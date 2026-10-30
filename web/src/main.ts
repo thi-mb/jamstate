@@ -187,16 +187,19 @@ async function initMidi(): Promise<void> {
   };
   midi.access!.onstatechange = refresh;
   $("midi-in").onchange = listenMidi;
+  $("midi-out").onchange = listenMidi;
   refresh();
 }
 
 function listenMidi(): void {
   unlistenMidi?.();
+  const outId = $<HTMLSelectElement>("midi-out").value;
+  const outName = outId ? midi.outputs().find((o) => o.id === outId)?.name : undefined;
   unlistenMidi = midi.listen($<HTMLSelectElement>("midi-in").value, (on, note, vel, ts) => {
     // MIDI timestamps are on the performance.now() timeline; map to the audio clock.
     const t = audio ? audio.currentTime - Math.max(0, performance.now() - ts) / 1000 : 0;
     playerNote(on, note, vel, t);
-  });
+  }, outName);
 }
 
 // ---------- player input ----------
