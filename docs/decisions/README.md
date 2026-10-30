@@ -10,7 +10,7 @@ Status values: **Proposed** (recommended, waiting on Thiago), **Accepted**,
 | # | Decision | Status |
 |---|----------|--------|
 | [0001](0001-three-timescales.md) | Three timescales; the fast layer never waits on AI | Accepted |
-| [0002](0002-browser-first.md) | v0 runs in the browser | Accepted (engine placement proposed) |
+| [0002](0002-browser-first.md) | v0 runs in the browser, engine in TypeScript | Accepted |
 | [0003](0003-fast-layer-timing.md) | Web Audio lookahead scheduler | Proposed |
 | [0004](0004-ableton-link-deferred.md) | Defer Ableton Link to a local bridge | Proposed |
 | [0005](0005-bar-commit-deadline.md) | Mid layer commits bar N+1 by a fixed point in bar N | Proposed |
