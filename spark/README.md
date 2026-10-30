@@ -28,6 +28,11 @@ cmake -B build -DGGML_CUDA=ON
 cmake --build build --config Release -j
 ```
 
+`-hf` downloads need llama.cpp built with OpenSSL (`sudo apt install
+libssl-dev` before `cmake`). Without it, the server exits with "HTTPS is not
+supported"; download the GGUF yourself (for example with `hf download`) and
+pass `-m <file>.gguf` instead of `-hf`.
+
 Run the default model from
 [ADR-0011](../docs/decisions/0011-bandleader-model.md). `-hf` downloads the
 GGUF from Hugging Face on first run; check the repo name and quant tag before
