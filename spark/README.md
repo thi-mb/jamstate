@@ -31,7 +31,8 @@ cmake --build build --config Release -j
 `-hf` downloads need llama.cpp built with OpenSSL (`sudo apt install
 libssl-dev` before `cmake`). Without it, the server exits with "HTTPS is not
 supported"; download the GGUF yourself (for example with `hf download`) and
-pass `-m <file>.gguf` instead of `-hf`.
+pass `-m <file>.gguf` instead of `-hf`. Hugging Face filenames are
+case-sensitive (`gpt-oss-20b-MXFP4.gguf`).
 
 Run the default model from
 [ADR-0011](../docs/decisions/0011-bandleader-model.md). `-hf` downloads the
@@ -115,18 +116,37 @@ press Start, and play. Use Chrome or Edge: Safari has no Web MIDI.
 
 To stop serving: `sudo tailscale serve --https=443 off`.
 
-## 5. Keep it running (optional)
+## 5. Keep it running
 
-Two systemd user services, one per server. Example for the model:
+Two systemd user services, as set up on the houseband Spark. The model:
 
 ```ini
 # ~/.config/systemd/user/houseband-llm.service
 [Unit]
-Description=houseband bandleader model (llama-server)
+Description=houseband bandleader model (llama-server, qwen3-30b-a3b) on 127.0.0.1:8080
 
 [Service]
-ExecStart=%h/llama.cpp/build/bin/llama-server -hf unsloth/Qwen3-30B-A3B-Instruct-2507-GGUF:Q4_K_M --alias qwen3-30b-a3b --host 127.0.0.1 --port 8080 -ngl 99 -c 8192 --parallel 1 --jinja
+ExecStart=%h/llama.cpp/build/bin/llama-server -m %h/models/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf --alias qwen3-30b-a3b --host 127.0.0.1 --port 8080 -ngl 99 -c 8192 --parallel 1 --jinja
 Restart=on-failure
+
+[Install]
+WantedBy=default.target
+```
+
+The app server, which starts after the model:
+
+```ini
+# ~/.config/systemd/user/houseband-app.service
+[Unit]
+Description=houseband app server (web/dist + /api) on 127.0.0.1:8765
+After=network-online.target houseband-llm.service
+Wants=houseband-llm.service
+
+[Service]
+WorkingDirectory=%h/dev/jamstate/server
+ExecStart=/usr/bin/python3 -m houseband_server --static ../web/dist --port 8765 --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b
+Restart=on-failure
+RestartSec=3
 
 [Install]
 WantedBy=default.target
@@ -134,11 +154,17 @@ WantedBy=default.target
 
 ```bash
 systemctl --user daemon-reload
-systemctl --user enable --now houseband-llm
-loginctl enable-linger "$USER"   # keep it running when you're logged out
+systemctl --user enable --now houseband-llm houseband-app
+loginctl enable-linger "$USER"   # keep them running when you're logged out
 ```
 
-The app server gets the same treatment with its own `ExecStart`.
+To deploy new code: `git pull`, `cd web && npm ci && npm run build`, then
+`systemctl --user restart houseband-app`. The model takes 5–10 s to load
+after a restart; until then the page uses the rule leader.
+
+If the Spark boots a new kernel and `nvidia-smi` can't see the GPU, the
+driver modules for that kernel are missing:
+`sudo apt install linux-modules-nvidia-580-open-$(uname -r) && sudo reboot`.
 
 ## Laptop-only development
 
