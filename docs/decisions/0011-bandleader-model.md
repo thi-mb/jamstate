@@ -1,6 +1,6 @@
 # 0011. Bandleader model: a small-active MoE, no reasoning, served by llama.cpp
 
-- Status: Proposed
+- Status: Accepted (2026-10-30, after the benchmark below)
 - Date: 2026-10-30
 
 ## Context
@@ -64,7 +64,7 @@ Notes:
   a layer. gpt-oss separated busy from sparse more clearly. Prompt work, not
   a model change, is the first lever for this.
 
-Recommendation: keep Qwen3-30B-A3B-Instruct-2507 as the default.
+Decision: Qwen3-30B-A3B-Instruct-2507 is the default bandleader model. Thiago accepted it on 2026-10-30.
 
 ## Consequences
 - Plenty of memory left on the Spark for v1 models (generative mid layer,
