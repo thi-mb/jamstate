@@ -1,6 +1,6 @@
 # 0011. Bandleader model: a small-active MoE, no reasoning, served by llama.cpp
 
-- Status: Proposed
+- Status: Accepted (2026-10-30, after the benchmark below)
 - Date: 2026-10-30
 
 ## Context
@@ -34,6 +34,37 @@ Rough expectation, to be confirmed by the benchmark: a few-billion-active MoE
 at 4 bits decodes at tens of tokens per second on the Spark and processes the
 prompt in well under a second, so a 60-token answer should land around
 1–1.5 s.
+
+## Benchmark results (2026-10-30)
+Measured on the Spark with `spark/bench_leader.py` at 112 bpm, llama.cpp
+792fcf4 (CUDA 13.0), `-ngl 99 -c 8192 --parallel 1 --jinja`, repo at 4f25483.
+
+| | Qwen3-30B-A3B-Instruct-2507 Q4_K_M | gpt-oss-20b MXFP4, reasoning low |
+|---|---|---|
+| p50 / p95 / max | 804 / 879 / 914 ms | 1856 / 2582 / 2651 ms (rerun: 1449 / 2098 ms) |
+| p95 in bars | 0.41 | 1.20 |
+| output tokens (avg) | 55 | 134 |
+| decode speed (median) | 69 tok/s | 73 tok/s |
+| invalid / errors (of 40) | 0 / 0 | 0 / 1 (rerun 0 / 3, cut off at 200 tokens) |
+| GPU memory | 18.6 GB | 11.5 GB |
+| result | PASS | MISS |
+
+Through `houseband_server` (`--via-server`, Qwen, n=20): p50 793 ms,
+p95 860 ms, 0 invalid. PASS.
+
+Notes:
+- gpt-oss-20b at default reasoning effort failed all 40 requests: its
+  reasoning tokens used the whole 200-token cap before any JSON came out.
+  Even at low effort it needs ~400 tokens of budget and misses the 1.5 s p95.
+  Some of its reasons were cut off, spoke about the player in the third
+  person, or described things the band can't do.
+- Qwen's reasons were short and fit the situation. Its move choice follows
+  the player only loosely: busy leans to `add_layer`, silent to
+  `drop_layer`/lower intensity, but sparse is mixed and busy sometimes drops
+  a layer. gpt-oss separated busy from sparse more clearly. Prompt work, not
+  a model change, is the first lever for this.
+
+Decision: Qwen3-30B-A3B-Instruct-2507 is the default bandleader model. Thiago accepted it on 2026-10-30.
 
 ## Consequences
 - Plenty of memory left on the Spark for v1 models (generative mid layer,
