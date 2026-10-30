@@ -11,6 +11,7 @@ import { simulate } from "../src/core/simulate";
 import { parseChord, voiceChord } from "../src/core/theory";
 import { Transport, type Sink } from "../src/core/transport";
 import { FEELS, type NoteEvent } from "../src/core/types";
+import { pickInputs } from "../src/audio/midi";
 
 import bluesJson from "../public/charts/blues-in-a.json";
 import nightShiftJson from "../public/charts/night-shift.json";
@@ -335,5 +336,21 @@ describe("transport", () => {
     for (const p of played) expect(p.time).toBeGreaterThanOrEqual(0);
     expect(Math.max(...played.map((p) => p.time))).toBeLessThan(5 + 0.1 + 1e-9);
     expect(t.beatAt(t.timeAt(6))).toBeCloseTo(6);
+  });
+});
+
+describe("midi inputs", () => {
+  const ins = [
+    { id: "in-kk", name: "KOMPLETE KONTROL M32" },
+    { id: "in-iac", name: "IAC Driver Bus 1" },
+  ];
+
+  it("leaves out the band's loopback port when listening to all inputs", () => {
+    expect(pickInputs(ins, "all", "IAC Driver Bus 1").map((i) => i.id)).toEqual(["in-kk"]);
+    expect(pickInputs(ins, "all", undefined).map((i) => i.id)).toEqual(["in-kk", "in-iac"]);
+  });
+
+  it("keeps an input the player picked by hand", () => {
+    expect(pickInputs(ins, "in-iac", "IAC Driver Bus 1").map((i) => i.id)).toEqual(["in-iac"]);
   });
 });
