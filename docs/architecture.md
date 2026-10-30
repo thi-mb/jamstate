@@ -153,6 +153,9 @@ the laptop. See [ADR-0008](decisions/0008-spark-as-stateless-advisor.md).
 
 ## Roadmap view
 
+The release plan after v0 is in [roadmap.md](roadmap.md); the list below is
+the original long-range view.
+
 - **v0**: browser app; typed chart; loop bank; drums, bass, chords; LLM leader
   on energy/density; built-in sound + Web MIDI out; overlay in the page.
 - **v1**: Ableton Link via a local bridge; audio → chart on the Spark
