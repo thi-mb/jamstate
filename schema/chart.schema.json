@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/thi-mb/jamstate/schema/chart.schema.json",
+  "title": "houseband chart",
+  "description": "A song skeleton: tempo, meter, key, sections with chords, and the form. Never audio. The browser (web/src/core/chart.ts) enforces the same rules and also checks that chord symbols parse.",
+  "type": "object",
+  "required": ["title", "bpm", "time_sig", "sections", "form"],
+  "additionalProperties": false,
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "bpm": { "type": "number", "minimum": 40, "maximum": 240 },
+    "time_sig": { "type": "string", "pattern": "^[2-7]/4$", "description": "N/4 only in v0." },
+    "key": { "type": "string", "description": "Informational, e.g. \"F minor\"." },
+    "phrase_bars": { "type": "integer", "minimum": 1, "maximum": 16, "default": 4 },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "bars", "chords"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+          "bars": { "type": "integer", "minimum": 1, "maximum": 64 },
+          "chords": {
+            "type": "array",
+            "minItems": 1,
+            "description": "One entry per bar, cycled to fill the section. An entry with spaces splits the bar evenly, e.g. \"Fm Eb\".",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "intensity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Suggested band intensity for this section; the bandleader can override it."
+          }
+        }
+      }
+    },
+    "form": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Section names in play order.",
+      "items": { "type": "string" }
+    }
+  }
+}

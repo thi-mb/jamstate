@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/thi-mb/jamstate/schema/moves.schema.json",
+  "title": "houseband bandleader response",
+  "description": "What the bandleader returns every few bars. Zero to two moves, each with a short reason shown to the player.",
+  "type": "object",
+  "required": ["moves"],
+  "additionalProperties": false,
+  "properties": {
+    "moves": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["move", "value", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "move": { "const": "set_intensity" },
+              "value": { "type": "number", "minimum": 0, "maximum": 1 },
+              "reason": { "type": "string", "maxLength": 120 }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["move", "part", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "move": { "enum": ["add_layer", "drop_layer"] },
+              "part": { "enum": ["drums", "bass", "chords"] },
+              "reason": { "type": "string", "maxLength": 120 }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["move", "section", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "move": { "const": "jump_to_section" },
+              "section": { "type": "string" },
+              "reason": { "type": "string", "maxLength": 120 }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["move", "bars", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "move": { "const": "extend_section" },
+              "bars": { "type": "integer", "minimum": 1, "maximum": 16 },
+              "reason": { "type": "string", "maxLength": 120 }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["move", "feel", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "move": { "const": "change_feel" },
+              "feel": { "enum": ["normal", "half_time", "double_time"] },
+              "reason": { "type": "string", "maxLength": 120 }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["move", "stinger", "reason"],
+            "additionalProperties": false,
+            "properties": {
+              "move": { "const": "fire_stinger" },
+              "stinger": { "enum": ["fill", "crash", "riser"] },
+              "reason": { "type": "string", "maxLength": 120 }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
