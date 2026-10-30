@@ -1,0 +1,21 @@
+{
+  "title": "Blues in A",
+  "bpm": 96,
+  "time_sig": "4/4",
+  "key": "A major",
+  "sections": [
+    {
+      "name": "head",
+      "bars": 12,
+      "chords": ["A7", "D7", "A7", "A7", "D7", "D7", "A7", "A7", "E7", "D7", "A7", "E7"],
+      "intensity": 0.5
+    },
+    {
+      "name": "solo",
+      "bars": 12,
+      "chords": ["A7", "D7", "A7", "A7", "D7", "D7", "A7", "A7", "E7", "D7", "A7", "E7"],
+      "intensity": 0.65
+    }
+  ],
+  "form": ["head", "solo", "solo", "solo", "head"]
+}
