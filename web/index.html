@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>houseband</title>
+    <link rel="stylesheet" href="/src/ui/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>houseband <small>v0</small></h1>
+      <p class="tag">An AI backing band that follows the song and reacts to how you play.</p>
+    </header>
+
+    <main>
+      <section id="stage" aria-live="polite">
+        <div class="now">
+          <div>
+            <div class="label">section</div>
+            <div id="section" class="big">ready</div>
+            <div id="bar" class="dim">press Start, then play</div>
+          </div>
+          <div>
+            <div class="label">chord</div>
+            <div id="chord" class="big">–</div>
+            <div id="feel" class="dim">normal feel</div>
+          </div>
+        </div>
+        <ol id="form" class="form"></ol>
+
+        <div class="meters">
+          <div>
+            <div class="label">band intensity <span id="intensity-num" class="dim"></span></div>
+            <div class="meter"><div id="intensity" class="fill"></div><div id="target" class="target"></div></div>
+          </div>
+          <div>
+            <div class="label">your energy <span id="energy-num" class="dim"></span></div>
+            <div class="meter"><div id="energy" class="fill player"></div></div>
+          </div>
+        </div>
+        <div id="layers" class="chips"></div>
+
+        <div class="move">
+          <div class="label">bandleader <span id="leader-status" class="dim"></span></div>
+          <div id="last-move" class="big-move">–</div>
+          <div id="last-reason" class="reason"></div>
+        </div>
+        <ul id="log" class="log"></ul>
+      </section>
+
+      <aside id="controls">
+        <div class="row">
+          <button id="start" class="primary">Start</button>
+          <button id="stop" disabled>Stop</button>
+          <label class="inline"><input type="checkbox" id="loop" checked /> loop form</label>
+        </div>
+
+        <fieldset>
+          <legend>Song</legend>
+          <select id="chart-select"></select>
+          <div class="row">
+            <label class="file">Load JSON… <input type="file" id="chart-file" accept=".json,application/json" hidden /></label>
+            <button id="chart-edit-toggle">Edit</button>
+          </div>
+          <div id="chart-editor" hidden>
+            <textarea id="chart-json" spellcheck="false" rows="14"></textarea>
+            <div class="row"><button id="chart-apply">Use this chart</button></div>
+          </div>
+          <div class="row">
+            <input id="chart-prompt" type="text" placeholder="or describe a song: slow 6-bar blues in E…" />
+            <button id="chart-ask" title="Ask the LLM on the Spark to write a chart">Write</button>
+          </div>
+          <div id="chart-errors" class="errors"></div>
+          <div id="chart-info" class="dim"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Bandleader</legend>
+          <select id="leader-select">
+            <option value="rules">Rules (in the page)</option>
+            <option value="llm">LLM on the Spark (falls back to rules)</option>
+            <option value="none">None (you drive it)</option>
+          </select>
+          <div id="server-status" class="dim"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>You</legend>
+          <label>MIDI in <select id="midi-in"><option value="all">all inputs</option></select></label>
+          <label>Pretend player
+            <select id="sim">
+              <option value="off">off (I'll play)</option>
+              <option value="silent">silent</option>
+              <option value="sparse">sparse</option>
+              <option value="medium">medium</option>
+              <option value="busy">busy</option>
+              <option value="demo">demo script (sparse → busy → silent)</option>
+            </select>
+          </label>
+          <p class="dim small">
+            Computer keys: <kbd>A</kbd>–<kbd>'</kbd> white keys, <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> <kbd>O</kbd> <kbd>P</kbd> black,
+            <kbd>Z</kbd>/<kbd>X</kbd> octave, hold <kbd>Shift</kbd> to play loud.
+          </p>
+          <div id="midi-status" class="dim small"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Output</legend>
+          <label class="inline"><input type="checkbox" id="builtin" checked /> built-in sound</label>
+          <label>MIDI out <select id="midi-out"><option value="">none</option></select></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Manual moves</legend>
+          <p class="dim small">Go through the same governor as the bandleader.</p>
+          <div class="row wrap" id="manual"></div>
+        </fieldset>
+      </aside>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
