@@ -11,7 +11,7 @@ are connected over Tailscale.
 ## Decision
 The Spark runs everything that isn't real-time:
 
-- **App server** (Python): serves the built web app, chart files and the loop
+- **App server** (Python, `server/`, package `houseband_server`): serves the built web app, chart files and the loop
   bank, and exposes a small API. The laptop browser opens
   `http://<spark>.<tailnet>.ts.net:<port>`.
 - **Bandleader endpoint**: the API proxies `/api/leader` to an
@@ -21,6 +21,8 @@ The Spark runs everything that isn't real-time:
 - **v1 workloads**: audio → chart (Demucs, allin1, chord recognition) as a
   job API; generative mid-layer models under the
   [commit-deadline contract](0005-bar-commit-deadline.md).
+
+Setup steps are in [spark/README.md](../../spark/README.md).
 
 The Spark holds no session timing state. Each leader request carries the full
 summary it needs, so a restarted server loses nothing.
