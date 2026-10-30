@@ -1,7 +1,7 @@
 # 0002. v0 runs in the browser
 
-- Status: Accepted (browser-first, Thiago 2026-10-30). Where the engine code
-  lives is Proposed: all in the browser, pending Thiago's pick.
+- Status: Accepted (Thiago, 2026-10-30: browser-first, with the engine
+  all in the browser in TypeScript)
 - Date: 2026-10-30
 
 ## Context
@@ -16,7 +16,7 @@ to own the clock that schedules it.
 
 ## Decision
 - The v0 app is a web page. Open a URL and play.
-- **Proposed:** the whole real-time engine (scheduler, arranger, governor,
+- The whole real-time engine (scheduler, arranger, governor,
   part generators, player features, rule-based leader, overlay) is written in
   TypeScript and runs in the page.
 - Sound comes from a built-in synth/sampler in the page (Web Audio). Web MIDI
