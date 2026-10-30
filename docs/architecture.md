@@ -131,7 +131,7 @@ the governor (manual move buttons for testing).
 | `set_intensity` | 0–1 | next bar (smoothed) |
 | `add_layer` / `drop_layer` | part | next phrase |
 | `jump_to_section` | name | next phrase |
-| `extend_section` | bars (multiple of phrase) | before current section ends |
+| `extend_section` | bars (1–16) | before current section ends |
 | `change_feel` | normal \| half_time \| double_time | next phrase |
 | `fire_stinger` | fill \| crash \| riser | fill: last bar of phrase; crash: next downbeat; riser: ends on next phrase |
 
@@ -162,3 +162,8 @@ the laptop. See [ADR-0008](decisions/0008-spark-as-stateless-advisor.md).
   ([ADR-0009](decisions/0009-magenta-realtime-spike.md)).
 - **Later**: Max for Live device, audio input, remote mode where only human
   parts cross the network and each player runs the band locally.
+
+## Further reading
+
+- [bandleader.md](bandleader.md): request/response contract for the bandleader.
+- [../spark/README.md](../spark/README.md): running the server and model on the Spark, HTTPS, and the latency benchmark.
