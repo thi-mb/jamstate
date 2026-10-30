@@ -20,8 +20,8 @@ since stopped.
   or vLLM guided decoding), with zero to two moves per response and a short
   `reason` per move. No free-form chat.
 - Each response is stamped with the beat it was requested at. Moves expire
-  after one phrase (TTL); expired moves are dropped by the governor and shown
-  as "too late" in the dev overlay.
+  after 8 bars (TTL, as implemented in v0); expired moves are dropped by the
+  governor and shown as "too late" in the dev overlay.
 - Timeout: a response not back within one phrase is abandoned.
 - After 3 consecutive failures/timeouts the page switches to the rule-based
   leader and retries the LLM in the background; it switches back on success.

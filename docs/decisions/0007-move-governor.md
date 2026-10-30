@@ -16,13 +16,14 @@ reaches the arranger:
 - **Validation**: schema, known section/part names, values in range.
 - **Expiry**: drop moves past their TTL ([ADR-0006](0006-bandleader-latency-contract.md)).
 - **Intensity smoothing**: `set_intensity` sets a target; actual intensity
-  moves toward it by at most 0.25 per bar. Changes smaller than 0.1 are
-  ignored (deadband).
-- **Dwell times**: a layer that was added or dropped can't flip back for
-  2 phrases. A feel change holds for at least 2 phrases.
-- **Structure**: at most one structural move (`jump_to_section`,
-  `extend_section`, `change_feel`) per phrase. No jump before a section has
-  played at least one phrase. Extensions capped at the section's own length.
+  eases toward it by at most 0.2 per bar. Small changes (under ~0.1) are
+  worth ignoring as a deadband.
+- **Dwell times**: layer changes at least 2 bars apart; a feel change holds
+  for at least 4 bars.
+- **Structure**: jumps apply at the next 4-bar phrase boundary and only after
+  the current section has played at least 4 bars. At most one structural move
+  (`jump_to_section`, `extend_section`, `change_feel`) per phrase. Extensions
+  capped at the section's own length.
 - **Stingers**: at most one per phrase; crash only on a downbeat; fill only in
   the last bar of a phrase; riser only when a section change is coming.
 - **Conflict**: within a phrase, the latest valid move of a kind wins.
@@ -35,8 +36,10 @@ fired, and the overlay shows the accepted ones with their reasons.
 ## Consequences
 - The prompt can stay short; the LLM doesn't need to be told about musical
   restraint because it can't violate it.
-- The numbers above are starting points to tune by ear and should live in one
-  config object, not scattered constants.
+- The numbers above match the v0 engine (`src/engine`) and are starting
+  points to tune by ear. They should live in one config object, not scattered
+  constants. Dwell times counted in bars may prove too twitchy; if so, move to
+  phrases.
 - Manual move buttons in the UI go through the same governor, which makes it
   easy to test.
 

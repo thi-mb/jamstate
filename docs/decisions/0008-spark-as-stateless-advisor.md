@@ -25,6 +25,10 @@ The Spark runs everything that isn't real-time:
 The Spark holds no session timing state. Each leader request carries the full
 summary it needs, so a restarted server loses nothing.
 
+Current state of v0: the Vite dev server on the laptop proxies leader calls to
+the Spark (`HOUSEBAND_LLM_URL`). That is the dev mode. Moving the built app
+and the proxy onto the Spark is the target, so testing only needs a browser.
+
 For local development without the Spark, the same server runs on the laptop
 and the leader falls back to the rule-based one (or to any OpenAI-compatible
 endpoint set by env var).
