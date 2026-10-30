@@ -18,5 +18,6 @@ Status values: **Proposed** (recommended, waiting on Thiago), **Accepted**,
 | [0007](0007-move-governor.md) | A deterministic governor between leader and arranger | Proposed |
 | [0008](0008-spark-as-stateless-advisor.md) | The Spark hosts the server and models; it never owns time | Proposed |
 | [0009](0009-magenta-realtime-spike.md) | Magenta RealTime is a timeboxed spike, not v0 | Proposed |
+| [0010](0010-chart-format-v0.md) | Chart format v0 | Accepted |
 
 New record: copy [template.md](template.md).
