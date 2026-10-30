@@ -6,6 +6,16 @@ import type { NoteEvent, Voice } from "../core/types";
 
 export const CHANNELS: Record<Voice, number> = { player: 0, bass: 1, chords: 2, drums: 9 };
 
+/**
+ * Inputs to listen to. "all" skips any input named like the band's MIDI out:
+ * a loopback port (IAC bus, loopMIDI) echoes the band back in, and its notes
+ * would count as the player's.
+ */
+export function pickInputs<T extends { id: string; name?: string | null }>(inputs: T[], id: string, outName?: string | null): T[] {
+  if (id !== "all") return inputs.filter((i) => i.id === id);
+  return inputs.filter((i) => !outName || i.name !== outName);
+}
+
 export type NoteHandler = (on: boolean, note: number, vel: number, timeStamp: number) => void;
 
 export class Midi {
@@ -34,9 +44,9 @@ export class Midi {
     return this.access ? [...this.access.outputs.values()] : [];
   }
 
-  /** Listen to one input (or all, with id "all"). Returns an unsubscribe function. */
-  listen(id: string, handler: NoteHandler): () => void {
-    const ins = this.inputs().filter((i) => id === "all" || i.id === id);
+  /** Listen to one input (or all but the band's loopback, with id "all"). Returns an unsubscribe function. */
+  listen(id: string, handler: NoteHandler, outName?: string | null): () => void {
+    const ins = pickInputs(this.inputs(), id, outName);
     const cb = (e: MIDIMessageEvent) => {
       const d = e.data;
       if (!d || d.length < 3) return;
