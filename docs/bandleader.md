@@ -6,13 +6,14 @@ return the same response. Timing rules are in
 [ADR-0006](decisions/0006-bandleader-latency-contract.md); what happens to a
 move after it arrives is in [ADR-0007](decisions/0007-move-governor.md).
 
-> If the engine code (`src/engine`) and this page disagree on a field name,
+> If the engine code (`web/src/core/`: `engine.ts`, `rules.ts`, `features.ts`) and this page disagree on a field name,
 > the code wins and this page should be fixed.
 
 ## When it is called
 
-- Every phrase (default 4 bars), at the phrase boundary, with a summary of
-  the phrase that just ended.
+- The LLM leader is called every phrase (default 4 bars), at the phrase
+  boundary, with a summary of the phrase that just ended. The in-page rule
+  leader runs every 2 bars.
 - At most one request in flight; if one is pending, skip this phrase.
 - Timeout one phrase. Moves expire 8 bars after the request bar.
 
@@ -40,7 +41,7 @@ and model keep no state between calls.
     "bars": 4,
     "energy": 0.62,
     "density": 1.4,
-    "mean_velocity": 79,
+    "mean_velocity": 0.62,
     "rest_ratio": 0.3,
     "repetition": 0.2,
     "register": "mid",
@@ -54,10 +55,12 @@ and model keep no state between calls.
 | Field | Meaning |
 |-------|---------|
 | `intensity` / `target` | where the band is now / where the governor is easing it to |
-| `player.energy` | mean velocity / 127 over the summarized bars |
+| `player.energy` | `0.55 * min(1, density / 2.4) + 0.45 * mean_velocity`, 0 when silent |
+| `player.mean_velocity` | mean velocity / 127 (0–1) |
 | `player.density` | notes per beat |
 | `player.rest_ratio` | fraction of time with no note sounding |
 | `player.repetition` | how much recent motifs repeat (0–1) |
+| `player.register` | `low` (mean pitch < 60) \| `mid` \| `high` (> 84), `null` when silent |
 | `player.trend` | `rising` \| `falling` \| `steady`, precomputed so the model doesn't do arithmetic |
 | `player.silent_bars` | consecutive bars with no notes |
 
@@ -123,12 +126,13 @@ The user message is the request JSON, verbatim.
 
 ## Rule-based leader (reference behavior)
 
-The in-page fallback implements the same contract with plain rules, so the
-LLM's output can be compared against it:
+The in-page fallback (`web/src/core/rules.ts`) implements the same contract
+with plain rules, so the LLM's output can be compared against it. It sorts the
+player into a mood, with hysteresis on energy:
 
-- Mean energy over the phrase sets the intensity target.
-- Busy (density above the enter threshold for a full phrase): add the next
-  missing layer, crash on the next downbeat if a layer was added.
-- Sparse: drop drums first, then chords.
-- Silent for a full phrase: drop to bass only, intensity 0.2.
-- Separate enter and exit thresholds for busy/sparse (hysteresis).
+| Mood | Enter / exit | Band response |
+|------|--------------|---------------|
+| silent | no notes | intensity 0.1, drop drums |
+| sparse | energy < 0.30 to enter, > 0.38 to leave | intensity 0.28, half time; drums back in if coming from silence |
+| groove | between sparse and busy | intensity 0.5, add a missing layer or return to normal feel |
+| busy | energy > 0.62 to enter, < 0.52 to leave | intensity 0.75+, add a missing layer, else leave half time, else a fill (crash if coming back from silence) |

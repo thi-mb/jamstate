@@ -92,9 +92,9 @@ def make_request(rng, scenario):
     player = dict(SCENARIOS[scenario])
     player.update(
         bars=4,
-        mean_velocity=round(player["energy"] * 127),
+        mean_velocity=round(min(1.0, player["energy"] + 0.1), 2) if player["silent_bars"] == 0 else 0.0,
         repetition=round(rng.uniform(0, 0.5), 2),
-        register=rng.choice(["low", "mid", "high"]),
+        register=None if player["silent_bars"] else rng.choice(["low", "mid", "high"]),
     )
     return {
         "bar": rng.randrange(8, 160),

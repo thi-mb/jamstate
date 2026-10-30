@@ -36,7 +36,7 @@ fired, and the overlay shows the accepted ones with their reasons.
 ## Consequences
 - The prompt can stay short; the LLM doesn't need to be told about musical
   restraint because it can't violate it.
-- The numbers above match the v0 engine (`src/engine`) and are starting
+- The numbers above match the v0 engine (`web/src/core/`) and are starting
   points to tune by ear. They should live in one config object, not scattered
   constants. Dwell times counted in bars may prove too twitchy; if so, move to
   phrases.
