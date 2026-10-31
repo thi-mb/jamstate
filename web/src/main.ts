@@ -14,7 +14,10 @@ import { checkSession, replaySession, sessionEngine, SessionRecorder, summarizeB
 import { DEMO_SCRIPT, parseScript, SimPlayer, type SimMode } from "./core/simplayer";
 import { Transport, type Sink } from "./core/transport";
 import { FEELS, STINGERS } from "./core/types";
-import { BRAIN_LABELS, BrainLeader, makeBrain, mergeSettings, type BrainSettings, type LeaderChoice } from "./core/brain";
+import {
+  BLIND_NAMES, BRAIN_LABELS, BrainLeader, blindCandidates, blindLeader, isBlind, makeBrain, mergeSettings, pickBlind, summarizeBlind,
+  type BrainKind, type BrainSettings, type LeaderChoice,
+} from "./core/brain";
 import { genreIds } from "./core/genres";
 import type { SessionMeta, SessionStore } from "./core/platform";
 import { ServerSessionStore, webPlatform } from "./platform/web";
@@ -39,6 +42,12 @@ let session: Session | null = null;
 let lastJam: { recorder: SessionRecorder; engine: Engine } | null = null;
 /** A session opened for replay. */
 let replayFile: SessionFile | null = null;
+/** Blind test: the brain secretly playing this jam, whether it ever failed, and how often each was tried. */
+let jamKind: BrainKind | null = null;
+let jamFallback = false;
+let blindTried: Partial<Record<BrainKind, number>> = {};
+/** Brains that answered the blind-test check; null until checked. */
+let blindReady: BrainKind[] | null = null;
 
 interface Session {
   engine: Engine;
@@ -207,7 +216,8 @@ function showBrainSettings(): void {
   for (const [id, get] of BRAIN_FIELDS) field(id).value = get(settings);
   field("jev-relay").checked = settings.jev.relay;
   field("jev-url").disabled = !settings.jev.relay;
-  for (const k of ["openai", "claude", "jev"]) $(`brain-${k}`).hidden = settings.kind !== k;
+  for (const k of ["openai", "claude", "jev", "blind"]) $(`brain-${k}`).hidden = settings.kind !== k;
+  if (settings.kind === "blind") showBlindPool();
   $("brain-keys-note").hidden = !["openai", "claude", "jev"].includes(settings.kind);
   $<HTMLButtonElement>("brain-test").disabled = settings.kind === "none";
 }
@@ -217,6 +227,7 @@ function saveBrainSettings(): void {
   next.kind = $<HTMLSelectElement>("leader-select").value as LeaderChoice;
   for (const [id, , set] of BRAIN_FIELDS) set(next, field(id).value.trim());
   next.jev.relay = field("jev-relay").checked;
+  if (JSON.stringify({ ...next, kind: "" }) !== JSON.stringify({ ...settings, kind: "" })) blindReady = null;
   settings = next;
   platform.settings.set(SETTINGS_KEY, settings);
   showBrainSettings();
@@ -242,6 +253,7 @@ const SAMPLE_CONTEXT = {
 } as const;
 
 $("brain-test").onclick = async () => {
+  if (settings.kind === "blind") return void checkBlind();
   const brain = makeBrain(settings);
   const out = $("brain-result");
   if (!brain) return;
@@ -275,17 +287,124 @@ async function checkServer(): Promise<void> {
   void listSessions();
 }
 
+// ---------- blind test ----------
+
+const blindEnv = () => ({ llmRelay: !!server?.relay.llm, jevRelay: !!server?.relay.jev });
+const blindPool = () => blindReady ?? blindCandidates(settings, blindEnv());
+
+function showBlindPool(): void {
+  const all: BrainKind[] = ["rules", "openai", "claude", "jev"];
+  const pool = blindPool();
+  const why: Record<BrainKind, string> = {
+    rules: "",
+    openai: blindReady ? "didn't answer" : "needs the Spark's relay or a direct endpoint",
+    claude: blindReady && settings.claude.apiKey ? "didn't answer" : "no key: pick Claude above and paste one",
+    jev: blindReady ? "didn't answer" : "needs the jamstate server's relay",
+  };
+  const out = all.filter((k) => !pool.includes(k)).map((k) => `${BLIND_NAMES[k]} (${why[k]})`);
+  $("blind-pool").textContent = `In the pool: ${pool.map((k) => BLIND_NAMES[k]).join(", ")}${blindReady ? " (checked)" : ""}.${out.length ? ` Left out: ${out.join("; ")}.` : ""}`;
+}
+
+/** Ask each candidate once; only the ones that answer go in the pool. */
+async function checkBlind(): Promise<void> {
+  const out = $("brain-result");
+  out.className = "small dim";
+  out.textContent = "Checking each brain…";
+  const cands = blindCandidates(settings, blindEnv());
+  const ok = await Promise.all(
+    cands.map(async (k) => {
+      try {
+        await makeBrain({ ...settings, kind: k })!.decide(structuredClone(SAMPLE_CONTEXT) as never, AbortSignal.timeout(20_000));
+        return k;
+      } catch {
+        return null;
+      }
+    }),
+  );
+  blindReady = ok.filter((k): k is BrainKind => !!k);
+  out.className = "small";
+  out.textContent = `${blindReady.length} of ${cands.length} brains answered.`;
+  showBlindPool();
+}
+
+function showRatingPanel(show: boolean): void {
+  $("blind-rate").hidden = !show;
+  if (!show) return;
+  stars = 0;
+  for (const b of $("blind-stars").querySelectorAll("button")) b.classList.remove("on");
+  field("blind-note").value = "";
+  $("blind-rate-result").textContent = "";
+}
+
+let stars = 0;
+$("blind-stars").replaceChildren(
+  ...["1 bad", "2 meh", "3 ok", "4 good", "5 great"].map((t, i) => {
+    const b = Object.assign(document.createElement("button"), { textContent: t });
+    b.onclick = () => {
+      stars = i + 1;
+      for (const o of $("blind-stars").querySelectorAll("button")) o.classList.toggle("on", o === b);
+    };
+    return b;
+  }),
+);
+
+$("blind-save").onclick = async () => {
+  const f = currentFile();
+  const res = $("blind-rate-result");
+  if (!f || !isBlind(f.leader)) return;
+  if (!stars) return void (res.textContent = "Pick 1 to 5 first.");
+  f.rating = { stars, ...(field("blind-note").value.trim() ? { note: field("blind-note").value.trim() } : {}), ...(jamFallback ? { fallback: true } : {}) };
+  try {
+    await platform.sessions.save(f);
+    let where = platform.sessions.label;
+    if (server?.sessions) {
+      try {
+        await spark.save(f);
+        where += ` and ${spark.label}`;
+      } catch {
+        /* kept in the browser; Sync to Spark can retry */
+      }
+    }
+    res.textContent = `Saved in ${where}. Start another jam for the next hidden brain.`;
+    void listSessions();
+  } catch (e) {
+    res.textContent = `Couldn't save the rating (${(e as Error).message}).`;
+  }
+};
+
+$("blind-results-btn").onclick = async () => {
+  const out = $("blind-results");
+  const files: SessionFile[] = [];
+  for (const m of await platform.sessions.list()) if (isBlind(m.leader)) files.push(await platform.sessions.load(m.name));
+  const rows = summarizeBlind(files);
+  if (!rows.length) return void (out.textContent = "No blind jams yet.");
+  out.replaceChildren(
+    ...rows.map((r) =>
+      Object.assign(document.createElement("div"), {
+        textContent: `${BLIND_NAMES[r.brain]}: ${r.mean === null ? "not rated" : `${r.mean.toFixed(1)} / 5`} over ${r.rated} rated of ${r.jams} jams${r.notes.length ? ` · “${r.notes.join("”, “")}”` : ""}`,
+      }),
+    ),
+  );
+};
+
 function makeLeader(c: Chart): { leader: Leader | null; remote: BrainLeader | null; every: number } {
   const rules = new RuleLeader();
-  const brain = makeBrain(settings);
+  const blind = settings.kind === "blind";
+  if (blind && !jamKind) {
+    jamKind = pickBlind(blindPool(), blindTried);
+    jamFallback = false;
+  }
+  const brain = makeBrain(blind ? { ...settings, kind: jamKind! } : settings);
   if (!brain) return { leader: null, remote: null, every: 4 };
   if (brain.kind === "rules") return { leader: ruleLeader(rules), remote: null, every: 2 };
   const phraseMs = (c.phraseBars * c.beatsPerBar * 60_000) / c.bpm;
   const remote = new BrainLeader(brain, rules, {
     timeoutMs: phraseMs,
     onAnswer: (_ctx, a, err) => {
-      if (a?.rejected.length) overlay.note(`${brain.label}: ${a.rejected.length} move(s) rejected (${a.rejected[0].error})`);
-      if (err) overlay.note(`${brain.label}: ${err}`);
+      const name = blind ? "bandleader" : brain.label;
+      if (err) jamFallback = true;
+      if (a?.rejected.length) overlay.note(`${name}: ${a.rejected.length} move(s) rejected${blind ? "" : ` (${a.rejected[0].error})`}`);
+      if (err) overlay.note(blind ? "bandleader: no answer this phrase" : `${brain.label}: ${err}`);
     },
   });
   return { leader: remote, remote, every: c.phraseBars };
@@ -293,6 +412,7 @@ function makeLeader(c: Chart): { leader: Leader | null; remote: BrainLeader | nu
 
 function leaderLabel(s: Session): string {
   if (!s.conductor.leader) return "off";
+  if (jamKind && !s.replay) return "hidden brain (blind test)";
   if (!s.remote) return "rules";
   const st = s.remote.status;
   const name = s.remote.brain.label;
@@ -403,6 +523,9 @@ function start(replay?: SessionFile): void {
   const engine = replay
     ? sessionEngine(replay, replay.controls)
     : new Engine(c, { config, seed, genre, swing, countIn: c.countIn });
+  if (!replay) jamKind = null;
+  showRatingPanel(false);
+  overlay.blind = replay ? isBlind(replay.leader) : settings.kind === "blind";
   const { leader, remote, every } = replay ? { leader: null, remote: null, every: replay.every_bars } : makeLeader(c);
   const recorder = replay
     ? null
@@ -413,6 +536,7 @@ function start(replay?: SessionFile): void {
   const conductor = new Conductor(engine, leader, every, {
     onFeatures: (_bar, f) => overlay.setEnergy(f),
     onDecision: (reply, bar) => {
+      if (overlay.blind) return overlay.leaderStatus(leaderLabel(session!));
       if (!reply.moves.length && reply.source !== "rules") overlay.note(`bar ${bar}: ${reply.source} says keep going${reply.latencyMs ? ` (${reply.latencyMs} ms)` : ""}`);
       else if (reply.latencyMs) overlay.note(`bar ${bar}: ${reply.source} answered in ${reply.latencyMs} ms`);
       overlay.leaderStatus(leaderLabel(session!));
@@ -488,6 +612,7 @@ function stop(): void {
   setRunning(false);
   updateSessionStatus();
   if (wasLive) void keepJam();
+  if (wasLive && jamKind && lastJam?.recorder) showRatingPanel(true);
 }
 
 $("start").onclick = () => start();
@@ -496,6 +621,7 @@ $("end-song").onclick = () => submitManual({ move: "end_song", reason: "You call
 
 /** What the recording says played: "rules", "none", or the brain and model ("jev", "openai:leader"). */
 function leaderName(): string {
+  if (settings.kind === "blind" && jamKind) return blindLeader(jamKind);
   if (settings.kind === "openai") return `openai:${settings.openai.model}`;
   if (settings.kind === "claude") return `claude:${settings.claude.model}`;
   return settings.kind;
@@ -586,7 +712,7 @@ function openReplay(raw: unknown, label: string): void {
   try {
     replayFile = checkSession(raw);
     res.className = "small";
-    res.textContent = `${label}: ${replayFile.title}, ${replayFile.genre}, ${replayFile.bars.length} bars, leader ${replayFile.leader}, recorded ${replayFile.created.slice(0, 16).replace("T", " ")}.`;
+    res.textContent = `${label}: ${replayFile.title}, ${replayFile.genre}, ${replayFile.bars.length} bars, leader ${isBlind(replayFile.leader) ? "hidden (blind test)" : replayFile.leader}, recorded ${replayFile.created.slice(0, 16).replace("T", " ")}.`;
   } catch (e) {
     replayFile = null;
     res.className = "small errors";
@@ -598,7 +724,7 @@ function openReplay(raw: unknown, label: string): void {
   setRunning(!!session);
 }
 
-const metaLabel = (s: SessionMeta) => `${s.created.slice(0, 16).replace("T", " ")} ${s.title} (${s.bars} bars${s.leader ? `, ${s.leader}` : ""})`;
+const metaLabel = (s: SessionMeta) => `${s.created.slice(0, 16).replace("T", " ")} ${s.title} (${s.bars} bars${s.leader ? `, ${isBlind(s.leader) ? "blind" : s.leader}` : ""})`;
 
 /** Sessions in this browser, plus the Spark's when a server is here. Values are "b:<name>" or "s:<name>". */
 async function listSessions(select?: string): Promise<void> {
@@ -609,6 +735,10 @@ async function listSessions(select?: string): Promise<void> {
     try {
       const list = await store.list();
       count += list.length;
+      if (prefix === "b") {
+        blindTried = {};
+        for (const m of list) if (isBlind(m.leader)) blindTried[m.leader!.slice(6) as BrainKind] = (blindTried[m.leader!.slice(6) as BrainKind] ?? 0) + 1;
+      }
       if (!list.length) continue;
       const g = document.createElement("optgroup");
       g.label = `in ${store.label}`;
