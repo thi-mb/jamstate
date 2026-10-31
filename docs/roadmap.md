@@ -26,12 +26,17 @@ three good, in that order:
 
 Three things run through every release:
 - **The v0 rules hold.** The music never stutters, the browser owns time,
-  the Spark is an advisor that can vanish, every move lands on a boundary
+  the bandleader is an advisor that can vanish, every move lands on a boundary
   and carries a reason ([architecture.md](architecture.md#design-principles)).
   New inputs (voice, guitar, tempo) are features or moves through the
   governor, never a second clock.
 - **Each release ships its own UI.** v0.7 is the polish pass, not the first
   time a feature gets a screen.
+- **No server required.** The page runs alone; the bandleader is a brain
+  the player picks; the Spark is an optional lab
+  ([ADR-0015](decisions/0015-no-server-required.md),
+  [ADR-0016](decisions/0016-brain-providers.md),
+  [ADR-0017](decisions/0017-one-core-thin-shells.md)).
 - **Genres.** A genre is more than a groove: it decides how the band
   composes, who's in it, how it's produced, and how the leader behaves.
   Every release adds its layer to the same genre packs; see
@@ -83,6 +88,7 @@ v0 is done and tested (11 of 12 pass). What it handed over:
 | Phase | Release | Theme | You'll notice |
 |-------|---------|-------|---------------|
 | Band | **v0.1** | Groove | The band swings, breathes, counts you in and ends songs properly |
+| Band | **v0.1.1** | Standalone | Nothing changes in the music; the page runs without the Spark and you pick the bandleader's brain |
 | Band | **v0.2** | Sound and lineup | Good built-in instruments, more of them, and you pick who plays on each song |
 | Bandleader | **v0.3** | Listening | The band hears your phrasing, harmony and tempo, and takes cues from pedal, pad or voice |
 | Bandleader | **v0.4** | Leading | The leader plans the whole song, has a personality, and trades fours with you |
@@ -95,7 +101,8 @@ How they depend on each other:
 
 ```mermaid
 flowchart LR
-  v01[v0.1 Groove<br/>+ record/replay] --> v02[v0.2 Sound and lineup]
+  v01[v0.1 Groove<br/>+ record/replay] --> v011[v0.1.1 Standalone<br/>+ brain bake-off]
+  v011 --> v02[v0.2 Sound and lineup]
   v01 --> v03[v0.3 Listening<br/>+ eval set]
   v03 --> v04[v0.4 Leading]
   v02 --> v04
@@ -163,6 +170,31 @@ Done when:
 - Unit tests pin the generators (seeded) and timing offsets stay inside the
   commit deadline ([ADR-0005](decisions/0005-bar-commit-deadline.md)).
 - v0 tests 1–9 still pass.
+
+### v0.1.1: Standalone
+
+**Goal:** the page runs on its own and the bandleader is a brain you pick,
+before new features land on the old shape
+([ADR-0015](decisions/0015-no-server-required.md),
+[ADR-0016](decisions/0016-brain-providers.md),
+[ADR-0017](decisions/0017-one-core-thin-shells.md)).
+
+- Static build that plays with no jamstate server.
+- Prompt building and move checking move from `server/` into the page.
+- Brain providers: rules (default), OpenAI-compatible (Qwen, Ollama),
+  Claude, Jev. Keys stored on the player's machine.
+- Sessions in browser storage, with download and import; saving to the
+  Spark becomes optional sync.
+- MIDI, audio input, storage and model runtime behind platform interfaces.
+- **Brain bake-off** on the Spark: replay recorded sessions through each
+  provider, measure latency, Thiago blind-rates the moves; picks the
+  default. Laya-in-the-browser spike alongside.
+
+**Done when:**
+- The static build plays from any host with the rules brain and no server.
+- Each provider returns moves through the governor in a replayed session.
+- The bake-off results are written up and the default brain is chosen.
+- v0 and v0.1 tests still pass.
 
 ### v0.2: Sound and lineup
 
@@ -372,8 +404,9 @@ Done when:
 
 ### v1.0: Public
 
-- Repo goes public (Apache 2.0); README, getting started for laptop-only and
-  laptop + Spark, a short architecture tour.
+- Repo goes public (Apache 2.0); README, getting started with no install
+  (web), with a key or local model, and with a Spark; a short architecture
+  tour.
 - About five genre packs that each sound and lead differently.
 - Demo video.
 - Decision records brought up to date (the Proposed ones accepted or
@@ -401,6 +434,12 @@ starting over.
   extension of free jam from v0.6). Needs a voice-tuned pitch tracker
   (vibrato, slides, breathy onsets) and a "fit chords to melody" step,
   probably on the Spark first.
+- **Desktop app:** the same page in a Tauri or Electron shell, with a
+  bundled local brain, its own MIDI port into Ableton, Link and native
+  audio in ([ADR-0017](decisions/0017-one-core-thin-shells.md)). May come
+  earlier if the public demo and the shell spike say so.
+- **Hosted tier:** a small subscription for generative audio, only if it is
+  good enough to pay for. The Spark prototypes it first.
 - **Community genre packs:** the pack format from v0.1, documented for
   others to add genres.
 
@@ -411,19 +450,27 @@ Not scheduled; each can slot in once its question is answered:
 - **Ableton Link** through a small local bridge
   ([ADR-0004](decisions/0004-ableton-link-deferred.md)). Untested, and it
   needs a helper app on the Mac, which may not be allowed on Thiago's work
-  laptop. Check that first.
+  laptop. Check that first. The desktop app (ADR-0017) would host Link
+  natively.
 - **Generative mid layer on the Spark:** a symbolic model writing the next
   1–2 bars under the same commit-deadline contract. Follows v0.1's
   rule-based groove once replay and the eval set can tell if it's better.
 - **Audio mode with Magenta RealTime**, after the spike in
   [ADR-0009](decisions/0009-magenta-realtime-spike.md). The spike can run on
-  the Spark any time.
+  the Spark any time. Magenta RealTime 2 (2026) streams in real time on
+  Apple Silicon with MIDI steering, which also makes it a desktop-app
+  candidate.
 - Max for Live device; remote mode where only the human parts cross the
   network.
 - Dropped for now (2026-10-31): practice mode (loop and slow down a section)
   and using a phone as a cue remote.
 
 ## Open questions
+
+Direction decided 2026-10-31 (ADR-0015 to 0017): no server required,
+pluggable brains, one core with thin shells. A **public web demo** with a
+short survey follows v0.2, to learn how players actually use it. Still open:
+Tauri vs. Electron, whether to build a DAW plugin, hosting and pricing.
 
 1. **Order of phase 1.** Groove before sound is the recommendation: the
    groove work is engine-only and shapes what the new instruments play.

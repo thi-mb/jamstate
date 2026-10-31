@@ -18,8 +18,9 @@ URL, plug in a MIDI keyboard (or use the computer keyboard), and play.
    rendering) is allowed on the path that emits notes. AI output is advisory,
    and late output is dropped, not waited for.
 2. **The player's machine owns time.** All scheduling happens locally against
-   one clock. The DGX Spark is a stateless advisor that can disappear without
-   the band stopping.
+   one clock. The bandleader brain (rules in the page, a local model, or a
+   cloud API) is an advisor that can disappear without the band stopping.
+   No server is required to play ([ADR-0015](decisions/0015-no-server-required.md)).
 3. **Small, quantized moves.** Every change lands on a bar or phrase boundary
    and is drawn from a fixed move set, so the band sounds like a band making
    decisions rather than a model twitching.
@@ -31,18 +32,18 @@ URL, plug in a MIDI keyboard (or use the computer keyboard), and play.
 ## The three timescales
 
 ```
-            browser (laptop)                                   DGX Spark
+            browser (laptop)                                   brain (optional)
  ┌───────────────────────────────────────────────┐      ┌──────────────────────┐
  │                                               │      │                      │
  │ Web MIDI / keys ─► Player features ───┐       │      │                      │
  │                    (per bar)          │summary│      │                      │
  │                                       ▼ /N bars      │                      │
- │                              Bandleader client ─────►│ app server + proxy   │
- │   Rule-based leader ──┐               │ moves │ HTTP │  ──► LLM (llama.cpp, │
- │                       │               │       │      │       vLLM)          │
- │                       ▼               ▼       │      │                      │
- │                    Move governor              │      │ v1: symbolic model   │
- │              (validate, TTL, dwell, quantize) │      │ (next 1–2 bars)      │
+ │                              Bandleader client ─────►│ brain provider       │
+ │   Rule-based leader ──┐               │ moves │ HTTP │  rules (in page),    │
+ │                       │               │       │      │  Laya, Jev, Claude,  │
+ │                       ▼               ▼       │      │  OpenAI, Qwen/Ollama │
+ │                    Move governor              │      │ user picks; rules by │
+ │              (validate, TTL, dwell, quantize) │      │ default, no server   │
  │                          │                    │      └──────────────────────┘
  │  SLOW  Arranger: form position, section,      │
  │        intensity, layers, feel, stingers      │
@@ -61,8 +62,8 @@ URL, plug in a MIDI keyboard (or use the computer keyboard), and play.
 | Layer | Cadence | Runs where | Job | If it is late |
 |-------|---------|------------|-----|---------------|
 | Fast  | per event (ms) | browser, audio clock | Turn beat-stamped events into sound/MIDI at exact times | Must not be late. See [ADR-0003](decisions/0003-fast-layer-timing.md) |
-| Mid   | per bar | browser (v0), Spark (v1) | Produce the next bar per active part from chart + arranger state (+ player, v1) | Repeat or lightly vary the previous bar. See [ADR-0005](decisions/0005-bar-commit-deadline.md) |
-| Slow  | every few bars | Spark | Read the player summary and propose moves | Arranger keeps its state; rule-based leader stands in. See [ADR-0006](decisions/0006-bandleader-latency-contract.md) |
+| Mid   | per bar | browser | Produce the next bar per active part from chart + arranger state (+ player, v1) | Repeat or lightly vary the previous bar. See [ADR-0005](decisions/0005-bar-commit-deadline.md) |
+| Slow  | every few bars | brain provider: rules in the page, a local model, or a cloud API | Read the player summary and propose moves | Arranger keeps its state; rule-based leader stands in. See [ADR-0006](decisions/0006-bandleader-latency-contract.md) |
 
 ## Components
 
@@ -108,8 +109,10 @@ and hysteresis, and picks the boundary each move lands on. The LLM proposes;
 the governor disposes. See [ADR-0007](decisions/0007-move-governor.md).
 
 ### Bandleader
-An LLM served by an OpenAI-compatible server on the Spark. Every N bars it
-gets a compact summary (player features, arranger state, position in form,
+A pluggable brain the player picks
+([ADR-0016](decisions/0016-brain-providers.md)): the in-page rules, an
+OpenAI-compatible model (Qwen on the Spark, Ollama), Claude, or a decision
+model such as Jev or Laya. Every N bars it gets a compact summary (player features, arranger state, position in form,
 recent moves) and returns zero or more moves as schema-constrained JSON. It is
 called asynchronously and never awaited by the music. A deterministic
 rule-based leader implements the same interface, runs in the page, and is
@@ -143,23 +146,33 @@ the governor (manual move buttons for testing).
 Every move carries `reason` (short string for the overlay). The governor
 stamps it with `issued_at_beat` and a TTL.
 
-## Laptop ↔ Spark
+## Where things run
 
-The DGX Spark is the host. It serves the web app (over HTTPS on the tailnet,
-since Web MIDI needs a secure context), runs a small Python API, and runs the
-LLM behind an OpenAI-compatible server. The API proxies leader requests to the
-model so the browser never talks to the model server directly. v1 workloads
-(audio → chart, generative mid layer) also run there.
+One TypeScript core runs inside thin shells
+([ADR-0017](decisions/0017-one-core-thin-shells.md)). The web page is the
+first shell; a desktop app may follow. MIDI, audio input, storage and the
+model runtime sit behind small platform interfaces that each shell fills in.
 
-Once the page has loaded, all timing lives in the browser. The page treats the
-Spark as unreliable: short timeouts, automatic switch to the rule-based
-leader, automatic recovery. For offline development the same server runs on
-the laptop. See [ADR-0008](decisions/0008-spark-as-stateless-advisor.md).
+The page runs alone as a static build
+([ADR-0015](decisions/0015-no-server-required.md)). Prompt building, move
+checking and session storage live in the page. API keys stay on the
+player's machine. The page treats every brain as unreliable: short timeouts,
+automatic switch to the rule-based leader, automatic recovery.
+
+The DGX Spark is optional. It is Thiago's lab: an eval bench that replays
+recorded sessions through each brain, offline jobs (stems, audio to chart),
+generative audio R&D, and one more brain host (Qwen) for whoever has it.
+The Python server in `server/` stays as an optional companion (static
+hosting, session sync, a proxy for providers that block browser calls).
+
+Until the switch lands, the page still uses the Spark server as described in
+[ADR-0008](decisions/0008-spark-as-stateless-advisor.md), now superseded.
 
 ## Roadmap view
 
 The release plan after v0 is in [roadmap.md](roadmap.md); the list below is
-the original long-range view.
+the original long-range view, kept for history. Where it puts work on the
+Spark, ADR-0015 now makes the Spark optional.
 
 - **v0**: browser app; typed chart; loop bank; drums, bass, chords; LLM leader
   on energy/density; built-in sound + Web MIDI out; overlay in the page.
