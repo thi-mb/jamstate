@@ -86,7 +86,8 @@ What a brain returns, after the page's checks (`web/src/core/brain/check.ts`):
 ```
 
 - `moves`: 0 to 2. An empty list is a valid, common answer ("keep going").
-- `reason` is shown on screen: required, at most 120 characters, plain words
+- `reason` is shown on screen: required, plain words; longer than 120
+  characters is shortened at a word boundary (not rejected)
   addressed to the player. Shorter is better on the overlay.
 - `rejected`: moves the checks dropped as invalid, with the error, for the
   dev overlay.
@@ -127,7 +128,7 @@ make space; when they stop, drop back. Prefer small changes. Saying nothing is
 often right. Never move more than two things at once.
 
 Answer only with JSON matching the schema. Each move needs a short, friendly
-reason addressed to the player.
+reason addressed to the player, under 100 characters.
 ```
 
 The user message is the request JSON, verbatim.
