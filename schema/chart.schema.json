@@ -2,37 +2,119 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/thi-mb/jamstate/schema/chart.schema.json",
   "title": "houseband chart",
-  "description": "A song skeleton: tempo, meter, key, sections with chords, and the form. Never audio. The browser (web/src/core/chart.ts) enforces the same rules and also checks that chord symbols parse.",
+  "description": "A song skeleton: tempo, meter, key, genre, sections with chords, and the form. Never audio. Format v0.1 (docs/decisions/0013-chart-format-v0.1.md); every v0 chart is valid. The browser (web/src/core/chart.ts) enforces the same rules and also checks that chord symbols parse and the genre exists.",
   "type": "object",
-  "required": ["title", "bpm", "time_sig", "sections", "form"],
+  "required": [
+    "title",
+    "bpm",
+    "time_sig",
+    "sections",
+    "form"
+  ],
   "additionalProperties": false,
   "properties": {
-    "title": { "type": "string", "minLength": 1 },
-    "bpm": { "type": "number", "minimum": 40, "maximum": 240 },
-    "time_sig": { "type": "string", "pattern": "^[2-7]/4$", "description": "N/4 only in v0." },
-    "key": { "type": "string", "description": "Informational, e.g. \"F minor\"." },
-    "phrase_bars": { "type": "integer", "minimum": 1, "maximum": 16, "default": 4 },
+    "version": {
+      "type": "string",
+      "enum": [
+        "0",
+        "0.1"
+      ],
+      "description": "Chart format version. Optional; v0 charts have none."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bpm": {
+      "type": "number",
+      "minimum": 40,
+      "maximum": 240
+    },
+    "time_sig": {
+      "type": "string",
+      "pattern": "^[2-7]/4$",
+      "description": "N/4 only in v0."
+    },
+    "key": {
+      "type": "string",
+      "description": "Informational, e.g. \"F minor\"."
+    },
+    "phrase_bars": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16,
+      "default": 4
+    },
+    "genre": {
+      "type": "string",
+      "description": "Genre pack id from genres/ (funk, blues-rock, jazz). Sets the groove, swing, feel and ending. Default blues-rock.",
+      "examples": [
+        "funk",
+        "blues-rock",
+        "jazz"
+      ]
+    },
+    "swing": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "0 = straight, 0.66 = triplet swing, 1 = dotted. Overrides the genre's swing."
+    },
+    "count_in": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "default": 1,
+      "description": "Bars the band counts in before the first bar."
+    },
     "sections": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["name", "bars", "chords"],
+        "required": [
+          "name",
+          "bars",
+          "chords"
+        ],
         "additionalProperties": false,
         "properties": {
-          "name": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
-          "bars": { "type": "integer", "minimum": 1, "maximum": 64 },
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "bars": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 64
+          },
           "chords": {
             "type": "array",
             "minItems": 1,
             "description": "One entry per bar, cycled to fill the section. An entry with spaces splits the bar evenly, e.g. \"Fm Eb\".",
-            "items": { "type": "string", "minLength": 1 }
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
           },
           "intensity": {
             "type": "number",
             "minimum": 0,
             "maximum": 1,
             "description": "Suggested band intensity for this section; the bandleader can override it."
+          },
+          "swing": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Overrides the song's swing for this section."
+          },
+          "cymbal": {
+            "enum": [
+              "hat",
+              "ride"
+            ],
+            "description": "Drummer keeps time on the hi-hat or the ride in this section (overrides the genre)."
           }
         }
       }
@@ -41,7 +123,9 @@
       "type": "array",
       "minItems": 1,
       "description": "Section names in play order.",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     }
   }
 }

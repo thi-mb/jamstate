@@ -98,6 +98,10 @@ What the server returns to the page:
 | `change_feel` | `feel` | `normal` \| `half_time` \| `double_time` |
 | `fire_stinger` | `stinger` | `fill` \| `crash` \| `riser` |
 
+The band also knows `end_song` (v0.1): it ends the song at the end of the
+phrase. That one is the player's call, so it is not in the model's schema,
+the server rejects it, and the page drops it from any leader's reply.
+
 The machine-readable schema is
 [schema/moves.schema.json](../schema/moves.schema.json). The server passes it
 to the model as a constrained-decoding `response_format`, so the model can

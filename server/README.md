@@ -9,9 +9,15 @@ The app server that runs on the DGX Spark. Python standard library only.
   (`response_format: json_schema`, degrading to `json_object`, then plain text
   if the model server rejects it) and drops malformed moves.
 - `POST /api/chart`: `{prompt}` in, `{chart, latency_ms, model}` out. The
-  browser validates the chart before using it.
+  browser validates the chart before using it. The prompt and schema offer
+  the installed genre packs (`../genres`).
+- `POST /api/sessions`: a recorded jam (`houseband-session/0.1`) in, `{name}`
+  out. `GET /api/sessions` lists them, `GET /api/sessions/<name>` returns one.
+  Files go to `--sessions-dir` (default `~/.local/share/houseband/sessions`,
+  or `HOUSEBAND_SESSIONS`). This is the only thing the server writes.
 
-It keeps no session state, so restarting it never affects a jam in progress.
+It keeps no jam state (saved sessions are just files), so restarting it
+never affects a jam in progress.
 The page falls back to its rule-based leader whenever this server or the
 model is unavailable.
 

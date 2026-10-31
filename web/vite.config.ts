@@ -9,6 +9,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: { "/api": { target: apiTarget, changeOrigin: true } },
+    // Genre packs live in ../genres (shared with the server).
+    fs: { allow: [".."] },
   },
   build: { outDir: "dist", target: "es2022" },
   test: { include: ["test/**/*.test.ts"] },

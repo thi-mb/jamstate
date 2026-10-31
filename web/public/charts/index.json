@@ -1,4 +1,5 @@
 [
-  { "file": "night-shift.json", "title": "Night Shift (F minor, 112)" },
-  { "file": "blues-in-a.json", "title": "Blues in A (96)" }
+  { "file": "night-shift.json", "title": "Night Shift (funk, F minor, 112)" },
+  { "file": "blues-in-a.json", "title": "Blues in A (blues rock, 96)" },
+  { "file": "late-set.json", "title": "Late Set (jazz, Bb, 132)" }
 ]

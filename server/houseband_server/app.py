@@ -14,8 +14,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
+from urllib.parse import unquote
+
 from .leader import ask_leader, write_chart
 from .llm import LLMClient, LLMError
+from .sessions import MAX_SESSION_BYTES, SessionError, SessionStore
 
 log = logging.getLogger("houseband")
 
@@ -23,9 +26,10 @@ MAX_BODY = 64 * 1024
 
 
 class App:
-    def __init__(self, static_dir: Path | None, llm: LLMClient | None):
+    def __init__(self, static_dir: Path | None, llm: LLMClient | None, sessions: SessionStore | None = None):
         self.static_dir = static_dir.resolve() if static_dir else None
         self.llm = llm
+        self.sessions = sessions
 
     def health(self) -> dict[str, Any]:
         return {
@@ -33,6 +37,7 @@ class App:
             "llm_url": self.llm.base_url if self.llm else None,
             "model": self.llm.model if self.llm else None,
             "static": str(self.static_dir) if self.static_dir else None,
+            "sessions": str(self.sessions.root) if self.sessions else None,
         }
 
 
@@ -52,9 +57,9 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
             self.end_headers()
             self.wfile.write(data)
 
-        def _body(self) -> Any:
+        def _body(self, limit: int = MAX_BODY) -> Any:
             n = int(self.headers.get("content-length") or 0)
-            if n > MAX_BODY:
+            if n > limit:
                 raise ValueError("request too large")
             return json.loads(self.rfile.read(n) or b"null")
 
@@ -62,12 +67,33 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
             path = self.path.split("?", 1)[0]
             if path == "/api/health":
                 return self._json(200, app.health())
+            if path == "/api/sessions" or path.startswith("/api/sessions/"):
+                return self._get_session(unquote(path[len("/api/sessions/"):]) if path.startswith("/api/sessions/") else "")
             if path.startswith("/api/"):
                 return self._json(404, {"error": "not found"})
             self._static(path)
 
+        def _get_session(self, name: str) -> None:
+            if app.sessions is None:
+                return self._json(503, {"error": "session storage is off"})
+            if not name:
+                return self._json(200, {"sessions": app.sessions.list()})
+            try:
+                return self._json(200, app.sessions.load(name))
+            except (SessionError, FileNotFoundError):
+                return self._json(404, {"error": "no such session"})
+
         def do_POST(self) -> None:
             path = self.path.split("?", 1)[0]
+            if path == "/api/sessions":
+                if app.sessions is None:
+                    return self._json(503, {"error": "session storage is off"})
+                try:
+                    name = app.sessions.save(self._body(MAX_SESSION_BYTES))
+                except (ValueError, json.JSONDecodeError) as e:
+                    return self._json(400, {"error": str(e)})
+                log.info("saved session %s", name)
+                return self._json(200, {"name": name})
             try:
                 body = self._body()
             except (ValueError, json.JSONDecodeError) as e:

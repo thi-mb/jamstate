@@ -1,0 +1,88 @@
+{
+  "format": "houseband-genre/0.1",
+  "id": "funk",
+  "name": "Funk",
+  "description": "Tight sixteenth-note groove on the hi-hat with ghosted snare, a syncopated bass that locks with the kick, and short high chord stabs. Barely swung, played on top of the beat.",
+  "parts": ["drums", "bass", "chords"],
+  "feel": { "swing": 0.15, "swing_unit": 16 },
+  "humanize": {
+    "drums": { "jitter_ms": 3, "velocity": 7, "lines": { "cymbal": -2, "snare": 2 } },
+    "bass": { "offset_ms": 0, "jitter_ms": 3, "velocity": 7 },
+    "chords": { "offset_ms": 1, "jitter_ms": 3, "velocity": 6, "spread_ms": 4 }
+  },
+  "drums": {
+    "grid": 4,
+    "cymbal": "hat",
+    "cymbal_sections": { "bridge": "ride" },
+    "levels": [
+      [
+        { "kick": "x.........x.....", "stick": "....x.......x...", "cymbal": "h.h.h.h.h.h.h.h." },
+        { "kick": "x.......x.x.....", "stick": "....x.......x...", "cymbal": "h.h.h.h.h.h.h.h." }
+      ],
+      [
+        { "kick": "x..x..x...x.....", "snare": "....X.......X...", "cymbal": "x.h.x.h.x.h.x.h." },
+        { "kick": "x.........x..x..", "snare": "....X.......X...", "cymbal": "x.h.x.h.x.h.x.h." },
+        { "lines": { "kick": "x..x..x...x.....", "snare": "....X.......X..g", "cymbal": "x.h.x.h.x.h.x.o." }, "phrase_end": true }
+      ],
+      [
+        { "kick": "x..x..x...x..x..", "snare": "....X..g.g..X..g", "cymbal": "xhxhxhxhxhxhxhxh" },
+        { "kick": "x.x...x...x..x..", "snare": "....X..g.g..X...", "cymbal": "xhxhxhxhxhxhxhxh" },
+        { "lines": { "kick": "x..x..x...x..x..", "snare": "....X..g.g..X.gg", "cymbal": "xhxhxhxhxhxhxho." }, "phrase_end": true }
+      ],
+      [
+        { "kick": "x..x..x.x.x..x..", "snare": "....X..g.g.gX..g", "cymbal": "XhxhXhxhXhxhXhxh" },
+        { "kick": "x.x...x...xx..x.", "snare": "....X..g.g..X.g.", "cymbal": "XhxhXhxhXhxhXhxh" },
+        { "lines": { "kick": "x..x..x.x.x.....", "snare": "....X..g.g.gX.XX", "cymbal": "XhxhXhxhXhxhXho." }, "phrase_end": true }
+      ]
+    ],
+    "ghosts": [0, 0, 0.08, 0.14],
+    "phrase_fills": [0, 0.1, 0.25, 0.4],
+    "fills": [
+      { "beats": 1, "levels": [0, 3], "lines": { "snare": "..xX" } },
+      { "beats": 1, "levels": [1, 3], "lines": { "snare": "x.gx", "tom_hi": "...." } },
+      { "beats": 2, "levels": [1, 3], "lines": { "snare": "x.xgx.x.", "tom_hi": "......x.", "tom_lo": ".......x" } },
+      { "beats": 2, "levels": [2, 3], "lines": { "snare": "xxxx....", "tom_hi": "....xx..", "tom_mid": "......x.", "tom_lo": ".......x" } },
+      { "beats": 4, "levels": [3, 3], "lines": { "kick": "x.......x.......", "snare": "..xx.xxx....x.xx", "tom_hi": "....x...........", "tom_mid": "........xx......", "tom_lo": "..........xx...." } }
+    ],
+    "pickup": { "snare": "..xX" }
+  },
+  "bass": {
+    "grid": 4,
+    "levels": [
+      ["R - - - - - - - - - - - . . . .", "R - - - - - - - . . 5 - - - . ."],
+      [
+        "R - - . . . R . . . 5 . R - . .",
+        "R - - . . . 8 . . . R . . . b7 .",
+        { "steps": "R - - . . . R . . . 5 . b7 . A .", "phrase_end": true }
+      ],
+      [
+        "R - . R . . 8 . . R . 5 . . b7 .",
+        "R - . x . R . . 8 . x . b7 . 5 .",
+        "R - . R . . 8 x . R . . b7 . 8 .",
+        { "steps": "R - . R . . 8 . . R . x 5 . A .", "phrase_end": true }
+      ],
+      [
+        "R! . x R . . 8 . x R . . b7 . 5 x",
+        "R! . 8 . x R . . R . x 8 . b7 R .",
+        "R! . x R . 8 . R x . R . b7 . 8 .",
+        { "steps": "R! . x R . . 8 . 5 . b7 . 8 . A .", "phrase_end": true }
+      ]
+    ],
+    "approach": "chromatic",
+    "approach_chance": [0, 0.15, 0.3, 0.4]
+  },
+  "chords": {
+    "grid": 4,
+    "voicing": "stab",
+    "range": [60, 79],
+    "levels": [
+      ["x - - - - - - - - - - - . . . .", "x - - - - - - - . . . . x - - -"],
+      [". . . . x - . . . . . . x - . .", ". . x . . . . . . . x . . . . ."],
+      [". . x . g . x . . . x . g . x .", ". . x . . g . x . . x . . g . .", "x . . g . . x . g . x . . g . p"],
+      [". x g x . g x . . x g x . g x .", "x . g x . . x g . x . g x . p .", ". . x g x . g x . . x g x . g x"]
+    ]
+  },
+  "ending": { "rit": 0, "ring_beats": 2, "chord": { "major": "9", "minor": "m9" }, "drums": "hit" },
+  "forms": ["vamp: A 8 bars, B 8 bars, back to A", "verse 8 / chorus 8 / breakdown 4 on one chord / chorus"],
+  "progressions": ["i7 (one-chord vamp)", "i7 IV7", "I7 IV7", "i7 bVII7 bVI7 V7", "I9 bVII9 IV9"]
+}

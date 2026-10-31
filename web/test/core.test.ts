@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { bassBar, chordBar, drumBar, DRUM, LoopBank, withFill } from "../src/core/bank";
+import { DRUM, GrooveGenerator } from "../src/core/groove";
 import { ChartError, loadChart, validateChart, type ChartJSON } from "../src/core/chart";
-import { Conductor } from "../src/core/conductor";
-import { Engine, type BarContext, type PartGenerator } from "../src/core/engine";
+import { Conductor, ruleLeader, type Leader } from "../src/core/conductor";
+import { replaySession, SessionRecorder, type SessionFile } from "../src/core/session";
+import { SimPlayer } from "../src/core/simplayer";
+import { Engine, type BarContext, type BarPlan, type PartGenerator } from "../src/core/engine";
 import { barFeatures, NoteTracker, summarize } from "../src/core/features";
 import { parseMove } from "../src/core/moves";
 import { RuleLeader, type LeaderContext } from "../src/core/rules";
@@ -10,7 +12,13 @@ import { parseScript } from "../src/core/simplayer";
 import { simulate } from "../src/core/simulate";
 import { parseChord, voiceChord } from "../src/core/theory";
 import { Transport, type Sink } from "../src/core/transport";
-import { FEELS, type NoteEvent } from "../src/core/types";
+import { FEELS, PARTS, type Feel, type NoteEvent } from "../src/core/types";
+import { MAX_OFFSET_MS, ritTime, swingTime } from "../src/core/feel";
+import { GenreError, loadGenre, type GenrePack } from "../src/core/genre";
+import { allGenres, genreIds, getGenre } from "../src/core/genres";
+import funkJson from "../../genres/funk.json";
+
+const getGenreRaw = (id: string) => ({ funk: funkJson })[id as "funk"];
 import { pickInputs } from "../src/audio/midi";
 
 import bluesJson from "../public/charts/blues-in-a.json";
@@ -72,35 +80,148 @@ describe("chart", () => {
   });
 });
 
-describe("bank", () => {
-  const inBar = (evs: NoteEvent[], bpb = 4) => evs.every((e) => e.start >= 0 && e.start < bpb && e.vel >= 1 && e.vel <= 127);
-  it("keeps every layer inside the bar for all levels and feels", () => {
-    const slots = chart.sections.get("outro")!.barChords(0);
-    for (const feel of FEELS)
-      for (let level = 0; level < 4; level++) {
-        expect(inBar(drumBar(level, feel, 4))).toBe(true);
-        expect(inBar(bassBar(slots, parseChord("Db"), level, feel, 4))).toBe(true);
-        expect(inBar(chordBar(slots, level, feel))).toBe(true);
-      }
+describe("groove generators", () => {
+  const genres = allGenres();
+  const ctxFor = (genre: GenrePack, level: number, feel: Feel, extra: Partial<BarContext> = {}): BarContext => ({
+    bar: 3, kind: "play", section: "verse", barInSection: 1, sectionBars: 8, barInPhrase: 1, phraseBars: 4, lastBarOfSection: false,
+    level, feel, parts: [...PARTS], slots: chart.sections.get("outro")!.barChords(0), next: parseChord("Db"), bpb: 4, genre, seed: 1,
+    stingers: [], cymbal: genre.drums.cymbal, ending: null, firstChord: parseChord("Fm"), ...extra,
   });
-  it("gets denser with intensity (vertical layering)", () => {
-    const count = (l: number) => drumBar(l, "normal", 4).length;
-    expect(count(0)).toBeLessThan(count(1));
-    expect(count(1)).toBeLessThan(count(3));
-    const backbeat = (f: (typeof FEELS)[number]) => drumBar(2, f, 4).filter((e) => e.note === DRUM.snare && e.vel > 40).map((e) => e.start);
+  const inBar = (evs: NoteEvent[], bpb = 4) => evs.every((e) => e.start >= 0 && e.start < bpb && e.vel >= 1 && e.vel <= 127 && e.dur > 0);
+
+  it("keeps every part inside the bar for every genre, level and feel", () => {
+    for (const g of genres)
+      for (const feel of FEELS)
+        for (let level = 0; level < 4; level++) {
+          const out = new GrooveGenerator().generate(ctxFor(g, level, feel));
+          for (const p of PARTS) expect(inBar(out[p]!), `${g.id} ${feel} ${level} ${p}`).toBe(true);
+        }
+  });
+
+  it("gets busier with intensity", () => {
+    for (const g of genres) {
+      const count = (level: number) => new GrooveGenerator().generate(ctxFor(g, level, "normal")).drums!.length;
+      expect(count(0), g.id).toBeLessThan(count(3));
+    }
+  });
+
+  it("keeps the backbeat where the feel says", () => {
+    const funk = getGenre("funk");
+    const backbeat = (f: Feel) =>
+      new GrooveGenerator().generate(ctxFor(funk, 1, f)).drums!.filter((e) => e.note === DRUM.snare && e.vel > 60).map((e) => e.start);
     expect(backbeat("normal")).toEqual([1, 3]);
     expect(backbeat("half_time")).toEqual([2]);
     expect(backbeat("double_time")).toEqual([0.5, 1.5, 2.5, 3.5]);
   });
-  it("fills replace the end of the bar", () => {
-    const filled = withFill(drumBar(2, "normal", 4), 4, 2);
-    expect(filled.filter((e) => e.start >= 3 && e.note === DRUM.hat)).toEqual([]);
-    expect(filled.some((e) => e.note === DRUM.tomLo)).toBe(true);
+
+  it("plays fills, crashes and the ride by section", () => {
+    const g = getGenre("blues-rock");
+    const filled = new GrooveGenerator().generate(ctxFor(g, 2, "normal", { stingers: ["fill"], lastBarOfSection: true })).drums!;
+    expect(filled.some((e) => [DRUM.tomHi, DRUM.tomLo, DRUM.tomMid].includes(e.note as 45) || e.start >= 2)).toBe(true);
+    const crash = new GrooveGenerator().generate(ctxFor(g, 2, "normal", { stingers: ["crash"] })).drums!;
+    expect(crash.some((e) => e.note === DRUM.crash && e.start === 0)).toBe(true);
+    const ride = new GrooveGenerator().generate(ctxFor(g, 2, "normal", { cymbal: "ride" })).drums!;
+    expect(ride.some((e) => e.note === DRUM.ride)).toBe(true);
+    expect(ride.some((e) => e.note === DRUM.hat)).toBe(false);
   });
-  it("memoizes bars", () => {
-    const bank = new LoopBank(chart);
-    const a = bank.bar("drums", "verse", 0, 1, "normal", null);
-    expect(bank.bar("drums", "verse", 0, 1, "normal", null)).toBe(a);
+
+  it("walks the bass in jazz: one note a beat, approaching each change", () => {
+    const jazz = getGenre("jazz");
+    const slots = [{ start: 0, dur: 2, chord: parseChord("Dm7") }, { start: 2, dur: 2, chord: parseChord("G7") }];
+    const gen = new GrooveGenerator();
+    for (let bar = 0; bar < 16; bar++) {
+      const bass = gen.generate(ctxFor(jazz, 2, "normal", { bar, slots, next: parseChord("Cmaj7") })).bass!.filter((e) => e.vel > 60);
+      const onBeats = bass.filter((e) => Number.isInteger(e.start));
+      expect(onBeats.map((e) => e.start)).toEqual([0, 1, 2, 3]);
+      expect(onBeats[0].note % 12).toBe(2); // D on the downbeat
+      expect(onBeats[2].note % 12).toBe(7); // G when the chord changes
+      expect(onBeats.every((e) => e.note >= 28 && e.note <= 52)).toBe(true);
+    }
+  });
+
+  it("varies the bass over a 16-bar section", () => {
+    for (const g of genres) {
+      const gen = new GrooveGenerator();
+      const bars = new Set<string>();
+      for (let i = 0; i < 16; i++) {
+        const bass = gen.generate(ctxFor(g, 2, "normal", { bar: i, barInSection: i, barInPhrase: i % 4, slots: [{ start: 0, dur: 4, chord: parseChord("A7") }], next: parseChord(i % 2 ? "D7" : "A7") })).bass!;
+        bars.add(bass.map((e) => `${e.start}:${e.note}`).join(" "));
+      }
+      expect(bars.size, g.id).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it("voice-leads the comping: small moves between chords", () => {
+    const g = getGenre("jazz");
+    const gen = new GrooveGenerator();
+    const changes = ["Dm7", "G7", "Cmaj7", "A7", "Dm7", "G7"];
+    let prev: number[] | null = null;
+    for (const [i, sym] of changes.entries()) {
+      const evs = gen.generate(ctxFor(g, 1, "normal", { bar: i, slots: [{ start: 0, dur: 4, chord: parseChord(sym) }], next: null })).chords!;
+      const first = evs.filter((e) => e.start === evs[0].start).map((e) => e.note).sort((a, b) => a - b);
+      expect(first.every((n) => n >= 50 && n <= 70)).toBe(true);
+      if (prev) expect(first.reduce((s, n, k) => s + Math.abs(n - (prev![k] ?? n)), 0)).toBeLessThanOrEqual(8);
+      prev = first;
+    }
+  });
+
+  it("is deterministic for a seed and differs across seeds", () => {
+    const g = getGenre("funk");
+    const run = (seed: number) => JSON.stringify(Array.from({ length: 8 }, (_, bar) => new GrooveGenerator().generate(ctxFor(g, 3, "normal", { bar, seed }))));
+    expect(run(5)).toEqual(run(5));
+    expect(run(5)).not.toEqual(run(6));
+  });
+});
+
+describe("genre packs", () => {
+  it("loads the three packs", () => {
+    expect(genreIds().sort()).toEqual(["blues-rock", "funk", "jazz"]);
+  });
+  it("reports problems in a bad pack", () => {
+    const good = JSON.parse(JSON.stringify(getGenreRaw("funk")));
+    good.drums.levels[0][0].cowbell = "x...";
+    good.bass.levels[1][0] = "R - Q";
+    good.feel.swing = 3;
+    good.chords.levels = [];
+    try {
+      loadGenre(good);
+      expect.fail("should throw");
+    } catch (e) {
+      const msg = (e as GenreError).errors.join("\n");
+      expect(msg).toMatch(/unknown drum line "cowbell"/);
+      expect(msg).toMatch(/unknown bass step "Q"/);
+      expect(msg).toMatch(/swing/);
+      expect(msg).toMatch(/chords.levels must have 4 entries/);
+    }
+  });
+});
+
+describe("feel", () => {
+  it("swings off-beats: 0 straight, 0.66 triplet", () => {
+    expect(swingTime(0.5, 0, 8)).toBe(0.5);
+    expect(swingTime(0.5, 0.66, 8)).toBeCloseTo(0.665, 3);
+    expect(swingTime(1, 0.66, 8)).toBe(1);
+    expect(swingTime(0.25, 0.5, 16)).toBeCloseTo(0.3125);
+    expect(swingTime(2.75, 1, 16)).toBeCloseTo(2.875);
+  });
+  it("slows the last bar with a ritardando", () => {
+    expect(ritTime(0, 4, 0.3)).toBeCloseTo(0);
+    expect(ritTime(4, 4, 0.3)).toBeGreaterThan(4.5);
+    expect(ritTime(2, 4, 0)).toBe(2);
+  });
+  it("keeps humanize inside the commit deadline for every genre", () => {
+    // ADR-0005: bar N+1 is committed one beat minus the lookahead (0.1 s) before it starts.
+    for (const g of allGenres())
+      for (const bpm of [60, 120, 220]) {
+        const c = loadChart({ ...small, bpm, genre: g.id });
+        const e = new Engine(c, { seed: 3, countIn: 1 });
+        const spb = 60 / bpm;
+        for (let p = e.nextBar(); p; p = e.nextBar()) {
+          const earliest = Math.min(...p.events.map((x) => x.start)) * spb;
+          expect(earliest).toBeGreaterThanOrEqual(-MAX_OFFSET_MS / 1000 - 1e-9);
+          expect(-earliest).toBeLessThan(spb - 0.1);
+        }
+      }
   });
 });
 
@@ -203,7 +324,164 @@ describe("engine + governor", () => {
     const plans = Array.from({ length: 9 }, () => e.nextBar()!);
     expect(plans[7].stingers).toContain("fill");
     expect(plans[8].stingers).toContain("crash");
-    expect(plans[8].events.some((x) => x.note === DRUM.crash && x.start === 0)).toBe(true);
+    expect(plans[8].events.some((x) => x.note === DRUM.crash && Math.abs(x.start) < 0.05)).toBe(true);
+  });
+});
+
+describe("v0.1 arranger: count-in, endings, genres, swing", () => {
+  it("counts in, then plays the form", () => {
+    const e = new Engine(loadChart({ ...small, genre: "funk" }), { countIn: 1 });
+    const first = e.nextBar()!;
+    expect(first.kind).toBe("count_in");
+    expect(first.events.filter((x) => x.part === "drums" && x.note === DRUM.stick).length).toBeGreaterThanOrEqual(3);
+    expect(first.events.some((x) => x.part === "chords")).toBe(false);
+    const second = e.nextBar()!;
+    expect([second.kind, second.section, second.barInSection]).toEqual(["play", "a", 0]);
+    expect(second.stingers).not.toContain("crash");
+  });
+
+  it("ends the form with a final hit and a ritardando", () => {
+    const e = new Engine(loadChart({ ...small, genre: "blues-rock", key: "C major" }));
+    let last: BarPlan | null = null;
+    for (let p = e.nextBar(); p; p = e.nextBar()) last = p;
+    expect(last!.kind).toBe("ending");
+    expect(e.finished).toBe(true);
+    // The final hit lands after the bar line (slowed down) and rings.
+    const hit = last!.events.filter((x) => x.note === DRUM.crash && x.start > 4);
+    expect(hit.length).toBeGreaterThan(0);
+    const bass = last!.events.filter((x) => x.part === "bass" && x.start > 4);
+    expect(bass.some((x) => x.note % 12 === 0 && x.dur > 2)).toBe(true);
+  });
+
+  it("end_song lands at the end of the phrase", () => {
+    const e = new Engine(loadChart(small), { config: { loop: true } });
+    e.nextBar();
+    e.nextBar(); // a:1
+    e.submit([{ move: "end_song", reason: "that's it" }], "you");
+    const p2 = e.nextBar()!; // a:2
+    expect(p2.moves[0]).toMatchObject({ status: "pending" });
+    const p3 = e.nextBar()!; // a:3, last bar of the phrase
+    expect(p3.kind).toBe("ending");
+    expect(p3.moves.some((m) => m.status === "applied" && m.label === "end_song")).toBe(true);
+    expect(e.nextBar()).toBeNull();
+  });
+
+  it("doesn't let a leader end the song", () => {
+    const e = new Engine(loadChart(small), { config: { loop: true } });
+    const c = new Conductor(e, { decide: () => ({ moves: [{ move: "end_song", reason: "bye" }], source: "llm" }) }, 1);
+    for (let i = 0; i < 8; i++) c.barFinished(e.nextBar()!, []);
+    expect(e.log.some((m) => m.label === "end_song")).toBe(false);
+  });
+
+  it("plays the same chart as different bands in different genres", () => {
+    const run = (genre: string) => {
+      const e = new Engine(loadChart({ ...small, genre }), { seed: 1, intensity: 0.6 });
+      return Array.from({ length: 8 }, () => e.nextBar()!);
+    };
+    const funk = run("funk");
+    const jazz = run("jazz");
+    const rock = run("blues-rock");
+    const cymbals = (plans: BarPlan[]) => new Set(plans.flatMap((p) => p.events.filter((x) => [DRUM.hat, DRUM.ride].includes(x.note as 42)).map((x) => x.note)));
+    expect(cymbals(jazz)).toContain(DRUM.ride);
+    expect(cymbals(funk)).toContain(DRUM.hat);
+    // Funk's hats run in sixteenths; the others don't.
+    const sixteenths = (plans: BarPlan[]) => plans[3].events.filter((x) => x.note === DRUM.hat || x.note === DRUM.ride).length;
+    expect(sixteenths(funk)).toBeGreaterThan(sixteenths(rock));
+    expect(funk[3].swing).toBeLessThan(0.3);
+    expect(rock[3].swing).toBeGreaterThan(0.6);
+  });
+
+  it("swing 0 and 0.66 move the off-beats", () => {
+    const offbeats = (swing: number) => {
+      const e = new Engine(loadChart({ ...small, genre: "blues-rock", swing }), { seed: 2, intensity: 0.6 });
+      e.nextBar();
+      const p = e.nextBar()!;
+      return p.events.filter((x) => x.note === DRUM.hat && x.start % 1 > 0.3 && x.start % 1 < 0.9).map((x) => x.start % 1);
+    };
+    const straight = offbeats(0);
+    const swung = offbeats(0.66);
+    expect(straight.every((t) => Math.abs(t - 0.5) < 0.03)).toBe(true);
+    expect(swung.every((t) => Math.abs(t - 0.665) < 0.03)).toBe(true);
+  });
+
+  it("switches genre and swing live from the next bar", () => {
+    const e = new Engine(loadChart({ ...small, genre: "funk" }), { config: { loop: true } });
+    e.nextBar();
+    e.setGenre(getGenre("jazz"));
+    e.setSwing(0);
+    const p = e.nextBar()!;
+    expect([p.genre, p.swing]).toEqual(["jazz", 0]);
+    e.setSwing(null);
+    expect(e.nextBar()!.swing).toBe(getGenre("jazz").swing);
+  });
+});
+
+describe("session record and replay", () => {
+  /** A live-like run: transport order (commit one bar ahead), rule leader, pretend player, a manual move. */
+  function record(chartJson: ChartJSON, genre: string, script: string, seed = 11): SessionFile {
+    const c = loadChart(chartJson);
+    const setup = { chart: chartJson, genre, swing: null, seed, countIn: 1, config: { loop: true }, leader: "rules", everyBars: 2 };
+    const engine = new Engine(c, { seed, genre: getGenre(genre), countIn: 1, config: setup.config });
+    const rec = new SessionRecorder(setup);
+    const conductor = new Conductor(engine, ruleLeader(new RuleLeader()), 2);
+    const sim = new SimPlayer(4);
+    const modes = parseScript(script);
+    const tracker = new NoteTracker();
+    const plans: BarPlan[] = [];
+    const commit = () => {
+      const p = engine.nextBar()!;
+      plans.push(p);
+      rec.bar(p);
+      if (p.kind === "count_in") return;
+      const start = p.bar * c.beatsPerBar;
+      for (const n of sim.play(p, modes[Math.min(p.bar, modes.length - 1)], c.beatsPerBar)) {
+        rec.note(start + n.start, n.note, n.vel);
+        rec.note(start + n.start + n.dur, n.note, 0);
+        tracker.noteOn(start + n.start, n.note, n.vel);
+        tracker.noteOff(start + n.start + n.dur, n.note);
+      }
+    };
+    commit();
+    commit();
+    for (let k = 0; k < modes.length; k++) {
+      if (k === 10) engine.submit([{ move: "fire_stinger", stinger: "riser", reason: "Manual" }], "you");
+      if (k === 14) engine.setSwing(0.3);
+      conductor.barFinished(plans[k], tracker.bar(k * c.beatsPerBar, c.beatsPerBar));
+      commit();
+    }
+    return JSON.parse(JSON.stringify(rec.finish(engine)));
+  }
+
+  it("replays a recorded session to the same band output, twice", async () => {
+    for (const genre of genreIds()) {
+      const file = record(nightShift, genre, "medium:4,sparse:8,busy:8,silent:6");
+      expect(file.controls.some((x) => x.kind === "moves" && x.source === "rules")).toBe(true);
+      const a = await replaySession(file);
+      const b = await replaySession(file);
+      expect(a.mismatches, genre).toEqual([]);
+      expect(a.bars.length).toBe(file.bars.length);
+      expect(a.bars.map((x) => x.hash)).toEqual(b.bars.map((x) => x.hash));
+    }
+  });
+
+  it("flags bars that changed", async () => {
+    const file = record(nightShift, "funk", "busy:12");
+    file.seed += 1;
+    const r = await replaySession(file);
+    expect(r.mismatches.length).toBeGreaterThan(0);
+  });
+
+  it("re-runs a leader over the recorded playing", async () => {
+    const file = record(nightShift, "funk", "medium:4,sparse:8,busy:8,silent:6");
+    const r = await replaySession(file, { leader: ruleLeader(new RuleLeader()) });
+    expect(r.decisions).toBeGreaterThan(5);
+    const applied = r.plans.flatMap((p) => p.moves.filter((m) => m.status === "applied"));
+    expect(applied.some((m) => m.source === "rules")).toBe(true);
+    expect(applied.some((m) => m.source === "you")).toBe(true); // the player's own button survives
+    // An async leader (like the LLM) is awaited.
+    const slow: Leader = { decide: async () => ({ moves: [{ move: "set_intensity", value: 0.9, reason: "up" }], source: "llm" }) };
+    const r2 = await replaySession(file, { leader: slow });
+    expect(r2.plans.some((p) => p.moves.some((m) => m.source === "llm" && m.status === "applied"))).toBe(true);
   });
 });
 
@@ -336,6 +614,23 @@ describe("transport", () => {
     for (const p of played) expect(p.time).toBeGreaterThanOrEqual(0);
     expect(Math.max(...played.map((p) => p.time))).toBeLessThan(5 + 0.1 + 1e-9);
     expect(t.beatAt(t.timeAt(6))).toBeCloseTo(6);
+  });
+});
+
+describe("transport endings", () => {
+  it("lets the final hit ring out before reporting the end", () => {
+    let now = 0;
+    let endedAt = -1;
+    const played: number[] = [];
+    const sink: Sink = { play: (_ev, time) => played.push(time), panic: () => {} };
+    const short: ChartJSON = { title: "t", bpm: 120, time_sig: "4/4", genre: "blues-rock", sections: [{ name: "a", bars: 2, chords: ["C"] }], form: ["a"] };
+    const t = new Transport(new Engine(loadChart(short)), { now: () => now }, sink, { onEnd: () => (endedAt = now) }, { lookahead: 0.1, startDelay: 0 });
+    t.start();
+    for (; now < 12 && endedAt < 0; now += 0.025) t.tick();
+    // Two bars of 2 s; the ritardando and a 4-beat ring push the last note well past 4 s.
+    const lastNote = Math.max(...played);
+    expect(lastNote).toBeGreaterThan(4.5);
+    expect(endedAt).toBeGreaterThan(lastNote + 1);
   });
 });
 

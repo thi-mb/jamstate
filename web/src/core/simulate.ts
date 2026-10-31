@@ -29,7 +29,7 @@ export function simulate(
     if (!plan) break;
     const mode = script[Math.min(i, script.length - 1)] ?? "silent";
     const features = conductor.barFinished(plan, player.play(plan, mode, chart.beatsPerBar));
-    out.push({ plan, mode, features });
+    if (features) out.push({ plan, mode, features });
   }
   return out;
 }
