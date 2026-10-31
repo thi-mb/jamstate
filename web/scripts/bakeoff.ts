@@ -1,5 +1,5 @@
 // npm run bakeoff -- <session files or dirs...> [--brains rules,jev,claude,openai] [--out dir]
-//                    [--url http://127.0.0.1:8080/v1] [--model leader] [--claude-model M] [--label host]
+//                    [--url http://127.0.0.1:8080/v1] [--model leader] [--claude-model M] [--label host] [--rate 24]
 //
 // The brain bake-off (ADR-0016). For every session:
 //   1. Same question: replay with the rule leader asked once per phrase and
@@ -32,6 +32,7 @@ const out = opt("out") ?? "bakeoff";
 const host = opt("label") ?? "unlabelled host";
 const brainArgs = { url: opt("url"), model: opt("model"), claudeModel: opt("claude-model"), jevModel: opt("jev-model") };
 const TIMEOUT_MS = Number(opt("timeout") ?? 20_000);
+const RATE_N = Number(opt("rate") ?? 24);
 
 const files: string[] = [];
 for (const p of args) {
@@ -260,5 +261,12 @@ if (errs.length) {
 }
 writeFileSync(join(out, "summary.md"), lines.join("\n") + "\n");
 writeFileSync(join(out, "results.json"), JSON.stringify({ host, created: new Date().toISOString(), brains: brains.map((b) => b.label), turns, loops, key }, null, 1));
-writeFileSync(join(out, "rating.json"), JSON.stringify(rating, null, 1));
-console.log(`\n${lines.join("\n")}\nwrote ${out}/summary.md, results.json, rating.json (${rating.length} blind items)`);
+// Blind items: only turns where the brains disagree, shuffled, at most --rate (default 24).
+const differ = rating.filter((r) => new Set(Object.values(r.answers).map((a) => a.join("|"))).size > 1);
+for (let j = differ.length - 1; j > 0; j--) {
+  const k = Math.floor(shuffle() * (j + 1));
+  [differ[j], differ[k]] = [differ[k], differ[j]];
+}
+const toRate = differ.slice(0, RATE_N);
+writeFileSync(join(out, "rating.json"), JSON.stringify(toRate, null, 1));
+console.log(`\n${lines.join("\n")}\nwrote ${out}/summary.md, results.json, rating.json (${toRate.length} blind items of ${differ.length} where brains disagree)`);

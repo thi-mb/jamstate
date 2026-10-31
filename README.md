@@ -33,20 +33,45 @@ player going sparse → busy → silent.
 Computer keys: `A`–`'` are white keys, `W E T Y U O P` black keys, `Z`/`X`
 change octave, hold `Shift` to play loud (energy is velocity plus density).
 
-## With the LLM bandleader on the Spark
+## Static build, no server
+
+`npm run build` writes a static, relative build to `web/dist`. Copy it to any
+web host or folder and it plays with the rule bandleader, keeps your sessions
+in the browser, and needs nothing else
+([ADR-0015](docs/decisions/0015-no-server-required.md)). Web MIDI needs HTTPS
+or localhost.
+
+## Picking the bandleader's brain
+
+Under **Bandleader**, pick a brain
+([ADR-0016](docs/decisions/0016-brain-providers.md)). Keys are stored in this
+browser only and sent only to that provider. **Test** asks it once.
+
+| Brain | Needs | Notes |
+|-------|-------|-------|
+| Rules | nothing | the default and the fallback |
+| OpenAI-compatible | an endpoint | Qwen on the Spark through the server's relay (`api/relay/llm`, the default), Ollama (`http://localhost:11434/v1`, with `OLLAMA_ORIGINS` set to the page's origin), or OpenAI |
+| Claude | an Anthropic API key | called from the page; model `claude-opus-5-5` by default, editable |
+| Jev | a TypeSafe API key, or the server's | TypeSafe blocks calls from web pages, so it goes through the jamstate server's relay (`api/relay/jev`) |
+
+Only the LLM brains can write charts from a description (**Write**).
+
+## With the jamstate server (optional companion)
 
 ```bash
 # on the Spark: model server (see spark/README.md for the build, download and flags)
 llama-server -m ~/models/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf --alias qwen3-30b-a3b \
   --host 127.0.0.1 --port 8080 -ngl 99 -c 8192 --parallel 1 --jinja
 
-# app server: serves web/dist and proxies /api/leader to the model
+# companion server: serves web/dist, relays the page's brain calls to the model and to Jev
 cd web && npm ci && npm run build && cd ..
 pip install -e server
 python -m jamstate_server --static web/dist --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b --port 8765
 ```
 
-Then pick **LLM on the Spark** under Bandleader. Web MIDI needs a secure
+Then pick **OpenAI-compatible** under Bandleader (the default endpoint,
+`api/relay/llm`, goes through this server to the model). For Jev, set
+`TYPESAFE_API_KEY` in the server's environment, or paste your key in the page. Web MIDI needs a secure
 context, so from the laptop open the app on localhost through an SSH tunnel
 (`ssh -L 8765:127.0.0.1:8765 <spark>`, then http://localhost:8765) or over
 HTTPS (`tailscale serve`). The bandleader model is Qwen3-30B-A3B-Instruct-2507
@@ -54,8 +79,8 @@ HTTPS (`tailscale serve`). The bandleader model is Qwen3-30B-A3B-Instruct-2507
 bars at 112 bpm). For development, run `npm run dev` on the laptop and point Vite at
 the Spark's server with `JAMSTATE_API=http://<spark>:8765 npm run dev`.
 
-If the model is slow or down, the page falls back to the in-page rule leader
-after three failures and switches back as soon as the LLM answers again.
+If a brain is slow or down, the page falls back to the in-page rule leader
+after three failures and switches back as soon as the brain answers again.
 
 ## Playing the band through a DAW
 
@@ -84,8 +109,9 @@ in on "all inputs" the page skips any input named like the selected MIDI out.
 ```
  browser                                                         DGX Spark
  ──────────────────────────────────────────────────────────      ─────────────────────
- MIDI in / keys ─► player features (per bar) ─► summary/N bars ─► /api/leader ─► LLM
-                                                    │                 (jamstate_server)
+ MIDI in / keys ─► player features (per bar) ─► summary/N bars ─► brain provider
+                                                    │   (rules · OpenAI-compatible · Claude · Jev;
+                                                    │    prompt + move checks in the page)
  rule leader (fallback) ─────────────────┐          ▼ moves (JSON)
                                          ▼
                            move governor (validate, TTL, dwell, deadband, quantize)
@@ -181,7 +207,8 @@ the command line:
 cd web
 npm run replay -- ~/.local/share/jamstate/sessions/<file>.json                 # exact replay, exit 1 on a mismatch
 npm run replay -- <file>.json --leader rules                                    # same playing, rule leader decides again
-npm run replay -- <file>.json --leader llm --server http://127.0.0.1:8765       # or the LLM via the app server
+npm run replay -- <file>.json --leader openai --url http://127.0.0.1:8080/v1   # or any brain: openai, claude, jev (keys from env)
+npm run bakeoff -- <sessions dir> --brains rules,jev,openai --label spark       # the brain bake-off (docs/bakeoff/)
 ```
 
 ## Repository layout
@@ -189,7 +216,7 @@ npm run replay -- <file>.json --leader llm --server http://127.0.0.1:8765       
 | Path | What |
 |------|------|
 | `web/` | the browser app (TypeScript + Vite). Engine in `web/src/core/` is DOM-free and unit tested |
-| `server/` | `jamstate_server`: Python stdlib server for the Spark (static app + `/api/leader`, `/api/chart`, `/api/sessions`) |
+| `server/` | `jamstate_server`: optional Python stdlib companion (static app, brain relays `/api/relay/llm` and `/api/relay/jev`, session sync `/api/sessions`) |
 | `genres/` | genre packs (funk, blues rock, jazz), read by the page and the server |
 | `schema/` | JSON schemas for charts, genre packs and bandleader moves, shared by both sides |
 | `spark/` | Spark setup: model serving, latency benchmark, HTTPS via Tailscale |
