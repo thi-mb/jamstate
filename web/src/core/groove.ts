@@ -2,15 +2,17 @@
 // each reading its vocabulary from the genre pack: drums with ghost notes,
 // open-hat lifts, fills and ride/hat by section; bass lines that move
 // (patterns with degrees and approaches, or walking); comping rhythms with
-// voice leading. Choices are seeded by the session seed and the place in the
+// voice leading. v0.2 adds rhythm guitar (strummed grips, power chords,
+// funk chanks, jazz shells), a pad that holds the harmony, and hand
+// percussion. Choices are seeded by the session seed and the place in the
 // song, so the same session always plays the same notes.
 
 import type { ChordSlot } from "./chart";
 import type { BarContext, PartGenerator } from "./engine";
 import { drumSteps, placeSteps, type Step } from "./pattern";
-import type { DrumLine, DrumLines, Fill, GenrePack, Variant } from "./genre";
+import type { CompPack, CompVoicing, DrumLine, DrumLines, Fill, GenrePack, PercLine, PercLines, Variant } from "./genre";
 import { pickWeighted, rngFor } from "./rand";
-import { bassNote, bassRoot, chordScale, degreeSemis, voiceLead, voicingPcs, type Chord } from "./theory";
+import { bassNote, bassRoot, chordScale, degreeSemis, voiceLead, voicingPcs, type Chord, type VoicingStyle } from "./theory";
 import { clamp, type NoteEvent, type Part } from "./types";
 
 /** General MIDI drum map, so MIDI out lands on the right pads in a DAW. */
@@ -322,29 +324,63 @@ interface ChordState {
   voicing: number[] | null;
 }
 
-function voice(chord: Chord, ctx: BarContext, st: ChordState): number[] {
-  const { voicing, range } = ctx.genre.chords;
-  const v = voiceLead(voicingPcs(chord, voicing), st.voicing, range[0], range[1], (range[0] + range[1]) / 2);
+/** Guitar shapes as intervals over a root on the low strings. */
+function guitarShape(chord: Chord, style: "power" | "grip" | "shell3"): number[] {
+  const has = (s: number) => chord.intervals.includes(s);
+  const third = degreeSemis(chord, "3");
+  const fifth = has(6) && !has(7) ? 6 : 7;
+  const minor = has(3) && !has(4);
+  const seventh = has(10) ? 10 : has(11) ? 11 : has(9) && has(6) ? 9 : null;
+  if (style === "power") return [0, fifth, 12];
+  if (style === "shell3") return [0, seventh ?? (minor ? 10 : 9), third + 12];
+  return [0, fifth, seventh ?? 12, third + 12];
+}
+
+/** Voice a chord for a comping part: keys-style voice leading, or a guitar grip whose root moves the least. */
+function voiceComp(chord: Chord, voicing: CompVoicing, range: [number, number], st: ChordState): number[] {
+  let v: number[];
+  if (voicing === "power" || voicing === "grip" || voicing === "shell3") {
+    const lo = range[0];
+    const prevRoot = st.voicing?.[0] ?? lo + 5;
+    const shape = guitarShape(chord, voicing);
+    const low = lo + ((((chord.root - lo) % 12) + 12) % 12);
+    // The root stays on the low strings (up to about the 7th fret of the A string) and moves the least.
+    const roots = [low, low + 12].filter((r) => r <= lo + 16 && r + shape[shape.length - 1] <= range[1] + 4);
+    const root = roots.length ? roots.reduce((a, b) => (Math.abs(b - prevRoot) < Math.abs(a - prevRoot) ? b : a)) : low;
+    v = shape.map((s) => root + s);
+  } else v = voiceLead(voicingPcs(chord, voicing as VoicingStyle), st.voicing, range[0], range[1], (range[0] + range[1]) / 2);
   st.voicing = v;
   return v;
+}
+
+function voice(chord: Chord, ctx: BarContext, st: ChordState): number[] {
+  const { voicing, range } = ctx.genre.chords;
+  return voiceComp(chord, voicing, range, st);
 }
 
 const COMP_VEL: Record<string, number> = { X: 100, x: 82, p: 92, g: 34 };
 
 function chordsBar(ctx: BarContext, st: ChordState, rand: Rand): NoteEvent[] {
-  const { slots, bpb, genre, level } = ctx;
+  return compBar(ctx, ctx.genre.chords, "chords", (c) => voice(c, ctx, st), rand);
+}
+
+/**
+ * One bar of comping from a pattern row: keys, guitar and pad. `p` pushes the
+ * next chord early; a chord change the pattern doesn't hit gets a hit anyway.
+ */
+function compBar(ctx: BarContext, g: { grid: number; levels: Variant<string[]>[][] }, part: Part, voicingFor0: (c: Chord) => number[], rand: Rand): NoteEvent[] {
+  const { slots, bpb, level } = ctx;
   if (ctx.kind === "count_in") return [];
-  const g = genre.chords;
   const steps: Step[] = placeSteps(choose(g.levels[level], ctx, rand), g.grid, bpb, ctx.feel);
   const out: NoteEvent[] = [];
   const voiced = new Map<string, number[]>();
   const voicingFor = (c: Chord) => {
     let v = voiced.get(c.symbol);
-    if (!v) voiced.set(c.symbol, (v = voice(c, ctx, st)));
+    if (!v) voiced.set(c.symbol, (v = voicingFor0(c)));
     return v;
   };
   const hit = (start: number, dur: number, chord: Chord, v: number) => {
-    for (const note of voicingFor(chord)) out.push({ start, dur, note, vel: vel(v), part: "chords" });
+    for (const note of voicingFor(chord)) out.push({ start, dur, note, vel: vel(v), part });
   };
   const covered = new Set<ChordSlot>();
   for (const s of steps) {
@@ -357,8 +393,56 @@ function chordsBar(ctx: BarContext, st: ChordState, rand: Rand): NoteEvent[] {
     hit(s.start, ghost ? 0.06 : Math.max(0.1, s.dur * 0.9), chord, v);
   }
   // A chord that changes mid-bar with no hit gets one, so the harmony is always heard.
-  for (const slot of slots) if (!covered.has(slot) && slot.dur >= 1 && !(ctx.feel === "half_time" && slot.start > 0)) hit(slot.start, Math.min(slot.dur, 1) * 0.9, slot.chord, 70 * LEVEL_GAIN[level]);
+  const fillChanges = part === "chords" || steps.length > 0; // a guitar or pad sitting out a bar stays out
+  for (const slot of slots) if (fillChanges && !covered.has(slot) && slot.dur >= 1 && !(ctx.feel === "half_time" && slot.start > 0)) hit(slot.start, Math.min(slot.dur, 1) * 0.9, slot.chord, 70 * LEVEL_GAIN[level]);
   if (ctx.ending) hit(bpb, ctx.ending.ringBeats, ctx.ending.tonic, 96);
+  return out;
+}
+
+// ---------- guitar, pad, percussion ----------
+
+function guitarBar(ctx: BarContext, st: ChordState, rand: Rand): NoteEvent[] {
+  const g = ctx.genre.guitar;
+  if (!g) return [];
+  return compBar(ctx, g, "guitar", (c) => voiceComp(c, g.voicing, g.range, st), rand);
+}
+
+function padBar(ctx: BarContext, st: ChordState, rand: Rand): NoteEvent[] {
+  const g: CompPack | null = ctx.genre.pad;
+  if (!g || ctx.kind === "count_in") return [];
+  const steps = placeSteps(choose(g.levels[ctx.level], ctx, rand), g.grid, ctx.bpb, ctx.feel);
+  const out: NoteEvent[] = [];
+  // A pad holds the harmony: a long note is split at each chord change, so it never rings over the wrong chord.
+  for (const s of steps) {
+    for (const slot of ctx.slots) {
+      const a = Math.max(s.start, slot.start);
+      const b = Math.min(s.start + s.dur, slot.start + slot.dur);
+      if (b - a < 0.25 - EPS) continue;
+      // Softer than the pattern letters say: a pad swells rather than strikes.
+      const v = (COMP_VEL[s.token] ?? 70) * LEVEL_GAIN[ctx.level] * 0.8 + (rand() - 0.5) * 4;
+      for (const note of voiceComp(slot.chord, g.voicing, g.range, st)) out.push({ start: a, dur: (b - a) * 0.97, note, vel: vel(v), part: "pad" });
+    }
+  }
+  if (ctx.ending) for (const note of voiceComp(ctx.ending.tonic, g.voicing, g.range, st)) out.push({ start: ctx.bpb, dur: ctx.ending.ringBeats, note, vel: 80, part: "pad" });
+  return out;
+}
+
+/** General MIDI percussion notes. */
+export const PERC: Record<PercLine, number> = {
+  tambourine: 54, cowbell: 56, bongo_hi: 60, bongo_lo: 61, conga_mute: 62, conga_hi: 63, conga_lo: 64, cabasa: 69, shaker: 70, claves: 75,
+};
+
+function percussionBar(ctx: BarContext, rand: Rand): NoteEvent[] {
+  const g = ctx.genre.percussion;
+  if (!g || ctx.kind === "count_in") return [];
+  const lines: PercLines = choose(g.levels[ctx.level], ctx, rand);
+  const out: NoteEvent[] = [];
+  for (const [line, row] of Object.entries(lines) as [PercLine, string][]) {
+    for (const s of placeSteps(drumSteps(row), g.grid, ctx.bpb, ctx.feel)) {
+      const v = s.token === "g" ? CHAR_VEL.g : CHAR_VEL[s.token] * LEVEL_GAIN[ctx.level];
+      out.push({ start: s.start, dur: 0.1, note: PERC[line], vel: vel(v + (rand() - 0.5) * 8), part: "percussion" });
+    }
+  }
   return out;
 }
 
@@ -370,10 +454,15 @@ type RoleGen = (ctx: BarContext, rand: Rand) => NoteEvent[];
 export class GrooveGenerator implements PartGenerator {
   private bass: BassState = { last: 38 };
   private chords: ChordState = { voicing: null };
+  private guitar: ChordState = { voicing: null };
+  private pad: ChordState = { voicing: null };
   private roles: Record<Part, RoleGen> = {
     drums: (ctx, r) => drumsBar(ctx, r),
     bass: (ctx, r) => bassBar(ctx, this.bass, r),
     chords: (ctx, r) => chordsBar(ctx, this.chords, r),
+    guitar: (ctx, r) => guitarBar(ctx, this.guitar, r),
+    pad: (ctx, r) => padBar(ctx, this.pad, r),
+    percussion: (ctx, r) => percussionBar(ctx, r),
   };
 
   generate(ctx: BarContext): Partial<Record<Part, NoteEvent[]>> {

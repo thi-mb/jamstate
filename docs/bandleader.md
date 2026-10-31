@@ -35,6 +35,7 @@ user message; Jev gets it regrouped as `state` (see below).
   "intensity": 0.45,
   "target": 0.5,
   "layers": ["bass", "chords"],
+  "lineup": ["drums", "bass", "chords", "guitar"],
   "feel": "normal",
   "form": ["intro", "verse", "chorus", "verse", "chorus", "outro"],
   "form_pos": 1,
@@ -119,7 +120,7 @@ describes the role, not the rules: dwell times, quantization and limits are
 enforced by the governor and need not be explained to the model.
 
 ```
-You are the bandleader of a live backing band (drums, bass, chords) jamming
+You are the bandleader of a live backing band (the parts in "lineup") jamming
 with one human player. Every few bars you get a summary of how they played
 and what the band is doing. Decide whether the band should change anything.
 

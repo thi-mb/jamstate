@@ -1,0 +1,3963 @@
+{
+ "instruments": {
+  "kit": {
+   "part": "drums",
+   "name": "Studio kit",
+   "kind": "kit",
+   "release": 0.1,
+   "bytes": 251314,
+   "zones": [
+    {
+     "file": "kit/36-40.ogg",
+     "key": 36,
+     "vel": 40
+    },
+    {
+     "file": "kit/36-70.ogg",
+     "key": 36,
+     "vel": 70
+    },
+    {
+     "file": "kit/36-100.ogg",
+     "key": 36,
+     "vel": 100
+    },
+    {
+     "file": "kit/36-127.ogg",
+     "key": 36,
+     "vel": 127
+    },
+    {
+     "file": "kit/37-40.ogg",
+     "key": 37,
+     "vel": 40
+    },
+    {
+     "file": "kit/37-70.ogg",
+     "key": 37,
+     "vel": 70
+    },
+    {
+     "file": "kit/37-100.ogg",
+     "key": 37,
+     "vel": 100
+    },
+    {
+     "file": "kit/37-127.ogg",
+     "key": 37,
+     "vel": 127
+    },
+    {
+     "file": "kit/38-40.ogg",
+     "key": 38,
+     "vel": 40
+    },
+    {
+     "file": "kit/38-70.ogg",
+     "key": 38,
+     "vel": 70
+    },
+    {
+     "file": "kit/38-100.ogg",
+     "key": 38,
+     "vel": 100
+    },
+    {
+     "file": "kit/38-127.ogg",
+     "key": 38,
+     "vel": 127
+    },
+    {
+     "file": "kit/39-40.ogg",
+     "key": 39,
+     "vel": 40
+    },
+    {
+     "file": "kit/39-70.ogg",
+     "key": 39,
+     "vel": 70
+    },
+    {
+     "file": "kit/39-100.ogg",
+     "key": 39,
+     "vel": 100
+    },
+    {
+     "file": "kit/39-127.ogg",
+     "key": 39,
+     "vel": 127
+    },
+    {
+     "file": "kit/42-40.ogg",
+     "key": 42,
+     "vel": 40
+    },
+    {
+     "file": "kit/42-70.ogg",
+     "key": 42,
+     "vel": 70
+    },
+    {
+     "file": "kit/42-100.ogg",
+     "key": 42,
+     "vel": 100
+    },
+    {
+     "file": "kit/42-127.ogg",
+     "key": 42,
+     "vel": 127
+    },
+    {
+     "file": "kit/44-40.ogg",
+     "key": 44,
+     "vel": 40
+    },
+    {
+     "file": "kit/44-70.ogg",
+     "key": 44,
+     "vel": 70
+    },
+    {
+     "file": "kit/44-100.ogg",
+     "key": 44,
+     "vel": 100
+    },
+    {
+     "file": "kit/44-127.ogg",
+     "key": 44,
+     "vel": 127
+    },
+    {
+     "file": "kit/46-40.ogg",
+     "key": 46,
+     "vel": 40
+    },
+    {
+     "file": "kit/46-70.ogg",
+     "key": 46,
+     "vel": 70
+    },
+    {
+     "file": "kit/46-100.ogg",
+     "key": 46,
+     "vel": 100
+    },
+    {
+     "file": "kit/46-127.ogg",
+     "key": 46,
+     "vel": 127
+    },
+    {
+     "file": "kit/45-40.ogg",
+     "key": 45,
+     "vel": 40
+    },
+    {
+     "file": "kit/45-70.ogg",
+     "key": 45,
+     "vel": 70
+    },
+    {
+     "file": "kit/45-100.ogg",
+     "key": 45,
+     "vel": 100
+    },
+    {
+     "file": "kit/45-127.ogg",
+     "key": 45,
+     "vel": 127
+    },
+    {
+     "file": "kit/47-40.ogg",
+     "key": 47,
+     "vel": 40
+    },
+    {
+     "file": "kit/47-70.ogg",
+     "key": 47,
+     "vel": 70
+    },
+    {
+     "file": "kit/47-100.ogg",
+     "key": 47,
+     "vel": 100
+    },
+    {
+     "file": "kit/47-127.ogg",
+     "key": 47,
+     "vel": 127
+    },
+    {
+     "file": "kit/50-40.ogg",
+     "key": 50,
+     "vel": 40
+    },
+    {
+     "file": "kit/50-70.ogg",
+     "key": 50,
+     "vel": 70
+    },
+    {
+     "file": "kit/50-100.ogg",
+     "key": 50,
+     "vel": 100
+    },
+    {
+     "file": "kit/50-127.ogg",
+     "key": 50,
+     "vel": 127
+    },
+    {
+     "file": "kit/49-40.ogg",
+     "key": 49,
+     "vel": 40
+    },
+    {
+     "file": "kit/49-70.ogg",
+     "key": 49,
+     "vel": 70
+    },
+    {
+     "file": "kit/49-100.ogg",
+     "key": 49,
+     "vel": 100
+    },
+    {
+     "file": "kit/49-127.ogg",
+     "key": 49,
+     "vel": 127
+    },
+    {
+     "file": "kit/51-40.ogg",
+     "key": 51,
+     "vel": 40
+    },
+    {
+     "file": "kit/51-70.ogg",
+     "key": 51,
+     "vel": 70
+    },
+    {
+     "file": "kit/51-100.ogg",
+     "key": 51,
+     "vel": 100
+    },
+    {
+     "file": "kit/51-127.ogg",
+     "key": 51,
+     "vel": 127
+    },
+    {
+     "file": "kit/53-40.ogg",
+     "key": 53,
+     "vel": 40
+    },
+    {
+     "file": "kit/53-70.ogg",
+     "key": 53,
+     "vel": 70
+    },
+    {
+     "file": "kit/53-100.ogg",
+     "key": 53,
+     "vel": 100
+    },
+    {
+     "file": "kit/53-127.ogg",
+     "key": 53,
+     "vel": 127
+    }
+   ]
+  },
+  "rock": {
+   "part": "drums",
+   "name": "Rock kit",
+   "kind": "kit",
+   "release": 0.1,
+   "bytes": 291441,
+   "zones": [
+    {
+     "file": "rock/36-40.ogg",
+     "key": 36,
+     "vel": 40
+    },
+    {
+     "file": "rock/36-70.ogg",
+     "key": 36,
+     "vel": 70
+    },
+    {
+     "file": "rock/36-100.ogg",
+     "key": 36,
+     "vel": 100
+    },
+    {
+     "file": "rock/36-127.ogg",
+     "key": 36,
+     "vel": 127
+    },
+    {
+     "file": "rock/37-40.ogg",
+     "key": 37,
+     "vel": 40
+    },
+    {
+     "file": "rock/37-70.ogg",
+     "key": 37,
+     "vel": 70
+    },
+    {
+     "file": "rock/37-100.ogg",
+     "key": 37,
+     "vel": 100
+    },
+    {
+     "file": "rock/37-127.ogg",
+     "key": 37,
+     "vel": 127
+    },
+    {
+     "file": "rock/38-40.ogg",
+     "key": 38,
+     "vel": 40
+    },
+    {
+     "file": "rock/38-70.ogg",
+     "key": 38,
+     "vel": 70
+    },
+    {
+     "file": "rock/38-100.ogg",
+     "key": 38,
+     "vel": 100
+    },
+    {
+     "file": "rock/38-127.ogg",
+     "key": 38,
+     "vel": 127
+    },
+    {
+     "file": "rock/39-40.ogg",
+     "key": 39,
+     "vel": 40
+    },
+    {
+     "file": "rock/39-70.ogg",
+     "key": 39,
+     "vel": 70
+    },
+    {
+     "file": "rock/39-100.ogg",
+     "key": 39,
+     "vel": 100
+    },
+    {
+     "file": "rock/39-127.ogg",
+     "key": 39,
+     "vel": 127
+    },
+    {
+     "file": "rock/42-40.ogg",
+     "key": 42,
+     "vel": 40
+    },
+    {
+     "file": "rock/42-70.ogg",
+     "key": 42,
+     "vel": 70
+    },
+    {
+     "file": "rock/42-100.ogg",
+     "key": 42,
+     "vel": 100
+    },
+    {
+     "file": "rock/42-127.ogg",
+     "key": 42,
+     "vel": 127
+    },
+    {
+     "file": "rock/44-40.ogg",
+     "key": 44,
+     "vel": 40
+    },
+    {
+     "file": "rock/44-70.ogg",
+     "key": 44,
+     "vel": 70
+    },
+    {
+     "file": "rock/44-100.ogg",
+     "key": 44,
+     "vel": 100
+    },
+    {
+     "file": "rock/44-127.ogg",
+     "key": 44,
+     "vel": 127
+    },
+    {
+     "file": "rock/46-40.ogg",
+     "key": 46,
+     "vel": 40
+    },
+    {
+     "file": "rock/46-70.ogg",
+     "key": 46,
+     "vel": 70
+    },
+    {
+     "file": "rock/46-100.ogg",
+     "key": 46,
+     "vel": 100
+    },
+    {
+     "file": "rock/46-127.ogg",
+     "key": 46,
+     "vel": 127
+    },
+    {
+     "file": "rock/45-40.ogg",
+     "key": 45,
+     "vel": 40
+    },
+    {
+     "file": "rock/45-70.ogg",
+     "key": 45,
+     "vel": 70
+    },
+    {
+     "file": "rock/45-100.ogg",
+     "key": 45,
+     "vel": 100
+    },
+    {
+     "file": "rock/45-127.ogg",
+     "key": 45,
+     "vel": 127
+    },
+    {
+     "file": "rock/47-40.ogg",
+     "key": 47,
+     "vel": 40
+    },
+    {
+     "file": "rock/47-70.ogg",
+     "key": 47,
+     "vel": 70
+    },
+    {
+     "file": "rock/47-100.ogg",
+     "key": 47,
+     "vel": 100
+    },
+    {
+     "file": "rock/47-127.ogg",
+     "key": 47,
+     "vel": 127
+    },
+    {
+     "file": "rock/50-40.ogg",
+     "key": 50,
+     "vel": 40
+    },
+    {
+     "file": "rock/50-70.ogg",
+     "key": 50,
+     "vel": 70
+    },
+    {
+     "file": "rock/50-100.ogg",
+     "key": 50,
+     "vel": 100
+    },
+    {
+     "file": "rock/50-127.ogg",
+     "key": 50,
+     "vel": 127
+    },
+    {
+     "file": "rock/49-40.ogg",
+     "key": 49,
+     "vel": 40
+    },
+    {
+     "file": "rock/49-70.ogg",
+     "key": 49,
+     "vel": 70
+    },
+    {
+     "file": "rock/49-100.ogg",
+     "key": 49,
+     "vel": 100
+    },
+    {
+     "file": "rock/49-127.ogg",
+     "key": 49,
+     "vel": 127
+    },
+    {
+     "file": "rock/51-40.ogg",
+     "key": 51,
+     "vel": 40
+    },
+    {
+     "file": "rock/51-70.ogg",
+     "key": 51,
+     "vel": 70
+    },
+    {
+     "file": "rock/51-100.ogg",
+     "key": 51,
+     "vel": 100
+    },
+    {
+     "file": "rock/51-127.ogg",
+     "key": 51,
+     "vel": 127
+    },
+    {
+     "file": "rock/53-40.ogg",
+     "key": 53,
+     "vel": 40
+    },
+    {
+     "file": "rock/53-70.ogg",
+     "key": 53,
+     "vel": 70
+    },
+    {
+     "file": "rock/53-100.ogg",
+     "key": 53,
+     "vel": 100
+    },
+    {
+     "file": "rock/53-127.ogg",
+     "key": 53,
+     "vel": 127
+    }
+   ]
+  },
+  "jazz": {
+   "part": "drums",
+   "name": "Jazz kit",
+   "kind": "kit",
+   "release": 0.1,
+   "bytes": 314763,
+   "zones": [
+    {
+     "file": "jazz/36-40.ogg",
+     "key": 36,
+     "vel": 40
+    },
+    {
+     "file": "jazz/36-70.ogg",
+     "key": 36,
+     "vel": 70
+    },
+    {
+     "file": "jazz/36-100.ogg",
+     "key": 36,
+     "vel": 100
+    },
+    {
+     "file": "jazz/36-127.ogg",
+     "key": 36,
+     "vel": 127
+    },
+    {
+     "file": "jazz/37-40.ogg",
+     "key": 37,
+     "vel": 40
+    },
+    {
+     "file": "jazz/37-70.ogg",
+     "key": 37,
+     "vel": 70
+    },
+    {
+     "file": "jazz/37-100.ogg",
+     "key": 37,
+     "vel": 100
+    },
+    {
+     "file": "jazz/37-127.ogg",
+     "key": 37,
+     "vel": 127
+    },
+    {
+     "file": "jazz/38-40.ogg",
+     "key": 38,
+     "vel": 40
+    },
+    {
+     "file": "jazz/38-70.ogg",
+     "key": 38,
+     "vel": 70
+    },
+    {
+     "file": "jazz/38-100.ogg",
+     "key": 38,
+     "vel": 100
+    },
+    {
+     "file": "jazz/38-127.ogg",
+     "key": 38,
+     "vel": 127
+    },
+    {
+     "file": "jazz/39-40.ogg",
+     "key": 39,
+     "vel": 40
+    },
+    {
+     "file": "jazz/39-70.ogg",
+     "key": 39,
+     "vel": 70
+    },
+    {
+     "file": "jazz/39-100.ogg",
+     "key": 39,
+     "vel": 100
+    },
+    {
+     "file": "jazz/39-127.ogg",
+     "key": 39,
+     "vel": 127
+    },
+    {
+     "file": "jazz/42-40.ogg",
+     "key": 42,
+     "vel": 40
+    },
+    {
+     "file": "jazz/42-70.ogg",
+     "key": 42,
+     "vel": 70
+    },
+    {
+     "file": "jazz/42-100.ogg",
+     "key": 42,
+     "vel": 100
+    },
+    {
+     "file": "jazz/42-127.ogg",
+     "key": 42,
+     "vel": 127
+    },
+    {
+     "file": "jazz/44-40.ogg",
+     "key": 44,
+     "vel": 40
+    },
+    {
+     "file": "jazz/44-70.ogg",
+     "key": 44,
+     "vel": 70
+    },
+    {
+     "file": "jazz/44-100.ogg",
+     "key": 44,
+     "vel": 100
+    },
+    {
+     "file": "jazz/44-127.ogg",
+     "key": 44,
+     "vel": 127
+    },
+    {
+     "file": "jazz/46-40.ogg",
+     "key": 46,
+     "vel": 40
+    },
+    {
+     "file": "jazz/46-70.ogg",
+     "key": 46,
+     "vel": 70
+    },
+    {
+     "file": "jazz/46-100.ogg",
+     "key": 46,
+     "vel": 100
+    },
+    {
+     "file": "jazz/46-127.ogg",
+     "key": 46,
+     "vel": 127
+    },
+    {
+     "file": "jazz/45-40.ogg",
+     "key": 45,
+     "vel": 40
+    },
+    {
+     "file": "jazz/45-70.ogg",
+     "key": 45,
+     "vel": 70
+    },
+    {
+     "file": "jazz/45-100.ogg",
+     "key": 45,
+     "vel": 100
+    },
+    {
+     "file": "jazz/45-127.ogg",
+     "key": 45,
+     "vel": 127
+    },
+    {
+     "file": "jazz/47-40.ogg",
+     "key": 47,
+     "vel": 40
+    },
+    {
+     "file": "jazz/47-70.ogg",
+     "key": 47,
+     "vel": 70
+    },
+    {
+     "file": "jazz/47-100.ogg",
+     "key": 47,
+     "vel": 100
+    },
+    {
+     "file": "jazz/47-127.ogg",
+     "key": 47,
+     "vel": 127
+    },
+    {
+     "file": "jazz/50-40.ogg",
+     "key": 50,
+     "vel": 40
+    },
+    {
+     "file": "jazz/50-70.ogg",
+     "key": 50,
+     "vel": 70
+    },
+    {
+     "file": "jazz/50-100.ogg",
+     "key": 50,
+     "vel": 100
+    },
+    {
+     "file": "jazz/50-127.ogg",
+     "key": 50,
+     "vel": 127
+    },
+    {
+     "file": "jazz/49-40.ogg",
+     "key": 49,
+     "vel": 40
+    },
+    {
+     "file": "jazz/49-70.ogg",
+     "key": 49,
+     "vel": 70
+    },
+    {
+     "file": "jazz/49-100.ogg",
+     "key": 49,
+     "vel": 100
+    },
+    {
+     "file": "jazz/49-127.ogg",
+     "key": 49,
+     "vel": 127
+    },
+    {
+     "file": "jazz/51-40.ogg",
+     "key": 51,
+     "vel": 40
+    },
+    {
+     "file": "jazz/51-70.ogg",
+     "key": 51,
+     "vel": 70
+    },
+    {
+     "file": "jazz/51-100.ogg",
+     "key": 51,
+     "vel": 100
+    },
+    {
+     "file": "jazz/51-127.ogg",
+     "key": 51,
+     "vel": 127
+    },
+    {
+     "file": "jazz/53-40.ogg",
+     "key": 53,
+     "vel": 40
+    },
+    {
+     "file": "jazz/53-70.ogg",
+     "key": 53,
+     "vel": 70
+    },
+    {
+     "file": "jazz/53-100.ogg",
+     "key": 53,
+     "vel": 100
+    },
+    {
+     "file": "jazz/53-127.ogg",
+     "key": 53,
+     "vel": 127
+    }
+   ]
+  },
+  "brushes": {
+   "part": "drums",
+   "name": "Brushes",
+   "kind": "kit",
+   "release": 0.1,
+   "bytes": 309888,
+   "zones": [
+    {
+     "file": "brushes/36-40.ogg",
+     "key": 36,
+     "vel": 40
+    },
+    {
+     "file": "brushes/36-70.ogg",
+     "key": 36,
+     "vel": 70
+    },
+    {
+     "file": "brushes/36-100.ogg",
+     "key": 36,
+     "vel": 100
+    },
+    {
+     "file": "brushes/36-127.ogg",
+     "key": 36,
+     "vel": 127
+    },
+    {
+     "file": "brushes/37-40.ogg",
+     "key": 37,
+     "vel": 40
+    },
+    {
+     "file": "brushes/37-70.ogg",
+     "key": 37,
+     "vel": 70
+    },
+    {
+     "file": "brushes/37-100.ogg",
+     "key": 37,
+     "vel": 100
+    },
+    {
+     "file": "brushes/37-127.ogg",
+     "key": 37,
+     "vel": 127
+    },
+    {
+     "file": "brushes/38-40.ogg",
+     "key": 38,
+     "vel": 40
+    },
+    {
+     "file": "brushes/38-70.ogg",
+     "key": 38,
+     "vel": 70
+    },
+    {
+     "file": "brushes/38-100.ogg",
+     "key": 38,
+     "vel": 100
+    },
+    {
+     "file": "brushes/38-127.ogg",
+     "key": 38,
+     "vel": 127
+    },
+    {
+     "file": "brushes/39-40.ogg",
+     "key": 39,
+     "vel": 40
+    },
+    {
+     "file": "brushes/39-70.ogg",
+     "key": 39,
+     "vel": 70
+    },
+    {
+     "file": "brushes/39-100.ogg",
+     "key": 39,
+     "vel": 100
+    },
+    {
+     "file": "brushes/39-127.ogg",
+     "key": 39,
+     "vel": 127
+    },
+    {
+     "file": "brushes/42-40.ogg",
+     "key": 42,
+     "vel": 40
+    },
+    {
+     "file": "brushes/42-70.ogg",
+     "key": 42,
+     "vel": 70
+    },
+    {
+     "file": "brushes/42-100.ogg",
+     "key": 42,
+     "vel": 100
+    },
+    {
+     "file": "brushes/42-127.ogg",
+     "key": 42,
+     "vel": 127
+    },
+    {
+     "file": "brushes/44-40.ogg",
+     "key": 44,
+     "vel": 40
+    },
+    {
+     "file": "brushes/44-70.ogg",
+     "key": 44,
+     "vel": 70
+    },
+    {
+     "file": "brushes/44-100.ogg",
+     "key": 44,
+     "vel": 100
+    },
+    {
+     "file": "brushes/44-127.ogg",
+     "key": 44,
+     "vel": 127
+    },
+    {
+     "file": "brushes/46-40.ogg",
+     "key": 46,
+     "vel": 40
+    },
+    {
+     "file": "brushes/46-70.ogg",
+     "key": 46,
+     "vel": 70
+    },
+    {
+     "file": "brushes/46-100.ogg",
+     "key": 46,
+     "vel": 100
+    },
+    {
+     "file": "brushes/46-127.ogg",
+     "key": 46,
+     "vel": 127
+    },
+    {
+     "file": "brushes/45-40.ogg",
+     "key": 45,
+     "vel": 40
+    },
+    {
+     "file": "brushes/45-70.ogg",
+     "key": 45,
+     "vel": 70
+    },
+    {
+     "file": "brushes/45-100.ogg",
+     "key": 45,
+     "vel": 100
+    },
+    {
+     "file": "brushes/45-127.ogg",
+     "key": 45,
+     "vel": 127
+    },
+    {
+     "file": "brushes/47-40.ogg",
+     "key": 47,
+     "vel": 40
+    },
+    {
+     "file": "brushes/47-70.ogg",
+     "key": 47,
+     "vel": 70
+    },
+    {
+     "file": "brushes/47-100.ogg",
+     "key": 47,
+     "vel": 100
+    },
+    {
+     "file": "brushes/47-127.ogg",
+     "key": 47,
+     "vel": 127
+    },
+    {
+     "file": "brushes/50-40.ogg",
+     "key": 50,
+     "vel": 40
+    },
+    {
+     "file": "brushes/50-70.ogg",
+     "key": 50,
+     "vel": 70
+    },
+    {
+     "file": "brushes/50-100.ogg",
+     "key": 50,
+     "vel": 100
+    },
+    {
+     "file": "brushes/50-127.ogg",
+     "key": 50,
+     "vel": 127
+    },
+    {
+     "file": "brushes/49-40.ogg",
+     "key": 49,
+     "vel": 40
+    },
+    {
+     "file": "brushes/49-70.ogg",
+     "key": 49,
+     "vel": 70
+    },
+    {
+     "file": "brushes/49-100.ogg",
+     "key": 49,
+     "vel": 100
+    },
+    {
+     "file": "brushes/49-127.ogg",
+     "key": 49,
+     "vel": 127
+    },
+    {
+     "file": "brushes/51-40.ogg",
+     "key": 51,
+     "vel": 40
+    },
+    {
+     "file": "brushes/51-70.ogg",
+     "key": 51,
+     "vel": 70
+    },
+    {
+     "file": "brushes/51-100.ogg",
+     "key": 51,
+     "vel": 100
+    },
+    {
+     "file": "brushes/51-127.ogg",
+     "key": 51,
+     "vel": 127
+    },
+    {
+     "file": "brushes/53-40.ogg",
+     "key": 53,
+     "vel": 40
+    },
+    {
+     "file": "brushes/53-70.ogg",
+     "key": 53,
+     "vel": 70
+    },
+    {
+     "file": "brushes/53-100.ogg",
+     "key": 53,
+     "vel": 100
+    },
+    {
+     "file": "brushes/53-127.ogg",
+     "key": 53,
+     "vel": 127
+    }
+   ]
+  },
+  "electronic": {
+   "part": "drums",
+   "name": "Electronic (808)",
+   "kind": "kit",
+   "release": 0.1,
+   "bytes": 177636,
+   "zones": [
+    {
+     "file": "electronic/36-50.ogg",
+     "key": 36,
+     "vel": 50
+    },
+    {
+     "file": "electronic/36-90.ogg",
+     "key": 36,
+     "vel": 90
+    },
+    {
+     "file": "electronic/36-127.ogg",
+     "key": 36,
+     "vel": 127
+    },
+    {
+     "file": "electronic/37-50.ogg",
+     "key": 37,
+     "vel": 50
+    },
+    {
+     "file": "electronic/37-90.ogg",
+     "key": 37,
+     "vel": 90
+    },
+    {
+     "file": "electronic/37-127.ogg",
+     "key": 37,
+     "vel": 127
+    },
+    {
+     "file": "electronic/38-50.ogg",
+     "key": 38,
+     "vel": 50
+    },
+    {
+     "file": "electronic/38-90.ogg",
+     "key": 38,
+     "vel": 90
+    },
+    {
+     "file": "electronic/38-127.ogg",
+     "key": 38,
+     "vel": 127
+    },
+    {
+     "file": "electronic/39-50.ogg",
+     "key": 39,
+     "vel": 50
+    },
+    {
+     "file": "electronic/39-90.ogg",
+     "key": 39,
+     "vel": 90
+    },
+    {
+     "file": "electronic/39-127.ogg",
+     "key": 39,
+     "vel": 127
+    },
+    {
+     "file": "electronic/42-50.ogg",
+     "key": 42,
+     "vel": 50
+    },
+    {
+     "file": "electronic/42-90.ogg",
+     "key": 42,
+     "vel": 90
+    },
+    {
+     "file": "electronic/42-127.ogg",
+     "key": 42,
+     "vel": 127
+    },
+    {
+     "file": "electronic/44-50.ogg",
+     "key": 44,
+     "vel": 50
+    },
+    {
+     "file": "electronic/44-90.ogg",
+     "key": 44,
+     "vel": 90
+    },
+    {
+     "file": "electronic/44-127.ogg",
+     "key": 44,
+     "vel": 127
+    },
+    {
+     "file": "electronic/46-50.ogg",
+     "key": 46,
+     "vel": 50
+    },
+    {
+     "file": "electronic/46-90.ogg",
+     "key": 46,
+     "vel": 90
+    },
+    {
+     "file": "electronic/46-127.ogg",
+     "key": 46,
+     "vel": 127
+    },
+    {
+     "file": "electronic/45-50.ogg",
+     "key": 45,
+     "vel": 50
+    },
+    {
+     "file": "electronic/45-90.ogg",
+     "key": 45,
+     "vel": 90
+    },
+    {
+     "file": "electronic/45-127.ogg",
+     "key": 45,
+     "vel": 127
+    },
+    {
+     "file": "electronic/47-50.ogg",
+     "key": 47,
+     "vel": 50
+    },
+    {
+     "file": "electronic/47-90.ogg",
+     "key": 47,
+     "vel": 90
+    },
+    {
+     "file": "electronic/47-127.ogg",
+     "key": 47,
+     "vel": 127
+    },
+    {
+     "file": "electronic/50-50.ogg",
+     "key": 50,
+     "vel": 50
+    },
+    {
+     "file": "electronic/50-90.ogg",
+     "key": 50,
+     "vel": 90
+    },
+    {
+     "file": "electronic/50-127.ogg",
+     "key": 50,
+     "vel": 127
+    },
+    {
+     "file": "electronic/49-50.ogg",
+     "key": 49,
+     "vel": 50
+    },
+    {
+     "file": "electronic/49-90.ogg",
+     "key": 49,
+     "vel": 90
+    },
+    {
+     "file": "electronic/49-127.ogg",
+     "key": 49,
+     "vel": 127
+    },
+    {
+     "file": "electronic/51-50.ogg",
+     "key": 51,
+     "vel": 50
+    },
+    {
+     "file": "electronic/51-90.ogg",
+     "key": 51,
+     "vel": 90
+    },
+    {
+     "file": "electronic/51-127.ogg",
+     "key": 51,
+     "vel": 127
+    },
+    {
+     "file": "electronic/53-50.ogg",
+     "key": 53,
+     "vel": 50
+    },
+    {
+     "file": "electronic/53-90.ogg",
+     "key": 53,
+     "vel": 90
+    },
+    {
+     "file": "electronic/53-127.ogg",
+     "key": 53,
+     "vel": 127
+    }
+   ]
+  },
+  "hand": {
+   "part": "percussion",
+   "name": "Hand percussion",
+   "kind": "percussion",
+   "release": 0.1,
+   "bytes": 47278,
+   "zones": [
+    {
+     "file": "hand/54-45.ogg",
+     "key": 54,
+     "vel": 45
+    },
+    {
+     "file": "hand/54-80.ogg",
+     "key": 54,
+     "vel": 80
+    },
+    {
+     "file": "hand/54-115.ogg",
+     "key": 54,
+     "vel": 115
+    },
+    {
+     "file": "hand/56-45.ogg",
+     "key": 56,
+     "vel": 45
+    },
+    {
+     "file": "hand/56-80.ogg",
+     "key": 56,
+     "vel": 80
+    },
+    {
+     "file": "hand/56-115.ogg",
+     "key": 56,
+     "vel": 115
+    },
+    {
+     "file": "hand/60-45.ogg",
+     "key": 60,
+     "vel": 45
+    },
+    {
+     "file": "hand/60-80.ogg",
+     "key": 60,
+     "vel": 80
+    },
+    {
+     "file": "hand/60-115.ogg",
+     "key": 60,
+     "vel": 115
+    },
+    {
+     "file": "hand/61-45.ogg",
+     "key": 61,
+     "vel": 45
+    },
+    {
+     "file": "hand/61-80.ogg",
+     "key": 61,
+     "vel": 80
+    },
+    {
+     "file": "hand/61-115.ogg",
+     "key": 61,
+     "vel": 115
+    },
+    {
+     "file": "hand/62-45.ogg",
+     "key": 62,
+     "vel": 45
+    },
+    {
+     "file": "hand/62-80.ogg",
+     "key": 62,
+     "vel": 80
+    },
+    {
+     "file": "hand/62-115.ogg",
+     "key": 62,
+     "vel": 115
+    },
+    {
+     "file": "hand/63-45.ogg",
+     "key": 63,
+     "vel": 45
+    },
+    {
+     "file": "hand/63-80.ogg",
+     "key": 63,
+     "vel": 80
+    },
+    {
+     "file": "hand/63-115.ogg",
+     "key": 63,
+     "vel": 115
+    },
+    {
+     "file": "hand/64-45.ogg",
+     "key": 64,
+     "vel": 45
+    },
+    {
+     "file": "hand/64-80.ogg",
+     "key": 64,
+     "vel": 80
+    },
+    {
+     "file": "hand/64-115.ogg",
+     "key": 64,
+     "vel": 115
+    },
+    {
+     "file": "hand/69-45.ogg",
+     "key": 69,
+     "vel": 45
+    },
+    {
+     "file": "hand/69-80.ogg",
+     "key": 69,
+     "vel": 80
+    },
+    {
+     "file": "hand/69-115.ogg",
+     "key": 69,
+     "vel": 115
+    },
+    {
+     "file": "hand/70-45.ogg",
+     "key": 70,
+     "vel": 45
+    },
+    {
+     "file": "hand/70-80.ogg",
+     "key": 70,
+     "vel": 80
+    },
+    {
+     "file": "hand/70-115.ogg",
+     "key": 70,
+     "vel": 115
+    },
+    {
+     "file": "hand/75-45.ogg",
+     "key": 75,
+     "vel": 45
+    },
+    {
+     "file": "hand/75-80.ogg",
+     "key": 75,
+     "vel": 80
+    },
+    {
+     "file": "hand/75-115.ogg",
+     "key": 75,
+     "vel": 115
+    }
+   ]
+  },
+  "electric": {
+   "part": "bass",
+   "name": "Electric bass",
+   "kind": "pitched",
+   "release": 0.08,
+   "bytes": 398865,
+   "zones": [
+    {
+     "file": "electric/28-70.ogg",
+     "key": 28,
+     "vel": 70
+    },
+    {
+     "file": "electric/28-115.ogg",
+     "key": 28,
+     "vel": 115
+    },
+    {
+     "file": "electric/31-70.ogg",
+     "key": 31,
+     "vel": 70
+    },
+    {
+     "file": "electric/31-115.ogg",
+     "key": 31,
+     "vel": 115
+    },
+    {
+     "file": "electric/34-70.ogg",
+     "key": 34,
+     "vel": 70
+    },
+    {
+     "file": "electric/34-115.ogg",
+     "key": 34,
+     "vel": 115
+    },
+    {
+     "file": "electric/37-70.ogg",
+     "key": 37,
+     "vel": 70
+    },
+    {
+     "file": "electric/37-115.ogg",
+     "key": 37,
+     "vel": 115
+    },
+    {
+     "file": "electric/40-70.ogg",
+     "key": 40,
+     "vel": 70
+    },
+    {
+     "file": "electric/40-115.ogg",
+     "key": 40,
+     "vel": 115
+    },
+    {
+     "file": "electric/43-70.ogg",
+     "key": 43,
+     "vel": 70
+    },
+    {
+     "file": "electric/43-115.ogg",
+     "key": 43,
+     "vel": 115
+    },
+    {
+     "file": "electric/46-70.ogg",
+     "key": 46,
+     "vel": 70
+    },
+    {
+     "file": "electric/46-115.ogg",
+     "key": 46,
+     "vel": 115
+    },
+    {
+     "file": "electric/49-70.ogg",
+     "key": 49,
+     "vel": 70
+    },
+    {
+     "file": "electric/49-115.ogg",
+     "key": 49,
+     "vel": 115
+    },
+    {
+     "file": "electric/52-70.ogg",
+     "key": 52,
+     "vel": 70
+    },
+    {
+     "file": "electric/52-115.ogg",
+     "key": 52,
+     "vel": 115
+    },
+    {
+     "file": "electric/55-70.ogg",
+     "key": 55,
+     "vel": 70
+    },
+    {
+     "file": "electric/55-115.ogg",
+     "key": 55,
+     "vel": 115
+    },
+    {
+     "file": "electric/58-70.ogg",
+     "key": 58,
+     "vel": 70
+    },
+    {
+     "file": "electric/58-115.ogg",
+     "key": 58,
+     "vel": 115
+    }
+   ]
+  },
+  "upright": {
+   "part": "bass",
+   "name": "Upright bass",
+   "kind": "pitched",
+   "release": 0.1,
+   "bytes": 355823,
+   "zones": [
+    {
+     "file": "upright/28-70.ogg",
+     "key": 28,
+     "vel": 70
+    },
+    {
+     "file": "upright/28-115.ogg",
+     "key": 28,
+     "vel": 115
+    },
+    {
+     "file": "upright/31-70.ogg",
+     "key": 31,
+     "vel": 70
+    },
+    {
+     "file": "upright/31-115.ogg",
+     "key": 31,
+     "vel": 115
+    },
+    {
+     "file": "upright/34-70.ogg",
+     "key": 34,
+     "vel": 70
+    },
+    {
+     "file": "upright/34-115.ogg",
+     "key": 34,
+     "vel": 115
+    },
+    {
+     "file": "upright/37-70.ogg",
+     "key": 37,
+     "vel": 70
+    },
+    {
+     "file": "upright/37-115.ogg",
+     "key": 37,
+     "vel": 115
+    },
+    {
+     "file": "upright/40-70.ogg",
+     "key": 40,
+     "vel": 70
+    },
+    {
+     "file": "upright/40-115.ogg",
+     "key": 40,
+     "vel": 115
+    },
+    {
+     "file": "upright/43-70.ogg",
+     "key": 43,
+     "vel": 70
+    },
+    {
+     "file": "upright/43-115.ogg",
+     "key": 43,
+     "vel": 115
+    },
+    {
+     "file": "upright/46-70.ogg",
+     "key": 46,
+     "vel": 70
+    },
+    {
+     "file": "upright/46-115.ogg",
+     "key": 46,
+     "vel": 115
+    },
+    {
+     "file": "upright/49-70.ogg",
+     "key": 49,
+     "vel": 70
+    },
+    {
+     "file": "upright/49-115.ogg",
+     "key": 49,
+     "vel": 115
+    },
+    {
+     "file": "upright/52-70.ogg",
+     "key": 52,
+     "vel": 70
+    },
+    {
+     "file": "upright/52-115.ogg",
+     "key": 52,
+     "vel": 115
+    },
+    {
+     "file": "upright/55-70.ogg",
+     "key": 55,
+     "vel": 70
+    },
+    {
+     "file": "upright/55-115.ogg",
+     "key": 55,
+     "vel": 115
+    },
+    {
+     "file": "upright/58-70.ogg",
+     "key": 58,
+     "vel": 70
+    },
+    {
+     "file": "upright/58-115.ogg",
+     "key": 58,
+     "vel": 115
+    }
+   ]
+  },
+  "pick": {
+   "part": "bass",
+   "name": "Picked bass",
+   "kind": "pitched",
+   "release": 0.08,
+   "bytes": 423199,
+   "zones": [
+    {
+     "file": "pick/28-70.ogg",
+     "key": 28,
+     "vel": 70
+    },
+    {
+     "file": "pick/28-115.ogg",
+     "key": 28,
+     "vel": 115
+    },
+    {
+     "file": "pick/31-70.ogg",
+     "key": 31,
+     "vel": 70
+    },
+    {
+     "file": "pick/31-115.ogg",
+     "key": 31,
+     "vel": 115
+    },
+    {
+     "file": "pick/34-70.ogg",
+     "key": 34,
+     "vel": 70
+    },
+    {
+     "file": "pick/34-115.ogg",
+     "key": 34,
+     "vel": 115
+    },
+    {
+     "file": "pick/37-70.ogg",
+     "key": 37,
+     "vel": 70
+    },
+    {
+     "file": "pick/37-115.ogg",
+     "key": 37,
+     "vel": 115
+    },
+    {
+     "file": "pick/40-70.ogg",
+     "key": 40,
+     "vel": 70
+    },
+    {
+     "file": "pick/40-115.ogg",
+     "key": 40,
+     "vel": 115
+    },
+    {
+     "file": "pick/43-70.ogg",
+     "key": 43,
+     "vel": 70
+    },
+    {
+     "file": "pick/43-115.ogg",
+     "key": 43,
+     "vel": 115
+    },
+    {
+     "file": "pick/46-70.ogg",
+     "key": 46,
+     "vel": 70
+    },
+    {
+     "file": "pick/46-115.ogg",
+     "key": 46,
+     "vel": 115
+    },
+    {
+     "file": "pick/49-70.ogg",
+     "key": 49,
+     "vel": 70
+    },
+    {
+     "file": "pick/49-115.ogg",
+     "key": 49,
+     "vel": 115
+    },
+    {
+     "file": "pick/52-70.ogg",
+     "key": 52,
+     "vel": 70
+    },
+    {
+     "file": "pick/52-115.ogg",
+     "key": 52,
+     "vel": 115
+    },
+    {
+     "file": "pick/55-70.ogg",
+     "key": 55,
+     "vel": 70
+    },
+    {
+     "file": "pick/55-115.ogg",
+     "key": 55,
+     "vel": 115
+    },
+    {
+     "file": "pick/58-70.ogg",
+     "key": 58,
+     "vel": 70
+    },
+    {
+     "file": "pick/58-115.ogg",
+     "key": 58,
+     "vel": 115
+    }
+   ]
+  },
+  "synth": {
+   "part": "bass",
+   "name": "Synth bass",
+   "kind": "pitched",
+   "release": 0.06,
+   "bytes": 336323,
+   "zones": [
+    {
+     "file": "synth/28-70.ogg",
+     "key": 28,
+     "vel": 70
+    },
+    {
+     "file": "synth/28-115.ogg",
+     "key": 28,
+     "vel": 115
+    },
+    {
+     "file": "synth/31-70.ogg",
+     "key": 31,
+     "vel": 70
+    },
+    {
+     "file": "synth/31-115.ogg",
+     "key": 31,
+     "vel": 115
+    },
+    {
+     "file": "synth/34-70.ogg",
+     "key": 34,
+     "vel": 70
+    },
+    {
+     "file": "synth/34-115.ogg",
+     "key": 34,
+     "vel": 115
+    },
+    {
+     "file": "synth/37-70.ogg",
+     "key": 37,
+     "vel": 70
+    },
+    {
+     "file": "synth/37-115.ogg",
+     "key": 37,
+     "vel": 115
+    },
+    {
+     "file": "synth/40-70.ogg",
+     "key": 40,
+     "vel": 70
+    },
+    {
+     "file": "synth/40-115.ogg",
+     "key": 40,
+     "vel": 115
+    },
+    {
+     "file": "synth/43-70.ogg",
+     "key": 43,
+     "vel": 70
+    },
+    {
+     "file": "synth/43-115.ogg",
+     "key": 43,
+     "vel": 115
+    },
+    {
+     "file": "synth/46-70.ogg",
+     "key": 46,
+     "vel": 70
+    },
+    {
+     "file": "synth/46-115.ogg",
+     "key": 46,
+     "vel": 115
+    },
+    {
+     "file": "synth/49-70.ogg",
+     "key": 49,
+     "vel": 70
+    },
+    {
+     "file": "synth/49-115.ogg",
+     "key": 49,
+     "vel": 115
+    },
+    {
+     "file": "synth/52-70.ogg",
+     "key": 52,
+     "vel": 70
+    },
+    {
+     "file": "synth/52-115.ogg",
+     "key": 52,
+     "vel": 115
+    },
+    {
+     "file": "synth/55-70.ogg",
+     "key": 55,
+     "vel": 70
+    },
+    {
+     "file": "synth/55-115.ogg",
+     "key": 55,
+     "vel": 115
+    },
+    {
+     "file": "synth/58-70.ogg",
+     "key": 58,
+     "vel": 70
+    },
+    {
+     "file": "synth/58-115.ogg",
+     "key": 58,
+     "vel": 115
+    }
+   ]
+  },
+  "piano": {
+   "part": "chords",
+   "name": "Piano",
+   "kind": "pitched",
+   "release": 0.3,
+   "bytes": 1004530,
+   "zones": [
+    {
+     "file": "piano/36-45.ogg",
+     "key": 36,
+     "vel": 45
+    },
+    {
+     "file": "piano/36-85.ogg",
+     "key": 36,
+     "vel": 85
+    },
+    {
+     "file": "piano/36-120.ogg",
+     "key": 36,
+     "vel": 120
+    },
+    {
+     "file": "piano/39-45.ogg",
+     "key": 39,
+     "vel": 45
+    },
+    {
+     "file": "piano/39-85.ogg",
+     "key": 39,
+     "vel": 85
+    },
+    {
+     "file": "piano/39-120.ogg",
+     "key": 39,
+     "vel": 120
+    },
+    {
+     "file": "piano/42-45.ogg",
+     "key": 42,
+     "vel": 45
+    },
+    {
+     "file": "piano/42-85.ogg",
+     "key": 42,
+     "vel": 85
+    },
+    {
+     "file": "piano/42-120.ogg",
+     "key": 42,
+     "vel": 120
+    },
+    {
+     "file": "piano/45-45.ogg",
+     "key": 45,
+     "vel": 45
+    },
+    {
+     "file": "piano/45-85.ogg",
+     "key": 45,
+     "vel": 85
+    },
+    {
+     "file": "piano/45-120.ogg",
+     "key": 45,
+     "vel": 120
+    },
+    {
+     "file": "piano/48-45.ogg",
+     "key": 48,
+     "vel": 45
+    },
+    {
+     "file": "piano/48-85.ogg",
+     "key": 48,
+     "vel": 85
+    },
+    {
+     "file": "piano/48-120.ogg",
+     "key": 48,
+     "vel": 120
+    },
+    {
+     "file": "piano/51-45.ogg",
+     "key": 51,
+     "vel": 45
+    },
+    {
+     "file": "piano/51-85.ogg",
+     "key": 51,
+     "vel": 85
+    },
+    {
+     "file": "piano/51-120.ogg",
+     "key": 51,
+     "vel": 120
+    },
+    {
+     "file": "piano/54-45.ogg",
+     "key": 54,
+     "vel": 45
+    },
+    {
+     "file": "piano/54-85.ogg",
+     "key": 54,
+     "vel": 85
+    },
+    {
+     "file": "piano/54-120.ogg",
+     "key": 54,
+     "vel": 120
+    },
+    {
+     "file": "piano/57-45.ogg",
+     "key": 57,
+     "vel": 45
+    },
+    {
+     "file": "piano/57-85.ogg",
+     "key": 57,
+     "vel": 85
+    },
+    {
+     "file": "piano/57-120.ogg",
+     "key": 57,
+     "vel": 120
+    },
+    {
+     "file": "piano/60-45.ogg",
+     "key": 60,
+     "vel": 45
+    },
+    {
+     "file": "piano/60-85.ogg",
+     "key": 60,
+     "vel": 85
+    },
+    {
+     "file": "piano/60-120.ogg",
+     "key": 60,
+     "vel": 120
+    },
+    {
+     "file": "piano/63-45.ogg",
+     "key": 63,
+     "vel": 45
+    },
+    {
+     "file": "piano/63-85.ogg",
+     "key": 63,
+     "vel": 85
+    },
+    {
+     "file": "piano/63-120.ogg",
+     "key": 63,
+     "vel": 120
+    },
+    {
+     "file": "piano/66-45.ogg",
+     "key": 66,
+     "vel": 45
+    },
+    {
+     "file": "piano/66-85.ogg",
+     "key": 66,
+     "vel": 85
+    },
+    {
+     "file": "piano/66-120.ogg",
+     "key": 66,
+     "vel": 120
+    },
+    {
+     "file": "piano/69-45.ogg",
+     "key": 69,
+     "vel": 45
+    },
+    {
+     "file": "piano/69-85.ogg",
+     "key": 69,
+     "vel": 85
+    },
+    {
+     "file": "piano/69-120.ogg",
+     "key": 69,
+     "vel": 120
+    },
+    {
+     "file": "piano/72-45.ogg",
+     "key": 72,
+     "vel": 45
+    },
+    {
+     "file": "piano/72-85.ogg",
+     "key": 72,
+     "vel": 85
+    },
+    {
+     "file": "piano/72-120.ogg",
+     "key": 72,
+     "vel": 120
+    },
+    {
+     "file": "piano/75-45.ogg",
+     "key": 75,
+     "vel": 45
+    },
+    {
+     "file": "piano/75-85.ogg",
+     "key": 75,
+     "vel": 85
+    },
+    {
+     "file": "piano/75-120.ogg",
+     "key": 75,
+     "vel": 120
+    },
+    {
+     "file": "piano/78-45.ogg",
+     "key": 78,
+     "vel": 45
+    },
+    {
+     "file": "piano/78-85.ogg",
+     "key": 78,
+     "vel": 85
+    },
+    {
+     "file": "piano/78-120.ogg",
+     "key": 78,
+     "vel": 120
+    },
+    {
+     "file": "piano/81-45.ogg",
+     "key": 81,
+     "vel": 45
+    },
+    {
+     "file": "piano/81-85.ogg",
+     "key": 81,
+     "vel": 85
+    },
+    {
+     "file": "piano/81-120.ogg",
+     "key": 81,
+     "vel": 120
+    },
+    {
+     "file": "piano/84-45.ogg",
+     "key": 84,
+     "vel": 45
+    },
+    {
+     "file": "piano/84-85.ogg",
+     "key": 84,
+     "vel": 85
+    },
+    {
+     "file": "piano/84-120.ogg",
+     "key": 84,
+     "vel": 120
+    },
+    {
+     "file": "piano/87-45.ogg",
+     "key": 87,
+     "vel": 45
+    },
+    {
+     "file": "piano/87-85.ogg",
+     "key": 87,
+     "vel": 85
+    },
+    {
+     "file": "piano/87-120.ogg",
+     "key": 87,
+     "vel": 120
+    },
+    {
+     "file": "piano/90-45.ogg",
+     "key": 90,
+     "vel": 45
+    },
+    {
+     "file": "piano/90-85.ogg",
+     "key": 90,
+     "vel": 85
+    },
+    {
+     "file": "piano/90-120.ogg",
+     "key": 90,
+     "vel": 120
+    }
+   ]
+  },
+  "epiano": {
+   "part": "chords",
+   "name": "Electric piano",
+   "kind": "pitched",
+   "release": 0.25,
+   "bytes": 814205,
+   "zones": [
+    {
+     "file": "epiano/39-60.ogg",
+     "key": 39,
+     "vel": 60
+    },
+    {
+     "file": "epiano/39-110.ogg",
+     "key": 39,
+     "vel": 110
+    },
+    {
+     "file": "epiano/42-60.ogg",
+     "key": 42,
+     "vel": 60
+    },
+    {
+     "file": "epiano/42-110.ogg",
+     "key": 42,
+     "vel": 110
+    },
+    {
+     "file": "epiano/45-60.ogg",
+     "key": 45,
+     "vel": 60
+    },
+    {
+     "file": "epiano/45-110.ogg",
+     "key": 45,
+     "vel": 110
+    },
+    {
+     "file": "epiano/48-60.ogg",
+     "key": 48,
+     "vel": 60
+    },
+    {
+     "file": "epiano/48-110.ogg",
+     "key": 48,
+     "vel": 110
+    },
+    {
+     "file": "epiano/51-60.ogg",
+     "key": 51,
+     "vel": 60
+    },
+    {
+     "file": "epiano/51-110.ogg",
+     "key": 51,
+     "vel": 110
+    },
+    {
+     "file": "epiano/54-60.ogg",
+     "key": 54,
+     "vel": 60
+    },
+    {
+     "file": "epiano/54-110.ogg",
+     "key": 54,
+     "vel": 110
+    },
+    {
+     "file": "epiano/57-60.ogg",
+     "key": 57,
+     "vel": 60
+    },
+    {
+     "file": "epiano/57-110.ogg",
+     "key": 57,
+     "vel": 110
+    },
+    {
+     "file": "epiano/60-60.ogg",
+     "key": 60,
+     "vel": 60
+    },
+    {
+     "file": "epiano/60-110.ogg",
+     "key": 60,
+     "vel": 110
+    },
+    {
+     "file": "epiano/63-60.ogg",
+     "key": 63,
+     "vel": 60
+    },
+    {
+     "file": "epiano/63-110.ogg",
+     "key": 63,
+     "vel": 110
+    },
+    {
+     "file": "epiano/66-60.ogg",
+     "key": 66,
+     "vel": 60
+    },
+    {
+     "file": "epiano/66-110.ogg",
+     "key": 66,
+     "vel": 110
+    },
+    {
+     "file": "epiano/69-60.ogg",
+     "key": 69,
+     "vel": 60
+    },
+    {
+     "file": "epiano/69-110.ogg",
+     "key": 69,
+     "vel": 110
+    },
+    {
+     "file": "epiano/72-60.ogg",
+     "key": 72,
+     "vel": 60
+    },
+    {
+     "file": "epiano/72-110.ogg",
+     "key": 72,
+     "vel": 110
+    },
+    {
+     "file": "epiano/75-60.ogg",
+     "key": 75,
+     "vel": 60
+    },
+    {
+     "file": "epiano/75-110.ogg",
+     "key": 75,
+     "vel": 110
+    },
+    {
+     "file": "epiano/78-60.ogg",
+     "key": 78,
+     "vel": 60
+    },
+    {
+     "file": "epiano/78-110.ogg",
+     "key": 78,
+     "vel": 110
+    },
+    {
+     "file": "epiano/81-60.ogg",
+     "key": 81,
+     "vel": 60
+    },
+    {
+     "file": "epiano/81-110.ogg",
+     "key": 81,
+     "vel": 110
+    },
+    {
+     "file": "epiano/84-60.ogg",
+     "key": 84,
+     "vel": 60
+    },
+    {
+     "file": "epiano/84-110.ogg",
+     "key": 84,
+     "vel": 110
+    },
+    {
+     "file": "epiano/87-60.ogg",
+     "key": 87,
+     "vel": 60
+    },
+    {
+     "file": "epiano/87-110.ogg",
+     "key": 87,
+     "vel": 110
+    }
+   ]
+  },
+  "organ": {
+   "part": "chords",
+   "name": "Organ",
+   "kind": "pitched",
+   "release": 0.06,
+   "bytes": 804144,
+   "zones": [
+    {
+     "file": "organ/39-100.ogg",
+     "key": 39,
+     "vel": 100,
+     "loop": [
+      1.9967,
+      4.9967
+     ]
+    },
+    {
+     "file": "organ/42-100.ogg",
+     "key": 42,
+     "vel": 100,
+     "loop": [
+      1.9951,
+      4.9951
+     ]
+    },
+    {
+     "file": "organ/45-100.ogg",
+     "key": 45,
+     "vel": 100,
+     "loop": [
+      1.9952,
+      4.9952
+     ]
+    },
+    {
+     "file": "organ/48-100.ogg",
+     "key": 48,
+     "vel": 100,
+     "loop": [
+      1.9966,
+      4.9965
+     ]
+    },
+    {
+     "file": "organ/51-100.ogg",
+     "key": 51,
+     "vel": 100,
+     "loop": [
+      1.9965,
+      4.9964
+     ]
+    },
+    {
+     "file": "organ/54-100.ogg",
+     "key": 54,
+     "vel": 100,
+     "loop": [
+      1.9976,
+      4.9976
+     ]
+    },
+    {
+     "file": "organ/57-100.ogg",
+     "key": 57,
+     "vel": 100,
+     "loop": [
+      1.9973,
+      4.9973
+     ]
+    },
+    {
+     "file": "organ/60-100.ogg",
+     "key": 60,
+     "vel": 100,
+     "loop": [
+      1.9979,
+      4.9979
+     ]
+    },
+    {
+     "file": "organ/63-100.ogg",
+     "key": 63,
+     "vel": 100,
+     "loop": [
+      1.9976,
+      4.9976
+     ]
+    },
+    {
+     "file": "organ/66-100.ogg",
+     "key": 66,
+     "vel": 100,
+     "loop": [
+      1.9986,
+      4.9986
+     ]
+    },
+    {
+     "file": "organ/69-100.ogg",
+     "key": 69,
+     "vel": 100,
+     "loop": [
+      1.9982,
+      4.9982
+     ]
+    },
+    {
+     "file": "organ/72-100.ogg",
+     "key": 72,
+     "vel": 100,
+     "loop": [
+      1.9991,
+      4.9991
+     ]
+    },
+    {
+     "file": "organ/75-100.ogg",
+     "key": 75,
+     "vel": 100,
+     "loop": [
+      1.9986,
+      4.9986
+     ]
+    },
+    {
+     "file": "organ/78-100.ogg",
+     "key": 78,
+     "vel": 100,
+     "loop": [
+      1.9995,
+      4.9995
+     ]
+    },
+    {
+     "file": "organ/81-100.ogg",
+     "key": 81,
+     "vel": 100,
+     "loop": [
+      1.999,
+      4.999
+     ]
+    },
+    {
+     "file": "organ/84-100.ogg",
+     "key": 84,
+     "vel": 100,
+     "loop": [
+      1.9997,
+      4.9997
+     ]
+    },
+    {
+     "file": "organ/87-100.ogg",
+     "key": 87,
+     "vel": 100,
+     "loop": [
+      1.9992,
+      4.9992
+     ]
+    }
+   ]
+  },
+  "rock-organ": {
+   "part": "chords",
+   "name": "Rock organ",
+   "kind": "pitched",
+   "release": 0.08,
+   "bytes": 800141,
+   "zones": [
+    {
+     "file": "rock-organ/39-100.ogg",
+     "key": 39,
+     "vel": 100,
+     "loop": [
+      1.9971,
+      4.9971
+     ]
+    },
+    {
+     "file": "rock-organ/42-100.ogg",
+     "key": 42,
+     "vel": 100,
+     "loop": [
+      1.997,
+      4.997
+     ]
+    },
+    {
+     "file": "rock-organ/45-100.ogg",
+     "key": 45,
+     "vel": 100,
+     "loop": [
+      1.9981,
+      4.9981
+     ]
+    },
+    {
+     "file": "rock-organ/48-100.ogg",
+     "key": 48,
+     "vel": 100,
+     "loop": [
+      1.9977,
+      4.9977
+     ]
+    },
+    {
+     "file": "rock-organ/51-100.ogg",
+     "key": 51,
+     "vel": 100,
+     "loop": [
+      1.9977,
+      4.9977
+     ]
+    },
+    {
+     "file": "rock-organ/54-100.ogg",
+     "key": 54,
+     "vel": 100,
+     "loop": [
+      1.9975,
+      4.9975
+     ]
+    },
+    {
+     "file": "rock-organ/57-100.ogg",
+     "key": 57,
+     "vel": 100,
+     "loop": [
+      1.9972,
+      4.9972
+     ]
+    },
+    {
+     "file": "rock-organ/60-100.ogg",
+     "key": 60,
+     "vel": 100,
+     "loop": [
+      1.9975,
+      4.9975
+     ]
+    },
+    {
+     "file": "rock-organ/63-100.ogg",
+     "key": 63,
+     "vel": 100,
+     "loop": [
+      1.9976,
+      4.9976
+     ]
+    },
+    {
+     "file": "rock-organ/66-100.ogg",
+     "key": 66,
+     "vel": 100,
+     "loop": [
+      1.9971,
+      4.9971
+     ]
+    },
+    {
+     "file": "rock-organ/69-100.ogg",
+     "key": 69,
+     "vel": 100,
+     "loop": [
+      1.9974,
+      4.9974
+     ]
+    },
+    {
+     "file": "rock-organ/72-100.ogg",
+     "key": 72,
+     "vel": 100,
+     "loop": [
+      1.9964,
+      4.9964
+     ]
+    },
+    {
+     "file": "rock-organ/75-100.ogg",
+     "key": 75,
+     "vel": 100,
+     "loop": [
+      1.9974,
+      4.9974
+     ]
+    },
+    {
+     "file": "rock-organ/78-100.ogg",
+     "key": 78,
+     "vel": 100,
+     "loop": [
+      1.9963,
+      4.9963
+     ]
+    },
+    {
+     "file": "rock-organ/81-100.ogg",
+     "key": 81,
+     "vel": 100,
+     "loop": [
+      1.9969,
+      4.9969
+     ]
+    },
+    {
+     "file": "rock-organ/84-100.ogg",
+     "key": 84,
+     "vel": 100,
+     "loop": [
+      1.9963,
+      4.9962
+     ]
+    },
+    {
+     "file": "rock-organ/87-100.ogg",
+     "key": 87,
+     "vel": 100,
+     "loop": [
+      1.9839,
+      4.9838
+     ]
+    }
+   ]
+  },
+  "clav": {
+   "part": "chords",
+   "name": "Clavinet",
+   "kind": "pitched",
+   "release": 0.05,
+   "bytes": 643292,
+   "zones": [
+    {
+     "file": "clav/39-60.ogg",
+     "key": 39,
+     "vel": 60
+    },
+    {
+     "file": "clav/39-110.ogg",
+     "key": 39,
+     "vel": 110
+    },
+    {
+     "file": "clav/42-60.ogg",
+     "key": 42,
+     "vel": 60
+    },
+    {
+     "file": "clav/42-110.ogg",
+     "key": 42,
+     "vel": 110
+    },
+    {
+     "file": "clav/45-60.ogg",
+     "key": 45,
+     "vel": 60
+    },
+    {
+     "file": "clav/45-110.ogg",
+     "key": 45,
+     "vel": 110
+    },
+    {
+     "file": "clav/48-60.ogg",
+     "key": 48,
+     "vel": 60
+    },
+    {
+     "file": "clav/48-110.ogg",
+     "key": 48,
+     "vel": 110
+    },
+    {
+     "file": "clav/51-60.ogg",
+     "key": 51,
+     "vel": 60
+    },
+    {
+     "file": "clav/51-110.ogg",
+     "key": 51,
+     "vel": 110
+    },
+    {
+     "file": "clav/54-60.ogg",
+     "key": 54,
+     "vel": 60
+    },
+    {
+     "file": "clav/54-110.ogg",
+     "key": 54,
+     "vel": 110
+    },
+    {
+     "file": "clav/57-60.ogg",
+     "key": 57,
+     "vel": 60
+    },
+    {
+     "file": "clav/57-110.ogg",
+     "key": 57,
+     "vel": 110
+    },
+    {
+     "file": "clav/60-60.ogg",
+     "key": 60,
+     "vel": 60
+    },
+    {
+     "file": "clav/60-110.ogg",
+     "key": 60,
+     "vel": 110
+    },
+    {
+     "file": "clav/63-60.ogg",
+     "key": 63,
+     "vel": 60
+    },
+    {
+     "file": "clav/63-110.ogg",
+     "key": 63,
+     "vel": 110
+    },
+    {
+     "file": "clav/66-60.ogg",
+     "key": 66,
+     "vel": 60
+    },
+    {
+     "file": "clav/66-110.ogg",
+     "key": 66,
+     "vel": 110
+    },
+    {
+     "file": "clav/69-60.ogg",
+     "key": 69,
+     "vel": 60
+    },
+    {
+     "file": "clav/69-110.ogg",
+     "key": 69,
+     "vel": 110
+    },
+    {
+     "file": "clav/72-60.ogg",
+     "key": 72,
+     "vel": 60
+    },
+    {
+     "file": "clav/72-110.ogg",
+     "key": 72,
+     "vel": 110
+    },
+    {
+     "file": "clav/75-60.ogg",
+     "key": 75,
+     "vel": 60
+    },
+    {
+     "file": "clav/75-110.ogg",
+     "key": 75,
+     "vel": 110
+    },
+    {
+     "file": "clav/78-60.ogg",
+     "key": 78,
+     "vel": 60
+    },
+    {
+     "file": "clav/78-110.ogg",
+     "key": 78,
+     "vel": 110
+    },
+    {
+     "file": "clav/81-60.ogg",
+     "key": 81,
+     "vel": 60
+    },
+    {
+     "file": "clav/81-110.ogg",
+     "key": 81,
+     "vel": 110
+    },
+    {
+     "file": "clav/84-60.ogg",
+     "key": 84,
+     "vel": 60
+    },
+    {
+     "file": "clav/84-110.ogg",
+     "key": 84,
+     "vel": 110
+    },
+    {
+     "file": "clav/87-60.ogg",
+     "key": 87,
+     "vel": 60
+    },
+    {
+     "file": "clav/87-110.ogg",
+     "key": 87,
+     "vel": 110
+    }
+   ]
+  },
+  "clean": {
+   "part": "guitar",
+   "name": "Clean guitar",
+   "kind": "pitched",
+   "release": 0.12,
+   "bytes": 746214,
+   "zones": [
+    {
+     "file": "clean/40-65.ogg",
+     "key": 40,
+     "vel": 65
+    },
+    {
+     "file": "clean/40-110.ogg",
+     "key": 40,
+     "vel": 110
+    },
+    {
+     "file": "clean/43-65.ogg",
+     "key": 43,
+     "vel": 65
+    },
+    {
+     "file": "clean/43-110.ogg",
+     "key": 43,
+     "vel": 110
+    },
+    {
+     "file": "clean/46-65.ogg",
+     "key": 46,
+     "vel": 65
+    },
+    {
+     "file": "clean/46-110.ogg",
+     "key": 46,
+     "vel": 110
+    },
+    {
+     "file": "clean/49-65.ogg",
+     "key": 49,
+     "vel": 65
+    },
+    {
+     "file": "clean/49-110.ogg",
+     "key": 49,
+     "vel": 110
+    },
+    {
+     "file": "clean/52-65.ogg",
+     "key": 52,
+     "vel": 65
+    },
+    {
+     "file": "clean/52-110.ogg",
+     "key": 52,
+     "vel": 110
+    },
+    {
+     "file": "clean/55-65.ogg",
+     "key": 55,
+     "vel": 65
+    },
+    {
+     "file": "clean/55-110.ogg",
+     "key": 55,
+     "vel": 110
+    },
+    {
+     "file": "clean/58-65.ogg",
+     "key": 58,
+     "vel": 65
+    },
+    {
+     "file": "clean/58-110.ogg",
+     "key": 58,
+     "vel": 110
+    },
+    {
+     "file": "clean/61-65.ogg",
+     "key": 61,
+     "vel": 65
+    },
+    {
+     "file": "clean/61-110.ogg",
+     "key": 61,
+     "vel": 110
+    },
+    {
+     "file": "clean/64-65.ogg",
+     "key": 64,
+     "vel": 65
+    },
+    {
+     "file": "clean/64-110.ogg",
+     "key": 64,
+     "vel": 110
+    },
+    {
+     "file": "clean/67-65.ogg",
+     "key": 67,
+     "vel": 65
+    },
+    {
+     "file": "clean/67-110.ogg",
+     "key": 67,
+     "vel": 110
+    },
+    {
+     "file": "clean/70-65.ogg",
+     "key": 70,
+     "vel": 65
+    },
+    {
+     "file": "clean/70-110.ogg",
+     "key": 70,
+     "vel": 110
+    },
+    {
+     "file": "clean/73-65.ogg",
+     "key": 73,
+     "vel": 65
+    },
+    {
+     "file": "clean/73-110.ogg",
+     "key": 73,
+     "vel": 110
+    },
+    {
+     "file": "clean/76-65.ogg",
+     "key": 76,
+     "vel": 65
+    },
+    {
+     "file": "clean/76-110.ogg",
+     "key": 76,
+     "vel": 110
+    },
+    {
+     "file": "clean/79-65.ogg",
+     "key": 79,
+     "vel": 65
+    },
+    {
+     "file": "clean/79-110.ogg",
+     "key": 79,
+     "vel": 110
+    },
+    {
+     "file": "clean/82-65.ogg",
+     "key": 82,
+     "vel": 65
+    },
+    {
+     "file": "clean/82-110.ogg",
+     "key": 82,
+     "vel": 110
+    }
+   ]
+  },
+  "funk": {
+   "part": "guitar",
+   "name": "Funk guitar",
+   "kind": "pitched",
+   "release": 0.05,
+   "bytes": 436492,
+   "zones": [
+    {
+     "file": "funk/40-65.ogg",
+     "key": 40,
+     "vel": 65
+    },
+    {
+     "file": "funk/40-110.ogg",
+     "key": 40,
+     "vel": 110
+    },
+    {
+     "file": "funk/43-65.ogg",
+     "key": 43,
+     "vel": 65
+    },
+    {
+     "file": "funk/43-110.ogg",
+     "key": 43,
+     "vel": 110
+    },
+    {
+     "file": "funk/46-65.ogg",
+     "key": 46,
+     "vel": 65
+    },
+    {
+     "file": "funk/46-110.ogg",
+     "key": 46,
+     "vel": 110
+    },
+    {
+     "file": "funk/49-65.ogg",
+     "key": 49,
+     "vel": 65
+    },
+    {
+     "file": "funk/49-110.ogg",
+     "key": 49,
+     "vel": 110
+    },
+    {
+     "file": "funk/52-65.ogg",
+     "key": 52,
+     "vel": 65
+    },
+    {
+     "file": "funk/52-110.ogg",
+     "key": 52,
+     "vel": 110
+    },
+    {
+     "file": "funk/55-65.ogg",
+     "key": 55,
+     "vel": 65
+    },
+    {
+     "file": "funk/55-110.ogg",
+     "key": 55,
+     "vel": 110
+    },
+    {
+     "file": "funk/58-65.ogg",
+     "key": 58,
+     "vel": 65
+    },
+    {
+     "file": "funk/58-110.ogg",
+     "key": 58,
+     "vel": 110
+    },
+    {
+     "file": "funk/61-65.ogg",
+     "key": 61,
+     "vel": 65
+    },
+    {
+     "file": "funk/61-110.ogg",
+     "key": 61,
+     "vel": 110
+    },
+    {
+     "file": "funk/64-65.ogg",
+     "key": 64,
+     "vel": 65
+    },
+    {
+     "file": "funk/64-110.ogg",
+     "key": 64,
+     "vel": 110
+    },
+    {
+     "file": "funk/67-65.ogg",
+     "key": 67,
+     "vel": 65
+    },
+    {
+     "file": "funk/67-110.ogg",
+     "key": 67,
+     "vel": 110
+    },
+    {
+     "file": "funk/70-65.ogg",
+     "key": 70,
+     "vel": 65
+    },
+    {
+     "file": "funk/70-110.ogg",
+     "key": 70,
+     "vel": 110
+    },
+    {
+     "file": "funk/73-65.ogg",
+     "key": 73,
+     "vel": 65
+    },
+    {
+     "file": "funk/73-110.ogg",
+     "key": 73,
+     "vel": 110
+    },
+    {
+     "file": "funk/76-65.ogg",
+     "key": 76,
+     "vel": 65
+    },
+    {
+     "file": "funk/76-110.ogg",
+     "key": 76,
+     "vel": 110
+    },
+    {
+     "file": "funk/79-65.ogg",
+     "key": 79,
+     "vel": 65
+    },
+    {
+     "file": "funk/79-110.ogg",
+     "key": 79,
+     "vel": 110
+    },
+    {
+     "file": "funk/82-65.ogg",
+     "key": 82,
+     "vel": 65
+    },
+    {
+     "file": "funk/82-110.ogg",
+     "key": 82,
+     "vel": 110
+    }
+   ]
+  },
+  "jazz-guitar": {
+   "part": "guitar",
+   "name": "Jazz guitar",
+   "kind": "pitched",
+   "release": 0.15,
+   "bytes": 753322,
+   "zones": [
+    {
+     "file": "jazz-guitar/40-65.ogg",
+     "key": 40,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/40-110.ogg",
+     "key": 40,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/43-65.ogg",
+     "key": 43,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/43-110.ogg",
+     "key": 43,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/46-65.ogg",
+     "key": 46,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/46-110.ogg",
+     "key": 46,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/49-65.ogg",
+     "key": 49,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/49-110.ogg",
+     "key": 49,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/52-65.ogg",
+     "key": 52,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/52-110.ogg",
+     "key": 52,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/55-65.ogg",
+     "key": 55,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/55-110.ogg",
+     "key": 55,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/58-65.ogg",
+     "key": 58,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/58-110.ogg",
+     "key": 58,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/61-65.ogg",
+     "key": 61,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/61-110.ogg",
+     "key": 61,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/64-65.ogg",
+     "key": 64,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/64-110.ogg",
+     "key": 64,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/67-65.ogg",
+     "key": 67,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/67-110.ogg",
+     "key": 67,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/70-65.ogg",
+     "key": 70,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/70-110.ogg",
+     "key": 70,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/73-65.ogg",
+     "key": 73,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/73-110.ogg",
+     "key": 73,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/76-65.ogg",
+     "key": 76,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/76-110.ogg",
+     "key": 76,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/79-65.ogg",
+     "key": 79,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/79-110.ogg",
+     "key": 79,
+     "vel": 110
+    },
+    {
+     "file": "jazz-guitar/82-65.ogg",
+     "key": 82,
+     "vel": 65
+    },
+    {
+     "file": "jazz-guitar/82-110.ogg",
+     "key": 82,
+     "vel": 110
+    }
+   ]
+  },
+  "crunch": {
+   "part": "guitar",
+   "name": "Crunch guitar",
+   "kind": "pitched",
+   "release": 0.1,
+   "bytes": 1011930,
+   "zones": [
+    {
+     "file": "crunch/40-65.ogg",
+     "key": 40,
+     "vel": 65
+    },
+    {
+     "file": "crunch/40-110.ogg",
+     "key": 40,
+     "vel": 110
+    },
+    {
+     "file": "crunch/43-65.ogg",
+     "key": 43,
+     "vel": 65
+    },
+    {
+     "file": "crunch/43-110.ogg",
+     "key": 43,
+     "vel": 110
+    },
+    {
+     "file": "crunch/46-65.ogg",
+     "key": 46,
+     "vel": 65
+    },
+    {
+     "file": "crunch/46-110.ogg",
+     "key": 46,
+     "vel": 110
+    },
+    {
+     "file": "crunch/49-65.ogg",
+     "key": 49,
+     "vel": 65
+    },
+    {
+     "file": "crunch/49-110.ogg",
+     "key": 49,
+     "vel": 110
+    },
+    {
+     "file": "crunch/52-65.ogg",
+     "key": 52,
+     "vel": 65
+    },
+    {
+     "file": "crunch/52-110.ogg",
+     "key": 52,
+     "vel": 110
+    },
+    {
+     "file": "crunch/55-65.ogg",
+     "key": 55,
+     "vel": 65
+    },
+    {
+     "file": "crunch/55-110.ogg",
+     "key": 55,
+     "vel": 110
+    },
+    {
+     "file": "crunch/58-65.ogg",
+     "key": 58,
+     "vel": 65
+    },
+    {
+     "file": "crunch/58-110.ogg",
+     "key": 58,
+     "vel": 110
+    },
+    {
+     "file": "crunch/61-65.ogg",
+     "key": 61,
+     "vel": 65
+    },
+    {
+     "file": "crunch/61-110.ogg",
+     "key": 61,
+     "vel": 110
+    },
+    {
+     "file": "crunch/64-65.ogg",
+     "key": 64,
+     "vel": 65
+    },
+    {
+     "file": "crunch/64-110.ogg",
+     "key": 64,
+     "vel": 110
+    },
+    {
+     "file": "crunch/67-65.ogg",
+     "key": 67,
+     "vel": 65
+    },
+    {
+     "file": "crunch/67-110.ogg",
+     "key": 67,
+     "vel": 110
+    },
+    {
+     "file": "crunch/70-65.ogg",
+     "key": 70,
+     "vel": 65
+    },
+    {
+     "file": "crunch/70-110.ogg",
+     "key": 70,
+     "vel": 110
+    },
+    {
+     "file": "crunch/73-65.ogg",
+     "key": 73,
+     "vel": 65
+    },
+    {
+     "file": "crunch/73-110.ogg",
+     "key": 73,
+     "vel": 110
+    },
+    {
+     "file": "crunch/76-65.ogg",
+     "key": 76,
+     "vel": 65
+    },
+    {
+     "file": "crunch/76-110.ogg",
+     "key": 76,
+     "vel": 110
+    },
+    {
+     "file": "crunch/79-65.ogg",
+     "key": 79,
+     "vel": 65
+    },
+    {
+     "file": "crunch/79-110.ogg",
+     "key": 79,
+     "vel": 110
+    },
+    {
+     "file": "crunch/82-65.ogg",
+     "key": 82,
+     "vel": 65
+    },
+    {
+     "file": "crunch/82-110.ogg",
+     "key": 82,
+     "vel": 110
+    }
+   ]
+  },
+  "strings": {
+   "part": "pad",
+   "name": "Strings",
+   "kind": "pitched",
+   "release": 0.5,
+   "bytes": 1339404,
+   "zones": [
+    {
+     "file": "strings/42-70.ogg",
+     "key": 42,
+     "vel": 70,
+     "loop": [
+      2.4799,
+      5.4799
+     ]
+    },
+    {
+     "file": "strings/42-110.ogg",
+     "key": 42,
+     "vel": 110,
+     "loop": [
+      2.4916,
+      5.4916
+     ]
+    },
+    {
+     "file": "strings/45-70.ogg",
+     "key": 45,
+     "vel": 70,
+     "loop": [
+      2.4744,
+      5.4744
+     ]
+    },
+    {
+     "file": "strings/45-110.ogg",
+     "key": 45,
+     "vel": 110,
+     "loop": [
+      2.4897,
+      5.4897
+     ]
+    },
+    {
+     "file": "strings/48-70.ogg",
+     "key": 48,
+     "vel": 70,
+     "loop": [
+      2.4772,
+      5.4772
+     ]
+    },
+    {
+     "file": "strings/48-110.ogg",
+     "key": 48,
+     "vel": 110,
+     "loop": [
+      2.492,
+      5.492
+     ]
+    },
+    {
+     "file": "strings/51-70.ogg",
+     "key": 51,
+     "vel": 70,
+     "loop": [
+      2.4808,
+      5.4808
+     ]
+    },
+    {
+     "file": "strings/51-110.ogg",
+     "key": 51,
+     "vel": 110,
+     "loop": [
+      2.4931,
+      5.4931
+     ]
+    },
+    {
+     "file": "strings/54-70.ogg",
+     "key": 54,
+     "vel": 70,
+     "loop": [
+      2.4756,
+      5.4756
+     ]
+    },
+    {
+     "file": "strings/54-110.ogg",
+     "key": 54,
+     "vel": 110,
+     "loop": [
+      2.4893,
+      5.4893
+     ]
+    },
+    {
+     "file": "strings/57-70.ogg",
+     "key": 57,
+     "vel": 70,
+     "loop": [
+      2.4853,
+      5.4853
+     ]
+    },
+    {
+     "file": "strings/57-110.ogg",
+     "key": 57,
+     "vel": 110,
+     "loop": [
+      2.4959,
+      5.4959
+     ]
+    },
+    {
+     "file": "strings/60-70.ogg",
+     "key": 60,
+     "vel": 70,
+     "loop": [
+      2.4722,
+      5.4722
+     ]
+    },
+    {
+     "file": "strings/60-110.ogg",
+     "key": 60,
+     "vel": 110,
+     "loop": [
+      2.4926,
+      5.4926
+     ]
+    },
+    {
+     "file": "strings/63-70.ogg",
+     "key": 63,
+     "vel": 70,
+     "loop": [
+      2.4848,
+      5.4848
+     ]
+    },
+    {
+     "file": "strings/63-110.ogg",
+     "key": 63,
+     "vel": 110,
+     "loop": [
+      2.4935,
+      5.4935
+     ]
+    },
+    {
+     "file": "strings/66-70.ogg",
+     "key": 66,
+     "vel": 70,
+     "loop": [
+      2.476,
+      5.4761
+     ]
+    },
+    {
+     "file": "strings/66-110.ogg",
+     "key": 66,
+     "vel": 110,
+     "loop": [
+      2.4925,
+      5.4925
+     ]
+    },
+    {
+     "file": "strings/69-70.ogg",
+     "key": 69,
+     "vel": 70,
+     "loop": [
+      2.4774,
+      5.4774
+     ]
+    },
+    {
+     "file": "strings/69-110.ogg",
+     "key": 69,
+     "vel": 110,
+     "loop": [
+      2.4938,
+      5.4938
+     ]
+    },
+    {
+     "file": "strings/72-70.ogg",
+     "key": 72,
+     "vel": 70,
+     "loop": [
+      2.4762,
+      5.4762
+     ]
+    },
+    {
+     "file": "strings/72-110.ogg",
+     "key": 72,
+     "vel": 110,
+     "loop": [
+      2.4881,
+      5.4881
+     ]
+    },
+    {
+     "file": "strings/75-70.ogg",
+     "key": 75,
+     "vel": 70,
+     "loop": [
+      2.4828,
+      5.4828
+     ]
+    },
+    {
+     "file": "strings/75-110.ogg",
+     "key": 75,
+     "vel": 110,
+     "loop": [
+      2.4908,
+      5.4908
+     ]
+    },
+    {
+     "file": "strings/78-70.ogg",
+     "key": 78,
+     "vel": 70,
+     "loop": [
+      2.465,
+      5.465
+     ]
+    },
+    {
+     "file": "strings/78-110.ogg",
+     "key": 78,
+     "vel": 110,
+     "loop": [
+      2.4811,
+      5.4811
+     ]
+    },
+    {
+     "file": "strings/81-70.ogg",
+     "key": 81,
+     "vel": 70,
+     "loop": [
+      2.4705,
+      5.4705
+     ]
+    },
+    {
+     "file": "strings/81-110.ogg",
+     "key": 81,
+     "vel": 110,
+     "loop": [
+      2.4824,
+      5.4824
+     ]
+    },
+    {
+     "file": "strings/84-70.ogg",
+     "key": 84,
+     "vel": 70,
+     "loop": [
+      2.4816,
+      5.4817
+     ]
+    },
+    {
+     "file": "strings/84-110.ogg",
+     "key": 84,
+     "vel": 110,
+     "loop": [
+      2.4929,
+      5.4929
+     ]
+    }
+   ]
+  },
+  "warm-pad": {
+   "part": "pad",
+   "name": "Warm pad",
+   "kind": "pitched",
+   "release": 0.6,
+   "bytes": 638825,
+   "zones": [
+    {
+     "file": "warm-pad/42-90.ogg",
+     "key": 42,
+     "vel": 90,
+     "loop": [
+      2.4261,
+      5.426
+     ]
+    },
+    {
+     "file": "warm-pad/45-90.ogg",
+     "key": 45,
+     "vel": 90,
+     "loop": [
+      2.4288,
+      5.4288
+     ]
+    },
+    {
+     "file": "warm-pad/48-90.ogg",
+     "key": 48,
+     "vel": 90,
+     "loop": [
+      2.4307,
+      5.4307
+     ]
+    },
+    {
+     "file": "warm-pad/51-90.ogg",
+     "key": 51,
+     "vel": 90,
+     "loop": [
+      2.4334,
+      5.4334
+     ]
+    },
+    {
+     "file": "warm-pad/54-90.ogg",
+     "key": 54,
+     "vel": 90,
+     "loop": [
+      2.4428,
+      5.4428
+     ]
+    },
+    {
+     "file": "warm-pad/57-90.ogg",
+     "key": 57,
+     "vel": 90,
+     "loop": [
+      2.4332,
+      5.4332
+     ]
+    },
+    {
+     "file": "warm-pad/60-90.ogg",
+     "key": 60,
+     "vel": 90,
+     "loop": [
+      2.4138,
+      5.4138
+     ]
+    },
+    {
+     "file": "warm-pad/63-90.ogg",
+     "key": 63,
+     "vel": 90,
+     "loop": [
+      2.4427,
+      5.4427
+     ]
+    },
+    {
+     "file": "warm-pad/66-90.ogg",
+     "key": 66,
+     "vel": 90,
+     "loop": [
+      2.4322,
+      5.4322
+     ]
+    },
+    {
+     "file": "warm-pad/69-90.ogg",
+     "key": 69,
+     "vel": 90,
+     "loop": [
+      2.4427,
+      5.4427
+     ]
+    },
+    {
+     "file": "warm-pad/72-90.ogg",
+     "key": 72,
+     "vel": 90,
+     "loop": [
+      2.4393,
+      5.4393
+     ]
+    },
+    {
+     "file": "warm-pad/75-90.ogg",
+     "key": 75,
+     "vel": 90,
+     "loop": [
+      2.4023,
+      5.4023
+     ]
+    },
+    {
+     "file": "warm-pad/78-90.ogg",
+     "key": 78,
+     "vel": 90,
+     "loop": [
+      2.4048,
+      5.4048
+     ]
+    },
+    {
+     "file": "warm-pad/81-90.ogg",
+     "key": 81,
+     "vel": 90,
+     "loop": [
+      2.4153,
+      5.4153
+     ]
+    },
+    {
+     "file": "warm-pad/84-90.ogg",
+     "key": 84,
+     "vel": 90,
+     "loop": [
+      2.4006,
+      5.4007
+     ]
+    }
+   ]
+  }
+ },
+ "format": "jamstate-samples/0.1",
+ "source": {
+  "name": "MuseScore_General.sf2",
+  "version": "0.2.0",
+  "license": "MIT",
+  "url": "http://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf2"
+ },
+ "rate": 48000,
+ "bytes": 11899029
+}

@@ -1,7 +1,9 @@
 // Page wiring: chart loading, controls, and one jam session at a time.
 
 import { MidiSink, MultiSink } from "./audio/midi";
+import { SampleLibrary } from "./audio/sampler";
 import { Synth } from "./audio/synth";
+import { bandParts, cloneBand, defaultInstrument, getInstrument, instrumentsFor, playerInstruments, type Band } from "./core/band";
 import { Ticker } from "./audio/ticker";
 import { ChartError, loadChart, type Chart, type ChartJSON } from "./core/chart";
 import { Conductor, ruleLeader, type Leader } from "./core/conductor";
@@ -10,10 +12,10 @@ import { NoteTracker } from "./core/features";
 import { allGenres, getGenre } from "./core/genres";
 import type { Move } from "./core/moves";
 import { RuleLeader } from "./core/rules";
-import { checkSession, replaySession, sessionEngine, SessionRecorder, summarizeBar, type SessionFile } from "./core/session";
+import { checkSession, replaySession, sessionBand, sessionEngine, SessionRecorder, summarizeBar, type SessionFile } from "./core/session";
 import { DEMO_SCRIPT, parseScript, SimPlayer, type SimMode } from "./core/simplayer";
 import { Transport, type Sink } from "./core/transport";
-import { FEELS, STINGERS } from "./core/types";
+import { FEELS, PART_LABELS, STINGERS, type Part } from "./core/types";
 import {
   BLIND_NAMES, BRAIN_LABELS, BrainLeader, blindCandidates, blindLeader, isBlind, makeBrain, mergeSettings, pickBlind, summarizeBlind,
   type BrainKind, type BrainSettings, type LeaderChoice,
@@ -30,6 +32,11 @@ const overlay = new Overlay();
 let audio: AudioContext | null = null;
 const getAudio = () => (audio ??= new AudioContext({ latencyHint: "interactive" }));
 const platform = webPlatform(getAudio);
+/** Sampled instruments, shared by every jam on this page. */
+let library: SampleLibrary | null = null;
+const getLibrary = () => (library ??= new SampleLibrary(getAudio()));
+/** The lineup in the picker: who plays the next jam (and the current one, live). */
+let band: Band = {};
 const midi = platform.midi;
 /** The companion server (the Spark, or a local one), if this page was served by one. */
 let server: { sessions: boolean; relay: { llm: boolean; jev: boolean; anthropic: boolean } } | null = null;
@@ -75,6 +82,7 @@ function useChart(raw: unknown, source: string): boolean {
   chartRaw = raw as ChartJSON;
   chartJson = JSON.stringify(raw, null, 2);
   fillGenres();
+  resetBand();
   ($("chart-json") as HTMLTextAreaElement).value = chartJson;
   const bars = chart.form.reduce((n, s) => n + chart!.sections.get(s)!.bars, 0);
   $("chart-info").textContent = `${source}: ${chart.bpm} bpm, ${chart.beatsPerBar}/4${chart.key ? `, ${chart.key}` : ""}, ${getGenre(chart.genre).name.toLowerCase()}, ${bars} bars`;
@@ -159,9 +167,153 @@ function pickedSwing(): number | null {
 
 $("genre-select").onchange = () => {
   $("genre-select").title = pickedGenre().description;
-  if (session && !session.replay) session.engine.setGenre(pickedGenre());
-  buildManualMoves();
+  if (session && !session.replay) {
+    session.engine.setGenre(pickedGenre());
+    session.synth.setMix(pickedGenre().mix);
+  }
+  // A new genre brings its own band and mix.
+  resetBand();
 };
+
+// ---------- band (lineup) ----------
+
+/** The song's own band when it plays in its own genre, else the genre's. */
+function songBand(): Band {
+  const g = pickedGenre();
+  return chart?.band && (!chart.genre || g.id === getGenre(chart.genre).id) ? chart.band : g.band;
+}
+
+function lineupOptions(): { id: string; name: string; band: Band }[] {
+  const g = pickedGenre();
+  const own = chart?.band && songBand() === chart.band ? [{ id: "song", name: "the song's band", band: chart.band }] : [];
+  return [...own, { id: "genre", name: `${g.name} band`, band: g.band }, ...g.lineups];
+}
+
+function resetBand(): void {
+  const opts = lineupOptions();
+  const sel = $<HTMLSelectElement>("lineup-select");
+  sel.replaceChildren(...opts.map((o) => new Option(o.name, o.id)), new Option("custom", "custom"));
+  sel.value = opts[0].id;
+  applyBand(opts[0].band);
+}
+
+$("lineup-select").onchange = () => {
+  const o = lineupOptions().find((x) => x.id === $<HTMLSelectElement>("lineup-select").value);
+  if (o) applyBand(o.band);
+};
+
+/** Use a lineup: from the next bar when playing, and for the next jam. */
+function applyBand(next: Band, rebuild = true): void {
+  band = cloneBand(next);
+  if (session && !session.replay) {
+    session.engine.setBand(band);
+    session.synth.setBand(band);
+  }
+  if (!session) overlay.showLineup(bandParts(band).filter((p) => pickedGenre().parts.includes(p)));
+  if (rebuild) renderBandParts();
+  buildManualMoves();
+  preload();
+}
+
+/** The picker changed by hand: the lineup becomes "custom". */
+function editBand(next: Band, rebuild = false): void {
+  const match = lineupOptions().find((o) => JSON.stringify(o.band) === JSON.stringify(next));
+  $<HTMLSelectElement>("lineup-select").value = match?.id ?? "custom";
+  applyBand(next, rebuild);
+}
+
+function renderBandParts(): void {
+  const g = pickedGenre();
+  $("band-parts").replaceChildren(
+    ...g.parts.map((p) => {
+      const slot = band[p];
+      const row = document.createElement("div");
+      row.className = `band-part${slot ? "" : " out"}`;
+      const on = Object.assign(document.createElement("input"), { type: "checkbox", checked: !!slot });
+      const name = document.createElement("label");
+      name.className = "inline";
+      name.append(on, PART_LABELS[p]);
+      const inst = document.createElement("select");
+      inst.replaceChildren(...instrumentsFor(p).map((i) => new Option(i.name, i.id)));
+      inst.value = slot?.instrument ?? defaultInstrument(p);
+      const mix = g.mix.parts[p];
+      const range = (min: number, max: number, value: number) => Object.assign(document.createElement("input"), { type: "range", min, max, step: 0.05, value });
+      const vol = range(0, 1, slot?.volume ?? mix.volume);
+      const pan = range(-1, 1, slot?.pan ?? mix.pan);
+      const sliders = document.createElement("div");
+      sliders.className = "sliders";
+      sliders.append("vol", vol, "pan", pan);
+      const state = document.createElement("div");
+      state.className = "state";
+      state.dataset.part = p;
+      const slotNow = () => ({ instrument: inst.value, volume: Number(vol.value), pan: Number(pan.value) });
+      on.onchange = () => {
+        const next = cloneBand(band);
+        if (on.checked) next[p] = slotNow();
+        else delete next[p];
+        if (!bandParts(next).length) return void (on.checked = true);
+        row.classList.toggle("out", !on.checked);
+        editBand(next);
+      };
+      inst.onchange = () => {
+        if (!band[p]) return;
+        editBand({ ...cloneBand(band), [p]: { ...band[p], instrument: inst.value } });
+      };
+      // Faders move the sound live while dragging; the lineup (and the recording) updates on release.
+      vol.oninput = () => session?.synth.setVolume(p, Number(vol.value));
+      pan.oninput = () => session?.synth.setPan(p, Number(pan.value));
+      const commit = () => band[p] && editBand({ ...cloneBand(band), [p]: slotNow() });
+      vol.onchange = commit;
+      pan.onchange = commit;
+      row.append(name, inst, sliders, state);
+      return row;
+    }),
+  );
+  showSampleStatus();
+}
+
+/** Start loading every sound the lineup needs, plus the player's. */
+function preload(): Promise<unknown> {
+  const lib = getLibrary();
+  const ids = [...bandParts(band).map((p) => band[p]!.instrument), playerSound()];
+  return Promise.all(ids.map((id) => lib.load(id)));
+}
+
+function showSampleStatus(): void {
+  if (!library) return;
+  for (const el of $("band-parts").querySelectorAll<HTMLElement>(".state")) {
+    const p = el.dataset.part as Part;
+    const id = band[p]?.instrument;
+    const st = id ? library.state.get(id) : undefined;
+    el.textContent = !id ? "" : st === "loading" ? "loading samples…" : st === "failed" ? "samples failed: synth sound" : st === "ready" ? "" : "";
+  }
+  const loading = [...library.state.values()].filter((s) => s === "loading").length;
+  const failed = [...library.state].filter(([, s]) => s === "failed").map(([id]) => getInstrument(id)?.name ?? id);
+  $("sample-status").textContent = loading
+    ? `Loading sounds… (${(library.fetched / 1e6).toFixed(1)} MB so far)`
+    : failed.length
+      ? `Couldn't load ${failed.join(", ")}: the built-in synth plays those.`
+      : library.fetched
+        ? `Sounds ready (${(library.fetched / 1e6).toFixed(1)} MB downloaded, kept in this browser).`
+        : "Sounds ready.";
+}
+
+const PLAYER_SOUND_KEY = "jamstate.player-sound";
+function playerSound(): string {
+  const id = platform.settings.get<string>(PLAYER_SOUND_KEY);
+  return id && getInstrument(id) ? id : defaultInstrument("player");
+}
+
+{
+  const sel = $<HTMLSelectElement>("player-sound");
+  sel.replaceChildren(...playerInstruments().map((i) => new Option(i.name, i.id)));
+  sel.value = playerSound();
+  sel.onchange = () => {
+    platform.settings.set(PLAYER_SOUND_KEY, sel.value);
+    session?.synth.setPlayerInstrument(sel.value);
+    void getLibrary().load(sel.value);
+  };
+}
 $("swing-select").onchange = () => {
   if (session && !session.replay) session.engine.setSwing(pickedSwing());
 };
@@ -184,7 +336,9 @@ function buildManualMoves(): void {
   };
   box.replaceChildren(
     ...[0.15, 0.4, 0.65, 0.9].map((v) => btn(`intensity ${v}`, { move: "set_intensity", value: v, reason: "Manual" })),
-    ...pickedGenre().parts.flatMap((p) => [btn(`+${p}`, { move: "add_layer", part: p, reason: "Manual" }), btn(`−${p}`, { move: "drop_layer", part: p, reason: "Manual" })]),
+    ...bandParts(band)
+      .filter((p) => pickedGenre().parts.includes(p))
+      .flatMap((p) => [btn(`+${PART_LABELS[p]}`, { move: "add_layer", part: p, reason: "Manual" }), btn(`−${PART_LABELS[p]}`, { move: "drop_layer", part: p, reason: "Manual" })]),
     ...FEELS.map((f) => btn(f.replace("_", " "), { move: "change_feel", feel: f, reason: "Manual" })),
     ...STINGERS.map((s) => btn(s, { move: "fire_stinger", stinger: s, reason: "Manual" })),
     ...[...new Set(chart?.form ?? [])].map((s) => btn(`→ ${s}`, { move: "jump_to_section", section: s, reason: "Manual" })),
@@ -528,14 +682,32 @@ function setRunning(running: boolean): void {
   $<HTMLButtonElement>("session-play").disabled = running || !replayFile;
 }
 
+/** Wait for the lineup's samples, but never more than a few seconds (the synth covers the rest). */
+async function soundsReady(ids: string[]): Promise<void> {
+  const lib = getLibrary();
+  if (ids.every((id) => lib.get(id))) return;
+  $("sample-status").textContent = "Loading sounds…";
+  await Promise.race([Promise.all(ids.map((id) => lib.load(id))), new Promise((r) => setTimeout(r, 4000))]);
+  showSampleStatus();
+}
+
+let starting = 0;
+
 /** Start a jam, or play back a recorded session when `replay` is given. */
-function start(replay?: SessionFile): void {
+async function start(replay?: SessionFile): Promise<void> {
   if (!chart && !replay) return;
   stop();
   audio = getAudio();
   void audio.resume();
+  const myStart = ++starting;
+  const startBand = replay ? sessionBand(replay) : cloneBand(band);
+  if ($<HTMLInputElement>("builtin").checked) await soundsReady([...bandParts(startBand).map((p) => startBand[p]!.instrument), playerSound()]);
+  if (myStart !== starting) return; // pressed again while loading
   const c = replay ? loadChart(replay.chart) : chart!;
-  const synth = new Synth(audio);
+  const synth = new Synth(audio, getLibrary());
+  synth.playerInstrument = playerSound();
+  synth.setMix(replay ? getGenre(replay.genre).mix : pickedGenre().mix);
+  synth.setBand(startBand);
   const sink = makeSink(audio, synth);
 
   const seed = (Math.random() * 0x7fffffff) | 0;
@@ -544,14 +716,14 @@ function start(replay?: SessionFile): void {
   const swing = pickedSwing();
   const engine = replay
     ? sessionEngine(replay, replay.controls)
-    : new Engine(c, { config, seed, genre, swing, countIn: c.countIn });
+    : new Engine(c, { config, seed, genre, swing, countIn: c.countIn, band: startBand });
   if (!replay) jamKind = null;
   showRatingPanel(false);
   overlay.blind = replay ? isBlind(replay.leader) : settings.kind === "blind";
   const { leader, remote, every } = replay ? { leader: null, remote: null, every: replay.every_bars } : makeLeader(c);
   const recorder = replay
     ? null
-    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every });
+    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every });
   if (recorder) lastJam = { recorder, engine };
   const tracker = new NoteTracker();
   const sim = new SimPlayer(seed & 0xffff);
@@ -568,11 +740,16 @@ function start(replay?: SessionFile): void {
   const ctx = audio;
   const replayNotes = replay ? pairNotes(replay) : [];
   let mismatches = 0;
+  let heardBand = startBand;
+  let heardGenre = replay?.genre;
   const transport = new Transport(engine, { now: () => ctx.currentTime }, sink, {
     onCommit: (plan, startBeat) => {
       recorder?.bar(plan);
       updateSessionStatus();
       if (replay) {
+        // A replay sounds like the jam: lineup and genre changes come from the recording.
+        if (plan.band !== heardBand) synth.setBand((heardBand = plan.band));
+        if (plan.genre !== heardGenre) synth.setMix(getGenre((heardGenre = plan.genre)).mix);
         const want = replay.bars[plan.bar];
         if (want && want.hash !== summarizeBar(plan).hash) {
           mismatches++;
@@ -633,11 +810,12 @@ function stop(): void {
   session = null;
   setRunning(false);
   updateSessionStatus();
+  overlay.showLineup(bandParts(band).filter((p) => pickedGenre().parts.includes(p)));
   if (wasLive) void keepJam();
   if (wasLive && jamKind && lastJam?.recorder) showRatingPanel(true);
 }
 
-$("start").onclick = () => start();
+$("start").onclick = () => void start();
 $("stop").onclick = stop;
 $("end-song").onclick = () => submitManual({ move: "end_song", reason: "You called the ending" });
 
@@ -845,10 +1023,11 @@ $("session-check").onclick = async () => {
 };
 
 $("session-play").onclick = () => {
-  if (replayFile) start(replayFile);
+  if (replayFile) void start(replayFile);
 };
 
 showBrainSettings();
+getLibrary().onChange = showSampleStatus;
 void loadCharts();
 void checkServer();
 void initMidi();

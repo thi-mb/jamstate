@@ -66,6 +66,7 @@ export class Conductor {
       intensity: Math.round(plan.intensity * 100) / 100,
       target: Math.round(plan.target * 100) / 100,
       layers: plan.layers,
+      lineup: plan.lineup,
       feel: plan.feel,
       form: chart.form,
       form_pos: plan.formPos,

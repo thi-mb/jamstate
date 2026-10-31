@@ -11,13 +11,14 @@
 //   buttons) and let a leader decide again, for scoring leaders (v0.3).
 // Format: ADR-0014.
 
+import { bandJSON, defaultBand, parseBand, type Band, type BandJSON } from "./band";
 import { loadChart, type ChartJSON } from "./chart";
 import { Conductor, type Leader, type LeaderReply } from "./conductor";
 import { Engine, type BarPlan, type Control, type GovernorConfig } from "./engine";
 import { NoteTracker } from "./features";
 import { getGenre } from "./genres";
 import { hash } from "./rand";
-import type { NoteEvent } from "./types";
+import { V01_PARTS, type NoteEvent } from "./types";
 
 export const SESSION_FORMAT = "jamstate-session/0.1";
 
@@ -51,6 +52,8 @@ export interface SessionFile {
   /** The genre at the start (the chart's, or the one picked in the page). */
   genre: string;
   swing: number | null;
+  /** The lineup at the start (v0.2). Missing in older files: drums, bass and keys on their default sounds. */
+  band?: BandJSON;
   seed: number;
   count_in: number;
   config: Partial<GovernorConfig>;
@@ -68,6 +71,7 @@ export interface SessionSetup {
   chart: ChartJSON;
   genre: string;
   swing: number | null;
+  band: Band;
   seed: number;
   countIn: number;
   config: Partial<GovernorConfig>;
@@ -131,6 +135,7 @@ export class SessionRecorder {
       chart: s.chart,
       genre: s.genre,
       swing: s.swing,
+      band: bandJSON(s.band),
       seed: s.seed,
       count_in: s.countIn,
       config: s.config,
@@ -151,12 +156,22 @@ export function checkSession(raw: unknown): SessionFile {
   return f;
 }
 
+/** The lineup a session started with. */
+export function sessionBand(f: SessionFile): Band {
+  if (f.band === undefined) return defaultBand(V01_PARTS);
+  const errs: string[] = [];
+  const band = parseBand(f.band, "band", errs);
+  if (errs.length) throw new Error(`session band: ${errs.join("; ")}`);
+  return band;
+}
+
 /** Build an engine set up like the recorded one. `controls` are replayed at their bars. */
 export function sessionEngine(f: SessionFile, controls: Control[]): Engine {
   return new Engine(loadChart(f.chart), {
     seed: f.seed,
     genre: getGenre(f.genre),
     swing: f.swing,
+    band: sessionBand(f),
     countIn: f.count_in,
     config: f.config,
     script: controls,

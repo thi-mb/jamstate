@@ -12,7 +12,7 @@
 
 import type { Move } from "../moves";
 import type { LeaderContext } from "../rules";
-import { PARTS } from "../types";
+import { V01_PARTS } from "../types";
 import { checkMove } from "./check";
 import { postSystemOne } from "./jev";
 import { now, type BrainAnswer, type BrainProvider, type Fetch, type Rejected } from "./types";
@@ -53,7 +53,7 @@ export function layaState(ctx: LeaderContext): string {
       : p.energy < 0.3
         ? `The player is playing a few soft, sparse notes${p.trend === "falling" ? ", and getting quieter" : ""}.`
         : `The player is playing a steady, medium groove${p.trend === "rising" ? ", building up" : p.trend === "falling" ? ", easing off" : ""}.`;
-  const out = PARTS.filter((x) => !ctx.layers.includes(x));
+  const out = (ctx.lineup ?? V01_PARTS).filter((x) => !ctx.layers.includes(x));
   const band = ctx.layers.length ? `The band is playing ${list(ctx.layers)}${out.length ? `; the ${list(out)} ${out.length > 1 ? "are" : "is"} out` : ""}.` : "The band is not playing.";
   return `${playing} ${band}`;
 }
@@ -74,7 +74,7 @@ export function layaChangeOptions(ctx: LeaderContext): Map<string, { text: strin
     for (const x of ctx.layers) opts.set(`drop_${x}`, { text: `the ${x} stop playing`, move: { move: "drop_layer", part: x, reason: stopped ? `You went quiet, ${x} out so it can breathe` : `${cap(x)} out to give you room` } });
   }
   if (!stopped) {
-    for (const x of PARTS) {
+    for (const x of ctx.lineup ?? V01_PARTS) {
       if (!ctx.layers.includes(x)) opts.set(`add_${x}`, { text: `the ${x} come back in`, move: { move: "add_layer", part: x, reason: `Bringing the ${x} back in with you` } });
     }
   }
