@@ -2,9 +2,9 @@
 
 Picks the default bandleader brain by measurement
 ([ADR-0016](../decisions/0016-brain-providers.md)). Status: **in progress**.
-Rules, Jev (from the cloud) and Qwen (on the Spark) are measured on simulated
-sessions; Claude runs next from a fresh cloud session; there are no real
-recorded jams on the Spark yet; Thiago's blind rating is still to do. Until
+Rules, Jev and Claude (from the cloud) and Qwen (on the Spark) are measured
+on simulated sessions; there are no real recorded jams on the Spark yet;
+Thiago's blind rating is still to do. Until
 it's done the default stays **rules**.
 
 ## How it works
@@ -31,9 +31,9 @@ These scores are shaped like the rule leader's own behavior, so rules score
 well by construction. They catch a brain that doesn't follow at all; they
 can't tell taste. Taste is the blind rating.
 
-Latency is measured from wherever the script runs (`--label`). Jev's numbers
+Latency is measured from wherever the script runs (`--label`). The numbers
 below are from a claude.ai cloud container on the US East coast calling
-TypeSafe directly. From the page it goes through the companion server's relay,
+TypeSafe and the Anthropic API directly. From the page it goes through the companion server's relay,
 which adds a hop (190 to 430 ms in a headless run through a local relay).
 
 ## Sessions
@@ -51,7 +51,28 @@ sessions, 102 turns per brain:
 | Brain | p50 | p95 | max | Errors | Moves per turn | follow | silent→drop | busy→lift |
 |-------|-----|-----|-----|--------|----------------|--------|-------------|-----------|
 | Rules | 0 ms | 0 ms | 0 ms | 0 | 0.94 | 0.94 | 1.00 | 1.00 |
-| Jev (jev-1.14.0) | 75 ms | 97 ms | 190 ms | 0 | 0.89 | 0.96 | 1.00 | 1.00 |
+| Jev (jev-1.14.0) | 89 ms | 134 ms | 190 ms | 0 | 0.88 | 0.96 | 1.00 | 1.00 |
+| Claude (claude-opus-5-5, effort low) | 1969 ms | 3274 ms | 3916 ms | 0 | 0.87 | 0.81 | 0.00 | 0.95 |
+
+Jev's latency moved from 75 / 97 ms in the first run to 89 / 134 ms in this
+one (same sessions, same container type); treat it as run-to-run noise.
+
+What we learned about Claude:
+
+- **It never drops out.** When the player stops, Claude eases back to 0.4 to
+  0.6 and drops the *chords*, where rules and Jev go to about 0.1 and drop
+  the drums. Its reasons say the right thing ("you've gone quiet, so we'll
+  ease off") but the number stays high, so silent→drop is 0.00 in every
+  session. Sparse playing gets 0.4 to 0.45 where the others go to about 0.3.
+  Qwen does the same below, and both get the shared `LEADER_SYSTEM` prompt,
+  which was never tuned the way Jev's questions were; it may be fixable with explicit levels in the prompt
+  ("player stopped: 0.1, drums out").
+- **It is slow but on time.** p95 3.3 s is well inside a 6 to 10 s phrase, so
+  no answer was late, but it is far over Jev's ~0.1 s.
+- **Its moves are the most varied:** the most stingers (21) and some feel
+  changes, and its reasons are written fresh each turn. One move in 102
+  turns was rejected by the check. Whether that variety is good is what the
+  blind rating is for.
 
 [2026-10-31-spark-sim/summary.md](2026-10-31-spark-sim/summary.md), same 9
 sessions on the DGX Spark, Qwen local (llama-server, Q4_K_M):
@@ -97,8 +118,11 @@ What we learned about Jev on the way:
       **Sync to Spark** to put them there), then re-run
       (`--brains rules,qwen,jev --label spark`, see
       [spark/README.md](../../spark/README.md)).
-- [ ] Claude: set `ANTHROPIC_API_KEY` in the environment and add `claude` to
-      `--brains`.
-- [ ] Thiago blind-rates the disagreements (A/B/C per turn), on his phone.
+- [x] Claude on the simulated sessions (2026-10-31, cloud). The script reads
+      `ANTHROPIC_API_KEY` or `JAMSTATE_ANTHROPIC_API_KEY`.
+- [ ] Claude: try explicit levels for silence in the prompt and rerun; it
+      currently never drops below 0.4 when the player stops.
+- [ ] Thiago blind-rates the disagreements (A/B/C per turn,
+      24 items across three brains), on his phone.
 - [ ] Pick the default and record it here and in ADR-0016.
 - [ ] Laya-in-the-browser spike (ONNX), alongside.

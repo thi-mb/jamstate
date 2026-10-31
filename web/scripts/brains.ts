@@ -1,5 +1,5 @@
 // Brains for Node scripts (replay, bake-off). Keys come from the environment,
-// never from files: TYPESAFE_API_KEY (Jev), ANTHROPIC_API_KEY (Claude),
+// never from files: TYPESAFE_API_KEY (Jev), ANTHROPIC_API_KEY or JAMSTATE_ANTHROPIC_API_KEY (Claude),
 // JAMSTATE_LLM_KEY (OpenAI-compatible, optional).
 import { ClaudeBrain, DEFAULT_CLAUDE_MODEL } from "../src/core/brain/claude";
 import { JevBrain } from "../src/core/brain/jev";
@@ -29,8 +29,8 @@ export function nodeBrain(name: string, a: BrainArgs = {}): BrainProvider {
         label: name === "qwen" ? "Qwen" : undefined,
       });
     case "claude": {
-      const key = process.env.ANTHROPIC_API_KEY;
-      if (!key) throw new Error("set ANTHROPIC_API_KEY for the Claude brain");
+      const key = process.env.ANTHROPIC_API_KEY ?? process.env.JAMSTATE_ANTHROPIC_API_KEY;
+      if (!key) throw new Error("set ANTHROPIC_API_KEY (or JAMSTATE_ANTHROPIC_API_KEY) for the Claude brain");
       return new ClaudeBrain({ apiKey: key, model: a.claudeModel ?? DEFAULT_CLAUDE_MODEL });
     }
     case "jev": {
