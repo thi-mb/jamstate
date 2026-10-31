@@ -44,7 +44,8 @@ export interface BrainSettings {
  * on the Spark forwards to Qwen, so a page served by the Spark works as is.
  */
 export const DEFAULT_SETTINGS: BrainSettings = {
-  kind: "rules",
+  // Jev won the bake-off and Thiago picked it (2026-10-31); rules stay the fallback.
+  kind: "jev",
   openai: { url: "api/relay/llm", model: "leader", apiKey: "" },
   claude: { model: DEFAULT_CLAUDE_MODEL, apiKey: "" },
   jev: { model: "jev-latest", apiKey: "", relay: true, url: "api/relay/jev" },
@@ -55,7 +56,7 @@ export const BRAIN_LABELS: Record<LeaderChoice, string> = {
   rules: "Rules (in the page)",
   openai: "OpenAI-compatible LLM (Qwen on the Spark, Ollama…)",
   claude: "Claude (your key, or the server's)",
-  jev: "Jev decision model (your TypeSafe key)",
+  jev: "Jev decision model (default; your key or the server's)",
   laya: "Laya decision model (on this machine)",
   none: "None (you drive it)",
   blind: "Blind test (a hidden brain each jam)",

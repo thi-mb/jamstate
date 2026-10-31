@@ -31,8 +31,8 @@ fixed set, plus its arguments. Two examples:
   answer (zero or more moves), and every answer still goes through the
   governor.
 - Providers, in the order we build them:
-  1. **Rules**: the existing in-page leader. Always available, the default
-     and the fallback.
+  1. **Rules**: the existing in-page leader. Always available, and the
+     fallback.
   2. **OpenAI-compatible**: any endpoint and model (Qwen on the Spark via
      llama.cpp, Ollama on a Mac, OpenAI itself).
   3. **Claude**: the Anthropic API with the player's key.
@@ -49,8 +49,13 @@ fixed set, plus its arguments. Two examples:
   models write no text.
 - **The default is picked by measurement**, not taste: a bake-off on the
   Spark replays recorded sessions through each provider, measures latency,
-  and Thiago blind-rates the moves. Until then the default stays rules, and
-  Qwen stays the LLM choice from ADR-0011 for Spark users.
+  and Thiago blind-tests the brains by playing.
+- **Result (Thiago, 2026-10-31): Jev is the default.** It followed the
+  player as well as rules on the bake-off (follow 0.96, silent→drop 1.00,
+  busy→lift 1.00) at about 0.1 s per answer. Rules, OpenAI-compatible (Qwen),
+  Claude (Haiku 5.5 by default) and Laya stay selectable and supported, and
+  the blind test keeps rotating through them. A page with no server relay
+  can't reach Jev and plays with rules.
 
 ## Consequences
 - jamstate works with no key, gets better with a key or a local model, and
