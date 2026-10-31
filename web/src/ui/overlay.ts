@@ -14,6 +14,8 @@ const FEEL_LABEL = { normal: "normal feel", half_time: "half time", double_time:
 export class Overlay {
   private formEl = $("form");
   private log = $("log");
+  /** Blind test: hide who made each move and why (the wording gives brains away). */
+  blind = false;
 
   setForm(form: string[]): void {
     this.formEl.replaceChildren(...form.map((name) => Object.assign(document.createElement("li"), { textContent: name })));
@@ -63,15 +65,16 @@ export class Overlay {
   }
 
   move(m: MoveRecord, bar: number): void {
-    if (m.status === "applied" && m.move.reason) {
+    const reason = this.blind && m.source !== "you" ? "" : m.move.reason;
+    if (m.status === "applied" && (m.move.reason || this.blind)) {
       $("last-move").textContent = m.label;
-      $("last-reason").textContent = m.move.reason;
+      $("last-reason").textContent = reason ?? "";
     }
     this.line(
       m.status,
       `bar ${bar} ${m.status.padEnd(8)} ${m.label}`,
-      m.source,
-      [m.move.reason && `“${m.move.reason}”`, m.note && `(${m.note})`].filter(Boolean).join(" "),
+      this.blind && m.source !== "you" ? "band" : m.source,
+      [reason && `“${reason}”`, m.note && `(${m.note})`].filter(Boolean).join(" "),
     );
   }
 

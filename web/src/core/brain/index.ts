@@ -11,6 +11,7 @@ import { now, type BrainAnswer, type BrainKind, type BrainProvider, type Fetch }
 export * from "./types";
 export { BrainLeader, type BrainStatus } from "./leader";
 export { splitMoves, checkMove, extractJson } from "./check";
+export { BLIND_NAMES, blindCandidates, blindLeader, isBlind, pickBlind, summarizeBlind, type BlindRating, type BlindRow } from "./blind";
 
 /** The rule leader as a provider, so the bake-off treats every brain alike. */
 export class RulesBrain implements BrainProvider {
@@ -24,7 +25,7 @@ export class RulesBrain implements BrainProvider {
   }
 }
 
-export type LeaderChoice = BrainKind | "none";
+export type LeaderChoice = BrainKind | "none" | "blind";
 
 export interface BrainSettings {
   kind: LeaderChoice;
@@ -51,6 +52,7 @@ export const BRAIN_LABELS: Record<LeaderChoice, string> = {
   claude: "Claude (your Anthropic key)",
   jev: "Jev decision model (your TypeSafe key)",
   none: "None (you drive it)",
+  blind: "Blind test (a hidden brain each jam)",
 };
 
 export function mergeSettings(raw: unknown): BrainSettings {
@@ -68,6 +70,7 @@ export function mergeSettings(raw: unknown): BrainSettings {
 export function makeBrain(s: BrainSettings, fetchFn?: Fetch): BrainProvider | null {
   switch (s.kind) {
     case "none":
+    case "blind": // resolve to a real brain first (brain/blind.ts)
       return null;
     case "rules":
       return new RulesBrain();
