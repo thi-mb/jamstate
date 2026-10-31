@@ -2,11 +2,87 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/thi-mb/jamstate/schema/genre.schema.json",
   "title": "jamstate genre pack",
-  "description": "One genre: how the band composes in it (v0.1). Later releases add instrumentation, production, listening and leading layers to the same file. Format: docs/decisions/0012-genre-pack-format.md. The browser (web/src/core/genre.ts) enforces the same rules with clearer messages.",
+  "description": "One genre: how the band composes in it (v0.1), who plays and how it is mixed (v0.2). Later releases add listening and leading layers to the same file. Format: docs/decisions/0012-genre-pack-format.md and 0018-lineups-and-sound.md. The browser (web/src/core/genre.ts) enforces the same rules with clearer messages.",
   "type": "object",
   "required": ["format", "id", "name", "drums", "bass", "chords"],
   "additionalProperties": false,
   "$defs": {
+    "slot": {
+      "oneOf": [
+        { "type": "string", "description": "Instrument id (sounds/instruments.json), e.g. upright, brushes, organ." },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "instrument": { "type": "string" },
+            "volume": { "type": "number", "minimum": 0, "maximum": 1 },
+            "pan": { "type": "number", "minimum": -1, "maximum": 1, "description": "-1 left, 1 right." }
+          }
+        }
+      ]
+    },
+    "band": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "description": "Who plays: part → instrument. A part that isn't listed sits out.",
+      "properties": {
+        "drums": { "$ref": "#/$defs/slot" },
+        "bass": { "$ref": "#/$defs/slot" },
+        "chords": { "$ref": "#/$defs/slot", "description": "The keys player." },
+        "guitar": { "$ref": "#/$defs/slot" },
+        "pad": { "$ref": "#/$defs/slot" },
+        "percussion": { "$ref": "#/$defs/slot" }
+      }
+    },
+    "percRow": { "type": "string", "pattern": "^[.xXg |]+$", "description": "One character per step: . rest, x hit, X accent, g ghost." },
+    "percLines": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tambourine": { "$ref": "#/$defs/percRow" }, "cowbell": { "$ref": "#/$defs/percRow" }, "bongo_hi": { "$ref": "#/$defs/percRow" },
+        "bongo_lo": { "$ref": "#/$defs/percRow" }, "conga_mute": { "$ref": "#/$defs/percRow" }, "conga_hi": { "$ref": "#/$defs/percRow" },
+        "conga_lo": { "$ref": "#/$defs/percRow" }, "cabasa": { "$ref": "#/$defs/percRow" }, "shaker": { "$ref": "#/$defs/percRow" },
+        "claves": { "$ref": "#/$defs/percRow" }
+      }
+    },
+    "percVariant": {
+      "oneOf": [
+        { "$ref": "#/$defs/percLines" },
+        {
+          "type": "object",
+          "required": ["lines"],
+          "additionalProperties": false,
+          "properties": { "lines": { "$ref": "#/$defs/percLines" }, "weight": { "type": "number", "minimum": 0, "maximum": 100 }, "phrase_end": { "type": "boolean" } }
+        }
+      ]
+    },
+    "comping": {
+      "type": "object",
+      "required": ["levels"],
+      "additionalProperties": false,
+      "properties": {
+        "grid": { "$ref": "#/$defs/grid" },
+        "voicing": { "enum": ["close", "shell", "triad", "stab", "power", "grip", "shell3"], "description": "Keys voicings, plus guitar ones: power (root, 5th, octave), grip (full barre shape), shell3 (root, 7th, 3rd)." },
+        "range": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "integer", "minimum": 24, "maximum": 108 } },
+        "levels": {
+          "allOf": [{ "$ref": "#/$defs/levels" }, { "items": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/tokenVariant" } } }],
+          "description": "Steps: . rest, - hold, x hit, X accent, g muted ghost (a funk chank), p push."
+        }
+      }
+    },
+    "partMix": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "volume": { "type": "number", "minimum": 0, "maximum": 1 },
+        "pan": { "type": "number", "minimum": -1, "maximum": 1 },
+        "eq": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number", "minimum": -12, "maximum": 12 }, "description": "Low shelf 100 Hz, presence 1.5 kHz, high shelf 8 kHz, in dB." },
+        "comp": { "type": "number", "minimum": 0, "maximum": 1, "description": "How hard the part's compressor works." },
+        "reverb": { "type": "number", "minimum": 0, "maximum": 1, "description": "Send to the shared room." },
+        "tune": { "type": "number", "minimum": -12, "maximum": 12, "description": "Drum tuning in semitones." }
+      }
+    },
     "perLevel": {
       "type": "array",
       "minItems": 4,
@@ -85,11 +161,44 @@
     }
   },
   "properties": {
-    "format": { "const": "jamstate-genre/0.1" },
+    "format": { "enum": ["jamstate-genre/0.2", "jamstate-genre/0.1"], "description": "0.1 packs still load: drums, bass and keys on default sounds and mix." },
     "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
     "name": { "type": "string", "minLength": 1 },
     "description": { "type": "string" },
-    "parts": { "type": "array", "items": { "enum": ["drums", "bass", "chords"] }, "minItems": 1, "description": "The lineup (roles). v0.2 adds instruments and more roles." },
+    "parts": { "type": "array", "items": { "enum": ["drums", "bass", "chords", "guitar", "pad", "percussion"] }, "minItems": 1, "description": "Roles this genre has grooves for (a section for each)." },
+    "band": { "$ref": "#/$defs/band", "description": "The default lineup." },
+    "lineups": {
+      "type": "array",
+      "description": "Other lineups that suit the genre; the page offers them.",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "band"],
+        "additionalProperties": false,
+        "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "band": { "$ref": "#/$defs/band" } }
+      }
+    },
+    "mix": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Production: the room, the master and a channel strip per part.",
+      "properties": {
+        "reverb": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "seconds": { "type": "number", "minimum": 0.2, "maximum": 6 }, "tone": { "type": "number", "minimum": 0, "maximum": 1, "description": "0 dark, 1 bright." } }
+        },
+        "saturation": { "type": "number", "minimum": 0, "maximum": 1, "description": "Tape-style saturation on the master." },
+        "gain": { "type": "number", "minimum": 0, "maximum": 1.5, "description": "Master level before the limiter." },
+        "parts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "drums": { "$ref": "#/$defs/partMix" }, "bass": { "$ref": "#/$defs/partMix" }, "chords": { "$ref": "#/$defs/partMix" },
+            "guitar": { "$ref": "#/$defs/partMix" }, "pad": { "$ref": "#/$defs/partMix" }, "percussion": { "$ref": "#/$defs/partMix" }
+          }
+        }
+      }
+    },
     "feel": {
       "type": "object",
       "additionalProperties": false,
@@ -101,7 +210,10 @@
     "humanize": {
       "type": "object",
       "additionalProperties": false,
-      "properties": { "drums": { "$ref": "#/$defs/humanize" }, "bass": { "$ref": "#/$defs/humanize" }, "chords": { "$ref": "#/$defs/humanize" } }
+      "properties": {
+        "drums": { "$ref": "#/$defs/humanize" }, "bass": { "$ref": "#/$defs/humanize" }, "chords": { "$ref": "#/$defs/humanize" },
+        "guitar": { "$ref": "#/$defs/humanize" }, "pad": { "$ref": "#/$defs/humanize" }, "percussion": { "$ref": "#/$defs/humanize" }
+      }
     },
     "drums": {
       "type": "object",
@@ -165,6 +277,17 @@
           "allOf": [{ "$ref": "#/$defs/levels" }, { "items": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/tokenVariant" } } }],
           "description": "Steps: . rest, - hold, x hit, X accent, g muted ghost, p push (play the next chord early)."
         }
+      }
+    },
+    "guitar": { "$ref": "#/$defs/comping", "description": "Rhythm guitar comping." },
+    "pad": { "$ref": "#/$defs/comping", "description": "Held chords (strings, pads); long notes split at each chord change." },
+    "percussion": {
+      "type": "object",
+      "required": ["levels"],
+      "additionalProperties": false,
+      "properties": {
+        "grid": { "$ref": "#/$defs/grid" },
+        "levels": { "allOf": [{ "$ref": "#/$defs/levels" }, { "items": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/percVariant" } } }] }
       }
     },
     "ending": {

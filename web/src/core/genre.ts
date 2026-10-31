@@ -1,14 +1,80 @@
 // Genre packs: one data file per genre that every layer of the band reads.
-// v0.1 fills in the composition layer (grooves per part and intensity level,
-// swing, humanize, fills, endings). Later releases add instrumentation,
-// production, listening and leading to the same file. Format: ADR-0012 and
-// schema/genre.schema.json; the packs live in genres/ at the repo root.
+// v0.1 filled in the composition layer (grooves per part and intensity level,
+// swing, humanize, fills, endings). v0.2 adds instrumentation (the default
+// band, alternative lineups, grooves for guitar, pad and percussion) and
+// production (the mix). Later releases add listening and leading to the same
+// file. Format: ADR-0012, ADR-0018 and schema/genre.schema.json; the packs
+// live in genres/ at the repo root.
 
+import { defaultBand, parseBand, type Band } from "./band";
 import { drumSteps, tokenSteps } from "./pattern";
 import { parseChord, VOICING_STYLES, type VoicingStyle } from "./theory";
-import { LEVELS, ROLES, type Part } from "./types";
+import { LEVELS, ROLES, V01_PARTS, type Part } from "./types";
 
-export const GENRE_FORMAT = "jamstate-genre/0.1";
+export const GENRE_FORMAT = "jamstate-genre/0.2";
+/** Packs written for v0.1 still load: three parts, default sounds and mix. */
+export const GENRE_FORMATS = ["jamstate-genre/0.1", GENRE_FORMAT];
+
+/** Percussion lines (General MIDI percussion notes). */
+export const PERC_LINES = ["tambourine", "cowbell", "bongo_hi", "bongo_lo", "conga_mute", "conga_hi", "conga_lo", "cabasa", "shaker", "claves"] as const;
+export type PercLine = (typeof PERC_LINES)[number];
+export type PercLines = Partial<Record<PercLine, string>>;
+
+/** Guitar voicings on top of the keys' ones: power chords, full grips, three-note jazz shells (root, 7th, 3rd). */
+export const GUITAR_VOICINGS = ["power", "grip", "shell3"] as const;
+export type CompVoicing = VoicingStyle | (typeof GUITAR_VOICINGS)[number];
+
+/** A comping part's vocabulary: keys, guitar and pad all use this shape. */
+export interface CompPack {
+  grid: number;
+  voicing: CompVoicing;
+  range: [number, number];
+  levels: Variant<string[]>[][];
+}
+
+/** Mix settings for one part. */
+export interface PartMix {
+  /** Fader, 0–1. */
+  volume: number;
+  /** -1 left to 1 right. */
+  pan: number;
+  /** Low shelf (100 Hz), presence (1.5 kHz) and high shelf (8 kHz) in dB. */
+  eq: [number, number, number];
+  /** How hard the part's compressor works, 0 (off) to 1. */
+  comp: number;
+  /** Send to the shared reverb, 0–1. */
+  reverb: number;
+  /** Drum tuning in semitones (kits only). */
+  tune: number;
+}
+
+/** Production: the room, the master bus and a channel strip per part. */
+export interface MixPreset {
+  /** Reverb tail length in seconds and brightness (0 dark to 1 bright). */
+  reverb: { seconds: number; tone: number };
+  /** Tape-style saturation on the master, 0 (clean) to 1. */
+  saturation: number;
+  /** Master level before the limiter, 0–1.5. */
+  gain: number;
+  parts: Record<Part, PartMix>;
+}
+
+export const DEFAULT_PART_MIX: Record<Part, PartMix> = {
+  drums: { volume: 0.85, pan: 0, eq: [0, 0, 0], comp: 0.3, reverb: 0.12, tune: 0 },
+  bass: { volume: 0.8, pan: 0, eq: [0, 0, 0], comp: 0.4, reverb: 0.02, tune: 0 },
+  chords: { volume: 0.55, pan: -0.15, eq: [0, 0, 0], comp: 0.2, reverb: 0.18, tune: 0 },
+  guitar: { volume: 0.5, pan: 0.3, eq: [0, 0, 0], comp: 0.2, reverb: 0.15, tune: 0 },
+  pad: { volume: 0.35, pan: 0, eq: [0, 0, 0], comp: 0, reverb: 0.35, tune: 0 },
+  percussion: { volume: 0.45, pan: 0.35, eq: [0, 0, 0], comp: 0.1, reverb: 0.15, tune: 0 },
+};
+
+export const DEFAULT_MIX: MixPreset = { reverb: { seconds: 1.4, tone: 0.5 }, saturation: 0.1, gain: 0.9, parts: DEFAULT_PART_MIX };
+
+export interface Lineup {
+  id: string;
+  name: string;
+  band: Band;
+}
 
 export const DRUM_LINES = ["kick", "snare", "stick", "cymbal", "pedal", "tom_hi", "tom_mid", "tom_lo", "crash", "clap"] as const;
 export type DrumLine = (typeof DRUM_LINES)[number];
@@ -45,7 +111,13 @@ export interface GenrePack {
   id: string;
   name: string;
   description: string;
+  /** Parts this genre has grooves for. */
   parts: Part[];
+  /** Who plays by default. */
+  band: Band;
+  /** Other lineups that suit the genre (the page offers them). */
+  lineups: Lineup[];
+  mix: MixPreset;
   swing: number;
   /** 8 = swing eighth notes, 16 = swing sixteenths. */
   swingUnit: 8 | 16;
@@ -74,6 +146,9 @@ export interface GenrePack {
     range: [number, number];
     levels: Variant<string[]>[][];
   };
+  guitar: CompPack | null;
+  pad: CompPack | null;
+  percussion: { grid: number; levels: Variant<PercLines>[][] } | null;
   ending: {
     /** How much the tempo slows across the last bar (0 = none, 0.3 = to 70%). */
     rit: number;
@@ -90,7 +165,10 @@ export interface GenrePack {
 const isObj = (x: unknown): x is Record<string, unknown> => typeof x === "object" && x !== null && !Array.isArray(x);
 const isNum = (x: unknown, lo: number, hi: number): x is number => typeof x === "number" && x >= lo && x <= hi;
 
-const TOP_KEYS = new Set(["format", "id", "name", "description", "parts", "feel", "humanize", "drums", "bass", "chords", "ending", "forms", "progressions"]);
+const TOP_KEYS = new Set([
+  "format", "id", "name", "description", "parts", "band", "lineups", "mix", "feel", "humanize", "drums", "bass", "chords", "guitar", "pad", "percussion",
+  "ending", "forms", "progressions",
+]);
 const BASS_TOKEN = /^([.\-xgAN]|(R|1|2|9|b3|3|4|11|b5|5|6|13|b7|7|8)[,']?)!?$/;
 const CHORD_TOKEN = /^[.\-xXgp]$/;
 const DRUM_CHAR = /^[.xXgoh]$/;
@@ -116,6 +194,83 @@ function drumLines(raw: unknown, where: string, errs: string[]): DrumLines {
     }
   }
   return out;
+}
+
+function percLines(raw: unknown, where: string, errs: string[]): PercLines {
+  if (!isObj(raw)) return errs.push(`${where} must be an object of percussion lines`), {};
+  const out: PercLines = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (!(PERC_LINES as readonly string[]).includes(k)) errs.push(`${where}: unknown percussion line "${k}" (use ${PERC_LINES.join(", ")})`);
+    else if (typeof v !== "string" || !drumSteps(v).length) errs.push(`${where}.${k} must be a non-empty step string`);
+    else {
+      const bad = drumSteps(v).find((c) => !DRUM_CHAR.test(c));
+      if (bad) errs.push(`${where}.${k}: unknown step "${bad}" (use . x X g)`);
+      else out[k as PercLine] = v;
+    }
+  }
+  return out;
+}
+
+const COMP_VOICINGS: readonly string[] = [...VOICING_STYLES, ...GUITAR_VOICINGS];
+
+function compPack(raw: unknown, where: string, errs: string[], defaults: { range: [number, number]; voicing: CompVoicing }): CompPack {
+  const c = isObj(raw) ? raw : (errs.push(`${where} must be an object`), {} as Record<string, unknown>);
+  const voicing = c.voicing ?? defaults.voicing;
+  if (!COMP_VOICINGS.includes(voicing as string)) errs.push(`${where}.voicing must be one of ${COMP_VOICINGS.join(", ")}`);
+  const range = c.range ?? defaults.range;
+  if (!Array.isArray(range) || range.length !== 2 || !isNum(range[0], 24, 96) || !isNum(range[1], 24, 108) || range[1] - range[0] < 12)
+    errs.push(`${where}.range must be [low, high] MIDI notes at least an octave apart`);
+  const g = c.grid ?? 4;
+  if (g !== 2 && g !== 3 && g !== 4) errs.push(`${where}.grid must be 2, 3 or 4 steps per beat`);
+  return {
+    grid: g as number,
+    voicing: voicing as CompVoicing,
+    range: range as [number, number],
+    levels: variants(c.levels, `${where}.levels`, errs, tokens(CHORD_TOKEN, "comping", errs), "steps"),
+  };
+}
+
+const MIX_KEYS = new Set(["volume", "pan", "eq", "comp", "reverb", "tune"]);
+
+function mixPreset(raw: unknown, errs: string[]): MixPreset {
+  if (raw === undefined) return DEFAULT_MIX;
+  if (!isObj(raw)) return errs.push("mix must be an object"), DEFAULT_MIX;
+  for (const k of Object.keys(raw)) if (!["reverb", "saturation", "gain", "parts"].includes(k)) errs.push(`mix: unknown field "${k}"`);
+  const num = (v: unknown, def: number, lo: number, hi: number, where: string) => {
+    if (v === undefined) return def;
+    if (!isNum(v, lo, hi)) return errs.push(`${where} must be a number from ${lo} to ${hi}`), def;
+    return v;
+  };
+  const rv = isObj(raw.reverb) ? raw.reverb : {};
+  const parts = {} as Record<Part, PartMix>;
+  const src = isObj(raw.parts) ? raw.parts : {};
+  if (raw.parts !== undefined && !isObj(raw.parts)) errs.push("mix.parts must be an object keyed by part");
+  for (const k of Object.keys(src)) if (!(ROLES as readonly string[]).includes(k)) errs.push(`mix.parts: unknown part "${k}"`);
+  for (const part of ROLES) {
+    const d = DEFAULT_PART_MIX[part];
+    const m = isObj(src[part]) ? src[part] : {};
+    const w = `mix.parts.${part}`;
+    for (const k of Object.keys(m)) if (!MIX_KEYS.has(k)) errs.push(`${w}: unknown field "${k}"`);
+    let eq = d.eq;
+    if (m.eq !== undefined) {
+      if (!Array.isArray(m.eq) || m.eq.length !== 3 || !m.eq.every((x) => isNum(x, -12, 12))) errs.push(`${w}.eq must be [low, mid, high] in dB from -12 to 12`);
+      else eq = m.eq as [number, number, number];
+    }
+    parts[part] = {
+      volume: num(m.volume, d.volume, 0, 1, `${w}.volume`),
+      pan: num(m.pan, d.pan, -1, 1, `${w}.pan`),
+      eq,
+      comp: num(m.comp, d.comp, 0, 1, `${w}.comp`),
+      reverb: num(m.reverb, d.reverb, 0, 1, `${w}.reverb`),
+      tune: num(m.tune, d.tune, -12, 12, `${w}.tune`),
+    };
+  }
+  return {
+    reverb: { seconds: num(rv.seconds, DEFAULT_MIX.reverb.seconds, 0.2, 6, "mix.reverb.seconds"), tone: num(rv.tone, DEFAULT_MIX.reverb.tone, 0, 1, "mix.reverb.tone") },
+    saturation: num(raw.saturation, DEFAULT_MIX.saturation, 0, 1, "mix.saturation"),
+    gain: num(raw.gain, DEFAULT_MIX.gain, 0, 1.5, "mix.gain"),
+    parts,
+  };
 }
 
 function variants<T>(raw: unknown, where: string, errs: string[], read: (x: unknown, where: string) => T | null, valueKey: string): Variant<T>[][] {
@@ -178,12 +333,30 @@ export function loadGenre(raw: unknown): GenrePack {
   const errs: string[] = [];
   if (!isObj(raw)) throw new GenreError(["genre pack must be a JSON object"]);
   for (const k of Object.keys(raw)) if (!TOP_KEYS.has(k)) errs.push(`unknown field "${k}"`);
-  if (raw.format !== GENRE_FORMAT) errs.push(`format must be "${GENRE_FORMAT}"`);
+  if (!GENRE_FORMATS.includes(raw.format as string)) errs.push(`format must be "${GENRE_FORMAT}" (or "${GENRE_FORMATS[0]}")`);
+  const v01 = raw.format === GENRE_FORMATS[0];
+  if (v01) for (const k of ["band", "lineups", "mix", "guitar", "pad", "percussion"]) if (raw[k] !== undefined) errs.push(`${k} needs format "${GENRE_FORMAT}"`);
   if (typeof raw.id !== "string" || !/^[a-z0-9-]+$/.test(raw.id)) errs.push("id must be lowercase letters, digits or -");
   if (typeof raw.name !== "string" || !raw.name) errs.push("name must be a non-empty string");
 
-  const parts = Array.isArray(raw.parts) ? raw.parts : [...ROLES];
+  const parts = Array.isArray(raw.parts) ? raw.parts : v01 ? [...V01_PARTS] : [...ROLES];
   if (!parts.length || !parts.every((p) => (ROLES as readonly string[]).includes(p as string))) errs.push(`parts must list roles from ${ROLES.join(", ")}`);
+  for (const p of ["guitar", "pad", "percussion"] as const) {
+    if (parts.includes(p) && raw[p] === undefined) errs.push(`parts lists ${p} but there is no "${p}" groove section`);
+    if (!parts.includes(p) && raw[p] !== undefined) errs.push(`there is a "${p}" section but parts doesn't list ${p}`);
+  }
+  const roles = (parts as Part[]).filter((p) => (ROLES as readonly string[]).includes(p));
+  const band = raw.band === undefined ? defaultBand(roles) : parseBand(raw.band, "band", errs, roles);
+  const lineups: Lineup[] = [];
+  if (raw.lineups !== undefined) {
+    if (!Array.isArray(raw.lineups)) errs.push("lineups must be a list of {id, name, band}");
+    else
+      raw.lineups.forEach((l, i) => {
+        const w = `lineups[${i}]`;
+        if (!isObj(l) || typeof l.id !== "string" || typeof l.name !== "string") return void errs.push(`${w} must have an id, a name and a band`);
+        lineups.push({ id: l.id, name: l.name, band: parseBand(l.band, `${w}.band`, errs, roles) });
+      });
+  }
 
   const feel = isObj(raw.feel) ? raw.feel : {};
   const swing = feel.swing ?? 0;
@@ -261,11 +434,20 @@ export function loadGenre(raw: unknown): GenrePack {
     return x as string[];
   };
 
+  let percussion: GenrePack["percussion"] = null;
+  if (raw.percussion !== undefined) {
+    const pc = isObj(raw.percussion) ? raw.percussion : (errs.push("percussion must be an object"), {} as Record<string, unknown>);
+    percussion = { grid: grid(pc.grid, "percussion"), levels: variants(pc.levels, "percussion.levels", errs, (x, w) => percLines(x, w, errs), "lines") };
+  }
+
   const pack: GenrePack = {
     id: raw.id as string,
     name: raw.name as string,
     description: typeof raw.description === "string" ? raw.description : "",
-    parts: parts as Part[],
+    parts: roles,
+    band,
+    lineups,
+    mix: mixPreset(raw.mix, errs),
     swing: swing as number,
     swingUnit: swingUnit as 8 | 16,
     humanize: humanize(raw.humanize, errs),
@@ -293,6 +475,9 @@ export function loadGenre(raw: unknown): GenrePack {
       range: range as [number, number],
       levels: variants(c.levels, "chords.levels", errs, tokens(CHORD_TOKEN, "comping", errs), "steps"),
     },
+    guitar: raw.guitar === undefined ? null : compPack(raw.guitar, "guitar", errs, { range: [52, 76], voicing: "grip" }),
+    pad: raw.pad === undefined ? null : compPack(raw.pad, "pad", errs, { range: [55, 79], voicing: "close" }),
+    percussion,
     ending: {
       rit: rit as number,
       ringBeats: ring as number,

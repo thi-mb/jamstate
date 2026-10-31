@@ -1,0 +1,53 @@
+{
+  "format": "jamstate-instruments/0.1",
+  "source": {
+    "name": "MuseScore_General.sf2",
+    "version": "0.2.0",
+    "license": "MIT",
+    "url": "http://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf2"
+  },
+  "defaults": {
+    "drums": "kit",
+    "bass": "electric",
+    "chords": "piano",
+    "guitar": "clean",
+    "pad": "strings",
+    "percussion": "hand",
+    "player": "piano"
+  },
+  "instruments": [
+    { "id": "kit", "part": "drums", "name": "Studio kit", "preset": [128, 0], "kind": "kit", "velocities": [40, 70, 100, 127] },
+    { "id": "rock", "part": "drums", "name": "Rock kit", "preset": [128, 16], "kind": "kit", "velocities": [40, 70, 100, 127] },
+    { "id": "jazz", "part": "drums", "name": "Jazz kit", "preset": [128, 32], "kind": "kit", "velocities": [40, 70, 100, 127] },
+    { "id": "brushes", "part": "drums", "name": "Brushes", "preset": [128, 40], "kind": "kit", "velocities": [40, 70, 100, 127] },
+    { "id": "electronic", "part": "drums", "name": "Electronic (808)", "preset": [128, 25], "kind": "kit", "velocities": [50, 90, 127] },
+
+    { "id": "hand", "part": "percussion", "name": "Hand percussion", "preset": [128, 0], "kind": "percussion", "velocities": [45, 80, 115] },
+
+    { "id": "electric", "part": "bass", "name": "Electric bass", "preset": [0, 33], "range": [28, 58], "velocities": [70, 115], "hold": 2.5, "release": 0.08 },
+    { "id": "upright", "part": "bass", "name": "Upright bass", "preset": [0, 32], "range": [28, 58], "velocities": [70, 115], "hold": 2.5, "release": 0.1 },
+    { "id": "pick", "part": "bass", "name": "Picked bass", "preset": [0, 34], "range": [28, 58], "velocities": [70, 115], "hold": 2.5, "release": 0.08 },
+    { "id": "synth", "part": "bass", "name": "Synth bass", "preset": [0, 38], "range": [28, 58], "velocities": [70, 115], "hold": 2.0, "release": 0.06 },
+
+    { "id": "piano", "part": "chords", "name": "Piano", "preset": [0, 0], "range": [36, 90], "velocities": [45, 85, 120], "hold": 3.5, "release": 0.3 },
+    { "id": "epiano", "part": "chords", "name": "Electric piano", "preset": [0, 4], "range": [39, 87], "velocities": [60, 110], "hold": 3.5, "release": 0.25 },
+    { "id": "organ", "part": "chords", "name": "Organ", "preset": [0, 16], "range": [39, 87], "velocities": [100], "hold": 6, "loop": [2.0, 5.0], "release": 0.06 },
+    { "id": "rock-organ", "part": "chords", "name": "Rock organ", "preset": [0, 18], "range": [39, 87], "velocities": [100], "hold": 6, "loop": [2.0, 5.0], "release": 0.08 },
+    { "id": "clav", "part": "chords", "name": "Clavinet", "preset": [0, 7], "range": [39, 87], "velocities": [60, 110], "hold": 2.0, "release": 0.05 },
+
+    { "id": "clean", "part": "guitar", "name": "Clean guitar", "preset": [0, 27], "range": [40, 82], "velocities": [65, 110], "hold": 3.0, "release": 0.12 },
+    { "id": "funk", "part": "guitar", "name": "Funk guitar", "preset": [8, 28], "range": [40, 82], "velocities": [65, 110], "hold": 1.5, "release": 0.05 },
+    { "id": "jazz-guitar", "part": "guitar", "name": "Jazz guitar", "preset": [0, 26], "range": [40, 82], "velocities": [65, 110], "hold": 3.0, "release": 0.15 },
+    { "id": "crunch", "part": "guitar", "name": "Crunch guitar", "preset": [0, 29], "range": [40, 82], "velocities": [65, 110], "hold": 3.0, "release": 0.1 },
+
+    { "id": "strings", "part": "pad", "name": "Strings", "preset": [0, 48], "range": [42, 84], "velocities": [70, 110], "hold": 6, "loop": [2.5, 5.5], "release": 0.5 },
+    { "id": "warm-pad", "part": "pad", "name": "Warm pad", "preset": [0, 89], "range": [42, 84], "velocities": [90], "hold": 6, "loop": [2.5, 5.5], "release": 0.6 }
+  ],
+  "kit_keys": {
+    "36": 1.2, "37": 0.6, "38": 1.2, "39": 1.0, "42": 0.8, "44": 0.6, "46": 2.0,
+    "45": 1.5, "47": 1.5, "50": 1.5, "49": 3.5, "51": 2.5, "53": 2.5
+  },
+  "percussion_keys": {
+    "54": 1.0, "56": 1.0, "60": 0.8, "61": 0.8, "62": 0.6, "63": 1.0, "64": 1.0, "69": 0.6, "70": 0.5, "75": 0.6
+  }
+}

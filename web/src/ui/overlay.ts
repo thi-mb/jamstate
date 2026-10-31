@@ -3,7 +3,7 @@
 import type { BarPlan, MoveRecord } from "../core/engine";
 import type { BarFeatures } from "../core/features";
 import { getGenre } from "../core/genres";
-import { PARTS } from "../core/types";
+import { PART_LABELS, V01_PARTS, type Part } from "../core/types";
 
 const genreName = (id: string) => getGenre(id).name.toLowerCase();
 
@@ -29,7 +29,7 @@ export class Overlay {
     $("last-reason").textContent = "";
     this.setEnergy(null);
     this.log.replaceChildren();
-    this.renderLayers([...PARTS]);
+    this.renderLayers(this.lineup, this.lineup);
   }
 
   bar(plan: BarPlan): void {
@@ -49,14 +49,23 @@ export class Overlay {
     ($("target") as HTMLElement).style.left = `calc(${plan.target * 100}% - 1px)`;
     $("intensity-num").textContent = `${plan.intensity.toFixed(2)} → ${plan.target.toFixed(2)}`;
     [...this.formEl.children].forEach((li, i) => li.classList.toggle("current", i === plan.formPos));
-    this.renderLayers(plan.layers);
+    this.renderLayers(plan.layers, plan.lineup);
     for (const m of plan.moves) this.move(m, plan.bar);
   }
 
-  private renderLayers(on: string[]): void {
+  /** Who is in the band before the first bar (the page sets it from the lineup picker). */
+  lineup: Part[] = [...V01_PARTS];
+
+  private renderLayers(on: string[], lineup: Part[]): void {
     $("layers").replaceChildren(
-      ...PARTS.map((p) => Object.assign(document.createElement("span"), { className: `chip ${on.includes(p) ? "on" : "off"}`, textContent: p })),
+      ...lineup.map((p) => Object.assign(document.createElement("span"), { className: `chip ${on.includes(p) ? "on" : "off"}`, textContent: PART_LABELS[p] })),
     );
+  }
+
+  /** Show the lineup while nothing plays. */
+  showLineup(lineup: Part[]): void {
+    this.lineup = lineup;
+    this.renderLayers(lineup, lineup);
   }
 
   setEnergy(f: BarFeatures | null): void {

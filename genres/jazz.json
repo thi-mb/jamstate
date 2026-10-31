@@ -1,14 +1,37 @@
 {
-  "format": "jamstate-genre/0.1",
+  "format": "jamstate-genre/0.2",
   "id": "jazz",
   "name": "Jazz",
   "description": "Swing on the ride with the hi-hat on two and four, a feathered kick and snare chatter, a walking bass from medium intensity up (two-feel below), and rootless piano voicings comped off the beat.",
-  "parts": ["drums", "bass", "chords"],
+  "parts": ["drums", "bass", "chords", "guitar", "pad", "percussion"],
+  "band": {"drums": "brushes", "bass": "upright", "chords": "piano"},
+  "lineups": [
+    {"id": "sticks", "name": "Trio with sticks", "band": {"drums": "jazz", "bass": "upright", "chords": "piano"}},
+    {"id": "quartet", "name": "Quartet with guitar", "band": {"drums": "brushes", "bass": "upright", "chords": "piano", "guitar": "jazz-guitar"}},
+    {"id": "organ", "name": "Organ group", "band": {"drums": "jazz", "bass": "upright", "chords": "organ", "guitar": "jazz-guitar"}},
+    {"id": "ballad", "name": "Ballad with strings", "band": {"drums": "brushes", "bass": "upright", "chords": "piano", "pad": "strings"}}
+  ],
+  "mix": {
+    "reverb": {"seconds": 2.2, "tone": 0.4},
+    "saturation": 0.05,
+    "gain": 0.4,
+    "parts": {
+      "drums": {"volume": 1.0, "pan": 0.1, "eq": [-1, 1, 2], "comp": 0.4, "reverb": 0.2},
+      "bass": {"volume": 0.5, "eq": [2, 1, -2], "comp": 0.3, "reverb": 0.06},
+      "chords": {"volume": 0.65, "pan": -0.25, "eq": [0, 0, 1], "comp": 0.1, "reverb": 0.22},
+      "guitar": {"volume": 0.4, "pan": 0.35, "eq": [-2, 1, -2], "comp": 0.1, "reverb": 0.18},
+      "pad": {"volume": 0.28, "reverb": 0.4},
+      "percussion": {"volume": 0.35, "pan": 0.45, "reverb": 0.2}
+    }
+  },
   "feel": { "swing": 0.6, "swing_unit": 8 },
   "humanize": {
     "drums": { "jitter_ms": 4, "velocity": 8, "lines": { "cymbal": -4, "snare": 3 } },
     "bass": { "offset_ms": -3, "jitter_ms": 4, "velocity": 6 },
-    "chords": { "offset_ms": 6, "jitter_ms": 8, "velocity": 9, "spread_ms": 10 }
+    "chords": { "offset_ms": 6, "jitter_ms": 8, "velocity": 9, "spread_ms": 10 },
+    "guitar": {"offset_ms": 2, "jitter_ms": 5, "velocity": 7, "spread_ms": 6},
+    "pad": {"offset_ms": 15, "jitter_ms": 6, "velocity": 4},
+    "percussion": {"offset_ms": 0, "jitter_ms": 5, "velocity": 8}
   },
   "drums": {
     "grid": 2,
@@ -67,6 +90,37 @@
       ["x - - . . . . .", "x . . x . . . .", ". . . x - - . ."],
       ["x . . x . . . .", ". . . x . . x .", ". x . . . . x .", "x . . . . x . p"],
       ["x . . x . x . .", ". x . . x . . p", "x . . x . . . p", ". . x . . x . x"]
+    ]
+  },
+  "guitar": {
+    "grid": 2,
+    "voicing": "shell3",
+    "range": [43, 67],
+    "levels": [
+      ["x - - - - - - -"],
+      ["x - x - x - x -"],
+      ["x . x . x . x .", "x . x . x . x p"],
+      ["x . x . x . x .", "X . x . X . x ."]
+    ]
+  },
+  "pad": {
+    "grid": 2,
+    "voicing": "close",
+    "range": [55, 79],
+    "levels": [
+      ["x - - - - - - -"],
+      ["x - - - - - - -"],
+      ["x - - - - - - -"],
+      ["x - - - x - - -"]
+    ]
+  },
+  "percussion": {
+    "grid": 2,
+    "levels": [
+      [{}],
+      [{"shaker": "..x...x."}],
+      [{"shaker": "x.x.x.x.", "conga_lo": "...x...."}],
+      [{"shaker": "xxxxxxxx", "conga_hi": "..x...x.", "conga_lo": "...x..xx"}]
     ]
   },
   "ending": { "rit": 0.25, "ring_beats": 4, "chord": { "major": "69", "minor": "m6" }, "drums": "hit" },

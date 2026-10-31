@@ -18,7 +18,7 @@ export function recordSimSession(chartJson: ChartJSON, script: string, opts: { s
   const seed = opts.seed ?? 11;
   const config = { loop: true };
   const engine = new Engine(c, { config, seed, genre, swing: null, countIn: c.countIn });
-  const rec = new SessionRecorder({ chart: chartJson, genre: genre.id, swing: null, seed, countIn: c.countIn, config, leader: "rules", everyBars: 2 });
+  const rec = new SessionRecorder({ chart: chartJson, genre: genre.id, swing: null, band: engine.band, seed, countIn: c.countIn, config, leader: "rules", everyBars: 2 });
   const conductor = new Conductor(engine, ruleLeader(new RuleLeader()), 2);
   const sim = new SimPlayer(seed & 0xffff);
   const modes = parseScript(script);

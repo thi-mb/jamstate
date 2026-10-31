@@ -4,7 +4,7 @@
 
 import type { PlayerSummary } from "./features";
 import type { Move } from "./moves";
-import { PARTS, type Feel, type Part } from "./types";
+import { V01_PARTS, type Feel, type Part } from "./types";
 
 /** What any bandleader sees every N bars. Field names match the server API. */
 export interface LeaderContext {
@@ -16,6 +16,8 @@ export interface LeaderContext {
   intensity: number;
   target: number;
   layers: Part[];
+  /** Who is in the band, playing or sitting out (v0.2). Missing: drums, bass, chords. */
+  lineup?: Part[];
   feel: Feel;
   form: string[];
   form_pos: number;
@@ -53,7 +55,7 @@ export class RuleLeader {
     const mood = this.classify(ctx.player);
     this.mood = mood;
     const has = (p: Part) => ctx.layers.includes(p);
-    const missing = PARTS.filter((p) => !has(p));
+    const missing = (ctx.lineup ?? V01_PARTS).filter((p) => !has(p));
     const moves: Move[] = [];
     const intensity = (value: number, reason: string) => {
       if (Math.abs(value - ctx.target) >= 0.1) moves.push({ move: "set_intensity", value: Math.round(value * 100) / 100, reason });

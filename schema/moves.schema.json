@@ -28,7 +28,7 @@
             "additionalProperties": false,
             "properties": {
               "move": { "enum": ["add_layer", "drop_layer"] },
-              "part": { "enum": ["drums", "bass", "chords"] },
+              "part": { "enum": ["drums", "bass", "chords", "guitar", "pad", "percussion"] },
               "reason": { "type": "string", "maxLength": 120 }
             }
           },
