@@ -26,13 +26,18 @@ often right. Never move more than two things at once.
 Answer only with JSON matching the schema. Each move needs a short, friendly
 reason addressed to the player."""
 
-CHART_SYSTEM = """You write chord charts for a backing band. Given a description, return one
-JSON chart matching the schema: title, bpm, time_sig ("4/4" or another N/4),
-key, sections (name, bars, chords, optional intensity 0-1) and form (section
-names in play order). Chords are symbols like Fm, Db, Ab, Eb7, Cmaj7, Bbm7,
-F#m7b5, C/E; one entry per bar, cycled to fill the section; an entry with a
-space splits the bar ("Fm Eb"). Describe structure only, never lyrics or
-melody. Answer only with JSON."""
+GENRE_DIR = SCHEMA_DIR.parent / "genres"
+GENRES = sorted(p.stem for p in GENRE_DIR.glob("*.json")) or ["blues-rock"]
+
+CHART_SYSTEM = f"""You write chord charts for a backing band. Given a description, return one
+JSON chart matching the schema: version "0.1", title, bpm, time_sig ("4/4" or
+another N/4), key, genre (one of {", ".join(GENRES)}; pick the closest), sections
+(name, bars, chords, optional intensity 0-1) and form (section names in play
+order). Add swing (0 straight to 0.66 triplet) only if the description asks
+for a feel the genre doesn't have. Chords are symbols like Fm, Db, Ab, Eb7,
+Cmaj7, Bbm7, F#m7b5, C/E; one entry per bar, cycled to fill the section; an
+entry with a space splits the bar ("Fm Eb"). Describe structure only, never
+lyrics or melody. Answer only with JSON."""
 
 PARTS = ("drums", "bass", "chords")
 FEELS = ("normal", "half_time", "double_time")
@@ -110,6 +115,7 @@ def write_chart(client: LLMClient, prompt: str) -> dict[str, Any]:
     """Ask the model for a chart. The browser validates it fully before use."""
     schema = load_schema("chart.schema.json")
     schema = {k: v for k, v in schema.items() if not k.startswith("$")}
+    schema["properties"]["genre"] = {**schema["properties"]["genre"], "enum": GENRES}
     res = client.chat(CHART_SYSTEM, prompt, schema, "chart")
     chart = extract_json(res.text)
     if not isinstance(chart, dict) or not isinstance(chart.get("sections"), list) or not isinstance(chart.get("form"), list):

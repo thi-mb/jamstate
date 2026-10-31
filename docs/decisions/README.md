@@ -18,7 +18,10 @@ Status values: **Proposed** (recommended, waiting on Thiago), **Accepted**,
 | [0007](0007-move-governor.md) | A deterministic governor between leader and arranger | Proposed |
 | [0008](0008-spark-as-stateless-advisor.md) | The Spark hosts the server and models; it never owns time | Proposed |
 | [0009](0009-magenta-realtime-spike.md) | Magenta RealTime is a timeboxed spike, not v0 | Proposed |
-| [0010](0010-chart-format-v0.md) | Chart format v0 | Accepted |
+| [0010](0010-chart-format-v0.md) | Chart format v0 | Superseded by 0013 (additively) |
 | [0011](0011-bandleader-model.md) | Bandleader model: small-active MoE on llama.cpp | Accepted |
+| [0012](0012-genre-pack-format.md) | Genre pack format (composition layer) | Proposed |
+| [0013](0013-chart-format-v0.1.md) | Chart format v0.1: genre, swing, count-in | Accepted |
+| [0014](0014-session-recording.md) | Session recording and replay | Proposed |
 
 New record: copy [template.md](template.md).

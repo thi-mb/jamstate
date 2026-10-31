@@ -9,6 +9,7 @@ from pathlib import Path
 
 from .app import App, serve
 from .llm import LLMClient
+from .sessions import SessionStore, default_dir
 
 
 def main() -> None:
@@ -20,12 +21,14 @@ def main() -> None:
     ap.add_argument("--model", default=os.environ.get("HOUSEBAND_LLM_MODEL", "default"))
     ap.add_argument("--api-key", default=os.environ.get("HOUSEBAND_LLM_KEY"))
     ap.add_argument("--timeout", type=float, default=8.0, help="seconds to wait for the model")
+    ap.add_argument("--sessions-dir", type=Path, default=Path(os.environ.get("HOUSEBAND_SESSIONS", default_dir())),
+                    help="where recorded jam sessions are saved (default ~/.local/share/houseband/sessions)")
     ap.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args()
 
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     llm = LLMClient(args.llm_url, args.model, args.api_key, args.timeout) if args.llm_url else None
-    httpd = serve(App(args.static, llm), args.host, args.port)
+    httpd = serve(App(args.static, llm, SessionStore(args.sessions_dir)), args.host, args.port)
     logging.info("houseband server on http://%s:%d (llm: %s)", args.host, args.port, args.llm_url or "none")
     try:
         httpd.serve_forever()

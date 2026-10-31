@@ -1,6 +1,6 @@
 # 0010. Chart format v0
 
-- Status: Accepted (as implemented by the v0 build)
+- Status: Superseded by [0013](0013-chart-format-v0.1.md) (additively: every v0 chart is a valid v0.1 chart)
 - Date: 2026-10-30
 
 ## Context
