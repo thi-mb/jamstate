@@ -7,11 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from jamstate_server.app import App, serve
-from jamstate_server.leader import SCHEMA_DIR, split_moves, validate_move
-from jamstate_server.llm import LLMClient, LLMError, extract_json
+from jamstate_server.app import App, Relay, serve
 
 REPO = Path(__file__).resolve().parents[2]
+SCHEMA_DIR = REPO / "schema"
 
 SUMMARY = {
     "bar": 15,
@@ -39,6 +38,8 @@ class FakeModel:
         self.replies = list(replies)
         self.reject_formats = set(reject_formats)
         self.requests = []
+        self.headers = []
+        self.paths = []
         fake = self
 
         class H(BaseHTTPRequestHandler):
@@ -48,6 +49,8 @@ class FakeModel:
             def do_POST(self):
                 body = json.loads(self.rfile.read(int(self.headers["content-length"])))
                 fake.requests.append(body)
+                fake.headers.append(dict(self.headers))
+                fake.paths.append(self.path)
                 fmt = (body.get("response_format") or {}).get("type")
                 if fmt in fake.reject_formats:
                     self.send_response(400)
@@ -77,14 +80,14 @@ def static_dir(tmp_path):
     return tmp_path
 
 
-def start_app(static_dir, llm):
-    httpd = serve(App(static_dir, llm), "127.0.0.1", 0)
+def start_app(static_dir, relays=None, sessions=None, cors=()):
+    httpd = serve(App(static_dir, relays or {}, sessions, tuple(cors), "fake"), "127.0.0.1", 0)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     return httpd, f"http://127.0.0.1:{httpd.server_address[1]}"
 
 
-def post(url, body):
-    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"content-type": "application/json"}, method="POST")
+def post(url, body, headers=None):
+    req = urllib.request.Request(url, data=json.dumps(body).encode(), headers={"content-type": "application/json", **(headers or {})}, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=5) as r:
             return r.status, json.loads(r.read())
@@ -100,50 +103,68 @@ def get(url):
         return e.code, e.headers.get("content-type"), e.read()
 
 
-def test_leader_proxy_returns_valid_moves_and_reports_rejects(static_dir):
-    reply = json.dumps({"moves": [
-        {"move": "set_intensity", "value": 0.8, "reason": "You're pushing, so are we"},
-        {"move": "jump_to_section", "section": "bridge", "reason": "nope"},
-    ]})
-    model = FakeModel([reply])
-    httpd, base = start_app(static_dir, LLMClient(model.url, "fake"))
+def test_llm_relay_forwards_bytes_and_adds_the_servers_key_same_origin_only(static_dir):
+    model = FakeModel(['{"moves":[]}', '{"moves":[]}'])
+    httpd, base = start_app(static_dir, {"llm": Relay(model.url, "server-key")})
     try:
-        status, body = post(base + "/api/leader", SUMMARY)
-        assert status == 200
-        assert body["moves"] == [{"move": "set_intensity", "value": 0.8, "reason": "You're pushing, so are we"}]
-        assert body["rejected"][0]["error"].startswith("section must be one of")
-        assert body["model"] == "fake-model"
-        sent = model.requests[0]
-        assert sent["response_format"]["type"] == "json_schema"
-        assert sent["response_format"]["json_schema"]["schema"]["properties"]["moves"]["maxItems"] == 2
-        assert json.loads(sent["messages"][1]["content"])["bar"] == 15
+        req = {"model": "leader", "messages": [{"role": "user", "content": "hi"}]}
+        status, body = post(base + "/api/relay/llm/chat/completions", req)
+        assert status == 200 and body["model"] == "fake-model"
+        assert model.requests[0] == req and model.paths[0] == "/v1/chat/completions"
+        assert model.headers[0].get("Authorization") == "Bearer server-key"
+        # The page's own key wins over the server's.
+        post(base + "/api/relay/llm/chat/completions", req, {"authorization": "Bearer mine"})
+        assert model.headers[1].get("Authorization") == "Bearer mine"
+        # Only chat/completions is relayed, and other sites can't use it.
+        assert post(base + "/api/relay/llm/models", req)[0] == 404
+        assert post(base + "/api/relay/llm/chat/completions", req, {"origin": "https://evil.example"})[0] == 403
+        assert post(base + "/api/relay/nope/x", req)[0] == 503
     finally:
         httpd.shutdown()
         model.close()
 
 
-def test_falls_back_when_json_schema_unsupported():
-    model = FakeModel(['{"moves":[]}'], reject_formats={"json_schema"})
+def test_relay_passes_provider_errors_through_and_reports_unreachable(static_dir):
+    model = FakeModel([], reject_formats={"json_schema"})
+    httpd, base = start_app(static_dir, {"llm": Relay(model.url), "jev": Relay("http://127.0.0.1:9/v1", timeout=1)})
     try:
-        res = LLMClient(model.url).chat("s", "u", {"type": "object"})
-        assert res.text == '{"moves":[]}'
-        assert [ (r.get("response_format") or {}).get("type") for r in model.requests] == ["json_schema", "json_object"]
-    finally:
-        model.close()
-
-
-def test_leader_errors_are_502_and_no_llm_is_503(static_dir):
-    httpd, base = start_app(static_dir, LLMClient("http://127.0.0.1:9/v1", timeout=1))
-    try:
-        status, body = post(base + "/api/leader", SUMMARY)
+        status, _ = post(base + "/api/relay/llm/chat/completions", {"response_format": {"type": "json_schema"}})
+        assert status == 400
+        status, body = post(base + "/api/relay/jev", {"state": {}, "questions": {}})
         assert status == 502 and "unreachable" in body["error"]
     finally:
         httpd.shutdown()
-    httpd, base = start_app(static_dir, None)
+        model.close()
+
+
+def test_cors_only_for_listed_origins(static_dir):
+    model = FakeModel(['{"ok":1}'])
+    httpd, base = start_app(static_dir, {"llm": Relay(model.url, "server-key")}, cors=("https://jam.example",))
     try:
-        assert post(base + "/api/leader", SUMMARY)[0] == 503
+        pre = urllib.request.Request(base + "/api/relay/llm/chat/completions", method="OPTIONS",
+                                     headers={"origin": "https://jam.example", "access-control-request-method": "POST"})
+        with urllib.request.urlopen(pre, timeout=5) as r:
+            assert r.status == 204 and r.headers["access-control-allow-origin"] == "https://jam.example"
+        bad = urllib.request.Request(base + "/api/relay/llm/chat/completions", method="OPTIONS", headers={"origin": "https://evil.example"})
+        with pytest.raises(urllib.error.HTTPError):
+            urllib.request.urlopen(bad, timeout=5)
+        status, _ = post(base + "/api/relay/llm/chat/completions", {}, {"origin": "https://jam.example"})
+        assert status == 200
+        # A listed origin must bring its own key: the server's key is same-origin only.
+        assert "Authorization" not in model.headers[0]
+    finally:
+        httpd.shutdown()
+        model.close()
+
+
+def test_health_lists_relays(static_dir):
+    httpd, base = start_app(static_dir)
+    try:
         status, _, data = get(base + "/api/health")
-        assert status == 200 and json.loads(data)["llm_url"] is None
+        h = json.loads(data)
+        assert status == 200 and h["ok"] and h["relay"] == {} and h["llm_url"] is None
+        # The bandleader endpoints moved into the page (ADR-0015).
+        assert post(base + "/api/leader", SUMMARY)[0] == 404
     finally:
         httpd.shutdown()
 
@@ -151,7 +172,7 @@ def test_leader_errors_are_502_and_no_llm_is_503(static_dir):
 def test_static_files_and_no_path_traversal(static_dir, tmp_path_factory):
     secret = static_dir.parent / "secret.txt"
     secret.write_text("nope")
-    httpd, base = start_app(static_dir, None)
+    httpd, base = start_app(static_dir)
     try:
         status, ctype, data = get(base + "/")
         assert status == 200 and b"jamstate" in data and ctype.startswith("text/html")
@@ -163,35 +184,6 @@ def test_static_files_and_no_path_traversal(static_dir, tmp_path_factory):
         assert b"nope" not in data
     finally:
         httpd.shutdown()
-
-
-def test_chart_endpoint(static_dir):
-    chart = json.loads((REPO / "web/public/charts/night-shift.json").read_text())
-    model = FakeModel(["```json\n" + json.dumps(chart) + "\n```"])
-    httpd, base = start_app(static_dir, LLMClient(model.url))
-    try:
-        status, body = post(base + "/api/chart", {"prompt": "moody F minor groove"})
-        assert status == 200 and body["chart"]["title"] == "Night Shift"
-        assert post(base + "/api/chart", {})[0] == 400
-    finally:
-        httpd.shutdown()
-        model.close()
-
-
-def test_extract_json_tolerates_chatter():
-    assert extract_json('<think>hmm</think>Sure! {"moves": []} hope that helps') == {"moves": []}
-    with pytest.raises(LLMError):
-        extract_json("no json here")
-
-
-def test_validate_move():
-    assert validate_move({"move": "add_layer", "part": "drums", "reason": "x"}) is None
-    assert validate_move({"move": "add_layer", "part": "keys", "reason": "x"})
-    assert validate_move({"move": "set_intensity", "value": 2, "reason": "x"})
-    assert validate_move({"move": "set_intensity", "value": 0.5})  # reason required
-    assert validate_move({"move": "extend_section", "bars": True, "reason": "x"})
-    ok, bad = split_moves({"moves": [{"move": "fire_stinger", "stinger": "fill", "reason": "a"}] * 3})
-    assert len(ok) == 2 and len(bad) == 1
 
 
 def test_schemas_accept_examples_and_match_validator():
@@ -217,8 +209,7 @@ def test_genre_packs_match_their_schema():
 
 
 def test_end_song_is_not_a_leader_move():
-    # The player ends songs; the LLM's schema and the server both leave end_song out.
-    assert validate_move({"move": "end_song", "reason": "bye"})
+    # The player ends songs; the LLM's schema leaves end_song out (the page checks the rest).
     assert "end_song" not in (SCHEMA_DIR / "moves.schema.json").read_text()
 
 
@@ -226,7 +217,7 @@ def test_sessions_are_saved_listed_and_loaded(static_dir, tmp_path):
     from jamstate_server.sessions import SessionStore
 
     store = SessionStore(tmp_path / "sessions")
-    httpd = serve(App(static_dir, None, store), "127.0.0.1", 0)
+    httpd = serve(App(static_dir, {}, store), "127.0.0.1", 0)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     base = f"http://127.0.0.1:{httpd.server_address[1]}"
     try:
@@ -240,7 +231,29 @@ def test_sessions_are_saved_listed_and_loaded(static_dir, tmp_path):
         assert status == 200 and json.loads(raw)["player"] == [[0, 60, 90]]
         assert post(f"{base}/api/sessions", {"format": "nope"})[0] == 400
         assert get(f"{base}/api/sessions/..%2F..%2Fetc%2Fpasswd")[0] == 404
-        # The LLM endpoints still say no LLM while sessions work.
-        assert post(f"{base}/api/leader", SUMMARY)[0] == 503
+        assert post(f"{base}/api/sessions", session, {"origin": "https://evil.example"})[0] == 403
     finally:
         httpd.shutdown()
+
+
+def lower(h):
+    return {k.lower(): v for k, v in h.items()}
+
+
+def test_claude_relay_uses_the_servers_key_only_same_origin(static_dir):
+    model = FakeModel(['{"moves":[]}', '{"moves":[]}', '{"moves":[]}'])
+    httpd, base = start_app(static_dir, {"anthropic": Relay(model.url.removesuffix("/v1"), "server-key")})
+    try:
+        req = {"model": "claude-x", "max_tokens": 10, "messages": [{"role": "user", "content": "hi"}]}
+        hdr = {"x-api-key": "relay", "anthropic-version": "2023-06-01"}
+        assert post(base + "/api/relay/anthropic/v1/messages", req, hdr)[0] == 200
+        assert model.paths[0] == "/v1/messages"
+        assert lower(model.headers[0]).get("x-api-key") == "server-key"
+        assert lower(model.headers[0]).get("anthropic-version") == "2023-06-01"
+        post(base + "/api/relay/anthropic/v1/messages", req, {**hdr, "x-api-key": "mine"})
+        assert lower(model.headers[1]).get("x-api-key") == "mine"
+        assert post(base + "/api/relay/anthropic/v1/models", req, hdr)[0] == 404
+        assert post(base + "/api/relay/anthropic/v1/messages", req, {**hdr, "origin": "https://evil.example"})[0] == 403
+    finally:
+        httpd.shutdown()
+        model.close()

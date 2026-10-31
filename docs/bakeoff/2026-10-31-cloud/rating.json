@@ -1,0 +1,436 @@
+[
+ {
+  "id": "sim-night-shift-arc#10",
+  "session": "sim-night-shift-arc",
+  "bar": 44,
+  "situation": "Bar 44, chorus (bar 4 of 8). The player is playing busy and loud (energy 0.74, falling). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "keep going"
+   ],
+   "C": [
+    "set_intensity(0.84): \"Leaving you some headroom\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-slowburn#9",
+  "session": "sim-late-set-slowburn",
+  "bar": 40,
+  "situation": "Bar 40, solo (bar 4 of 8). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.83, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.90): \"You're burning hot and steady in this solo, so we'll lean in a little more to match your energy.\""
+   ],
+   "B": [
+    "keep going"
+   ],
+   "C": [
+    "set_intensity(0.98): \"Still pushing, staying with you\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-arc#11",
+  "session": "sim-blues-in-a-arc",
+  "bar": 48,
+  "situation": "Bar 48, solo (bar 12 of 12). The player is playing a medium groove (energy 0.52, steady). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.86): \"Still pushing, staying with you\""
+   ],
+   "B": [
+    "set_intensity(0.50): \"Easing back to give you room\""
+   ],
+   "C": [
+    "keep going"
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-stopstart#1",
+  "session": "sim-night-shift-stopstart",
+  "bar": 8,
+  "situation": "Bar 8, verse (bar 4 of 8). The player is playing busy and loud (energy 0.94, steady). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "set_intensity(0.81): \"Leaving you some headroom\""
+   ],
+   "C": [
+    "keep going"
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-stopstart#3",
+  "session": "sim-late-set-stopstart",
+  "bar": 16,
+  "situation": "Bar 16, A (bar 4 of 8). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.20, bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.81): \"Picking the energy up with you\"",
+    "add_layer(drums): \"Bringing the drums back in with you\""
+   ],
+   "B": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "add_layer(drums): \"Full band: drums in\""
+   ],
+   "C": [
+    "add_layer(drums): \"You're playing with a lot of fire, so I'm bringing the drums back in to push with you.\"",
+    "set_intensity(0.60): \"Lifting the band's energy to match how strong and busy you're sounding.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-slowburn#3",
+  "session": "sim-blues-in-a-slowburn",
+  "bar": 16,
+  "situation": "Bar 16, solo (bar 4 of 12). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.47, drums+bass+chords, half time feel.",
+  "answers": {
+   "A": [
+    "change_feel(normal): \"You're playing nonstop with lots of notes, so we'll come out of half-time and lock in with your pace.\"",
+    "set_intensity(0.52): \"Nudging the band up a touch to match your energy.\""
+   ],
+   "B": [
+    "keep going"
+   ],
+   "C": [
+    "change_feel(normal): \"Back to the normal feel\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-stopstart#0",
+  "session": "sim-blues-in-a-stopstart",
+  "bar": 4,
+  "situation": "Bar 4, head (bar 4 of 12). The player is playing busy and loud (energy 0.93, steady). Band: intensity 0.50, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "fire_stinger(fill): \"Marking the lift\""
+   ],
+   "B": [
+    "set_intensity(0.81): \"Picking the energy up with you\""
+   ],
+   "C": [
+    "set_intensity(0.70): \"You're coming in hot and busy — we'll lift the band to meet your energy.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-slowburn#6",
+  "session": "sim-blues-in-a-slowburn",
+  "bar": 28,
+  "situation": "Bar 28, solo (bar 4 of 12). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.56, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "fire_stinger(fill): \"Marking the lift\""
+   ],
+   "B": [
+    "set_intensity(0.75): \"You're really digging in — we'll bring the band up to match your energy.\"",
+    "fire_stinger(fill): \"A drum fill to kick this build into gear behind you.\""
+   ],
+   "C": [
+    "set_intensity(0.82): \"Picking the energy up with you\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-stopstart#4",
+  "session": "sim-blues-in-a-stopstart",
+  "bar": 20,
+  "situation": "Bar 20, solo (bar 8 of 12). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.70, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.85): \"You're burning hot and steady — nudging the band up a notch to meet your energy.\""
+   ],
+   "B": [
+    "keep going"
+   ],
+   "C": [
+    "set_intensity(0.82): \"Leaving you some headroom\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-slowburn#8",
+  "session": "sim-blues-in-a-slowburn",
+  "bar": 36,
+  "situation": "Bar 36, solo (bar 12 of 12). The player is playing busy and loud (energy 0.94, steady). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "set_intensity(0.82): \"Leaving you some headroom\""
+   ],
+   "C": [
+    "keep going"
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-arc#9",
+  "session": "sim-night-shift-arc",
+  "bar": 40,
+  "situation": "Bar 40, bridge (bar 4 of 4). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.50, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.75): \"You're playing hot and busy — the band's coming up to meet you.\"",
+    "fire_stinger(riser): \"Building into the last chorus with you — let it rip!\""
+   ],
+   "B": [
+    "set_intensity(0.81): \"Picking the energy up with you\""
+   ],
+   "C": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "fire_stinger(fill): \"Marking the lift\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-stopstart#2",
+  "session": "sim-blues-in-a-stopstart",
+  "bar": 12,
+  "situation": "Bar 12, head (bar 12 of 12). The player is stopped playing (energy 0.00, steady, 4 silent bars). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.10): \"You went quiet, giving you space\"",
+    "drop_layer(drums): \"Drums out so it can breathe\""
+   ],
+   "B": [
+    "set_intensity(0.11): \"You went quiet, giving you space\"",
+    "drop_layer(drums): \"You went quiet, drums out so it can breathe\""
+   ],
+   "C": [
+    "set_intensity(0.60): \"You've gone quiet, so we'll ease off and leave plenty of room for you to come back in.\"",
+    "drop_layer(chords): \"Thinning out the chords to give you an open space whenever you're ready to jump into the solo.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-arc#4",
+  "session": "sim-night-shift-arc",
+  "bar": 20,
+  "situation": "Bar 20, chorus (bar 8 of 8). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.28, drums+bass+chords, half time feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.60): \"You're playing hot and busy, so we're lifting the band up to meet you.\"",
+    "change_feel(normal): \"Dropping the half-time so the groove can keep pace with all those notes.\""
+   ],
+   "B": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "change_feel(normal): \"Out of half time to keep up\""
+   ],
+   "C": [
+    "set_intensity(0.82): \"Picking the energy up with you\"",
+    "fire_stinger(fill): \"A fill to mark the lift\""
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-slowburn#4",
+  "session": "sim-night-shift-slowburn",
+  "bar": 20,
+  "situation": "Bar 20, chorus (bar 8 of 8). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.52, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "fire_stinger(fill): \"Chorus is wrapping up next bar, so here's a fill to carry your steady groove into the next verse.\""
+   ],
+   "B": [
+    "keep going"
+   ],
+   "C": [
+    "keep going"
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-slowburn#7",
+  "session": "sim-late-set-slowburn",
+  "bar": 32,
+  "situation": "Bar 32, A (bar 4 of 8). The player is playing busy and loud (energy 0.94, steady). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "keep going"
+   ],
+   "C": [
+    "set_intensity(0.81): \"Leaving you some headroom\""
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-slowburn#0",
+  "session": "sim-night-shift-slowburn",
+  "bar": 4,
+  "situation": "Bar 4, intro (bar 4 of 4). The player is playing a medium groove (energy 0.31, steady). Band: intensity 0.30, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "set_intensity(0.50): \"Picking the energy up with you\""
+   ],
+   "C": [
+    "set_intensity(0.47): \"Following your dynamics\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-arc#9",
+  "session": "sim-blues-in-a-arc",
+  "bar": 40,
+  "situation": "Bar 40, solo (bar 4 of 12). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.50, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.81): \"Picking the energy up with you\""
+   ],
+   "B": [
+    "set_intensity(0.70): \"You're playing hot and busy, so we'll lift the band to match your energy.\"",
+    "fire_stinger(fill): \"A drum fill to kick off the next phrase and push your solo forward.\""
+   ],
+   "C": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "fire_stinger(fill): \"Marking the lift\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-slowburn#0",
+  "session": "sim-late-set-slowburn",
+  "bar": 4,
+  "situation": "Bar 4, intro (bar 4 of 4). The player is playing sparse and soft (energy 0.27, steady). Band: intensity 0.30, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "change_feel(half_time): \"Half time to match the space\""
+   ],
+   "B": [
+    "keep going"
+   ],
+   "C": [
+    "keep going"
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-slowburn#11",
+  "session": "sim-late-set-slowburn",
+  "bar": 48,
+  "situation": "Bar 48, solo (bar 4 of 8). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.82, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "keep going"
+   ],
+   "C": [
+    "set_intensity(0.50): \"Easing back to give you room\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-stopstart#5",
+  "session": "sim-blues-in-a-stopstart",
+  "bar": 24,
+  "situation": "Bar 24, solo (bar 12 of 12). The player is stopped playing (energy 0.00, steady, 4 silent bars). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.11): \"You went quiet, giving you space\"",
+    "drop_layer(drums): \"You went quiet, drums out so it can breathe\""
+   ],
+   "B": [
+    "set_intensity(0.40): \"You've been resting for a few bars, so we'll ease off and leave you room to come back in.\"",
+    "drop_layer(chords): \"Thinning out the chords to open up space for your next idea.\""
+   ],
+   "C": [
+    "set_intensity(0.10): \"You went quiet, giving you space\"",
+    "drop_layer(drums): \"Drums out so it can breathe\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-stopstart#3",
+  "session": "sim-blues-in-a-stopstart",
+  "bar": 16,
+  "situation": "Bar 16, solo (bar 4 of 12). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.22, bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.82): \"Picking the energy up with you\"",
+    "add_layer(drums): \"Bringing the drums back in with you\""
+   ],
+   "B": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "add_layer(drums): \"Full band: drums in\""
+   ],
+   "C": [
+    "add_layer(drums): \"You're playing with tons of energy—bringing the drums back in to ride with you.\"",
+    "set_intensity(0.50): \"Lifting the band up to meet your busy, loud solo without drowning you out.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-arc#5",
+  "session": "sim-blues-in-a-arc",
+  "bar": 24,
+  "situation": "Bar 24, solo (bar 12 of 12). The player is playing busy and loud (energy 0.93, steady). Band: intensity 0.88, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.83): \"Leaving you some headroom\""
+   ],
+   "B": [
+    "fire_stinger(fill): \"You're on fire. Here's a fill to push you into the next solo chorus!\""
+   ],
+   "C": [
+    "keep going"
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-arc#8",
+  "session": "sim-night-shift-arc",
+  "bar": 36,
+  "situation": "Bar 36, chorus (bar 8 of 8). The player is playing a medium groove (energy 0.47, rising). Band: intensity 0.28, bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.51): \"You're building, the band lifts with you\"",
+    "add_layer(drums): \"Bringing the drums back in with you\""
+   ],
+   "B": [
+    "set_intensity(0.45): \"You're digging in harder and climbing, so we'll lift the band up to meet you.\"",
+    "add_layer(drums): \"Bringing the drums back in to push the energy you're building.\""
+   ],
+   "C": [
+    "set_intensity(0.50): \"Settling into the groove\"",
+    "add_layer(drums): \"Bringing the drums back\""
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-slowburn#11",
+  "session": "sim-night-shift-slowburn",
+  "bar": 48,
+  "situation": "Bar 48, chorus (bar 8 of 8). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.86, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "keep going"
+   ],
+   "C": [
+    "set_intensity(0.50): \"Easing back to give you room\""
+   ]
+  }
+ }
+]

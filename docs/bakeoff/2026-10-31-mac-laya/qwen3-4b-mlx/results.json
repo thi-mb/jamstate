@@ -1,0 +1,1531 @@
+{
+ "host": "Thiago's MacBook Pro (M4 Max), localhost",
+ "created": "2026-10-31T14:33:05.344Z",
+ "brains": [
+  "Qwen"
+ ],
+ "turns": [
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 1509,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 664,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 550,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 674,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 772,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 608,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 593,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 883,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 700,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 602,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 762,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 554,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 648,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 794,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 641,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 617,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 734,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 489,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 779,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 492,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 741,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 534,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 697,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 710,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 544,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 592,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 630,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 719,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 512,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 753,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 641,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 688,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 603,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 566,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 571,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 600,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 565,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 664,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 822,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 629,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 705,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 686,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 854,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 819,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 824,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 667,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 605,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 701,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 686,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 682,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 681,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 660,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 688,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 788,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 632,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 542,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 735,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 646,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 755,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 626,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 731,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 852,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 516,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 778,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 693,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 826,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 689,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 967,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 785,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 600,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 593,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 567,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 619,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 713,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 616,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 607,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 875,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 670,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 781,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 631,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 569,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 561,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 581,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 640,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 558,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 547,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 581,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 621,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 645,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 658,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 656,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 795,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 527,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 550,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 704,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 657,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 625,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 873,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 784,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 710,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 523,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "mlx-community/Qwen3-4B-Instruct-2507-4bit",
+   "latencyMs": 575,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  }
+ ],
+ "loops": [
+  {
+   "session": "sim-blues-in-a-arc",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 0,
+   "follow": 0.11121464355510004,
+   "silentDrop": 0,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 0,
+   "follow": 0.5881612628167376,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "brain": "Qwen",
+   "turns": 10,
+   "errors": 0,
+   "moves": 0,
+   "follow": -0.5387764244838001,
+   "silentDrop": 0,
+   "busyLift": 0.5
+  },
+  {
+   "session": "sim-late-set-arc",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 0,
+   "follow": 0.4686768187618606,
+   "silentDrop": 0,
+   "busyLift": 0.4
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 0,
+   "follow": 0.3933023847117283,
+   "silentDrop": null,
+   "busyLift": 0.5
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "brain": "Qwen",
+   "turns": 10,
+   "errors": 0,
+   "moves": 0,
+   "follow": 0.017053511711046777,
+   "silentDrop": 0,
+   "busyLift": 0.2
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 0,
+   "follow": -0.2787551006964034,
+   "silentDrop": 0,
+   "busyLift": 0.6
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 0,
+   "follow": 0.4144205565541414,
+   "silentDrop": null,
+   "busyLift": 0.75
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "brain": "Qwen",
+   "turns": 10,
+   "errors": 0,
+   "moves": 0,
+   "follow": -0.43786447157303027,
+   "silentDrop": 0,
+   "busyLift": 0.25
+  }
+ ],
+ "key": {
+  "sim-blues-in-a-arc#0": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#1": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#2": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#3": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#4": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#5": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#6": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#7": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#8": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#9": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#10": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-arc#11": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#0": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#1": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#2": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#3": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#4": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#5": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#6": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#7": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#8": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#9": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#10": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#11": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#0": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#1": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#2": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#3": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#4": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#5": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#6": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#7": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#8": {
+   "A": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#9": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#0": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#1": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#2": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#3": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#4": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#5": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#6": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#7": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#8": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#9": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#10": {
+   "A": "Qwen"
+  },
+  "sim-late-set-arc#11": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#0": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#1": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#2": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#3": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#4": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#5": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#6": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#7": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#8": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#9": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#10": {
+   "A": "Qwen"
+  },
+  "sim-late-set-slowburn#11": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#0": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#1": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#2": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#3": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#4": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#5": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#6": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#7": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#8": {
+   "A": "Qwen"
+  },
+  "sim-late-set-stopstart#9": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#0": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#1": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#2": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#3": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#4": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#5": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#6": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#7": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#8": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#9": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#10": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-arc#11": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#0": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#1": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#2": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#3": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#4": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#5": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#6": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#7": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#8": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#9": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#10": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-slowburn#11": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#0": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#1": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#2": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#3": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#4": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#5": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#6": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#7": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#8": {
+   "A": "Qwen"
+  },
+  "sim-night-shift-stopstart#9": {
+   "A": "Qwen"
+  }
+ }
+}

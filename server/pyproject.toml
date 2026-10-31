@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jamstate-server"
-version = "0.1.0"
-description = "jamstate app server: serves the web app and proxies the bandleader to an OpenAI-compatible LLM"
+version = "0.1.1"
+description = "Optional jamstate companion server: static page, brain relays (local LLM, Jev) and session sync"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Apache-2.0" }
