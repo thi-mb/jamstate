@@ -71,3 +71,6 @@ button.primary { background: var(--accent); color: #1a1205; border-color: var(--
 .errors { color: var(--bad); font-size: 13px; white-space: pre-wrap; }
 kbd { border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; font-size: 12px; }
 input[type=text] { flex: 1; min-width: 0; }
+input[type=password] { font: inherit; color: var(--text); background: #0b0d11; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+.brain-cfg label input[type=text], .brain-cfg label input[type=password] { display: block; width: 100%; margin-top: 3px; }
+code { font-size: 12px; }
