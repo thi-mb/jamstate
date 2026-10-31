@@ -1,7 +1,7 @@
 // Built-in sound: small Web Audio voices so the band plays with nothing
 // installed. Every note is scheduled at an exact AudioContext time.
 
-import { DRUM } from "../core/bank";
+import { DRUM } from "../core/groove";
 import type { Sink } from "../core/transport";
 import type { NoteEvent, Voice } from "../core/types";
 
@@ -105,8 +105,18 @@ export class Synth implements Sink {
         return this.noiseBurst(t, v * 0.35, 0.045, "highpass", 7500, out);
       case DRUM.openHat:
         return this.noiseBurst(t, v * 0.35, 0.3, "highpass", 7000, out);
+      case DRUM.pedalHat:
+        return this.noiseBurst(t, v * 0.25, 0.03, "highpass", 6500, out);
       case DRUM.crash:
         return this.noiseBurst(t, v * 0.45, 1.6, "highpass", 4500, out);
+      case DRUM.ride:
+        this.tone(t, "square", 3200, 3150, 0.3, v * 0.03, 0.35, out);
+        return this.noiseBurst(t, v * 0.22, 0.35, "bandpass", 6000, out);
+      case DRUM.bell:
+        this.tone(t, "square", 2400, 2380, 0.4, v * 0.06, 0.5, out);
+        return this.noiseBurst(t, v * 0.18, 0.2, "bandpass", 5000, out);
+      case DRUM.clap:
+        return this.noiseBurst(t, v * 0.6, 0.12, "bandpass", 1800, out);
       case DRUM.tomHi:
       case DRUM.tomMid:
       case DRUM.tomLo: {

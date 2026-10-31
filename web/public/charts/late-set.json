@@ -1,0 +1,16 @@
+{
+  "version": "0.1",
+  "title": "Late Set",
+  "bpm": 132,
+  "time_sig": "4/4",
+  "key": "Bb major",
+  "genre": "jazz",
+  "phrase_bars": 4,
+  "sections": [
+    { "name": "intro", "bars": 4, "chords": ["Cm7 F7"], "intensity": 0.3 },
+    { "name": "A", "bars": 8, "chords": ["Bbmaj7 G7", "Cm7 F7", "Dm7 G7", "Cm7 F7", "Fm7 Bb7", "Ebmaj7 Ab7", "Dm7 G7", "Cm7 F7"], "intensity": 0.45 },
+    { "name": "B", "bars": 8, "chords": ["Am7b5", "D7", "Gm7", "C7", "Cm7", "F7", "Bbmaj7", "Cm7 F7"], "intensity": 0.55 },
+    { "name": "solo", "bars": 8, "chords": ["Bbmaj7 G7", "Cm7 F7", "Dm7 G7", "Cm7 F7", "Fm7 Bb7", "Ebmaj7 Ab7", "Dm7 G7", "Cm7 F7"], "intensity": 0.65 }
+  ],
+  "form": ["intro", "A", "A", "B", "A", "solo", "solo", "B", "solo", "A", "A", "B", "A"]
+}

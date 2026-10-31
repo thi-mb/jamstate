@@ -1,0 +1,75 @@
+{
+  "format": "houseband-genre/0.1",
+  "id": "jazz",
+  "name": "Jazz",
+  "description": "Swing on the ride with the hi-hat on two and four, a feathered kick and snare chatter, a walking bass from medium intensity up (two-feel below), and rootless piano voicings comped off the beat.",
+  "parts": ["drums", "bass", "chords"],
+  "feel": { "swing": 0.6, "swing_unit": 8 },
+  "humanize": {
+    "drums": { "jitter_ms": 4, "velocity": 8, "lines": { "cymbal": -4, "snare": 3 } },
+    "bass": { "offset_ms": -3, "jitter_ms": 4, "velocity": 6 },
+    "chords": { "offset_ms": 6, "jitter_ms": 8, "velocity": 9, "spread_ms": 10 }
+  },
+  "drums": {
+    "grid": 2,
+    "cymbal": "ride",
+    "cymbal_sections": { "intro": "hat" },
+    "levels": [
+      [
+        { "cymbal": "h.hhh.hh", "pedal": "..x...x.", "kick": "g.g.g.g." }
+      ],
+      [
+        { "cymbal": "x.xhx.xh", "pedal": "..x...x.", "kick": "g.g.g.g." },
+        { "cymbal": "x.xhx.xh", "pedal": "..x...x.", "kick": "g.g.g.g.", "snare": "......g." }
+      ],
+      [
+        { "cymbal": "x.xhx.xh", "pedal": "..x...x.", "kick": "g.g.g.g.", "snare": "...g..g." },
+        { "cymbal": "x.xhx.xh", "pedal": "..x...x.", "kick": "g.g.g.g.", "snare": ".g....x." },
+        { "cymbal": "x.xhx.xh", "pedal": "..x...x.", "kick": "g.g.g.g.", "snare": "....g..h" },
+        { "lines": { "cymbal": "x.xhx.xh", "pedal": "..x...x.", "kick": "g.g.g.g.", "snare": "...g.hxx" }, "phrase_end": true }
+      ],
+      [
+        { "cymbal": "X.xhX.xh", "pedal": "..x...x.", "kick": "g.g.g..x", "snare": "..g.x..g" },
+        { "cymbal": "X.xhX.xh", "pedal": "..x...x.", "kick": "g.g.x.g.", "snare": "...x.g.h" },
+        { "cymbal": "X.xhX.xh", "pedal": "..x...x.", "kick": "g..xg.g.", "snare": ".h..g.x." },
+        { "lines": { "cymbal": "X.xhX.xh", "pedal": "..x...x.", "kick": "g.g.g..x", "snare": "..g.xhxX" }, "phrase_end": true }
+      ]
+    ],
+    "ghosts": [0, 0, 0, 0],
+    "phrase_fills": [0, 0.1, 0.2, 0.35],
+    "fills": [
+      { "beats": 1, "levels": [0, 3], "lines": { "snare": "hx" } },
+      { "beats": 1, "levels": [1, 3], "lines": { "snare": "x.", "tom_lo": ".x" } },
+      { "beats": 2, "levels": [1, 3], "lines": { "snare": "x.xx", "kick": "...x" } },
+      { "beats": 2, "levels": [2, 3], "lines": { "snare": "xxx.", "tom_mid": "...x" } },
+      { "beats": 4, "levels": [3, 3], "lines": { "snare": "x.xxx.x.", "tom_hi": "......x.", "tom_lo": ".......x", "kick": "...x...." } }
+    ],
+    "pickup": { "snare": "hx" }
+  },
+  "bass": {
+    "grid": 2,
+    "levels": [
+      ["R - - - - - - -", "R - - - 5 - - -"],
+      ["R - - - 5 - - -", "R - - - 3 - - -", { "steps": "R - - - 5 - A -", "phrase_end": true }],
+      ["R - - - 5 - - -"],
+      ["R - - - 5 - - -"]
+    ],
+    "approach": "mixed",
+    "approach_chance": [0, 0.3, 0.6, 0.7],
+    "walk": { "levels": [2, 3], "skip_chance": 0.1 }
+  },
+  "chords": {
+    "grid": 2,
+    "voicing": "shell",
+    "range": [50, 70],
+    "levels": [
+      ["x - - - - - - -", "x - - - - - . ."],
+      ["x - - . . . . .", "x . . x . . . .", ". . . x - - . ."],
+      ["x . . x . . . .", ". . . x . . x .", ". x . . . . x .", "x . . . . x . p"],
+      ["x . . x . x . .", ". x . . x . . p", "x . . x . . . p", ". . x . . x . x"]
+    ]
+  },
+  "ending": { "rit": 0.25, "ring_beats": 4, "chord": { "major": "69", "minor": "m6" }, "drums": "hit" },
+  "forms": ["32-bar AABA: head, solo choruses, head", "12-bar jazz blues", "intro (4 bars on a ii-V) then the tune"],
+  "progressions": ["ii7 V7 Imaj7", "Imaj7 VI7 ii7 V7", "iim7b5 V7 i6", "I7 IV7 I7 v7 I7 IV7 IV7 I7 VI7 ii7 V7 I7 VI7 ii7 V7"]
+}
