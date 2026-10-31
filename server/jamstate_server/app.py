@@ -1,4 +1,4 @@
-"""The Jam State app server: serves the built web app and the /api endpoints.
+"""The jamstate app server: serves the built web app and the /api endpoints.
 
 Runs on the DGX Spark next to the model. Holds no session state: every
 request carries everything it needs, so restarting it loses nothing.

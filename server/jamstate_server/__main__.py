@@ -13,7 +13,7 @@ from .sessions import SessionStore, default_dir
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(prog="jamstate_server", description="Jam State app server: web app + bandleader proxy")
+    ap = argparse.ArgumentParser(prog="jamstate_server", description="jamstate app server: web app + bandleader proxy")
     ap.add_argument("--host", default=os.environ.get("JAMSTATE_HOST", "127.0.0.1"))
     ap.add_argument("--port", type=int, default=int(os.environ.get("JAMSTATE_PORT", "8765")))
     ap.add_argument("--static", type=Path, default=None, help="built web app to serve (web/dist)")
@@ -29,7 +29,7 @@ def main() -> None:
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     llm = LLMClient(args.llm_url, args.model, args.api_key, args.timeout) if args.llm_url else None
     httpd = serve(App(args.static, llm, SessionStore(args.sessions_dir)), args.host, args.port)
-    logging.info("Jam State server on http://%s:%d (llm: %s)", args.host, args.port, args.llm_url or "none")
+    logging.info("jamstate server on http://%s:%d (llm: %s)", args.host, args.port, args.llm_url or "none")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

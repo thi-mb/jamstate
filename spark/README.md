@@ -1,4 +1,4 @@
-# Running Jam State on the DGX Spark
+# Running jamstate on the DGX Spark
 
 The Spark hosts everything except the music itself: the built web app, the
 app server with the `/api/leader` proxy, and the bandleader model. The
@@ -118,12 +118,12 @@ To stop serving: `sudo tailscale serve --https=443 off`.
 
 ## 5. Keep it running
 
-Two systemd user services, as set up on the Jam State Spark. The model:
+Two systemd user services, as set up on the jamstate Spark. The model:
 
 ```ini
 # ~/.config/systemd/user/jamstate-llm.service
 [Unit]
-Description=Jam State bandleader model (llama-server, qwen3-30b-a3b) on 127.0.0.1:8080
+Description=jamstate bandleader model (llama-server, qwen3-30b-a3b) on 127.0.0.1:8080
 
 [Service]
 ExecStart=%h/llama.cpp/build/bin/llama-server -m %h/models/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf --alias qwen3-30b-a3b --host 127.0.0.1 --port 8080 -ngl 99 -c 8192 --parallel 1 --jinja
@@ -138,7 +138,7 @@ The app server, which starts after the model:
 ```ini
 # ~/.config/systemd/user/jamstate-app.service
 [Unit]
-Description=Jam State app server (web/dist + /api) on 127.0.0.1:8765
+Description=jamstate app server (web/dist + /api) on 127.0.0.1:8765
 After=network-online.target jamstate-llm.service
 Wants=jamstate-llm.service
 

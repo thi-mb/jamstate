@@ -71,7 +71,7 @@ class FakeModel:
 
 @pytest.fixture
 def static_dir(tmp_path):
-    (tmp_path / "index.html").write_text("<!doctype html><title>Jam State</title>")
+    (tmp_path / "index.html").write_text("<!doctype html><title>jamstate</title>")
     (tmp_path / "charts").mkdir()
     (tmp_path / "charts" / "a.json").write_text('{"x":1}')
     return tmp_path
@@ -154,7 +154,7 @@ def test_static_files_and_no_path_traversal(static_dir, tmp_path_factory):
     httpd, base = start_app(static_dir, None)
     try:
         status, ctype, data = get(base + "/")
-        assert status == 200 and b"Jam State" in data and ctype.startswith("text/html")
+        assert status == 200 and b"jamstate" in data and ctype.startswith("text/html")
         status, ctype, data = get(base + "/charts/a.json")
         assert status == 200 and json.loads(data) == {"x": 1}
         status, _, data = get(base + "/../secret.txt")
