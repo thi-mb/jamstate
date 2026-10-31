@@ -24,7 +24,7 @@ three good, in that order:
 3. **Your music** (v0.5–v0.7). Play any instrument, bring any song, and play
    it from a real stage view, then go public.
 
-Two things run through every release:
+Three things run through every release:
 - **The v0 rules hold.** The music never stutters, the browser owns time,
   the Spark is an advisor that can vanish, every move lands on a boundary
   and carries a reason ([architecture.md](architecture.md#design-principles)).
@@ -32,6 +32,31 @@ Two things run through every release:
   governor, never a second clock.
 - **Each release ships its own UI.** v0.7 is the polish pass, not the first
   time a feature gets a screen.
+- **Genres.** A genre is more than a groove: it decides how the band
+  composes, who's in it, how it's produced, and how the leader behaves.
+  Every release adds its layer to the same genre packs; see
+  [Genres](#genres).
+
+## Genres
+
+A **genre pack** is one data file (plus samples) that every layer reads. It
+starts small in v0.1 and each release fills in its part, so by v1.0 a genre
+changes everything about how the band plays and sounds.
+
+| Layer | What the genre sets | Added in |
+|-------|---------------------|----------|
+| Composition | Groove vocabulary per part (drum patterns, bass lines, comping), swing and feel, typical forms and progressions, fills and endings, how intensity levels differ | v0.1 |
+| Instrumentation | Default lineup and alternatives (jazz trio vs funk band vs rock four-piece vs bossa duo), which parts exist at all | v0.2 |
+| Production | Sounds per part, mix and effects (dry and tight vs roomy, tape saturation, reverb size, drum tuning, sidechain), loudness | v0.2 |
+| Listening | What counts as "busy" or "outside" for this genre (a bebop solo vs a blues solo), how strictly to keep tempo | v0.3 |
+| Leading | The leader's moves and taste: jazz trades fours and stays dynamic, rock builds to big choruses, a ballad stays out of the way, funk locks the groove and changes little | v0.4 |
+| Songs | Text-to-song and free jam know the genre's forms and harmony ("bossa nova in D" gives a bossa form, chords and lineup) | v0.6 |
+
+The pack format is a decision record in v0.1, so genres can be added without
+code once the engine supports the layers. Target for v1.0: about five genres
+that are clearly different (for example blues/shuffle, funk, rock, jazz
+swing, bossa or Latin), picked with Thiago. Community genre packs after
+v1.0.
 
 ## Where v0 left us
 
@@ -98,10 +123,12 @@ Scope:
 - **Parts as data:** generators keyed by part *role* (drums, bass, keys, and
   room for more) instead of three hard-wired parts, so v0.2 can add
   instruments without touching the arranger.
-- **Feel in the chart and arranger:** `swing` (0 = straight, 0.66 = triplet
-  swing) and a groove style per section (e.g. `rock`, `funk`, `shuffle`,
-  `ballad`). Chart format v0.1, superseding
+- **Genre packs, composition layer:** the pack format (decision record) and
+  the first two or three genres' groove vocabularies. A song picks a genre;
+  a section can override feel. Chart format v0.1, superseding
   [ADR-0010](decisions/0010-chart-format-v0.md) additively.
+- **Feel in the chart and arranger:** `swing` (0 = straight, 0.66 = triplet
+  swing), set by the genre and overridable per section.
 - **Humanize:** per-part micro-timing (bass slightly behind, hats ahead or
   behind by style), velocity variation, accents. Seeded, so replays match.
 - **Bass lines that move:** a vocabulary per style and intensity: root-fifth,
@@ -118,7 +145,8 @@ Scope:
 Done when:
 - Through MIDI out to Ableton (so the synth isn't judged), the band sounds
   like players.
-- Swing at 0 and 0.66 are clearly different; the bass doesn't sound like all
+- The same chart in two genres sounds like two different bands, through the
+  same sounds. Swing at 0 and 0.66 are clearly different; the bass doesn't sound like all
   quarter or all eighth notes over a 16-bar section.
 - A song starts with a count-in and an "end the song" cue gives a proper
   ending.
@@ -146,6 +174,9 @@ Scope:
   which parts play, with which instrument, at what volume and pan. A lineup
   picker in the page that works live. `add_layer`/`drop_layer` cover every
   part in the lineup, and MIDI out gets one channel per part.
+- **Genre packs, instrumentation and production layers:** each genre gets
+  a default lineup, its sounds, and a mix preset (effects, room, drum
+  tuning, loudness).
 - Sample sizes and licenses are written down in `docs/` before a set is
   added.
 
@@ -155,6 +186,8 @@ Done when:
 - He can pick upright bass + brushes + piano for one song and electric bass +
   kit + organ + guitar for another, and switch a part's instrument mid-song
   without a click or a dropped bar.
+- Switching genre changes the lineup and the mix, and each genre's
+  default sounds like that genre.
 - The default lineup's samples stay under about 10 MB.
 
 ## Phase 2: the bandleader listens and leads
@@ -186,7 +219,8 @@ Scope:
   Spark turns it into the same cue moves. Advisory like any leader output.
 - **Leader eval set on the Spark:** recorded and scripted situations ("goes
   sparse for 8 bars", "builds to the chorus", "stops", "calls and waits"),
-  each with the moves a good bandleader would or wouldn't make. Scores Qwen
+  each with the moves a good bandleader would or wouldn't make. Features
+  are read against the genre (what's "busy" in a ballad isn't in bebop). Scores Qwen
   and the rule leader, run next to `spark/bench_leader.py`. This release
   gets the baseline score; v0.4 improves it.
 
@@ -214,6 +248,10 @@ Scope:
 - **Bandleader personality:** presets (steady, supportive, adventurous) that
   set how often and how boldly it moves, through the prompt and the
   governor's dwell times.
+- **Genre taste:** the genre pack's leading layer: which moves the leader
+  favours, how often it moves, and how it shapes a song (jazz stays
+  dynamic and trades, rock builds to the chorus, funk locks in). Personality
+  adjusts within the genre's range.
 - **Trading fours:** when you lay out at a phrase boundary, a band
   instrument from the lineup takes a short solo or answers your last phrase,
   then hands back when you come in. Uses v0.3's phrasing signals and a
@@ -227,6 +265,8 @@ Done when:
 - Two runs with different personalities differ clearly in how much the band
   moves.
 - Thiago trades fours with the band for a full chorus.
+- Over the same playing, the leader makes recognisably different calls in
+  two genres.
 
 ## Phase 3: your music
 
@@ -265,7 +305,8 @@ Scope, in order of value:
   `schema/chart.schema.json`. Songs saved on the Spark.
 - **Text to song:** "slow 12/8 blues in G, two verses and a solo, organ
   trio" → a valid chart via Qwen with schema-constrained output, opened in
-  the editor to tweak.
+  the editor to tweak. Uses the genre packs' forms, progressions and
+  lineups.
 - **Play-in progression:** play a progression once on keys or guitar and it
   becomes a section.
 - **Free jam, no chart:** start playing and the band works out key, tempo
@@ -307,9 +348,35 @@ Done when:
 
 - Repo goes public (Apache 2.0); README, getting started for laptop-only and
   laptop + Spark, a short architecture tour.
+- About five genre packs that each sound and lead differently.
 - Demo video.
 - Decision records brought up to date (the Proposed ones accepted or
   superseded).
+
+## After v1.0
+
+Longer-term goals, in rough order. Both reuse the v0.x pieces rather than
+starting over.
+
+- **Phone app:** the phone listens to you through its mic and plays the band
+  out of a Bluetooth or wired speaker. The engine is already browser
+  TypeScript, so it starts as an installable web app (PWA) and becomes a
+  native wrapper only if needed. Needs: v0.5's audio input, the band and
+  leader running fully on the phone (rule leader on device, LLM optional over
+  the network), and output-latency compensation, since Bluetooth adds about
+  150–250 ms between the band and your ears. The governor's bar/phrase
+  landing already tolerates late *decisions*; this is about scheduling the
+  *sound* earlier by the measured output latency, and about the mic hearing
+  the speaker (bleed gating from v0.5 becomes required, not a stretch).
+- **Singing mode:** your voice guides the track. Builds on v0.5's pitch
+  tracking (voice is single-note) and v0.3's phrasing: the band follows the
+  sung melody's energy and phrasing, finds verse vs chorus from melody
+  repetition, and picks or adjusts chords to fit what you sing (an
+  extension of free jam from v0.6). Needs a voice-tuned pitch tracker
+  (vibrato, slides, breathy onsets) and a "fit chords to melody" step,
+  probably on the Spark first.
+- **Community genre packs:** the pack format from v0.1, documented for
+  others to add genres.
 
 ## Later
 
@@ -336,6 +403,6 @@ Not scheduled; each can slot in once its question is answered:
    groove work is engine-only and shapes what the new instruments play.
    Sound first would fix test 10 sooner.
 2. **Sample set for v0.2:** which one (license and size).
-3. **Styles:** which two or three groove styles matter most (this decides
-   what the bass and drum vocabularies cover first).
+3. **Genres:** which two or three come first in v0.1, and the five for
+   v1.0.
 4. **Link:** can a local helper app run on the work Mac at all?
