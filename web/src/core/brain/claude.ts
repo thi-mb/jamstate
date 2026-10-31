@@ -9,7 +9,9 @@ import { extractJson, splitMoves } from "./check";
 import { chartSchema, chartSystem, LEADER_SYSTEM, movesSchema, strictSchema } from "./prompt";
 import { BrainError, now, type BrainAnswer, type BrainProvider, type ChartAnswer, type Fetch } from "./types";
 
-export const DEFAULT_CLAUDE_MODEL = "claude-opus-5-5";
+export const DEFAULT_CLAUDE_MODEL = "claude-haiku-5-5";
+/** The default before 2026-10-31; settings that still hold it untouched move to the new one. */
+export const OLD_DEFAULT_CLAUDE_MODEL = "claude-opus-5-5";
 
 export interface ClaudeConfig {
   apiKey: string;
@@ -33,7 +35,11 @@ export class ClaudeBrain implements BrainProvider {
   }
 
   private sdk(): Promise<Anthropic> {
-    this.client ??= import("@anthropic-ai/sdk").then(
+    this.client ??= import("@anthropic-ai/sdk").catch((e) => {
+      // Usually a page loaded before a rebuild asking for a chunk that is gone.
+      this.client = null;
+      throw new BrainError(`couldn't load the Claude client (${(e as Error).message}); reload the page`);
+    }).then(
       ({ default: Anthropic }) =>
         new Anthropic({
           apiKey: this.cfg.apiKey,
