@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/thi-mb/jamstate/schema/genre.schema.json",
-  "title": "houseband genre pack",
+  "title": "jamstate genre pack",
   "description": "One genre: how the band composes in it (v0.1). Later releases add instrumentation, production, listening and leading layers to the same file. Format: docs/decisions/0012-genre-pack-format.md. The browser (web/src/core/genre.ts) enforces the same rules with clearer messages.",
   "type": "object",
   "required": ["format", "id", "name", "drums", "bass", "chords"],
@@ -85,7 +85,7 @@
     }
   },
   "properties": {
-    "format": { "const": "houseband-genre/0.1" },
+    "format": { "const": "jamstate-genre/0.1" },
     "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
     "name": { "type": "string", "minLength": 1 },
     "description": { "type": "string" },
