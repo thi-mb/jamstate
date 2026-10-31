@@ -202,7 +202,10 @@ const BRAIN_FIELDS: [string, (s: BrainSettings) => string, (s: BrainSettings, v:
   ["openai-url", (s) => s.openai.url, (s, v) => (s.openai.url = v)],
   ["openai-model", (s) => s.openai.model, (s, v) => (s.openai.model = v)],
   ["openai-key", (s) => s.openai.apiKey, (s, v) => (s.openai.apiKey = v)],
-  ["claude-model", (s) => s.claude.model, (s, v) => (s.claude.model = v)],
+  ["claude-model", (s) => s.claude.model, (s, v) => {
+    if (v !== s.claude.model) s.claude.modelChosen = true;
+    s.claude.model = v;
+  }],
   ["claude-key", (s) => s.claude.apiKey, (s, v) => (s.claude.apiKey = v)],
   ["jev-model", (s) => s.jev.model, (s, v) => (s.jev.model = v)],
   ["jev-key", (s) => s.jev.apiKey, (s, v) => (s.jev.apiKey = v)],

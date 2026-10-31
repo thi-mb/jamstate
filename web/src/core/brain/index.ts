@@ -3,7 +3,7 @@
 // key-value store the shell provides (ADR-0016).
 
 import { RuleLeader, type LeaderContext } from "../rules";
-import { ClaudeBrain, DEFAULT_CLAUDE_MODEL } from "./claude";
+import { ClaudeBrain, DEFAULT_CLAUDE_MODEL, OLD_DEFAULT_CLAUDE_MODEL } from "./claude";
 import { JevBrain, JEV_API } from "./jev";
 import { LayaBrain, LAYA_URL } from "./laya";
 import { OpenAIBrain } from "./openai";
@@ -31,7 +31,8 @@ export type LeaderChoice = BrainKind | "none" | "blind";
 export interface BrainSettings {
   kind: LeaderChoice;
   openai: { url: string; model: string; apiKey: string };
-  claude: { model: string; apiKey: string };
+  /** `modelChosen`: the player typed the model (so a default change leaves it alone). */
+  claude: { model: string; apiKey: string; modelChosen?: boolean };
   /** `relay`: go through the companion server (needed in the browser). */
   jev: { model: string; apiKey: string; relay: boolean; url: string };
   /** Laya on the player's machine (localbrain/laya_server.py); no key. */
@@ -66,7 +67,7 @@ export function mergeSettings(raw: unknown): BrainSettings {
   return {
     kind: kinds.includes(r.kind as string) ? (r.kind as LeaderChoice) : DEFAULT_SETTINGS.kind,
     openai: { ...DEFAULT_SETTINGS.openai, ...(r.openai ?? {}) },
-    claude: { ...DEFAULT_SETTINGS.claude, ...(r.claude ?? {}) },
+    claude: claudeSettings(r.claude),
     jev: { ...DEFAULT_SETTINGS.jev, ...(r.jev ?? {}) },
     laya: { ...DEFAULT_SETTINGS.laya, ...(r.laya ?? {}) },
   };
@@ -75,6 +76,13 @@ export function mergeSettings(raw: unknown): BrainSettings {
 /** The companion server's Claude relay, used when the page has no key of its own. */
 export const CLAUDE_RELAY = "api/relay/anthropic";
 const absolute = (u: string) => (typeof location !== "undefined" ? new URL(u, location.href).href.replace(/\/$/, "") : u);
+
+function claudeSettings(raw: Partial<BrainSettings["claude"]> | undefined): BrainSettings["claude"] {
+  const c = { ...DEFAULT_SETTINGS.claude, ...(raw ?? {}) };
+  // The model field was prefilled with the old default, so a saved copy of it wasn't a choice.
+  if (c.model === OLD_DEFAULT_CLAUDE_MODEL && !c.modelChosen) c.model = DEFAULT_CLAUDE_MODEL;
+  return c;
+}
 
 /** A provider for these settings, or null for "none". */
 export function makeBrain(s: BrainSettings, fetchFn?: Fetch): BrainProvider | null {

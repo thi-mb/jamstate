@@ -134,7 +134,7 @@ describe("Claude brain", () => {
     expect(a.moves).toEqual([{ move: "add_layer", part: "drums", reason: "Drums in" }]);
     expect(a.rejected).toHaveLength(1);
     expect(sent[0].url).toMatch(/\/v1\/messages$/);
-    expect(sent[0].body.model).toBe("claude-opus-5-5");
+    expect(sent[0].body.model).toBe("claude-haiku-5-5");
     expect(sent[0].body.output_config.format.type).toBe("json_schema");
     expect(sent[0].body.output_config.effort).toBe("low");
     expect(sent[0].body.system).toBe(LEADER_SYSTEM);
