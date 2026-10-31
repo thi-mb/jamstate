@@ -6,8 +6,8 @@ public v1.0. Each release has a goal you can hear or see, a scope, and a
 ([testing/v0.md](testing/v0.md)). A release is finished when Thiago's
 hands-on test passes, not when the code merges.
 
-Status: **draft**, agreed in outline with Thiago (2026-10-31). Open points
-are at the end.
+Status: **agreed** with Thiago (2026-10-31). A few smaller open points are
+at the end.
 
 ## The shape of it
 
