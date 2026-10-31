@@ -2,8 +2,9 @@
 
 Picks the default bandleader brain by measurement
 ([ADR-0016](../decisions/0016-brain-providers.md)). Status: **in progress**.
-Jev and rules are measured; Qwen runs on the Spark next; Claude needs an
-Anthropic key in the environment; Thiago's blind rating is still to do. Until
+Rules, Jev (from the cloud) and Qwen (on the Spark) are measured on simulated
+sessions; Claude runs next from a fresh cloud session; there are no real
+recorded jams on the Spark yet; Thiago's blind rating is still to do. Until
 it's done the default stays **rules**.
 
 ## How it works
@@ -52,6 +53,21 @@ sessions, 102 turns per brain:
 | Rules | 0 ms | 0 ms | 0 ms | 0 | 0.94 | 0.94 | 1.00 | 1.00 |
 | Jev (jev-1.14.0) | 75 ms | 97 ms | 190 ms | 0 | 0.89 | 0.96 | 1.00 | 1.00 |
 
+[2026-10-31-spark-sim/summary.md](2026-10-31-spark-sim/summary.md), same 9
+sessions on the DGX Spark, Qwen local (llama-server, Q4_K_M):
+
+| Brain | p50 | p95 | max | Errors | Moves per turn | follow | silent→drop | busy→lift |
+|-------|-----|-----|-----|--------|----------------|--------|-------------|-----------|
+| Qwen3-30B-A3B | 787 ms | 1111 ms | 1360 ms | 0 | 1.04 | 0.14 | 0.00 | 0.51 |
+
+Qwen is valid and on time (2 of 102 turns had a rejected move, none late),
+but it barely follows the player: it almost never says "keep going" (1 turn
+of 102, vs 44 for rules), never drops back when the player stops, and swings
+intensity between extremes (0.28 and 1.0 are its most common answers). With
+the same prompt as v0, so this is the v0 LLM's behavior too; it was never
+measured this way before. Prompting or tuning Qwen is v0.4 work; for now it
+is the weakest brain here.
+
 What we learned about Jev on the way:
 
 - **First questions failed.** Asked "how hard should the band play?" with the
@@ -75,8 +91,11 @@ What we learned about Jev on the way:
 
 ## Still to do
 
-- [ ] Qwen3-30B-A3B on the Spark, on the same sessions and on Thiago's saved
-      jams (`--brains rules,qwen,jev --label spark`, see
+- [x] Qwen3-30B-A3B on the Spark, simulated sessions.
+- [ ] Real jams: none saved on the Spark yet (`~/.local/share/jamstate/sessions`
+      doesn't exist). Play a few, keep them (now automatic in the browser,
+      **Sync to Spark** to put them there), then re-run
+      (`--brains rules,qwen,jev --label spark`, see
       [spark/README.md](../../spark/README.md)).
 - [ ] Claude: set `ANTHROPIC_API_KEY` in the environment and add `claude` to
       `--brains`.
