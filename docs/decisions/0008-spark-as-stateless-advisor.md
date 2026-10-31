@@ -1,6 +1,6 @@
 # 0008. The DGX Spark hosts the server and models; it never owns time
 
-- Status: Proposed
+- Status: Superseded by [0015](0015-no-server-required.md) (2026-10-31)
 - Date: 2026-10-30
 
 ## Context
