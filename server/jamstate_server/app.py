@@ -1,7 +1,15 @@
-"""The jamstate app server: serves the built web app and the /api endpoints.
+"""The optional jamstate companion server (ADR-0015).
 
-Runs on the DGX Spark next to the model. Holds no session state: every
-request carries everything it needs, so restarting it loses nothing.
+The page plays without it. When it runs (on the Spark, or on a player's own
+machine) it adds what a static host can't:
+- serves the built page;
+- relays brain calls to providers a web page can't reach directly: the local
+  OpenAI-compatible model (Qwen on the Spark, only reachable from the box)
+  and Jev (TypeSafe blocks browser calls);
+- saves recorded sessions as files (optional sync for the eval set).
+
+Prompts and move checking live in the page now; the relay forwards bytes and
+never reads the music. Holds no jam state, so restarting it loses nothing.
 """
 
 from __future__ import annotations
@@ -14,28 +22,49 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
-from urllib.parse import unquote
+import urllib.error
+import urllib.request
+from dataclasses import dataclass, field
+from urllib.parse import unquote, urlsplit
 
-from .leader import ask_leader, write_chart
-from .llm import LLMClient, LLMError
 from .sessions import MAX_SESSION_BYTES, SessionError, SessionStore
 
 log = logging.getLogger("jamstate")
 
 MAX_BODY = 64 * 1024
+JEV_API = "https://api.typesafe.ai/v1/systemone"
 
 
+@dataclass
+class Relay:
+    """Where a relay forwards to. `key` is the server's own key, used only for
+    same-origin requests that bring none (so another site can't spend it)."""
+
+    url: str
+    key: str | None = None
+    timeout: float = 15.0
+
+
+@dataclass
 class App:
-    def __init__(self, static_dir: Path | None, llm: LLMClient | None, sessions: SessionStore | None = None):
-        self.static_dir = static_dir.resolve() if static_dir else None
-        self.llm = llm
-        self.sessions = sessions
+    static_dir: Path | None = None
+    relays: dict[str, Relay] = field(default_factory=dict)
+    sessions: SessionStore | None = None
+    #: Origins allowed to call the API from another site (CORS); same-origin always works.
+    cors_origins: tuple[str, ...] = ()
+    #: Model name to show in /api/health for the llm relay.
+    llm_model: str | None = None
+
+    def __post_init__(self) -> None:
+        self.static_dir = self.static_dir.resolve() if self.static_dir else None
 
     def health(self) -> dict[str, Any]:
+        llm = self.relays.get("llm")
         return {
             "ok": True,
-            "llm_url": self.llm.base_url if self.llm else None,
-            "model": self.llm.model if self.llm else None,
+            "relay": {name: True for name in self.relays},
+            "llm_url": llm.url if llm else None,
+            "model": self.llm_model if llm else None,
             "static": str(self.static_dir) if self.static_dir else None,
             "sessions": str(self.sessions.root) if self.sessions else None,
         }
@@ -48,14 +77,47 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
         def log_message(self, fmt: str, *args: Any) -> None:  # route through logging
             log.debug("%s %s", self.address_string(), fmt % args)
 
+        def _origin_allowed(self) -> str | None:
+            origin = self.headers.get("origin")
+            if origin and (origin in app.cors_origins or "*" in app.cors_origins):
+                return origin
+            return None
+
+        def _same_origin(self) -> bool:
+            origin = self.headers.get("origin")
+            if not origin:
+                return True  # curl, scripts, same-origin GETs
+            return urlsplit(origin).netloc == self.headers.get("host")
+
+        def _cors(self) -> None:
+            origin = self._origin_allowed()
+            if origin:
+                self.send_header("access-control-allow-origin", origin)
+                self.send_header("vary", "origin")
+
         def _json(self, status: int, body: Any) -> None:
             data = json.dumps(body).encode()
             self.send_response(status)
             self.send_header("content-type", "application/json")
             self.send_header("content-length", str(len(data)))
             self.send_header("cache-control", "no-store")
+            self._cors()
             self.end_headers()
             self.wfile.write(data)
+
+        def do_OPTIONS(self) -> None:
+            if not self.path.startswith("/api/") or not self._origin_allowed():
+                self.send_response(403)
+                self.send_header("content-length", "0")
+                self.end_headers()
+                return
+            self.send_response(204)
+            self._cors()
+            self.send_header("access-control-allow-methods", "GET, POST, OPTIONS")
+            self.send_header("access-control-allow-headers", "authorization, content-type")
+            self.send_header("access-control-max-age", "600")
+            self.send_header("content-length", "0")
+            self.end_headers()
 
         def _body(self, limit: int = MAX_BODY) -> Any:
             n = int(self.headers.get("content-length") or 0)
@@ -86,6 +148,8 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
         def do_POST(self) -> None:
             path = self.path.split("?", 1)[0]
             if path == "/api/sessions":
+                if not self._same_origin() and not self._origin_allowed():
+                    return self._json(403, {"error": "origin not allowed"})
                 if app.sessions is None:
                     return self._json(503, {"error": "session storage is off"})
                 try:
@@ -94,29 +158,49 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
                     return self._json(400, {"error": str(e)})
                 log.info("saved session %s", name)
                 return self._json(200, {"name": name})
+            if path.startswith("/api/relay/"):
+                return self._relay(path[len("/api/relay/"):])
+            return self._json(404, {"error": "not found"})
+
+        def _relay(self, rest: str) -> None:
+            name, _, sub = rest.partition("/")
+            relay = app.relays.get(name)
+            if relay is None:
+                return self._json(503, {"error": f"no {name} relay on this server"})
+            if not self._same_origin() and not self._origin_allowed():
+                return self._json(403, {"error": "origin not allowed"})
+            if name == "jev":
+                target = relay.url
+            else:
+                # Only the one call the page makes; this is not a general proxy.
+                if sub != "chat/completions":
+                    return self._json(404, {"error": "not found"})
+                target = relay.url.rstrip("/") + "/" + sub
+            n = int(self.headers.get("content-length") or 0)
+            if n > MAX_BODY:
+                return self._json(413, {"error": "request too large"})
+            data = self.rfile.read(n)
+            auth = self.headers.get("authorization")
+            if not auth and relay.key and self._same_origin():
+                auth = f"Bearer {relay.key}"
+            headers = {"content-type": "application/json", **({"authorization": auth} if auth else {})}
+            req = urllib.request.Request(target, data=data, headers=headers, method="POST")
             try:
-                body = self._body()
-            except (ValueError, json.JSONDecodeError) as e:
-                return self._json(400, {"error": f"bad request: {e}"})
-            if path not in ("/api/leader", "/api/chart"):
-                return self._json(404, {"error": "not found"})
-            if app.llm is None:
-                return self._json(503, {"error": "no LLM configured (start the server with --llm-url)"})
-            try:
-                if path == "/api/leader":
-                    if not isinstance(body, dict):
-                        return self._json(400, {"error": "summary must be an object"})
-                    out = ask_leader(app.llm, body)
-                    log.info("leader bar=%s %d ms moves=%s rejected=%d", body.get("bar"), out["latency_ms"], [m["move"] for m in out["moves"]], len(out["rejected"]))
-                else:
-                    prompt = body.get("prompt") if isinstance(body, dict) else None
-                    if not isinstance(prompt, str) or not prompt.strip():
-                        return self._json(400, {"error": "prompt is required"})
-                    out = write_chart(app.llm, prompt[:2000])
-                return self._json(200, out)
-            except LLMError as e:
-                log.warning("%s failed: %s", path, e)
-                return self._json(502, {"error": str(e)})
+                with urllib.request.urlopen(req, timeout=relay.timeout) as resp:
+                    status, out, ctype = resp.status, resp.read(), resp.headers.get("content-type", "application/json")
+            except urllib.error.HTTPError as e:
+                status, out, ctype = e.code, e.read(), e.headers.get("content-type", "application/json")
+            except (urllib.error.URLError, TimeoutError, OSError) as e:
+                log.warning("relay %s unreachable: %s", name, e)
+                return self._json(502, {"error": f"{name} unreachable: {e}"})
+            log.info("relay %s -> %d (%d bytes)", name, status, len(out))
+            self.send_response(status)
+            self.send_header("content-type", ctype)
+            self.send_header("content-length", str(len(out)))
+            self.send_header("cache-control", "no-store")
+            self._cors()
+            self.end_headers()
+            self.wfile.write(out)
 
         def _static(self, path: str) -> None:
             if app.static_dir is None:

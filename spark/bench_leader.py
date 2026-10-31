@@ -9,7 +9,10 @@ Stdlib only. Examples:
 
     python3 spark/bench_leader.py --url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b
     python3 spark/bench_leader.py --url http://127.0.0.1:8080/v1 --model gpt-oss-20b -n 50 --bpm 112
-    python3 spark/bench_leader.py --via-server http://127.0.0.1:8765   # through jamstate_server
+    python3 spark/bench_leader.py --url http://127.0.0.1:8765/api/relay/llm   # through the jamstate server's relay
+
+The prompt and move checking now live in the page (web/src/core/brain); to
+compare every brain on recorded sessions use `npm run bakeoff` in web/.
 """
 
 import argparse
@@ -163,13 +166,6 @@ def call_model(args, schema, request):
     return ms, tokens, moves
 
 
-def call_server(args, request):
-    t0 = time.perf_counter()
-    resp = post(args.via_server.rstrip("/") + "/api/leader", request, args.timeout)
-    ms = (time.perf_counter() - t0) * 1000
-    return ms, None, resp.get("moves")
-
-
 def pct(values, p):
     values = sorted(values)
     k = max(0, min(len(values) - 1, round(p / 100 * (len(values) - 1))))
@@ -180,7 +176,6 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--url", default="http://127.0.0.1:8080/v1", help="OpenAI-compatible base URL")
     ap.add_argument("--model", default="default")
-    ap.add_argument("--via-server", help="hit jamstate_server's /api/leader at this base URL instead")
     ap.add_argument("-n", type=int, default=30, help="number of requests")
     ap.add_argument("--bpm", type=float, default=112)
     ap.add_argument("--beats-per-bar", type=int, default=4)
@@ -194,13 +189,13 @@ def main():
     bar_ms = 60000 / args.bpm * args.beats_per_bar
     target_ms = 1500
 
-    target = args.via_server or f"{args.url} ({args.model})"
+    target = f"{args.url} ({args.model})"
     print(f"target: {target}\nschema: {schema_src}\nrequests: {args.n}, bar = {bar_ms:.0f} ms at {args.bpm:g} bpm\n")
 
     # One untimed call so model load and prompt-cache warm-up don't skew results.
     try:
         req = make_request(rng, "steady")
-        call_server(args, req) if args.via_server else call_model(args, schema, req)
+        call_model(args, schema, req)
     except Exception as e:  # noqa: BLE001 - report and keep going
         print(f"warm-up failed: {e}")
 
@@ -210,10 +205,7 @@ def main():
         scenario = list(SCENARIOS)[i % len(SCENARIOS)]
         req = make_request(rng, scenario)
         try:
-            if args.via_server:
-                ms, tokens, moves = call_server(args, req)
-            else:
-                ms, tokens, moves = call_model(args, schema, req)
+            ms, tokens, moves = call_model(args, schema, req)
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, KeyError) as e:
             errors += 1
             print(f"[{i:3}] {scenario:7} ERROR {e}")

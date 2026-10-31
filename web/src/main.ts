@@ -1,6 +1,6 @@
 // Page wiring: chart loading, controls, and one jam session at a time.
 
-import { MidiSink, Midi, MultiSink } from "./audio/midi";
+import { MidiSink, MultiSink } from "./audio/midi";
 import { Synth } from "./audio/synth";
 import { Ticker } from "./audio/ticker";
 import { ChartError, loadChart, type Chart, type ChartJSON } from "./core/chart";
@@ -14,18 +14,26 @@ import { checkSession, replaySession, sessionEngine, SessionRecorder, summarizeB
 import { DEMO_SCRIPT, parseScript, SimPlayer, type SimMode } from "./core/simplayer";
 import { Transport, type Sink } from "./core/transport";
 import { FEELS, STINGERS } from "./core/types";
-import { RemoteLeader } from "./leader/remote";
+import { BRAIN_LABELS, BrainLeader, makeBrain, mergeSettings, type BrainSettings, type LeaderChoice } from "./core/brain";
+import { genreIds } from "./core/genres";
+import type { SessionMeta, SessionStore } from "./core/platform";
+import { ServerSessionStore, webPlatform } from "./platform/web";
 import { attachKeyboard } from "./ui/keyboard";
 import { Overlay } from "./ui/overlay";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
 const overlay = new Overlay();
-const midi = new Midi();
+let audio: AudioContext | null = null;
+const getAudio = () => (audio ??= new AudioContext({ latencyHint: "interactive" }));
+const platform = webPlatform(getAudio);
+const midi = platform.midi;
+/** The companion server (the Spark, or a local one), if this page was served by one. */
+let server: { sessions: boolean; relay: { llm: boolean; jev: boolean } } | null = null;
+const spark: SessionStore = new ServerSessionStore();
 let chart: Chart | null = null;
 let chartRaw: ChartJSON | null = null;
 let chartJson = "";
-let audio: AudioContext | null = null;
 let session: Session | null = null;
 /** The last jam (running or stopped), ready to save. */
 let lastJam: { recorder: SessionRecorder; engine: Engine } | null = null;
@@ -39,7 +47,7 @@ interface Session {
   ticker: Ticker;
   tracker: NoteTracker;
   synth: Synth;
-  remote: RemoteLeader | null;
+  remote: BrainLeader | null;
   recorder: SessionRecorder | null;
   /** Playing back a recorded session: live input and the genre/swing pickers are ignored. */
   replay: boolean;
@@ -97,22 +105,20 @@ $("chart-apply").onclick = () => {
 $("chart-ask").onclick = async () => {
   const prompt = ($("chart-prompt") as HTMLInputElement).value.trim();
   if (!prompt) return;
+  const brain = makeBrain(settings);
+  if (!brain?.writeChart) {
+    $("chart-errors").textContent = "Writing a chart needs an LLM brain: pick OpenAI-compatible or Claude under Bandleader.";
+    return;
+  }
   const btn = $<HTMLButtonElement>("chart-ask");
   btn.disabled = true;
   $("chart-errors").textContent = "";
-  $("chart-info").textContent = "Asking the LLM for a chart…";
+  $("chart-info").textContent = `Asking ${brain.label} for a chart…`;
   try {
-    const r = await fetch("api/chart", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ prompt }),
-      signal: AbortSignal.timeout(60_000),
-    });
-    const body = await r.json();
-    if (!r.ok) throw new Error(body.error ?? `HTTP ${r.status}`);
-    if (useChart(body.chart, `LLM chart (${body.latency_ms} ms)`)) $("chart-editor").hidden = false;
-    else $("chart-info").textContent = "The LLM's chart has problems; fix it in the editor.";
-    ($("chart-json") as HTMLTextAreaElement).value = JSON.stringify(body.chart, null, 2);
+    const res = await brain.writeChart(prompt, genreIds(), AbortSignal.timeout(90_000));
+    if (useChart(res.chart, `${brain.label} chart (${res.latencyMs} ms)`)) $("chart-editor").hidden = false;
+    else $("chart-info").textContent = "The model's chart has problems; fix it in the editor.";
+    ($("chart-json") as HTMLTextAreaElement).value = JSON.stringify(res.chart, null, 2);
   } catch (err) {
     $("chart-info").textContent = "";
     $("chart-errors").textContent = `Couldn't write a chart: ${(err as Error).message}`;
@@ -177,26 +183,111 @@ function buildManualMoves(): void {
   );
 }
 
-// ---------- server / leader ----------
+// ---------- brain (bandleader) ----------
+
+const SETTINGS_KEY = "jamstate.brain";
+let settings: BrainSettings = mergeSettings(platform.settings.get(SETTINGS_KEY));
+
+const field = (id: string) => $<HTMLInputElement>(id);
+const BRAIN_FIELDS: [string, (s: BrainSettings) => string, (s: BrainSettings, v: string) => void][] = [
+  ["openai-url", (s) => s.openai.url, (s, v) => (s.openai.url = v)],
+  ["openai-model", (s) => s.openai.model, (s, v) => (s.openai.model = v)],
+  ["openai-key", (s) => s.openai.apiKey, (s, v) => (s.openai.apiKey = v)],
+  ["claude-model", (s) => s.claude.model, (s, v) => (s.claude.model = v)],
+  ["claude-key", (s) => s.claude.apiKey, (s, v) => (s.claude.apiKey = v)],
+  ["jev-model", (s) => s.jev.model, (s, v) => (s.jev.model = v)],
+  ["jev-key", (s) => s.jev.apiKey, (s, v) => (s.jev.apiKey = v)],
+  ["jev-url", (s) => s.jev.url, (s, v) => (s.jev.url = v)],
+];
+
+function showBrainSettings(): void {
+  const sel = $<HTMLSelectElement>("leader-select");
+  if (!sel.options.length) sel.replaceChildren(...(Object.keys(BRAIN_LABELS) as LeaderChoice[]).map((k) => new Option(BRAIN_LABELS[k], k)));
+  sel.value = settings.kind;
+  for (const [id, get] of BRAIN_FIELDS) field(id).value = get(settings);
+  field("jev-relay").checked = settings.jev.relay;
+  field("jev-url").disabled = !settings.jev.relay;
+  for (const k of ["openai", "claude", "jev"]) $(`brain-${k}`).hidden = settings.kind !== k;
+  $("brain-keys-note").hidden = !["openai", "claude", "jev"].includes(settings.kind);
+  $<HTMLButtonElement>("brain-test").disabled = settings.kind === "none";
+}
+
+function saveBrainSettings(): void {
+  const next = mergeSettings(settings);
+  next.kind = $<HTMLSelectElement>("leader-select").value as LeaderChoice;
+  for (const [id, , set] of BRAIN_FIELDS) set(next, field(id).value.trim());
+  next.jev.relay = field("jev-relay").checked;
+  settings = next;
+  platform.settings.set(SETTINGS_KEY, settings);
+  showBrainSettings();
+  if (session && chart && !session.replay) {
+    const { leader, remote, every } = makeLeader(chart);
+    session.conductor.leader = leader;
+    session.conductor.everyBars = every;
+    session.remote = remote;
+    overlay.leaderStatus(leaderLabel(session));
+  }
+}
+
+$("leader-select").onchange = saveBrainSettings;
+for (const [id] of BRAIN_FIELDS) field(id).onchange = saveBrainSettings;
+field("jev-relay").onchange = saveBrainSettings;
+
+/** A sample phrase: the player got busy over four bars. */
+const SAMPLE_CONTEXT = {
+  bar: 15, section: "verse", bar_in_section: 3, section_bars: 8, phrase_bars: 4, intensity: 0.4, target: 0.4,
+  layers: ["drums", "bass", "chords"], feel: "normal", form: ["intro", "verse", "chorus"], form_pos: 1, sections: ["intro", "verse", "chorus"],
+  player: { bars: 4, energy: 0.8, density: 3.1, mean_velocity: 0.8, rest_ratio: 0.1, repetition: 0.2, register: "mid", trend: "rising", silent_bars: 0 },
+  recent_moves: [],
+} as const;
+
+$("brain-test").onclick = async () => {
+  const brain = makeBrain(settings);
+  const out = $("brain-result");
+  if (!brain) return;
+  out.className = "small dim";
+  out.textContent = `Asking ${brain.label}…`;
+  try {
+    const a = await brain.decide(structuredClone(SAMPLE_CONTEXT) as never, AbortSignal.timeout(20_000));
+    out.className = "small";
+    const moves = a.moves.map((m) => `${m.move}: “${m.reason}”`).join("; ") || "keep going";
+    out.textContent = `${a.model ?? brain.label}, ${a.latencyMs} ms: ${moves}${a.rejected.length ? ` (${a.rejected.length} rejected: ${a.rejected[0].error})` : ""}`;
+  } catch (e) {
+    out.className = "small errors";
+    out.textContent = `${brain.label} failed: ${(e as Error).message}`;
+  }
+};
 
 async function checkServer(): Promise<void> {
   const el = $("server-status");
   try {
     const r = await fetch("api/health", { signal: AbortSignal.timeout(2000) });
     const h = await r.json();
-    el.textContent = h.llm_url ? `Server up · model ${h.model ?? "?"} at ${h.llm_url}` : "Server up · no LLM configured";
+    if (!h.ok) throw new Error("not a jamstate server");
+    server = { sessions: !!h.sessions, relay: { llm: !!h.relay?.llm, jev: !!h.relay?.jev } };
+    const relays = [server.relay.llm && `LLM ${h.model ?? ""}`.trim(), server.relay.jev && "Jev"].filter(Boolean).join(", ");
+    el.textContent = `jamstate server here${relays ? ` · relays ${relays}` : ""}${server.sessions ? " · session sync" : ""}`;
   } catch {
-    el.textContent = "No jamstate server reachable: the LLM leader will fall back to rules.";
+    server = null;
+    el.textContent = "Standalone: no jamstate server. Rules, Claude and direct LLM endpoints work; Jev needs the server's relay.";
   }
+  $("session-save").hidden = !server?.sessions;
+  void listSessions();
 }
 
-function makeLeader(c: Chart): { leader: Leader | null; remote: RemoteLeader | null; every: number } {
-  const kind = $<HTMLSelectElement>("leader-select").value;
+function makeLeader(c: Chart): { leader: Leader | null; remote: BrainLeader | null; every: number } {
   const rules = new RuleLeader();
-  if (kind === "none") return { leader: null, remote: null, every: 4 };
-  if (kind === "rules") return { leader: ruleLeader(rules), remote: null, every: 2 };
+  const brain = makeBrain(settings);
+  if (!brain) return { leader: null, remote: null, every: 4 };
+  if (brain.kind === "rules") return { leader: ruleLeader(rules), remote: null, every: 2 };
   const phraseMs = (c.phraseBars * c.beatsPerBar * 60_000) / c.bpm;
-  const remote = new RemoteLeader(rules, { endpoint: "api/leader", timeoutMs: phraseMs });
+  const remote = new BrainLeader(brain, rules, {
+    timeoutMs: phraseMs,
+    onAnswer: (_ctx, a, err) => {
+      if (a?.rejected.length) overlay.note(`${brain.label}: ${a.rejected.length} move(s) rejected (${a.rejected[0].error})`);
+      if (err) overlay.note(`${brain.label}: ${err}`);
+    },
+  });
   return { leader: remote, remote, every: c.phraseBars };
 }
 
@@ -204,8 +295,9 @@ function leaderLabel(s: Session): string {
   if (!s.conductor.leader) return "off";
   if (!s.remote) return "rules";
   const st = s.remote.status;
-  if (st.mode === "fallback") return `rules (LLM down: ${st.lastError ?? "?"})`;
-  return `LLM${st.model ? ` ${st.model}` : ""}${st.lastLatencyMs ? ` · ${st.lastLatencyMs} ms` : ""}${st.failures ? ` · ${st.failures} failed` : ""}`;
+  const name = s.remote.brain.label;
+  if (st.mode === "fallback") return `rules (${name} down: ${st.lastError ?? "?"})`;
+  return `${name}${st.model && !name.includes(st.model) ? ` (${st.model})` : ""}${st.lastLatencyMs ? ` · ${st.lastLatencyMs} ms` : ""}${st.failures ? ` · ${st.failures} failed` : ""}`;
 }
 
 // ---------- MIDI ----------
@@ -221,14 +313,14 @@ async function initMidi(): Promise<void> {
     const outSel = $<HTMLSelectElement>("midi-out");
     const keepIn = inSel.value;
     const keepOut = outSel.value;
-    inSel.replaceChildren(new Option("all inputs", "all"), ...midi.inputs().map((i) => new Option(i.name ?? i.id, i.id)));
-    outSel.replaceChildren(new Option("none", ""), ...midi.outputs().map((o) => new Option(o.name ?? o.id, o.id)));
+    inSel.replaceChildren(new Option("all inputs", "all"), ...midi.inputs().map((i) => new Option(i.name, i.id)));
+    outSel.replaceChildren(new Option("none", ""), ...midi.outputs().map((o) => new Option(o.name, o.id)));
     inSel.value = [...inSel.options].some((o) => o.value === keepIn) ? keepIn : "all";
     outSel.value = [...outSel.options].some((o) => o.value === keepOut) ? keepOut : "";
     $("midi-status").textContent = `${midi.inputs().length} MIDI in, ${midi.outputs().length} MIDI out`;
     listenMidi();
   };
-  midi.access!.onstatechange = refresh;
+  midi.onChange(refresh);
   $("midi-in").onchange = listenMidi;
   $("midi-out").onchange = listenMidi;
   refresh();
@@ -298,7 +390,7 @@ function setRunning(running: boolean): void {
 function start(replay?: SessionFile): void {
   if (!chart && !replay) return;
   stop();
-  audio ??= new AudioContext({ latencyHint: "interactive" });
+  audio = getAudio();
   void audio.resume();
   const c = replay ? loadChart(replay.chart) : chart!;
   const synth = new Synth(audio);
@@ -314,7 +406,7 @@ function start(replay?: SessionFile): void {
   const { leader, remote, every } = replay ? { leader: null, remote: null, every: replay.every_bars } : makeLeader(c);
   const recorder = replay
     ? null
-    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, seed, countIn: c.countIn, config, leader: $<HTMLSelectElement>("leader-select").value, everyBars: every });
+    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every });
   if (recorder) lastJam = { recorder, engine };
   const tracker = new NoteTracker();
   const sim = new SimPlayer(seed & 0xffff);
@@ -387,6 +479,7 @@ function start(replay?: SessionFile): void {
 
 function stop(): void {
   if (!session) return;
+  const wasLive = !session.replay;
   session.ticker.stop();
   session.transport.stop();
   for (const release of held.values()) release();
@@ -394,20 +487,19 @@ function stop(): void {
   session = null;
   setRunning(false);
   updateSessionStatus();
+  if (wasLive) void keepJam();
 }
 
 $("start").onclick = () => start();
 $("stop").onclick = stop;
 $("end-song").onclick = () => submitManual({ move: "end_song", reason: "You called the ending" });
-$("leader-select").onchange = () => {
-  if (session && chart && !session.replay) {
-    const { leader, remote, every } = makeLeader(chart);
-    session.conductor.leader = leader;
-    session.conductor.everyBars = every;
-    session.remote = remote;
-    overlay.leaderStatus(leaderLabel(session));
-  }
-};
+
+/** What the recording says played: "rules", "none", or the brain and model ("jev", "openai:leader"). */
+function leaderName(): string {
+  if (settings.kind === "openai") return `openai:${settings.openai.model}`;
+  if (settings.kind === "claude") return `claude:${settings.claude.model}`;
+  return settings.kind;
+}
 
 // ---------- recording and replay ----------
 
@@ -445,14 +537,33 @@ function fileName(f: SessionFile): string {
   return `${f.created.slice(0, 19).replace(/[:T]/g, "-")}-${slug}.json`;
 }
 
-$("session-download").onclick = () => {
-  const f = currentFile();
-  if (!f) return;
+function download(f: SessionFile): void {
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(f)], { type: "application/json" }));
   a.download = fileName(f);
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/** Keep the jam that just stopped in browser storage (ADR-0015). */
+async function keepJam(): Promise<void> {
+  const f = currentFile();
+  if (!f || !f.bars.length) return;
+  const res = $("session-result");
+  try {
+    const name = await platform.sessions.save(f);
+    await listSessions(`b:${name}`);
+    res.className = "small";
+    res.textContent = `Kept in ${platform.sessions.label}: ${f.title}, ${f.bars.length} bars. Pick it under Replay any time, or Download it.`;
+  } catch (e) {
+    res.className = "small errors";
+    res.textContent = `Couldn't keep it in ${platform.sessions.label} (${(e as Error).message}). Use Download.`;
+  }
+}
+
+$("session-download").onclick = () => {
+  const f = currentFile();
+  if (f) download(f);
 };
 
 $("session-save").onclick = async () => {
@@ -460,14 +571,12 @@ $("session-save").onclick = async () => {
   if (!f) return;
   const res = $("session-result");
   try {
-    const r = await fetch("api/sessions", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(f), signal: AbortSignal.timeout(10_000) });
-    const body = await r.json();
-    if (!r.ok) throw new Error(body.error ?? `HTTP ${r.status}`);
-    res.textContent = `Saved on the Spark as ${body.name}`;
+    const name = await spark.save(f);
+    res.textContent = `Synced to ${spark.label} as ${name}`;
     res.className = "small";
     void listSessions();
   } catch (e) {
-    res.textContent = `Couldn't save on the Spark (${(e as Error).message}). Use Download instead.`;
+    res.textContent = `Couldn't sync to ${spark.label} (${(e as Error).message}). Use Download instead.`;
     res.className = "small errors";
   }
 };
@@ -484,40 +593,85 @@ function openReplay(raw: unknown, label: string): void {
     res.textContent = `Can't replay ${label}: ${(e as Error).message}`;
   }
   $<HTMLButtonElement>("session-check").disabled = !replayFile;
+  $<HTMLButtonElement>("session-export").disabled = !replayFile;
+  $<HTMLButtonElement>("session-delete").disabled = !replayFile || !$<HTMLSelectElement>("session-list").value.startsWith("b:");
   setRunning(!!session);
 }
 
-async function listSessions(): Promise<void> {
+const metaLabel = (s: SessionMeta) => `${s.created.slice(0, 16).replace("T", " ")} ${s.title} (${s.bars} bars${s.leader ? `, ${s.leader}` : ""})`;
+
+/** Sessions in this browser, plus the Spark's when a server is here. Values are "b:<name>" or "s:<name>". */
+async function listSessions(select?: string): Promise<void> {
   const sel = $<HTMLSelectElement>("session-list");
-  try {
-    const r = await fetch("api/sessions", { signal: AbortSignal.timeout(3000) });
-    if (!r.ok) return;
-    const list: { name: string; title: string; bars: number }[] = (await r.json()).sessions ?? [];
-    sel.replaceChildren(new Option(list.length ? "sessions saved on the Spark…" : "no sessions on the Spark yet", ""), ...list.map((s) => new Option(`${s.name} (${s.bars} bars)`, s.name)));
-  } catch {
-    /* no server: file replay still works */
+  const groups: HTMLElement[] = [];
+  let count = 0;
+  for (const [prefix, store] of [["b", platform.sessions], ...(server?.sessions ? [["s", spark]] : [])] as [string, SessionStore][]) {
+    try {
+      const list = await store.list();
+      count += list.length;
+      if (!list.length) continue;
+      const g = document.createElement("optgroup");
+      g.label = `in ${store.label}`;
+      g.append(...list.map((s) => new Option(metaLabel(s), `${prefix}:${s.name}`)));
+      groups.push(g);
+    } catch {
+      /* that store is unavailable; the others still work */
+    }
+  }
+  sel.replaceChildren(new Option(count ? "pick a session…" : "no sessions yet", ""), ...groups);
+  if (select && [...sel.options].some((o) => o.value === select)) {
+    sel.value = select;
+    await pickSession();
   }
 }
 
-$("session-list").onchange = async () => {
-  const name = $<HTMLSelectElement>("session-list").value;
-  if (!name) return;
+async function pickSession(): Promise<void> {
+  const v = $<HTMLSelectElement>("session-list").value;
+  if (!v) return;
+  const store = v.startsWith("s:") ? spark : platform.sessions;
+  const name = v.slice(2);
   try {
-    const r = await fetch(`api/sessions/${encodeURIComponent(name)}`);
-    openReplay(await r.json(), name);
+    openReplay(await store.load(name), name);
   } catch (e) {
     openReplay(null, `${name} (${(e as Error).message})`);
   }
-};
+}
+
+$("session-list").onchange = () => void pickSession();
 
 $("session-file").onchange = async (e) => {
-  const file = (e.target as HTMLInputElement).files?.[0];
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
   if (!file) return;
+  input.value = "";
+  let f: SessionFile;
   try {
-    openReplay(JSON.parse(await file.text()), file.name);
+    f = checkSession(JSON.parse(await file.text()));
   } catch (err) {
-    openReplay(null, `${file.name} (${(err as Error).message})`);
+    return openReplay(null, `${file.name} (${(err as Error).message})`);
   }
+  try {
+    const name = await platform.sessions.save(f);
+    await listSessions(`b:${name}`);
+  } catch {
+    openReplay(f, file.name);
+  }
+};
+
+$("session-export").onclick = () => {
+  if (replayFile) download(replayFile);
+};
+
+$("session-delete").onclick = async () => {
+  const v = $<HTMLSelectElement>("session-list").value;
+  if (!v.startsWith("b:") || !platform.sessions.remove) return;
+  if (!confirm("Remove this session from this browser?")) return;
+  await platform.sessions.remove(v.slice(2));
+  replayFile = null;
+  $("session-result").textContent = "Removed.";
+  await listSessions();
+  openReplay(null, "");
+  $("session-result").textContent = "Removed.";
 };
 
 $("session-check").onclick = async () => {
@@ -541,6 +695,7 @@ $("session-play").onclick = () => {
   if (replayFile) start(replayFile);
 };
 
+showBrainSettings();
 void loadCharts();
 void checkServer();
 void initMidi();
