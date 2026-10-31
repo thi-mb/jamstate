@@ -1,0 +1,2070 @@
+{
+ "host": "Thiago's MacBook Pro (M4 Max), localhost",
+ "created": "2026-10-31T14:26:49.833Z",
+ "brains": [
+  "Laya"
+ ],
+ "turns": [
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 25,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 13,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You went quiet, drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Easing back to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Easing back to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Easing back to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You went quiet, drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You went quiet, drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 11,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You went quiet, drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Easing back to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Easing back to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Easing back to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You went quiet, drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You went quiet, drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You went quiet, drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Easing back to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Easing back to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Easing back to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You went quiet, drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You went quiet, drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out to give you room"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya",
+   "model": "laya-multilingual@mlx",
+   "latencyMs": 10,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  }
+ ],
+ "loops": [
+  {
+   "session": "sim-blues-in-a-arc",
+   "brain": "Laya",
+   "turns": 12,
+   "errors": 0,
+   "moves": 11,
+   "follow": 0.9607232486847225,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "brain": "Laya",
+   "turns": 12,
+   "errors": 0,
+   "moves": 8,
+   "follow": 0.9602633525509112,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "brain": "Laya",
+   "turns": 10,
+   "errors": 0,
+   "moves": 13,
+   "follow": 0.984579370567991,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-late-set-arc",
+   "brain": "Laya",
+   "turns": 12,
+   "errors": 0,
+   "moves": 11,
+   "follow": 0.959612748444145,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "brain": "Laya",
+   "turns": 12,
+   "errors": 0,
+   "moves": 9,
+   "follow": 0.9662526905569956,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "brain": "Laya",
+   "turns": 10,
+   "errors": 0,
+   "moves": 12,
+   "follow": 0.9432920289311844,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "brain": "Laya",
+   "turns": 12,
+   "errors": 0,
+   "moves": 11,
+   "follow": 0.9637543426146246,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "brain": "Laya",
+   "turns": 12,
+   "errors": 0,
+   "moves": 7,
+   "follow": 0.9204528314636412,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "brain": "Laya",
+   "turns": 10,
+   "errors": 0,
+   "moves": 13,
+   "follow": 0.9582713779099061,
+   "silentDrop": 1,
+   "busyLift": 1
+  }
+ ],
+ "key": {
+  "sim-blues-in-a-arc#0": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#1": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#2": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#3": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#4": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#5": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#6": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#7": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#8": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#9": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#10": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-arc#11": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#0": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#1": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#2": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#3": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#4": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#5": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#6": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#7": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#8": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#9": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#10": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-slowburn#11": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#0": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#1": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#2": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#3": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#4": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#5": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#6": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#7": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#8": {
+   "A": "Laya"
+  },
+  "sim-blues-in-a-stopstart#9": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#0": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#1": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#2": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#3": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#4": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#5": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#6": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#7": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#8": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#9": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#10": {
+   "A": "Laya"
+  },
+  "sim-late-set-arc#11": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#0": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#1": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#2": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#3": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#4": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#5": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#6": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#7": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#8": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#9": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#10": {
+   "A": "Laya"
+  },
+  "sim-late-set-slowburn#11": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#0": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#1": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#2": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#3": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#4": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#5": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#6": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#7": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#8": {
+   "A": "Laya"
+  },
+  "sim-late-set-stopstart#9": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#0": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#1": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#2": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#3": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#4": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#5": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#6": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#7": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#8": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#9": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#10": {
+   "A": "Laya"
+  },
+  "sim-night-shift-arc#11": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#0": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#1": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#2": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#3": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#4": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#5": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#6": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#7": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#8": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#9": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#10": {
+   "A": "Laya"
+  },
+  "sim-night-shift-slowburn#11": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#0": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#1": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#2": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#3": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#4": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#5": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#6": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#7": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#8": {
+   "A": "Laya"
+  },
+  "sim-night-shift-stopstart#9": {
+   "A": "Laya"
+  }
+ }
+}

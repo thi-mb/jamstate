@@ -1,7 +1,7 @@
 {
   "name": "jamstate-web",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "jamstate: an AI backing band in the browser",
   "scripts": {
@@ -12,11 +12,16 @@
     "test": "vitest run",
     "simulate": "vite-node scripts/simulate.ts",
     "replay": "vite-node scripts/replay.ts",
-    "dump": "vite-node scripts/dump.ts"
+    "dump": "vite-node scripts/dump.ts",
+    "make-sessions": "vite-node scripts/make-sessions.ts",
+    "bakeoff": "vite-node scripts/bakeoff.ts"
   },
   "devDependencies": {
     "typescript": "5.9.3",
     "vite": "6.4.5",
     "vitest": "3.2.7"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.135.0"
   }
 }
