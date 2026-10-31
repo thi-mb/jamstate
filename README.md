@@ -51,7 +51,7 @@ browser only and sent only to that provider. **Test** asks it once.
 |-------|-------|-------|
 | Rules | nothing | the default and the fallback |
 | OpenAI-compatible | an endpoint | Qwen on the Spark through the server's relay (`api/relay/llm`, the default), Ollama (`http://localhost:11434/v1`, with `OLLAMA_ORIGINS` set to the page's origin), or OpenAI |
-| Claude | an Anthropic API key | called from the page; model `claude-opus-5-5` by default, editable |
+| Claude | an Anthropic API key | called from the page; model `claude-haiku-5-5` by default, editable |
 | Jev | a TypeSafe API key, or the server's | TypeSafe blocks calls from web pages, so it goes through the jamstate server's relay (`api/relay/jev`) |
 
 Only the LLM brains can write charts from a description (**Write**).

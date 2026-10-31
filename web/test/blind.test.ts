@@ -59,3 +59,11 @@ describe("Claude through the server", () => {
     }
   });
 });
+
+describe("Claude default model", () => {
+  it("is Haiku 5.5, and an untouched old default moves to it", () => {
+    expect(mergeSettings({}).claude.model).toBe("claude-haiku-5-5");
+    expect(mergeSettings({ claude: { model: "claude-opus-5-5", apiKey: "" } }).claude.model).toBe("claude-haiku-5-5");
+    expect(mergeSettings({ claude: { model: "claude-opus-5-5", apiKey: "", modelChosen: true } }).claude.model).toBe("claude-opus-5-5");
+  });
+});
