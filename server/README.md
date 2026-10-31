@@ -5,16 +5,21 @@ The page plays without it; on the Spark (or your own machine) it adds what a
 static host can't. Python standard library only.
 
 - `GET /` and everything else: the built web app (`--static web/dist`).
-- `GET /api/health`: `{ok, relay: {llm, jev}, llm_url, model, sessions}`.
+- `GET /api/health`: `{ok, relay: {llm, jev, anthropic}, llm_url, model, sessions}`.
 - `POST /api/relay/llm/chat/completions`: forwarded to `--llm-url` (Qwen on
   the Spark listens on 127.0.0.1 only, so the page reaches it through here).
 - `POST /api/relay/jev`: forwarded to TypeSafe's API, which blocks calls from
   web pages. On by default; `--no-jev` turns it off.
+- `POST /api/relay/anthropic/v1/messages`: forwarded to the Anthropic API,
+  only when the server has `ANTHROPIC_API_KEY` (or
+  `JAMSTATE_ANTHROPIC_API_KEY`) in its environment; `--no-claude` turns it
+  off. The page uses it when no Claude key is pasted in the page (it sends
+  `x-api-key: relay`); a page key goes straight to Anthropic instead.
 
   The relays forward bytes: the prompt, the questions and the move checking
   live in the page (`web/src/core/brain`). A request's own `Authorization`
   header is passed through. Without one, the server adds its own key
-  (`--api-key`/`JAMSTATE_LLM_KEY`, `TYPESAFE_API_KEY`), but only for
+  (`--api-key`/`JAMSTATE_LLM_KEY`, `TYPESAFE_API_KEY`, `ANTHROPIC_API_KEY`), but only for
   same-origin requests, so another site can't spend it.
 - CORS: only for origins listed with `--cors-origin` (or `JAMSTATE_CORS`,
   comma-separated), for a page hosted elsewhere that talks to a local server.

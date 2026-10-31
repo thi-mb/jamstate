@@ -33,6 +33,9 @@ log = logging.getLogger("jamstate")
 
 MAX_BODY = 64 * 1024
 JEV_API = "https://api.typesafe.ai/v1/systemone"
+ANTHROPIC_API = "https://api.anthropic.com"
+# The page sends this as its Claude key to mean "use the server's key".
+RELAY_KEY = "relay"
 
 
 @dataclass
@@ -171,6 +174,10 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
                 return self._json(403, {"error": "origin not allowed"})
             if name == "jev":
                 target = relay.url
+            elif name == "anthropic":
+                if sub != "v1/messages":
+                    return self._json(404, {"error": "not found"})
+                target = relay.url.rstrip("/") + "/" + sub
             else:
                 # Only the one call the page makes; this is not a general proxy.
                 if sub != "chat/completions":
@@ -180,10 +187,22 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
             if n > MAX_BODY:
                 return self._json(413, {"error": "request too large"})
             data = self.rfile.read(n)
-            auth = self.headers.get("authorization")
-            if not auth and relay.key and self._same_origin():
-                auth = f"Bearer {relay.key}"
-            headers = {"content-type": "application/json", **({"authorization": auth} if auth else {})}
+            headers = {"content-type": "application/json"}
+            if name == "anthropic":
+                key = self.headers.get("x-api-key")
+                if (not key or key == RELAY_KEY) and relay.key and self._same_origin():
+                    key = relay.key
+                if key and key != RELAY_KEY:
+                    headers["x-api-key"] = key
+                for h in ("anthropic-version", "anthropic-beta"):
+                    if self.headers.get(h):
+                        headers[h] = self.headers[h]
+            else:
+                auth = self.headers.get("authorization")
+                if not auth and relay.key and self._same_origin():
+                    auth = f"Bearer {relay.key}"
+                if auth:
+                    headers["authorization"] = auth
             req = urllib.request.Request(target, data=data, headers=headers, method="POST")
             try:
                 with urllib.request.urlopen(req, timeout=relay.timeout) as resp:

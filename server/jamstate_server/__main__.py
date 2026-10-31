@@ -7,7 +7,7 @@ import logging
 import os
 from pathlib import Path
 
-from .app import JEV_API, App, Relay, serve
+from .app import ANTHROPIC_API, JEV_API, App, Relay, serve
 from .sessions import SessionStore, default_dir
 
 
@@ -21,6 +21,7 @@ def main() -> None:
     ap.add_argument("--api-key", default=os.environ.get("JAMSTATE_LLM_KEY"), help="key for the LLM relay (same-origin requests only)")
     ap.add_argument("--timeout", type=float, default=15.0, help="seconds to wait for a relayed provider")
     ap.add_argument("--no-jev", action="store_true", help="turn off the Jev relay")
+    ap.add_argument("--no-claude", action="store_true", help="turn off the Claude relay (key from ANTHROPIC_API_KEY)")
     ap.add_argument("--cors-origin", action="append", default=[o for o in os.environ.get("JAMSTATE_CORS", "").split(",") if o],
                     help="also accept API calls from this origin (repeatable), e.g. a page on another host")
     ap.add_argument("--sessions-dir", type=Path, default=Path(os.environ.get("JAMSTATE_SESSIONS", default_dir())),
@@ -35,6 +36,10 @@ def main() -> None:
     if not args.no_jev:
         # The server's own key (if any) is used only for same-origin requests that bring none.
         relays["jev"] = Relay(JEV_API, os.environ.get("TYPESAFE_API_KEY"), args.timeout)
+    claude_key = os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("JAMSTATE_ANTHROPIC_API_KEY")
+    if claude_key and not args.no_claude:
+        # Only with a server key (used for same-origin requests); a page with its own key calls Anthropic directly.
+        relays["anthropic"] = Relay(ANTHROPIC_API, claude_key, max(args.timeout, 30.0))
     app = App(args.static, relays, SessionStore(args.sessions_dir), tuple(args.cors_origin), args.model if args.llm_url else None)
     httpd = serve(app, args.host, args.port)
     logging.info("jamstate server on http://%s:%d (relays: %s)", args.host, args.port, ", ".join(relays) or "none")
