@@ -1,0 +1,74 @@
+{
+  "format": "houseband-genre/0.1",
+  "id": "blues-rock",
+  "name": "Blues rock",
+  "description": "Shuffle on triplet-swung eighths with a heavy, laid-back backbeat, a root-fifth-sixth boogie in the bass, and keys comping on two and four. Ends with a slowdown and a big roll.",
+  "parts": ["drums", "bass", "chords"],
+  "feel": { "swing": 0.66, "swing_unit": 8 },
+  "humanize": {
+    "drums": { "jitter_ms": 4, "velocity": 8, "lines": { "snare": 6, "kick": 2 } },
+    "bass": { "offset_ms": 6, "jitter_ms": 4, "velocity": 7 },
+    "chords": { "offset_ms": 5, "jitter_ms": 5, "velocity": 7, "spread_ms": 8 }
+  },
+  "drums": {
+    "grid": 2,
+    "cymbal": "hat",
+    "cymbal_sections": { "chorus": "ride", "solo": "ride" },
+    "levels": [
+      [
+        { "kick": "x...x...", "stick": "..x...x.", "cymbal": "h.h.h.h." },
+        { "kick": "x.....x.", "stick": "..x...x.", "cymbal": "h.h.h.h." }
+      ],
+      [
+        { "kick": "x...x...", "snare": "..X...X.", "cymbal": "xhxhxhxh" },
+        { "kick": "x..xx...", "snare": "..X...X.", "cymbal": "xhxhxhxh" },
+        { "lines": { "kick": "x...x...", "snare": "..X...Xg", "cymbal": "xhxhxhxo" }, "phrase_end": true }
+      ],
+      [
+        { "kick": "x..xx...", "snare": "..X.g.X.", "cymbal": "xhxhxhxh" },
+        { "kick": "x...x..x", "snare": "..X...Xg", "cymbal": "xhxhxhxh" },
+        { "lines": { "kick": "x..xx...", "snare": "..X...XX", "cymbal": "xhxhxhxo" }, "phrase_end": true }
+      ],
+      [
+        { "kick": "x.xxx.x.", "snare": "..X.g.X.", "cymbal": "XxXxXxXx" },
+        { "kick": "x..xx..x", "snare": "..X...Xg", "cymbal": "XxXxXxXx" },
+        { "lines": { "kick": "x.xxx...", "snare": "..X.g.XX", "cymbal": "XxXxXxXo" }, "phrase_end": true }
+      ]
+    ],
+    "ghosts": [0, 0, 0, 0],
+    "phrase_fills": [0, 0.1, 0.2, 0.3],
+    "fills": [
+      { "beats": 1, "levels": [0, 3], "lines": { "snare": "xx" } },
+      { "beats": 1, "levels": [1, 3], "lines": { "tom_hi": "x.", "tom_lo": ".x" } },
+      { "beats": 2, "levels": [1, 3], "lines": { "snare": "xx..", "tom_hi": "..x.", "tom_lo": "...x" } },
+      { "beats": 2, "levels": [2, 3], "lines": { "snare": "x.xx", "kick": "x..." } },
+      { "beats": 4, "levels": [2, 3], "lines": { "snare": "xx..xx..", "tom_hi": "..x.....", "tom_mid": "......x.", "tom_lo": "...x...x" } }
+    ],
+    "pickup": { "snare": "xx" }
+  },
+  "bass": {
+    "grid": 2,
+    "levels": [
+      ["R - - - - - - -", "R - - - 5 - - -"],
+      ["R - - - 5 - - -", "R - - R 5 - - -", { "steps": "R - - - 5 - A -", "phrase_end": true }],
+      ["R - 5 - 6 - 5 -", "R - 5 - 6 - b7 -", { "steps": "R - 5 - 6 - A -", "phrase_end": true }],
+      ["R 3 5 6 b7 6 5 3", "R R 5 5 6 6 b7 6", { "steps": "R 3 5 6 b7 6 5 A", "phrase_end": true }]
+    ],
+    "approach": "chromatic",
+    "approach_chance": [0, 0.2, 0.25, 0.25]
+  },
+  "chords": {
+    "grid": 2,
+    "voicing": "triad",
+    "range": [55, 74],
+    "levels": [
+      ["x - - - - - - -"],
+      ["x - - - x - - -", ". . x - . . x -"],
+      [". . x - . . x -", "x - . x - . x .", ". . x . . . x p"],
+      ["x . X . x . X .", ". x X . . x X .", "x . X . x . X p"]
+    ]
+  },
+  "ending": { "rit": 0.3, "ring_beats": 4, "chord": { "major": "9", "minor": "m7" }, "drums": "roll" },
+  "forms": ["12-bar blues, head / solos / head", "verse (12-bar) / chorus (8 bars on IV and I) / solo / verse"],
+  "progressions": ["I7 IV7 I7 I7 IV7 IV7 I7 I7 V7 IV7 I7 V7", "I7 I7 I7 I7 IV7 IV7 I7 I7 V7 IV7 I7 V7", "i7 iv7 i7 i7 iv7 iv7 i7 i7 bVI7 V7 i7 V7"]
+}

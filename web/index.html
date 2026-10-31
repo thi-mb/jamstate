@@ -8,7 +8,7 @@
   </head>
   <body>
     <header>
-      <h1>houseband <small>v0</small></h1>
+      <h1>houseband <small>v0.1</small></h1>
       <p class="tag">An AI backing band that follows the song and reacts to how you play.</p>
     </header>
 
@@ -51,6 +51,7 @@
       <aside id="controls">
         <div class="row">
           <button id="start" class="primary">Start</button>
+          <button id="end-song" disabled title="The band finishes the phrase and ends the song">End song</button>
           <button id="stop" disabled>Stop</button>
           <label class="inline"><input type="checkbox" id="loop" checked /> loop form</label>
         </div>
@@ -58,6 +59,17 @@
         <fieldset>
           <legend>Song</legend>
           <select id="chart-select"></select>
+          <label>Genre <select id="genre-select"></select></label>
+          <label>Swing
+            <select id="swing-select">
+              <option value="">song's swing</option>
+              <option value="0">0 (straight)</option>
+              <option value="0.33">0.33 (light)</option>
+              <option value="0.5">0.5</option>
+              <option value="0.66">0.66 (triplet)</option>
+            </select>
+          </label>
+          <p class="dim small">Genre and swing change from the next bar, also while playing.</p>
           <div class="row">
             <label class="file">Load JSON… <input type="file" id="chart-file" accept=".json,application/json" hidden /></label>
             <button id="chart-edit-toggle">Edit</button>
@@ -108,6 +120,24 @@
           <legend>Output</legend>
           <label class="inline"><input type="checkbox" id="builtin" checked /> built-in sound</label>
           <label>MIDI out <select id="midi-out"><option value="">none</option></select></label>
+        </fieldset>
+
+        <fieldset>
+          <legend>Session</legend>
+          <div id="session-status" class="dim small">Every jam is recorded. Save it after you stop.</div>
+          <div class="row wrap">
+            <button id="session-download" disabled>Download</button>
+            <button id="session-save" disabled title="Save on the Spark (for replay and, later, the leader eval set)">Save to Spark</button>
+          </div>
+          <label>Replay
+            <select id="session-list"><option value="">sessions saved on the Spark…</option></select>
+          </label>
+          <div class="row wrap">
+            <label class="file">Open file… <input type="file" id="session-file" accept=".json,application/json" hidden /></label>
+            <button id="session-check" disabled title="Run the session offline and compare every bar">Check</button>
+            <button id="session-play" disabled title="Play it again: the same band, your recorded notes">Play</button>
+          </div>
+          <div id="session-result" class="small"></div>
         </fieldset>
 
         <fieldset>

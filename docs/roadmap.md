@@ -117,6 +117,9 @@ and the recordings.
 
 ### v0.1: Groove
 
+Status: built (2026-10-31), waiting on the hands-on test in
+[testing/v0.1.md](testing/v0.1.md).
+
 **Goal:** the band plays like people, not a sequencer. All engine work, in
 `web/src/core`. How the instruments *sound* is v0.2.
 
