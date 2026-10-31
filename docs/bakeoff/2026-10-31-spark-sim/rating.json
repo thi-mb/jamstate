@@ -1,0 +1,352 @@
+[
+ {
+  "id": "sim-late-set-arc#2",
+  "session": "sim-late-set-arc",
+  "bar": 12,
+  "situation": "Bar 12, A (bar 8 of 8). The player is playing sparse and soft (energy 0.28, steady). Band: intensity 0.56, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.28): \"Sparse playing, laying back\"",
+    "change_feel(half_time): \"Half time to match the space\""
+   ],
+   "B": [
+    "set_intensity(0.56): \"You're holding steady in the mid register with consistent energy—let's keep the groove warm and steady with the current \""
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-arc#0",
+  "session": "sim-night-shift-arc",
+  "bar": 4,
+  "situation": "Bar 4, intro (bar 4 of 4). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.30, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "add_layer(bass): \"Nice steady groove—let's gently add the bass to deepen the intro feel.\"",
+    "add_layer(drums): \"Adding light drums to match your steady energy and give the groove some pulse.\""
+   ],
+   "B": [
+    "set_intensity(0.56): \"Following your dynamics\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-stopstart#0",
+  "session": "sim-blues-in-a-stopstart",
+  "bar": 4,
+  "situation": "Bar 4, head (bar 4 of 12). The player is playing busy and loud (energy 0.93, steady). Band: intensity 0.50, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "add_layer(chords): \"You're playing with steady energy—let's add a little more color to match your momentum.\""
+   ],
+   "B": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "fire_stinger(fill): \"Marking the lift\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-arc#3",
+  "session": "sim-blues-in-a-arc",
+  "bar": 16,
+  "situation": "Bar 16, solo (bar 4 of 12). The player is playing sparse and soft (energy 0.25, steady). Band: intensity 0.28, drums+bass+chords, half time feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "set_intensity(0.28): \"Keeping it steady with you—nice control in the mid register!\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-slowburn#11",
+  "session": "sim-blues-in-a-slowburn",
+  "bar": 48,
+  "situation": "Bar 48, solo (bar 12 of 12). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.86, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "set_intensity(0.86): \"Nice steady flow—keeping the intensity right where it needs to be for this moment.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-stopstart#6",
+  "session": "sim-late-set-stopstart",
+  "bar": 28,
+  "situation": "Bar 28, B (bar 8 of 8). The player is playing sparse and soft (energy 0.14, rising). Band: intensity 0.17, bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.15): \"Nice and calm, let's keep the vibe gentle as you rise in energy.\""
+   ],
+   "B": [
+    "add_layer(drums): \"You're back, drums ease in\"",
+    "set_intensity(0.28): \"Sparse playing, laying back\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-slowburn#5",
+  "session": "sim-blues-in-a-slowburn",
+  "bar": 24,
+  "situation": "Bar 24, solo (bar 12 of 12). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.47, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "set_intensity(0.47): \"Nice steady flow—let's match your current intensity to keep the groove locked in.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-arc#7",
+  "session": "sim-late-set-arc",
+  "bar": 32,
+  "situation": "Bar 32, A (bar 4 of 8). The player is stopped playing (energy 0.00, steady, 4 silent bars). Band: intensity 0.73, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.10): \"You went quiet, giving you space\"",
+    "drop_layer(drums): \"Drums out so it can breathe\""
+   ],
+   "B": [
+    "set_intensity(0.73): \"Nice steady groove—matching your energy level now.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-slowburn#0",
+  "session": "sim-late-set-slowburn",
+  "bar": 4,
+  "situation": "Bar 4, intro (bar 4 of 4). The player is playing sparse and soft (energy 0.27, steady). Band: intensity 0.30, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "change_feel(half_time): \"Half time to match the space\""
+   ],
+   "B": [
+    "add_layer(chords): \"Nice steady start—let's gently add chords to fill the space and support your mid-register playing.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-arc#4",
+  "session": "sim-blues-in-a-arc",
+  "bar": 20,
+  "situation": "Bar 20, solo (bar 8 of 12). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.28, drums+bass+chords, half time feel.",
+  "answers": {
+   "A": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "change_feel(normal): \"Out of half time to keep up\""
+   ],
+   "B": [
+    "set_intensity(0.28): \"Keeping the feel steady and supportive, just like your groove.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-stopstart#3",
+  "session": "sim-blues-in-a-stopstart",
+  "bar": 16,
+  "situation": "Bar 16, solo (bar 4 of 12). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.22, bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "add_layer(drums): \"Full band: drums in\""
+   ],
+   "B": [
+    "drop_layer(drums): \"You're holding steady in the mid register—let's keep the space open and breathe with your phrasing.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-stopstart#9",
+  "session": "sim-night-shift-stopstart",
+  "bar": 40,
+  "situation": "Bar 40, bridge (bar 4 of 4). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.42, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.35): \"Nice steady flow—let's gently nudge the intensity up to match your energy.\""
+   ],
+   "B": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "fire_stinger(fill): \"Marking the lift\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-arc#11",
+  "session": "sim-late-set-arc",
+  "bar": 48,
+  "situation": "Bar 48, solo (bar 4 of 8). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.83, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.83): \"Nice steady flow—let’s settle into that 0.83 intensity you're aiming for, just right for the solo.\""
+   ],
+   "B": [
+    "keep going"
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-stopstart#1",
+  "session": "sim-late-set-stopstart",
+  "bar": 8,
+  "situation": "Bar 8, A (bar 4 of 8). The player is playing busy and loud (energy 0.94, steady). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(1.00): \"You're locked in with steady energy—let's keep the groove tight and focused.\""
+   ],
+   "B": [
+    "keep going"
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-arc#8",
+  "session": "sim-late-set-arc",
+  "bar": 36,
+  "situation": "Bar 36, A (bar 8 of 8). The player is playing a medium groove (energy 0.47, rising). Band: intensity 0.12, bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "drop_layer(drums): \"You're playing with a lot of space—let's keep the feel light and open.\""
+   ],
+   "B": [
+    "set_intensity(0.50): \"Settling into the groove\"",
+    "add_layer(drums): \"Bringing the drums back\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-stopstart#0",
+  "session": "sim-late-set-stopstart",
+  "bar": 4,
+  "situation": "Bar 4, intro (bar 4 of 4). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.30, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "add_layer(chords): \"You're playing with steady energy—let's gently add chords to fill the space and support your mid-register lines.\""
+   ],
+   "B": [
+    "set_intensity(1.00): \"You're digging in, raising the energy\"",
+    "fire_stinger(fill): \"Marking the lift\""
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-arc#8",
+  "session": "sim-night-shift-arc",
+  "bar": 36,
+  "situation": "Bar 36, chorus (bar 8 of 8). The player is playing a medium groove (energy 0.47, rising). Band: intensity 0.28, bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.50): \"Settling into the groove\"",
+    "add_layer(drums): \"Bringing the drums back\""
+   ],
+   "B": [
+    "drop_layer(drums): \"You're easing back, so let's keep it light and open\"",
+    "set_intensity(0.10): \"Matching your quiet, reflective energy in the chorus\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-slowburn#10",
+  "session": "sim-late-set-slowburn",
+  "bar": 44,
+  "situation": "Bar 44, solo (bar 8 of 8). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.98, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.86): \"Still pushing, staying with you\""
+   ],
+   "B": [
+    "set_intensity(0.96): \"Nice steady flow—let's ease back just a touch to keep the space open for your next move.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-arc#11",
+  "session": "sim-blues-in-a-arc",
+  "bar": 48,
+  "situation": "Bar 48, solo (bar 12 of 12). The player is playing a medium groove (energy 0.52, steady). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.85): \"Let's ease back a bit to give your steady mid-register playing room to breathe.\""
+   ],
+   "B": [
+    "set_intensity(0.86): \"Still pushing, staying with you\""
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-stopstart#4",
+  "session": "sim-night-shift-stopstart",
+  "bar": 20,
+  "situation": "Bar 20, chorus (bar 8 of 8). The player is playing busy and loud (energy 0.94, steady). Band: intensity 0.70, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.80): \"You're really locking in with that steady energy—let's ease up a touch to keep the groove balanced and give your mid-voi\""
+   ],
+   "B": [
+    "keep going"
+   ]
+  }
+ },
+ {
+  "id": "sim-night-shift-arc#7",
+  "session": "sim-night-shift-arc",
+  "bar": 32,
+  "situation": "Bar 32, chorus (bar 4 of 8). The player is stopped playing (energy 0.00, steady, 4 silent bars). Band: intensity 0.88, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.10): \"You went quiet, giving you space\"",
+    "drop_layer(drums): \"Drums out so it can breathe\""
+   ],
+   "B": [
+    "set_intensity(0.88): \"Nice steady groove—let's match your current energy level and keep the chorus feeling full and present.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-blues-in-a-slowburn#10",
+  "session": "sim-blues-in-a-slowburn",
+  "bar": 44,
+  "situation": "Bar 44, solo (bar 8 of 12). The player is playing a medium groove (energy 0.52, steady). Band: intensity 0.98, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.86): \"Still pushing, staying with you\""
+   ],
+   "B": [
+    "set_intensity(0.98): \"You're holding steady—let's keep the intensity right where it is, nice and focused.\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-stopstart#8",
+  "session": "sim-late-set-stopstart",
+  "bar": 36,
+  "situation": "Bar 36, A (bar 8 of 8). The player is playing busy and loud (energy 0.62, rising). Band: intensity 0.28, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "set_intensity(0.28): \"Nice steady rise—let's match your energy now and settle in.\""
+   ],
+   "B": [
+    "set_intensity(0.75): \"You're digging in, raising the energy\"",
+    "fire_stinger(fill): \"Marking the lift\""
+   ]
+  }
+ },
+ {
+  "id": "sim-late-set-arc#10",
+  "session": "sim-late-set-arc",
+  "bar": 44,
+  "situation": "Bar 44, solo (bar 8 of 8). The player is playing busy and loud (energy 0.73, falling). Band: intensity 1.00, drums+bass+chords, normal feel.",
+  "answers": {
+   "A": [
+    "keep going"
+   ],
+   "B": [
+    "set_intensity(0.80): \"Nice falling line—let's ease back a bit to give your next phrase room to breathe.\""
+   ]
+  }
+ }
+]

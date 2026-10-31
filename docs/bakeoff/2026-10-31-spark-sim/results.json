@@ -1,0 +1,4015 @@
+{
+ "host": "DGX Spark (Qwen local; Jev not run, no key in this shell)",
+ "created": "2026-10-31T13:48:50.498Z",
+ "brains": [
+  "Rules",
+  "Qwen"
+ ],
+ "turns": [
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Sparse playing, laying back"
+    },
+    {
+     "move": "change_feel",
+     "feel": "half_time",
+     "reason": "Half time to match the space"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Out of half time to keep up"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.98,
+     "reason": "Still pushing, staying with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Settling into the groove"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.86,
+     "reason": "Still pushing, staying with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 829,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "You're steady and in the groove—let's stay right here with you."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 900,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Nice steady groove—let's gently add some light brushwork to enhance the texture without overwhelming your mid-register, "
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 817,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Let's keep it light and open for you to explore"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 759,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Keeping it steady with you—nice control in the mid register!"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 748,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Keeping the feel steady and supportive, just like your groove."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 825,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.9,
+     "reason": "You're playing with strong energy and steady momentum—let's match that intensity to keep the groove locked in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 760,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.83,
+     "reason": "Matching your steady energy and keeping the intensity consistent with your solo flow."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 836,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.98,
+     "reason": "You're holding steady—let's keep the intensity right where it is to match your calm focus."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 797,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "You're building nicely—let's open up space for your rising lines with just bass and drums."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 767,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You're building energy steadily—let's gently lift the intensity to match your momentum."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 849,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.8,
+     "reason": "Nice and steady—let's ease back a bit to match your falling trend and give space for your next phrase."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 786,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.85,
+     "reason": "Let's ease back a bit to give your steady mid-register playing room to breathe."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Sparse playing, laying back"
+    },
+    {
+     "move": "change_feel",
+     "feel": "half_time",
+     "reason": "Half time to match the space"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Back to the normal feel"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.98,
+     "reason": "Still pushing, staying with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.86,
+     "reason": "Still pushing, staying with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 809,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're playing steady and mid-range—let's gently add some light groove to support your vibe."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 798,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Keeping it steady with you—nice and smooth, just like the half-time groove!"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 708,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Keeping it steady with you—nice and smooth!"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 796,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.47,
+     "reason": "Nice steady flow—let's match your current intensity to keep the groove locked in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 752,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.47,
+     "reason": "Nice steady flow—let's match your current intensity and settle in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 781,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.47,
+     "reason": "Nice steady flow—let's match your current intensity to keep the groove locked in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 774,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "Nice steady flow—let's match your current intensity and keep the groove grounded."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 781,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 1315,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Adding a subtle ghost note pattern to keep the groove alive without overwhelming your mid-register lines."
+    }
+   ],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 771,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.85,
+     "reason": "Nice steady flow—just easing back a touch to keep the groove warm and responsive."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 818,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.98,
+     "reason": "You're holding steady—let's keep the intensity right where it is, nice and focused."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 781,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.86,
+     "reason": "Nice steady flow—keeping the intensity right where it needs to be for this moment."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Full band: drums in"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're back, drums ease in"
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Sparse playing, laying back"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Settling into the groove"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 859,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "chords",
+     "reason": "You're playing with steady energy—let's add a little more color to match your momentum."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 765,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're steady and in the groove—let's keep the momentum smooth and locked in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 799,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're resting, so we're staying quiet and patient—keeping space for you to come back in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 809,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You're holding steady in the mid register—let's keep the space open and breathe with your phrasing."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 832,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.8,
+     "reason": "You're building nicely—let's ease up slightly to keep the momentum steady and give your next phrase room to breathe."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 813,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.9,
+     "reason": "You're holding steady—let's keep the energy just under the surface, ready to respond when you shift."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 820,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.15,
+     "reason": "Nice and calm, keeping the space for your rising lines—just a little more quiet to match your feel."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 816,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "You're holding steady and the groove feels right—let's keep the intensity where it is."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 780,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "You're building nicely—keeping the intensity steady to match your rising energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 795,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.47,
+     "reason": "You're in a steady groove—let's match your energy and settle into the flow."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "Following your dynamics"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Sparse playing, laying back"
+    },
+    {
+     "move": "change_feel",
+     "feel": "half_time",
+     "reason": "Half time to match the space"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Out of half time to keep up"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Settling into the groove"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 761,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Nice steady groove—let's gently add the drums to deepen the intro."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 839,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "You're steady and in the groove—let's keep the vibe consistent and support your mid-range flow."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 923,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "You're holding steady in the mid register with consistent energy—let's keep the groove warm and steady with the current "
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 737,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Nice and steady, keeping the groove smooth and supportive."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 788,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "You're steady and mid-range—keeping it simple and clean feels right."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 776,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're holding steady and building energy—let's match your intensity and keep the momentum."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 850,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're holding steady and playing with focus—let's keep the intensity right where it is to match your energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 716,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.73,
+     "reason": "Nice steady groove—matching your energy level now."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 796,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You're playing with a lot of space—let's keep the feel light and open."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 750,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You're building nicely—let's gently lift the intensity to match your steady energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 803,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.8,
+     "reason": "Nice falling line—let's ease back a bit to give your next phrase room to breathe."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 867,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.83,
+     "reason": "Nice steady flow—let’s settle into that 0.83 intensity you're aiming for, just right for the solo."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "half_time",
+     "reason": "Half time to match the space"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Back to the normal feel"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "Following your dynamics"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.98,
+     "reason": "Still pushing, staying with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.86,
+     "reason": "Still pushing, staying with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 797,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "chords",
+     "reason": "Nice steady start—let's gently add chords to fill the space and support your mid-register playing."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 845,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're holding steady in the mid register—let's gently add a subtle groove to match your calm energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 873,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're holding steady in the mid register—let's add a subtle groove to match your calm energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 813,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "half_time",
+     "reason": "Keeping the half-time feel consistent with the player's steady energy and mid-register focus."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 800,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Nice steady groove—let's keep it smooth and in time with the feel you're giving us!"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 808,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "You're settling into a steady groove—let's keep it smooth and locked in with the original feel."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 838,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "half_time",
+     "reason": "Let's keep the groove feeling a bit more spacious and laid back—perfect for your steady mid-range playing."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 804,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're steady and in the groove—let's keep the intensity right where it is."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 800,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're steady and in the groove—let's keep the intensity right where it feels good."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 1360,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.95,
+     "reason": "Nice steady fire—let’s ease up just a hair to keep the groove breathing."
+    },
+    {
+     "move": "change_feel",
+     "feel": "half_time",
+     "reason": "That half-time feel’s working—let’s ride it a bit longer to match your momentum."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 844,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.96,
+     "reason": "Nice steady flow—let's ease back just a touch to keep the space open for your next move."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 788,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.82,
+     "reason": "Nice steady flow—let's settle into the solo groove at your intensity level."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Full band: drums in"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're back, drums ease in"
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Sparse playing, laying back"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.75,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.98,
+     "reason": "Still pushing, staying with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 834,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "chords",
+     "reason": "You're playing with steady energy—let's gently add chords to fill the space and support your mid-register lines."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 780,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're locked in with steady energy—let's keep the groove tight and focused."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 817,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're holding steady—keeping it simple and clean with space. Let's stay in this calm groove."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 789,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.15,
+     "reason": "Nice and steady, keeping it smooth—just a tiny lift to match your calm energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 772,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.8,
+     "reason": "You're building nicely—let's ease up slightly to keep the groove in balance."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 742,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.78,
+     "reason": "Nice steady feel—let's settle into the B section's intensity."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 756,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.15,
+     "reason": "Nice and calm, let's keep the vibe gentle as you rise in energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 757,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Nice and steady—let's match your current energy level and keep things balanced."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 753,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Nice steady rise—let's match your energy now and settle in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 837,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.75,
+     "reason": "You're locked in with steady energy—let's keep the groove consistent and support your mid-register flow."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "Following your dynamics"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Sparse playing, laying back"
+    },
+    {
+     "move": "change_feel",
+     "feel": "half_time",
+     "reason": "Half time to match the space"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Out of half time to keep up"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Settling into the groove"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Settling into the groove"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 1196,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "bass",
+     "reason": "Nice steady groove—let's gently add the bass to deepen the intro feel."
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Adding light drums to match your steady energy and give the groove some pulse."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 760,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "You're steady and in the groove—let's stay right here with you."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 746,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "You're holding steady in the mid-range—keeping it smooth and supportive!"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 752,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Nice and steady—keeping the feel smooth and in line with your groove."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 755,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Nice and steady—keeping the feel smooth and in line with your groove."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 813,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.98,
+     "reason": "You're really locking in—let's just nudge the intensity up a hair to match your steady energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 746,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're holding steady—let's keep the intensity right where it is for now."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 787,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.88,
+     "reason": "Nice steady groove—let's match your current energy level and keep the chorus feeling full and present."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 1111,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You're easing back, so let's keep it light and open"
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "Matching your quiet, reflective energy in the chorus"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 1222,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You're building energy steadily—let's gently lift the intensity to match your momentum."
+    },
+    {
+     "move": "add_layer",
+     "part": "bass",
+     "reason": "Adding a subtle bass line will support your mid-register phrasing and deepen the groove."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 764,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.8,
+     "reason": "Nice groove—let's ease back a touch to keep the chorus feeling open and powerful."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 747,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're holding steady and strong—let's match your energy and keep the momentum going."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.47,
+     "reason": "Following your dynamics"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Sparse playing, laying back"
+    },
+    {
+     "move": "change_feel",
+     "feel": "half_time",
+     "reason": "Half time to match the space"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Back to the normal feel"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.98,
+     "reason": "Still pushing, staying with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.86,
+     "reason": "Still pushing, staying with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 758,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're steady and mid-range—let's gently add a light groove to match your vibe."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 757,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "chords",
+     "reason": "Nice steady groove—let’s gently add chords to deepen the texture and support your mid-register playing."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 827,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're holding steady in the mid register—let's add a subtle groove to match your calm energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 742,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.52,
+     "reason": "You're holding steady—let's match your energy and settle into the groove."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 769,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.52,
+     "reason": "Nice steady groove—let's match your current intensity and keep the energy flowing smoothly."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 741,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.48,
+     "reason": "Nice steady groove—let’s match your energy and settle into the verse feel."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 704,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.48,
+     "reason": "Nice steady groove—matching your energy with a smooth intensity lift."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 783,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're locked in with steady energy—let's keep the intensity right where it is for now."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 725,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're holding steady and strong—let's keep the energy locked in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 780,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.85,
+     "reason": "Nice steady flow—let's ease back a touch to keep the bridge feeling spacious and intentional."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 757,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.98,
+     "reason": "You're holding strong in the chorus—keeping the intensity steady feels right."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 762,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.86,
+     "reason": "Nice steady groove—keeping the intensity right where it should be for this chorus."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Full band: drums in"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.1,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "Drums out so it can breathe"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're back, drums ease in"
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "Sparse playing, laying back"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Settling into the groove"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Rules",
+   "model": "rules",
+   "latencyMs": 0,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're digging in, raising the energy"
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Marking the lift"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 714,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're building energy—let's add light percussion to match your momentum."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 861,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're in a steady groove—keeping it simple and solid with your mid-register playing. Let's stay locked in and support."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 771,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 1,
+     "reason": "You're holding steady—let's keep the vibe consistent and wait for your next move."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 1324,
+   "moves": [
+    {
+     "move": "drop_layer",
+     "part": "drums",
+     "reason": "You're holding steady with mid register and low repetition—let's keep it light and open for you to breathe."
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.15,
+     "reason": "You're in a calm, steady groove—let’s match that with a quiet, spacious feel."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 918,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.8,
+     "reason": "You're really locking in with that steady energy—let's ease up a touch to keep the groove balanced and give your mid-voi"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 715,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.73,
+     "reason": "Nice and steady—let's match your current intensity and keep it smooth."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 720,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.12,
+     "reason": "Nice and steady—keeping the feel light and open like you're building quietly."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 735,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "You're holding steady—let's keep the groove warm and consistent."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 770,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.28,
+     "reason": "You're building nicely—keeping the intensity steady to match your rising energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Qwen",
+   "model": "qwen3-30b-a3b",
+   "latencyMs": 769,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.35,
+     "reason": "Nice steady flow—let's gently nudge the intensity up to match your energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  }
+ ],
+ "loops": [
+  {
+   "session": "sim-blues-in-a-arc",
+   "brain": "Rules",
+   "turns": 12,
+   "errors": 0,
+   "moves": 12,
+   "follow": 0.9607209231639868,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 11,
+   "follow": 0.11121464355510004,
+   "silentDrop": 0,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "brain": "Rules",
+   "turns": 12,
+   "errors": 0,
+   "moves": 7,
+   "follow": 0.9062826507969324,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 12,
+   "follow": 0.5881612628167376,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "brain": "Rules",
+   "turns": 10,
+   "errors": 0,
+   "moves": 13,
+   "follow": 0.9840479964001162,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "brain": "Qwen",
+   "turns": 10,
+   "errors": 0,
+   "moves": 10,
+   "follow": -0.5387764244838001,
+   "silentDrop": 0,
+   "busyLift": 0.5
+  },
+  {
+   "session": "sim-late-set-arc",
+   "brain": "Rules",
+   "turns": 12,
+   "errors": 0,
+   "moves": 11,
+   "follow": 0.965963041520818,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-late-set-arc",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 12,
+   "follow": 0.4686768187618606,
+   "silentDrop": 0,
+   "busyLift": 0.4
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "brain": "Rules",
+   "turns": 12,
+   "errors": 0,
+   "moves": 7,
+   "follow": 0.9073225624332781,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 12,
+   "follow": 0.3933023847117283,
+   "silentDrop": null,
+   "busyLift": 0.5
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "brain": "Rules",
+   "turns": 10,
+   "errors": 0,
+   "moves": 13,
+   "follow": 0.9780298309565164,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "brain": "Qwen",
+   "turns": 10,
+   "errors": 0,
+   "moves": 10,
+   "follow": 0.017053511711046777,
+   "silentDrop": 0,
+   "busyLift": 0.2
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "brain": "Rules",
+   "turns": 12,
+   "errors": 0,
+   "moves": 12,
+   "follow": 0.9735882300782092,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 12,
+   "follow": 0.240905204988871,
+   "silentDrop": 0,
+   "busyLift": 0
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "brain": "Rules",
+   "turns": 12,
+   "errors": 0,
+   "moves": 8,
+   "follow": 0.8655807375905691,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "brain": "Qwen",
+   "turns": 12,
+   "errors": 0,
+   "moves": 11,
+   "follow": 0.4144205565541414,
+   "silentDrop": null,
+   "busyLift": 0.75
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "brain": "Rules",
+   "turns": 10,
+   "errors": 0,
+   "moves": 13,
+   "follow": 0.9585278045734197,
+   "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "brain": "Qwen",
+   "turns": 10,
+   "errors": 0,
+   "moves": 10,
+   "follow": -0.43786447157303027,
+   "silentDrop": 0,
+   "busyLift": 0.25
+  }
+ ],
+ "key": {
+  "sim-blues-in-a-arc#0": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-arc#1": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-arc#2": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-arc#3": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-arc#4": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-arc#5": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-arc#6": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-arc#7": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-arc#8": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-arc#9": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-arc#10": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-arc#11": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-slowburn#0": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#1": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-slowburn#2": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-slowburn#3": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#4": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-slowburn#5": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#6": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-slowburn#7": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-slowburn#8": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-slowburn#9": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-slowburn#10": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-slowburn#11": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#0": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-stopstart#1": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-stopstart#2": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#3": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#4": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#5": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-stopstart#6": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-blues-in-a-stopstart#7": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#8": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-blues-in-a-stopstart#9": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-arc#0": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-arc#1": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-arc#2": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-arc#3": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-arc#4": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-arc#5": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-arc#6": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-arc#7": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-arc#8": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-arc#9": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-arc#10": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-arc#11": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-slowburn#0": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#1": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#2": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#3": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#4": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#5": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#6": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#7": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#8": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#9": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-slowburn#10": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-slowburn#11": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-stopstart#0": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-stopstart#1": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-stopstart#2": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-stopstart#3": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-stopstart#4": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-stopstart#5": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-late-set-stopstart#6": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-stopstart#7": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-stopstart#8": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-late-set-stopstart#9": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-arc#0": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-arc#1": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-arc#2": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-arc#3": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-arc#4": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-arc#5": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-arc#6": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-arc#7": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-arc#8": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-arc#9": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-arc#10": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-arc#11": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-slowburn#0": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-slowburn#1": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-slowburn#2": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-slowburn#3": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-slowburn#4": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-slowburn#5": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-slowburn#6": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-slowburn#7": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-slowburn#8": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-slowburn#9": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-slowburn#10": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-slowburn#11": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-stopstart#0": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-stopstart#1": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-stopstart#2": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-stopstart#3": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-stopstart#4": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-stopstart#5": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-stopstart#6": {
+   "A": "Rules",
+   "B": "Qwen"
+  },
+  "sim-night-shift-stopstart#7": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-stopstart#8": {
+   "A": "Qwen",
+   "B": "Rules"
+  },
+  "sim-night-shift-stopstart#9": {
+   "A": "Qwen",
+   "B": "Rules"
+  }
+ }
+}
