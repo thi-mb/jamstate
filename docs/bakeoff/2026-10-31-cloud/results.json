@@ -1,9 +1,10 @@
 {
- "host": "claude.ai cloud container (US East), direct to TypeSafe",
- "created": "2026-10-31T12:26:48.782Z",
+ "host": "claude.ai cloud container (US East), direct to providers",
+ "created": "2026-10-31T13:49:39.741Z",
  "brains": [
   "Rules",
-  "Jev"
+  "Jev",
+  "Claude claude-opus-5-5"
  ],
  "turns": [
   {
@@ -12,7 +13,7 @@
    "bar": 4,
    "brain": "Rules",
    "model": "rules",
-   "latencyMs": 0,
+   "latencyMs": 1,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -222,7 +223,7 @@
    "bar": 8,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 64,
+   "latencyMs": 132,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -233,7 +234,7 @@
    "bar": 12,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 81,
+   "latencyMs": 88,
    "moves": [
     {
      "move": "set_intensity",
@@ -250,7 +251,7 @@
    "bar": 16,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 82,
+   "latencyMs": 92,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -261,7 +262,7 @@
    "bar": 20,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 57,
+   "latencyMs": 94,
    "moves": [
     {
      "move": "set_intensity",
@@ -278,7 +279,7 @@
    "bar": 24,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 81,
+   "latencyMs": 70,
    "moves": [
     {
      "move": "set_intensity",
@@ -295,7 +296,7 @@
    "bar": 28,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 73,
+   "latencyMs": 83,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -306,7 +307,7 @@
    "bar": 32,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 74,
+   "latencyMs": 88,
    "moves": [
     {
      "move": "set_intensity",
@@ -328,7 +329,7 @@
    "bar": 36,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 74,
+   "latencyMs": 103,
    "moves": [
     {
      "move": "set_intensity",
@@ -350,11 +351,11 @@
    "bar": 40,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 78,
+   "latencyMs": 87,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.82,
+     "value": 0.81,
      "reason": "Picking the energy up with you"
     }
    ],
@@ -367,11 +368,11 @@
    "bar": 44,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 58,
+   "latencyMs": 109,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.84,
+     "value": 0.83,
      "reason": "Leaving you some headroom"
     }
    ],
@@ -384,7 +385,7 @@
    "bar": 48,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 59,
+   "latencyMs": 84,
    "moves": [
     {
      "move": "set_intensity",
@@ -392,6 +393,200 @@
      "reason": "Easing back to give you room"
     }
    ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2659,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1815,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3534,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.4,
+     "reason": "You're playing with lots of space, so we'll ease back a little to give your lines room as we head into the solos."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1285,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3182,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You're playing with huge energy, so the band is lifting up to meet you."
+    },
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Dropping the half-time so the groove can drive under your busy lines."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2149,
+   "moves": [
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "You're on fire. Here's a fill to push you into the next solo chorus!"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2167,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.9,
+     "reason": "You're burning hot and steady — nudging the band up a touch to match your energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2479,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "You've laid out for a few bars, so we'll bring it down and leave you room to come back in."
+    },
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Thinning out the chords to open up space for whenever you're ready to jump back in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3191,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're picking it back up and hitting harder, so let's bring the drums back in under you."
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Your energy's rising, so we'll lift a bit to meet you heading into the next solo chorus."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2448,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.7,
+     "reason": "You're playing hot and busy, so we'll lift the band to match your energy."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A drum fill to kick off the next phrase and push your solo forward."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2077,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3314,
+   "moves": [],
    "rejected": 0,
    "late": false
   },
@@ -573,11 +768,11 @@
    "bar": 4,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 81,
+   "latencyMs": 148,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.31,
+     "value": 0.3,
      "reason": "Easing back to give you room"
     }
    ],
@@ -590,7 +785,7 @@
    "bar": 8,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 68,
+   "latencyMs": 99,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -601,7 +796,7 @@
    "bar": 12,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 77,
+   "latencyMs": 91,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -612,7 +807,7 @@
    "bar": 16,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 62,
+   "latencyMs": 83,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -623,7 +818,7 @@
    "bar": 20,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 58,
+   "latencyMs": 95,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -634,7 +829,7 @@
    "bar": 24,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 74,
+   "latencyMs": 87,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -645,11 +840,11 @@
    "bar": 28,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 67,
+   "latencyMs": 91,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.81,
+     "value": 0.82,
      "reason": "Picking the energy up with you"
     }
    ],
@@ -662,11 +857,11 @@
    "bar": 32,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 94,
+   "latencyMs": 61,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.82,
+     "value": 0.81,
      "reason": "Leaving you some headroom"
     }
    ],
@@ -679,7 +874,7 @@
    "bar": 36,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 96,
+   "latencyMs": 83,
    "moves": [
     {
      "move": "set_intensity",
@@ -696,7 +891,7 @@
    "bar": 40,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 72,
+   "latencyMs": 66,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -707,11 +902,11 @@
    "bar": 44,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 72,
+   "latencyMs": 94,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.51,
+     "value": 0.5,
      "reason": "Easing back to give you room"
     }
    ],
@@ -724,7 +919,7 @@
    "bar": 48,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 74,
+   "latencyMs": 81,
    "moves": [
     {
      "move": "set_intensity",
@@ -732,6 +927,184 @@
      "reason": "Easing back to give you room"
     }
    ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2548,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.4,
+     "reason": "You're playing light and leaving space, so we'll ease back a touch to give you room."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 983,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3916,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3154,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "You're playing nonstop with lots of notes, so we'll come out of half-time and lock in with your pace."
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.52,
+     "reason": "Nudging the band up a touch to match your energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2469,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.52,
+     "reason": "You're playing full-on with no gaps, so we'll lift a little to match your energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2282,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.52,
+     "reason": "You're playing full and steady, so we'll lift a touch to match your energy going into the next solo chorus."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2493,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.75,
+     "reason": "You're really digging in — we'll bring the band up to match your energy."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A drum fill to kick this build into gear behind you."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1118,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1157,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1935,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.9,
+     "reason": "You're burning hot and steady — nudging the band up a bit to match your energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1502,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1550,
+   "moves": [],
    "rejected": 0,
    "late": false
   },
@@ -923,11 +1296,11 @@
    "bar": 4,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 98,
+   "latencyMs": 140,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.8,
+     "value": 0.81,
      "reason": "Picking the energy up with you"
     }
    ],
@@ -940,11 +1313,11 @@
    "bar": 8,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 81,
+   "latencyMs": 105,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.81,
+     "value": 0.82,
      "reason": "Leaving you some headroom"
     }
    ],
@@ -979,7 +1352,7 @@
    "bar": 16,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 77,
+   "latencyMs": 86,
    "moves": [
     {
      "move": "set_intensity",
@@ -1001,7 +1374,7 @@
    "bar": 20,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 94,
+   "latencyMs": 89,
    "moves": [
     {
      "move": "set_intensity",
@@ -1018,7 +1391,7 @@
    "bar": 24,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 86,
+   "latencyMs": 87,
    "moves": [
     {
      "move": "set_intensity",
@@ -1040,7 +1413,7 @@
    "bar": 28,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 75,
+   "latencyMs": 89,
    "moves": [
     {
      "move": "set_intensity",
@@ -1057,7 +1430,7 @@
    "bar": 32,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 84,
+   "latencyMs": 116,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -1068,7 +1441,7 @@
    "bar": 36,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 64,
+   "latencyMs": 108,
    "moves": [
     {
      "move": "set_intensity",
@@ -1085,12 +1458,189 @@
    "bar": 40,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 84,
+   "latencyMs": 88,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.81,
+     "value": 0.82,
      "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2121,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.7,
+     "reason": "You're coming in hot and busy — we'll lift the band to meet your energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1278,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3237,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You've gone quiet, so we'll ease off and leave plenty of room for you to come back in."
+    },
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Thinning out the chords to give you an open space whenever you're ready to jump into the solo."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2436,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're playing with tons of energy—bringing the drums back in to ride with you."
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Lifting the band up to meet your busy, loud solo without drowning you out."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1421,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.85,
+     "reason": "You're burning hot and steady — nudging the band up a notch to meet your energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2423,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.4,
+     "reason": "You've been resting for a few bars, so we'll ease off and leave you room to come back in."
+    },
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Thinning out the chords to open up space for your next idea."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1227,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1166,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1686,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.45,
+     "reason": "You're heating up and the trend is rising, so the band will lift with you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A drum fill to carry you into the next solo chorus."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2816,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.65,
+     "reason": "You're playing hot and busy. We'll lift the band up to meet you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A quick drum fill to push your solo into the next phrase."
     }
    ],
    "rejected": 0,
@@ -1295,7 +1845,7 @@
    "bar": 4,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 68,
+   "latencyMs": 119,
    "moves": [
     {
      "move": "set_intensity",
@@ -1312,7 +1862,7 @@
    "bar": 8,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 72,
+   "latencyMs": 91,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -1323,7 +1873,7 @@
    "bar": 12,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 70,
+   "latencyMs": 83,
    "moves": [
     {
      "move": "set_intensity",
@@ -1340,7 +1890,7 @@
    "bar": 16,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 81,
+   "latencyMs": 68,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -1351,7 +1901,7 @@
    "bar": 20,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 73,
+   "latencyMs": 82,
    "moves": [
     {
      "move": "set_intensity",
@@ -1368,7 +1918,7 @@
    "bar": 24,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 72,
+   "latencyMs": 70,
    "moves": [
     {
      "move": "set_intensity",
@@ -1385,7 +1935,7 @@
    "bar": 28,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 76,
+   "latencyMs": 89,
    "moves": [
     {
      "move": "set_intensity",
@@ -1402,7 +1952,7 @@
    "bar": 32,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 76,
+   "latencyMs": 93,
    "moves": [
     {
      "move": "set_intensity",
@@ -1424,7 +1974,7 @@
    "bar": 36,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 72,
+   "latencyMs": 102,
    "moves": [
     {
      "move": "set_intensity",
@@ -1446,7 +1996,7 @@
    "bar": 40,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 112,
+   "latencyMs": 86,
    "moves": [
     {
      "move": "set_intensity",
@@ -1463,7 +2013,7 @@
    "bar": 44,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 73,
+   "latencyMs": 91,
    "moves": [
     {
      "move": "set_intensity",
@@ -1480,7 +2030,7 @@
    "bar": 48,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 76,
+   "latencyMs": 106,
    "moves": [
     {
      "move": "set_intensity",
@@ -1488,6 +2038,188 @@
      "reason": "Easing back to give you room"
     }
    ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1268,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.45,
+     "reason": "You're coming in strong and busy, so we'll lift the energy a bit to meet you."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1188,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1030,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1888,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3345,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You're playing big and busy, so we'll lift the band up to meet you."
+    },
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Dropping the half-time so the groove can keep pace with your dense lines."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1135,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1056,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2362,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.45,
+     "reason": "You've laid out for a few bars, so we'll ease back and leave room for you to come back in."
+    },
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Thinning out the chords to open up space for your next idea."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2377,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.3,
+     "reason": "You're picking up steam and playing with conviction, so we'll lift the energy a little to meet you."
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in under your rising lines to give you some groove to lean on."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2414,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.7,
+     "reason": "You're playing hot and busy — we'll push the energy up to match you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A drum fill to lift us into the next phrase with you."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1164,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1210,
+   "moves": [],
    "rejected": 0,
    "late": false
   },
@@ -1670,7 +2402,7 @@
    "bar": 4,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 68,
+   "latencyMs": 153,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -1681,7 +2413,7 @@
    "bar": 8,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 74,
+   "latencyMs": 91,
    "moves": [
     {
      "move": "set_intensity",
@@ -1698,7 +2430,7 @@
    "bar": 12,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 75,
+   "latencyMs": 86,
    "moves": [
     {
      "move": "set_intensity",
@@ -1715,7 +2447,7 @@
    "bar": 16,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 85,
+   "latencyMs": 109,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -1726,7 +2458,7 @@
    "bar": 20,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 81,
+   "latencyMs": 84,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -1737,7 +2469,7 @@
    "bar": 24,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 94,
+   "latencyMs": 97,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -1748,11 +2480,11 @@
    "bar": 28,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 73,
+   "latencyMs": 87,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.82,
+     "value": 0.81,
      "reason": "Picking the energy up with you"
     }
    ],
@@ -1765,7 +2497,7 @@
    "bar": 32,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 83,
+   "latencyMs": 85,
    "moves": [
     {
      "move": "set_intensity",
@@ -1782,7 +2514,7 @@
    "bar": 36,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 92,
+   "latencyMs": 94,
    "moves": [
     {
      "move": "set_intensity",
@@ -1799,7 +2531,7 @@
    "bar": 40,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 74,
+   "latencyMs": 107,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -1810,7 +2542,7 @@
    "bar": 44,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 75,
+   "latencyMs": 104,
    "moves": [
     {
      "move": "set_intensity",
@@ -1827,7 +2559,7 @@
    "bar": 48,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 67,
+   "latencyMs": 97,
    "moves": [
     {
      "move": "set_intensity",
@@ -1835,6 +2567,167 @@
      "reason": "Easing back to give you room"
     }
    ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 980,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2449,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.35,
+     "reason": "You're playing sparse and soft, so we'll ease back a little to give your lines more room."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1644,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3274,
+   "moves": [],
+   "rejected": 1,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2087,
+   "moves": [
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "You're playing full and steady. A quick fill will carry us into the next section."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1008,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2363,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.7,
+     "reason": "You're playing with a lot of energy, so the band is lifting to meet you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A fill to carry your momentum out of the B section and into the next A."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1284,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 997,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1969,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.9,
+     "reason": "You're burning hot and steady in this solo, so we'll lean in a little more to match your energy."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1165,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1393,
+   "moves": [],
    "rejected": 0,
    "late": false
   },
@@ -2026,11 +2919,11 @@
    "bar": 4,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 73,
+   "latencyMs": 133,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.81,
+     "value": 0.8,
      "reason": "Picking the energy up with you"
     }
    ],
@@ -2043,7 +2936,7 @@
    "bar": 8,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 91,
+   "latencyMs": 84,
    "moves": [
     {
      "move": "set_intensity",
@@ -2060,7 +2953,7 @@
    "bar": 12,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 97,
+   "latencyMs": 78,
    "moves": [
     {
      "move": "set_intensity",
@@ -2082,11 +2975,11 @@
    "bar": 16,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 74,
+   "latencyMs": 72,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.8,
+     "value": 0.81,
      "reason": "Picking the energy up with you"
     },
     {
@@ -2104,7 +2997,7 @@
    "bar": 20,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 72,
+   "latencyMs": 85,
    "moves": [
     {
      "move": "set_intensity",
@@ -2121,7 +3014,7 @@
    "bar": 24,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 55,
+   "latencyMs": 100,
    "moves": [
     {
      "move": "set_intensity",
@@ -2143,7 +3036,7 @@
    "bar": 28,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 70,
+   "latencyMs": 126,
    "moves": [
     {
      "move": "set_intensity",
@@ -2160,7 +3053,7 @@
    "bar": 32,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 91,
+   "latencyMs": 100,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -2171,17 +3064,12 @@
    "bar": 36,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 91,
+   "latencyMs": 74,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.82,
+     "value": 0.83,
      "reason": "You're building, the band lifts with you"
-    },
-    {
-     "move": "fire_stinger",
-     "stinger": "fill",
-     "reason": "A fill to mark the lift"
     }
    ],
    "rejected": 0,
@@ -2193,8 +3081,185 @@
    "bar": 40,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 85,
+   "latencyMs": 81,
    "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2178,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You're coming in hot and busy — we'll lift the energy to meet you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A quick drum fill to launch us out of the intro with you."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1185,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3030,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "You've been quiet for a few bars, so we'll ease back and leave plenty of room for you to come in."
+    },
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Thinning out the chords so there's open space whenever you're ready to jump back in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3902,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're playing with a lot of fire, so I'm bringing the drums back in to push with you."
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "Lifting the band's energy to match how strong and busy you're sounding."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2135,
+   "moves": [
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "You're playing hot and we're heading into the next section, so here's a drum fill to carry us over."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2413,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.45,
+     "reason": "You've been quiet for a few bars, so we'll ease back and leave room for you to come back in."
+    },
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Thinning out the chords so there's open space whenever you're ready to jump in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1110,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1542,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2507,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.45,
+     "reason": "You're heating up, so we'll lift the band a notch to meet you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A fill to carry your rising line into the next section."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2006,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.85,
+     "reason": "You're really cooking on this solo — we'll push a little harder right behind you."
+    }
+   ],
    "rejected": 0,
    "late": false
   },
@@ -2403,7 +3468,7 @@
    "bar": 4,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 89,
+   "latencyMs": 134,
    "moves": [
     {
      "move": "set_intensity",
@@ -2420,7 +3485,7 @@
    "bar": 8,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 80,
+   "latencyMs": 102,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -2431,7 +3496,7 @@
    "bar": 12,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 80,
+   "latencyMs": 114,
    "moves": [
     {
      "move": "set_intensity",
@@ -2448,7 +3513,7 @@
    "bar": 16,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 55,
+   "latencyMs": 74,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -2459,7 +3524,7 @@
    "bar": 20,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 76,
+   "latencyMs": 86,
    "moves": [
     {
      "move": "set_intensity",
@@ -2481,7 +3546,7 @@
    "bar": 24,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 76,
+   "latencyMs": 100,
    "moves": [
     {
      "move": "set_intensity",
@@ -2498,7 +3563,7 @@
    "bar": 28,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 67,
+   "latencyMs": 96,
    "moves": [
     {
      "move": "set_intensity",
@@ -2515,7 +3580,7 @@
    "bar": 32,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 78,
+   "latencyMs": 75,
    "moves": [
     {
      "move": "set_intensity",
@@ -2537,7 +3602,7 @@
    "bar": 36,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 76,
+   "latencyMs": 89,
    "moves": [
     {
      "move": "set_intensity",
@@ -2559,7 +3624,7 @@
    "bar": 40,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 75,
+   "latencyMs": 89,
    "moves": [
     {
      "move": "set_intensity",
@@ -2576,11 +3641,11 @@
    "bar": 44,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 68,
+   "latencyMs": 83,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.83,
+     "value": 0.84,
      "reason": "Leaving you some headroom"
     }
    ],
@@ -2593,7 +3658,7 @@
    "bar": 48,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 105,
+   "latencyMs": 91,
    "moves": [
     {
      "move": "set_intensity",
@@ -2601,6 +3666,200 @@
      "reason": "Easing back to give you room"
     }
    ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2008,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.45,
+     "reason": "You're playing full and steady, so we'll lift the energy a bit to meet you as we head into the verse."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1935,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1762,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.45,
+     "reason": "You're playing sparse and leaving lots of space, so I'll ease the band back to give your lines room to breathe."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1516,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1872,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You're playing hot and busy, so we're lifting the band up to meet you."
+    },
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "Dropping the half-time so the groove can keep pace with all those notes."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1550,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2396,
+   "moves": [
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "You're on fire. Here's a fill to launch us into the chorus next bar!"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2129,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.55,
+     "reason": "You've been quiet for a few bars, so we're easing back to leave room for you to come back in."
+    },
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Thinning out the chords to open up space whenever you're ready to jump in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2179,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.45,
+     "reason": "You're digging in harder and climbing, so we'll lift the band up to meet you."
+    },
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "Bringing the drums back in to push the energy you're building."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1830,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.75,
+     "reason": "You're playing hot and busy — the band's coming up to meet you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "riser",
+     "reason": "Building into the last chorus with you — let it rip!"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1157,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2243,
+   "moves": [],
    "rejected": 0,
    "late": false
   },
@@ -2788,7 +4047,7 @@
    "bar": 4,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 72,
+   "latencyMs": 149,
    "moves": [
     {
      "move": "set_intensity",
@@ -2805,11 +4064,11 @@
    "bar": 8,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 80,
+   "latencyMs": 108,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.3,
+     "value": 0.31,
      "reason": "Easing back to give you room"
     }
    ],
@@ -2822,7 +4081,7 @@
    "bar": 12,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 75,
+   "latencyMs": 89,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -2833,7 +4092,7 @@
    "bar": 16,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 70,
+   "latencyMs": 94,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -2844,7 +4103,7 @@
    "bar": 20,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 78,
+   "latencyMs": 89,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -2855,7 +4114,7 @@
    "bar": 24,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 85,
+   "latencyMs": 82,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -2866,7 +4125,7 @@
    "bar": 28,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 79,
+   "latencyMs": 106,
    "moves": [
     {
      "move": "set_intensity",
@@ -2883,7 +4142,7 @@
    "bar": 32,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 73,
+   "latencyMs": 91,
    "moves": [
     {
      "move": "set_intensity",
@@ -2900,11 +4159,11 @@
    "bar": 36,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 79,
+   "latencyMs": 98,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.82,
+     "value": 0.81,
      "reason": "Leaving you some headroom"
     }
    ],
@@ -2917,7 +4176,7 @@
    "bar": 40,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 81,
+   "latencyMs": 104,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -2928,7 +4187,7 @@
    "bar": 44,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 88,
+   "latencyMs": 103,
    "moves": [
     {
      "move": "set_intensity",
@@ -2945,7 +4204,7 @@
    "bar": 48,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 67,
+   "latencyMs": 88,
    "moves": [
     {
      "move": "set_intensity",
@@ -2953,6 +4212,184 @@
      "reason": "Easing back to give you room"
     }
    ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1558,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1928,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.38,
+     "reason": "You're playing with lots of space, so we'll ease back a touch to leave you room."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1205,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2714,
+   "moves": [
+    {
+     "move": "change_feel",
+     "feel": "normal",
+     "reason": "You're playing nonstop and full of notes, so we'll bring the groove back to normal time to keep up with you."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1709,
+   "moves": [
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "Chorus is wrapping up next bar, so here's a fill to carry your steady groove into the next verse."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3167,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2234,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.68,
+     "reason": "You're playing hot and busy, so the band is lifting to meet you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A fill to launch us into the chorus with all that energy you're bringing."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1159,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1544,
+   "moves": [
+    {
+     "move": "fire_stinger",
+     "stinger": "riser",
+     "reason": "You're on fire. Here's a riser to carry us out of this chorus into the bridge."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2163,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.9,
+     "reason": "You're playing hot and busy, so we'll lift the band to match your energy."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "riser",
+     "reason": "Bridge is wrapping up, so a riser will launch us into the final chorus with you."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1349,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1400,
+   "moves": [],
    "rejected": 0,
    "late": false
   },
@@ -3144,7 +4581,7 @@
    "bar": 4,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 99,
+   "latencyMs": 112,
    "moves": [
     {
      "move": "set_intensity",
@@ -3161,7 +4598,7 @@
    "bar": 8,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 90,
+   "latencyMs": 76,
    "moves": [
     {
      "move": "set_intensity",
@@ -3178,7 +4615,7 @@
    "bar": 12,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 68,
+   "latencyMs": 91,
    "moves": [
     {
      "move": "set_intensity",
@@ -3200,11 +4637,11 @@
    "bar": 16,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 61,
+   "latencyMs": 89,
    "moves": [
     {
      "move": "set_intensity",
-     "value": 0.8,
+     "value": 0.81,
      "reason": "Picking the energy up with you"
     },
     {
@@ -3222,7 +4659,7 @@
    "bar": 20,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 73,
+   "latencyMs": 92,
    "moves": [
     {
      "move": "set_intensity",
@@ -3239,7 +4676,7 @@
    "bar": 24,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 70,
+   "latencyMs": 79,
    "moves": [
     {
      "move": "set_intensity",
@@ -3261,7 +4698,7 @@
    "bar": 28,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 82,
+   "latencyMs": 84,
    "moves": [
     {
      "move": "set_intensity",
@@ -3278,7 +4715,7 @@
    "bar": 32,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 68,
+   "latencyMs": 78,
    "moves": [],
    "rejected": 0,
    "late": false
@@ -3289,7 +4726,7 @@
    "bar": 36,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 75,
+   "latencyMs": 74,
    "moves": [
     {
      "move": "set_intensity",
@@ -3306,12 +4743,194 @@
    "bar": 40,
    "brain": "Jev",
    "model": "jev-1.14.0",
-   "latencyMs": 72,
+   "latencyMs": 75,
    "moves": [
     {
      "move": "set_intensity",
      "value": 0.81,
      "reason": "Picking the energy up with you"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3117,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You're coming in hot and busy — we'll lift the band to meet your energy."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A fill to launch us out of the intro alongside you."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1165,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 3024,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "You've gone quiet, so we'll ease off and leave room for you to come back in."
+    },
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Pulling the chords out to open up space. Jump in whenever you're ready."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2390,
+   "moves": [
+    {
+     "move": "add_layer",
+     "part": "drums",
+     "reason": "You're playing big and loud. Bringing the drums back in to match your energy."
+    },
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "Lifting the band to meet you in this chorus, with room left to build further."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2411,
+   "moves": [
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "You're on fire. Here's a fill to carry us out of this chorus!"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2451,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.35,
+     "reason": "You've gone quiet for a few bars, so we'll ease back and leave you plenty of room."
+    },
+    {
+     "move": "drop_layer",
+     "part": "chords",
+     "reason": "Thinning the chords out so there's open space whenever you want to jump back in."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1082,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1506,
+   "moves": [],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 1752,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.45,
+     "reason": "You're heating up — we'll lift the energy with you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "fill",
+     "reason": "A fill to carry your rising line into the bridge."
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Claude claude-opus-5-5",
+   "model": "claude-opus-5-5",
+   "latencyMs": 2584,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You're playing big and busy—bringing the band up to meet you."
+    },
+    {
+     "move": "fire_stinger",
+     "stinger": "riser",
+     "reason": "Building into the last chorus with you, let's launch it!"
     }
    ],
    "rejected": 0,
@@ -3335,8 +4954,18 @@
    "turns": 12,
    "errors": 0,
    "moves": 8,
-   "follow": 0.9668842199457177,
+   "follow": 0.9644770430926577,
    "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "brain": "Claude claude-opus-5-5",
+   "turns": 12,
+   "errors": 0,
+   "moves": 11,
+   "follow": 0.8673068431705877,
+   "silentDrop": 0,
    "busyLift": 1
   },
   {
@@ -3360,6 +4989,16 @@
    "busyLift": 1
   },
   {
+   "session": "sim-blues-in-a-slowburn",
+   "brain": "Claude claude-opus-5-5",
+   "turns": 12,
+   "errors": 0,
+   "moves": 7,
+   "follow": 0.8246833755320002,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
    "session": "sim-blues-in-a-stopstart",
    "brain": "Rules",
    "turns": 10,
@@ -3374,9 +5013,19 @@
    "brain": "Jev",
    "turns": 10,
    "errors": 0,
-   "moves": 11,
-   "follow": 0.9917963522795002,
+   "moves": 12,
+   "follow": 0.9914962143002785,
    "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "brain": "Claude claude-opus-5-5",
+   "turns": 10,
+   "errors": 0,
+   "moves": 13,
+   "follow": 0.9267588562273782,
+   "silentDrop": 0,
    "busyLift": 1
   },
   {
@@ -3395,8 +5044,18 @@
    "turns": 12,
    "errors": 0,
    "moves": 9,
-   "follow": 0.9645040994370133,
+   "follow": 0.9634580890580139,
    "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-late-set-arc",
+   "brain": "Claude claude-opus-5-5",
+   "turns": 12,
+   "errors": 0,
+   "moves": 13,
+   "follow": 0.8505441740318441,
+   "silentDrop": 0,
    "busyLift": 1
   },
   {
@@ -3415,7 +5074,17 @@
    "turns": 12,
    "errors": 0,
    "moves": 4,
-   "follow": 0.9735907400049711,
+   "follow": 0.974831860876515,
+   "silentDrop": null,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "brain": "Claude claude-opus-5-5",
+   "turns": 12,
+   "errors": 0,
+   "moves": 10,
+   "follow": 0.8339444936663696,
    "silentDrop": null,
    "busyLift": 1
   },
@@ -3435,9 +5104,19 @@
    "turns": 10,
    "errors": 0,
    "moves": 10,
-   "follow": 0.9473248306406414,
+   "follow": 0.9490184834638226,
    "silentDrop": 1,
    "busyLift": 1
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "brain": "Claude claude-opus-5-5",
+   "turns": 10,
+   "errors": 0,
+   "moves": 15,
+   "follow": 0.7018590423657566,
+   "silentDrop": 0,
+   "busyLift": 0.8
   },
   {
    "session": "sim-night-shift-arc",
@@ -3454,9 +5133,19 @@
    "brain": "Jev",
    "turns": 12,
    "errors": 0,
-   "moves": 10,
-   "follow": 0.9778965115406053,
+   "moves": 9,
+   "follow": 0.9785610453816741,
    "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "brain": "Claude claude-opus-5-5",
+   "turns": 12,
+   "errors": 0,
+   "moves": 12,
+   "follow": 0.8049403864583422,
+   "silentDrop": 0,
    "busyLift": 1
   },
   {
@@ -3475,9 +5164,19 @@
    "turns": 12,
    "errors": 0,
    "moves": 5,
-   "follow": 0.904958111780069,
+   "follow": 0.9028561659601071,
    "silentDrop": null,
    "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "brain": "Claude claude-opus-5-5",
+   "turns": 12,
+   "errors": 0,
+   "moves": 12,
+   "follow": 0.7378688046805186,
+   "silentDrop": null,
+   "busyLift": 0.75
   },
   {
    "session": "sim-night-shift-stopstart",
@@ -3494,420 +5193,532 @@
    "brain": "Jev",
    "turns": 10,
    "errors": 0,
-   "moves": 12,
+   "moves": 11,
    "follow": 0.9708970921456942,
    "silentDrop": 1,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "brain": "Claude claude-opus-5-5",
+   "turns": 10,
+   "errors": 0,
+   "moves": 16,
+   "follow": 0.7857259294657308,
+   "silentDrop": 0,
    "busyLift": 1
   }
  ],
  "key": {
   "sim-blues-in-a-arc#0": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-blues-in-a-arc#1": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-blues-in-a-arc#2": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-arc#3": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-blues-in-a-arc#4": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-blues-in-a-arc#5": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-blues-in-a-arc#6": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-blues-in-a-arc#7": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-blues-in-a-arc#8": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-blues-in-a-arc#9": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-blues-in-a-arc#10": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-blues-in-a-arc#11": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-slowburn#0": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-blues-in-a-slowburn#1": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-slowburn#2": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-blues-in-a-slowburn#3": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-blues-in-a-slowburn#4": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-blues-in-a-slowburn#5": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-blues-in-a-slowburn#6": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-blues-in-a-slowburn#7": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-blues-in-a-slowburn#8": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-blues-in-a-slowburn#9": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-blues-in-a-slowburn#10": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Rules",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-slowburn#11": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-stopstart#0": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-stopstart#1": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-stopstart#2": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-stopstart#3": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Rules",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-stopstart#4": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-blues-in-a-stopstart#5": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-blues-in-a-stopstart#6": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-stopstart#7": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-blues-in-a-stopstart#8": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-blues-in-a-stopstart#9": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-late-set-arc#0": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-late-set-arc#1": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-late-set-arc#2": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-arc#3": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-arc#4": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-late-set-arc#5": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-arc#6": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-late-set-arc#7": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-arc#8": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-late-set-arc#9": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-arc#10": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-arc#11": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-slowburn#0": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-late-set-slowburn#1": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-late-set-slowburn#2": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-late-set-slowburn#3": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-late-set-slowburn#4": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-late-set-slowburn#5": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-late-set-slowburn#6": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-late-set-slowburn#7": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-slowburn#8": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-late-set-slowburn#9": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-late-set-slowburn#10": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-late-set-slowburn#11": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-stopstart#0": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-late-set-stopstart#1": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-late-set-stopstart#2": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-stopstart#3": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Rules",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-late-set-stopstart#4": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-late-set-stopstart#5": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-stopstart#6": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-late-set-stopstart#7": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-stopstart#8": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-late-set-stopstart#9": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-night-shift-arc#0": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Rules",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-night-shift-arc#1": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-night-shift-arc#2": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-night-shift-arc#3": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-night-shift-arc#4": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-night-shift-arc#5": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-night-shift-arc#6": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-night-shift-arc#7": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-night-shift-arc#8": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-night-shift-arc#9": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-night-shift-arc#10": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-night-shift-arc#11": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-night-shift-slowburn#0": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-night-shift-slowburn#1": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-night-shift-slowburn#2": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-night-shift-slowburn#3": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-night-shift-slowburn#4": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-night-shift-slowburn#5": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-night-shift-slowburn#6": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-night-shift-slowburn#7": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-night-shift-slowburn#8": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-night-shift-slowburn#9": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   },
   "sim-night-shift-slowburn#10": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-night-shift-slowburn#11": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-night-shift-stopstart#0": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-night-shift-stopstart#1": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-night-shift-stopstart#2": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-night-shift-stopstart#3": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Claude claude-opus-5-5",
+   "B": "Jev",
+   "C": "Rules"
   },
   "sim-night-shift-stopstart#4": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Claude claude-opus-5-5",
+   "B": "Rules",
+   "C": "Jev"
   },
   "sim-night-shift-stopstart#5": {
    "A": "Rules",
-   "B": "Jev"
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-night-shift-stopstart#6": {
-   "A": "Rules",
-   "B": "Jev"
+   "A": "Jev",
+   "B": "Rules",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-night-shift-stopstart#7": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Jev",
+   "C": "Claude claude-opus-5-5"
   },
   "sim-night-shift-stopstart#8": {
-   "A": "Jev",
-   "B": "Rules"
+   "A": "Rules",
+   "B": "Claude claude-opus-5-5",
+   "C": "Jev"
   },
   "sim-night-shift-stopstart#9": {
    "A": "Jev",
-   "B": "Rules"
+   "B": "Claude claude-opus-5-5",
+   "C": "Rules"
   }
  }
 }
