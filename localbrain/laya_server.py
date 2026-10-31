@@ -65,6 +65,8 @@ def main() -> None:
             self.send_header("access-control-allow-origin", "*")
             self.send_header("access-control-allow-headers", "content-type, authorization")
             self.send_header("access-control-allow-methods", "GET, POST, OPTIONS")
+            # Chrome's private network access check, for a page served from another host (the Spark).
+            self.send_header("access-control-allow-private-network", "true")
 
         def do_OPTIONS(self) -> None:
             self.send_response(204)
