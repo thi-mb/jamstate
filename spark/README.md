@@ -1,15 +1,16 @@
 # Running jamstate on the DGX Spark
 
-The Spark hosts everything except the music itself: the built web app, the
-app server with the `/api/leader` proxy, and the bandleader model. The
-browser on your laptop owns all timing
-([ADR-0008](../docs/decisions/0008-spark-as-stateless-advisor.md)).
+The Spark is optional ([ADR-0015](../docs/decisions/0015-no-server-required.md)):
+the page plays from any static host. On Thiago's rig it serves the built web
+app, relays the page's brain calls to Qwen (and to Jev), keeps synced
+sessions, and runs the brain bake-off. The browser on your laptop owns all
+timing, and the prompt and move checks ship with the page.
 
 ```
 laptop browser ──HTTPS (tailnet)──► tailscale serve :443
                                         │
                                         ▼
-                         jamstate_server :8765  (static web/dist + /api/leader)
+                         jamstate_server :8765  (static web/dist + /api/relay/{llm,jev} + /api/sessions)
                                         │
                                         ▼
                          llama-server :8080  (OpenAI-compatible, bandleader model)
@@ -93,10 +94,18 @@ python -m jamstate_server --static ../web/dist \
   --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b --port 8765
 ```
 
-To check the whole path, including the server's own validation:
+To check the whole path through the server's relay:
 
 ```bash
-python3 spark/bench_leader.py --via-server http://127.0.0.1:8765 -n 20
+python3 spark/bench_leader.py --url http://127.0.0.1:8765/api/relay/llm --model qwen3-30b-a3b -n 20
+```
+
+To run the brain bake-off on the sessions saved here (Qwen direct, plus Jev
+if `TYPESAFE_API_KEY` is set):
+
+```bash
+cd web && npm run bakeoff -- ~/.local/share/jamstate/sessions --brains rules,qwen,jev \
+  --url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b --label spark --out ../docs/bakeoff/spark
 ```
 
 ## 4. HTTPS on the tailnet

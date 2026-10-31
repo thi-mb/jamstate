@@ -165,8 +165,12 @@ generative audio R&D, and one more brain host (Qwen) for whoever has it.
 The Python server in `server/` stays as an optional companion (static
 hosting, session sync, a proxy for providers that block browser calls).
 
-Until the switch lands, the page still uses the Spark server as described in
-[ADR-0008](decisions/0008-spark-as-stateless-advisor.md), now superseded.
+Where the code is (v0.1.1): brains in `web/src/core/brain/` (one file per
+provider, the shared prompt and checks, and `BrainLeader`, the timeout and
+fallback wrapper); platform interfaces in `web/src/core/platform.ts` with the
+web versions in `web/src/platform/web.ts`; the companion's relays in
+`server/jamstate_server/app.py`. The brain bake-off is `npm run bakeoff`
+(results in [bakeoff/](bakeoff/)).
 
 ## Roadmap view
 

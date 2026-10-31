@@ -123,7 +123,7 @@ export function jevMoves(ctx: LeaderContext, answers: JevAnswers): { moves: Move
       const up = value > ctx.target;
       const reason = up
         ? ctx.player.trend === "rising" ? "You're building, the band lifts with you" : "Picking the energy up with you"
-        : ctx.player.silent_bars > 0 ? "You went quiet, giving you space" : "Easing back to give you room";
+        : ctx.player.silent_bars > 0 ? "You went quiet, giving you space" : ctx.player.energy >= 0.62 ? "Leaving you some headroom" : "Easing back to give you room";
       moves.push({ move: "set_intensity", value, reason });
     }
   } else if (answers.level) rejected.push({ move: answers.level, error: "level has no score" });

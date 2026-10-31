@@ -1,8 +1,10 @@
 # Bandleader contract
 
-How the page and the bandleader talk. The bandleader is either the LLM on the
-DGX Spark or the in-page rule-based leader; both take the same request and
-return the same response. Timing rules are in
+How the page and the bandleader talk. The bandleader is a brain the player
+picks ([ADR-0016](decisions/0016-brain-providers.md)): the in-page rules, an
+OpenAI-compatible LLM (Qwen on the Spark, Ollama), Claude, or the Jev decision
+model. All take the same request and return the same response; the prompt and
+the move checks live in the page (`web/src/core/brain/`). Timing rules are in
 [ADR-0006](decisions/0006-bandleader-latency-contract.md); what happens to a
 move after it arrives is in [ADR-0007](decisions/0007-move-governor.md).
 
@@ -19,9 +21,9 @@ move after it arrives is in [ADR-0007](decisions/0007-move-governor.md).
 
 ## Request: the summary
 
-The page POSTs one JSON object to `/api/leader` on the app server
-(`server/`, package `jamstate_server`). It is the whole context: the server
-and model keep no state between calls.
+The page builds one JSON object and hands it to the brain. It is the whole
+context: no brain keeps state between calls. LLM brains get it verbatim as the
+user message; Jev gets it regrouped as `state` (see below).
 
 ```json
 {
@@ -69,7 +71,7 @@ v0 bandleader decisions rely on `energy`, `density`, `trend` and
 
 ## Response: moves
 
-What the server returns to the page:
+What a brain returns, after the page's checks (`web/src/core/brain/check.ts`):
 
 ```json
 {
@@ -86,7 +88,7 @@ What the server returns to the page:
 - `moves`: 0 to 2. An empty list is a valid, common answer ("keep going").
 - `reason` is shown on screen: required, at most 120 characters, plain words
   addressed to the player. Shorter is better on the overlay.
-- `rejected`: moves the server dropped as invalid, with the error, for the
+- `rejected`: moves the checks dropped as invalid, with the error, for the
   dev overlay.
 
 | `move` | Argument | Values |
@@ -100,16 +102,18 @@ What the server returns to the page:
 
 The band also knows `end_song` (v0.1): it ends the song at the end of the
 phrase. That one is the player's call, so it is not in the model's schema,
-the server rejects it, and the page drops it from any leader's reply.
+the checks reject it, and the conductor drops it from any leader's reply.
 
 The machine-readable schema is
-[schema/moves.schema.json](../schema/moves.schema.json). The server passes it
-to the model as a constrained-decoding `response_format`, so the model can
-only return valid shapes; the governor still checks values against the song.
+[schema/moves.schema.json](../schema/moves.schema.json). The OpenAI-compatible
+brain passes it as a constrained-decoding `response_format`; the Claude brain
+passes a strict version of it (`anyOf`, no numeric limits) as
+`output_config.format`. The checks then enforce the limits and the governor
+checks values against the song.
 
 ## Prompt
 
-The system prompt is fixed (so the server can cache its prefix) and short. It
+The system prompt is fixed (so model servers can cache its prefix) and short. It
 describes the role, not the rules: dwell times, quantization and limits are
 enforced by the governor and need not be explained to the model.
 
@@ -127,6 +131,26 @@ reason addressed to the player.
 ```
 
 The user message is the request JSON, verbatim.
+
+## Jev (decision model)
+
+Jev answers typed questions instead of writing text
+(`web/src/core/brain/jev.ts`). Each turn is one request with two questions:
+
+- `level` (score, 5 levels from "barely there: the player stopped" to "full
+  out"): how hard the band should play next, asked *ignoring how hard it plays
+  now* (asked relative to the current level, Jev anchors on it). The score maps
+  onto intensity 0.1 / 0.3 / 0.5 / 0.8 / 1.0, interpolated, and becomes a
+  `set_intensity` if it differs from the target by 0.1 or more.
+- `change` (choice): one structural move or `keep`, with options generated
+  from the band's state (add a missing part, drop a playing part but never the
+  last, other feels, stingers, extend, jump to another section).
+
+`state` is the request regrouped: `player` (plus `sounds`: "stopped", "sparse
+and soft", "steady, medium" or "busy and loud", words for the numbers),
+`band` (`intensity`, `playing`, `not_playing`, `feel`, `recent_moves`) and
+`song`. Reasons come from a template per move. TypeSafe blocks browser calls,
+so the page reaches Jev through the companion server's `/api/relay/jev`.
 
 ## Rule-based leader (reference behavior)
 
