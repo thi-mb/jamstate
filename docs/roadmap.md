@@ -53,7 +53,11 @@ changes everything about how the band plays and sounds.
 | Songs | Text-to-song and free jam know the genre's forms and harmony ("bossa nova in D" gives a bossa form, chords and lineup) | v0.6 |
 
 The pack format is a decision record in v0.1, so genres can be added without
-code once the engine supports the layers. Target for v1.0: about five genres
+code once the engine supports the layers. The genre count stays at the first two or three through
+v0.5: each release adds its layer to those same genres, and they act as
+test cases that keep the engine from assuming one style. The remaining
+genres are added in v0.6–v0.7, when the format is stable and a new genre is
+mostly data and samples. Target for v1.0: about five genres
 that are clearly different (for example blues/shuffle, funk, rock, jazz
 swing, bossa or Latin), picked with Thiago. Community genre packs after
 v1.0.
