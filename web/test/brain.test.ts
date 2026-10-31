@@ -68,7 +68,7 @@ describe("move checking (moved from the server)", () => {
     expect(checkMove({ move: "set_intensity", value: 2, reason: "x" })).toBeTruthy();
     expect(checkMove({ move: "set_intensity", value: 0.5 })).toBe("reason is required");
     expect(checkMove({ move: "extend_section", bars: true, reason: "x" })).toBeTruthy();
-    expect(checkMove({ move: "set_intensity", value: 0.5, reason: "x".repeat(121) })).toMatch(/longer/);
+    expect(checkMove({ move: "set_intensity", value: 0.5, reason: "x".repeat(121) })).toBeNull() // shortened by splitMoves, not rejected;
     expect(splitMoves("nonsense").rejected[0].error).toBe("reply has no moves list");
   });
 
@@ -317,5 +317,17 @@ describe("simulated sessions and brain replay", () => {
     const applied = r.bars.flatMap((b) => b.moves);
     expect(applied.some((m) => m.startsWith("drop_layer(drums) [jev]"))).toBe(true);
     expect(applied.some((m) => m.startsWith("set_intensity(0.10) [jev]"))).toBe(true);
+  });
+});
+
+describe("long reasons", () => {
+  it("are shortened at a word, and the move is kept", () => {
+    const long = "You've gone quiet for a couple of bars now, so the band is easing right back and dropping the drums to leave you plenty of room to come back in";
+    const { moves, rejected } = splitMoves({ moves: [{ move: "drop_layer", part: "drums", reason: long }] });
+    expect(rejected).toEqual([]);
+    expect(moves[0].reason.length).toBeLessThanOrEqual(120);
+    expect(moves[0].reason.endsWith("…")).toBe(true);
+    expect(long.startsWith(moves[0].reason.slice(0, -1))).toBe(true);
+    expect(moves[0].reason).not.toMatch(/ …$/);
   });
 });
