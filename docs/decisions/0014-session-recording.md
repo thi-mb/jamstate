@@ -9,7 +9,7 @@ way to check that a change didn't break anything, and from v0.3 a way to
 score bandleaders on real playing. Listening again by hand doesn't scale.
 
 ## Decision
-Every jam in the page is recorded to a `houseband-session/0.1` JSON file
+Every jam in the page is recorded to a `jamstate-session/0.1` JSON file
 (`web/src/core/session.ts`):
 
 - the chart as played, the starting genre and swing, the seed, count-in,
@@ -29,7 +29,7 @@ and the player's own moves and lets a leader decide again, at the same points
 as live (one bar committed ahead), awaiting async leaders.
 
 Sessions can be downloaded from the page or saved on the Spark
-(`POST /api/sessions`, files in `~/.local/share/houseband/sessions`). Replay
+(`POST /api/sessions`, files in `~/.local/share/jamstate/sessions`). Replay
 runs in the page (Check, Play) or headless: `npm run replay -- file.json
 [--leader rules|llm]`.
 

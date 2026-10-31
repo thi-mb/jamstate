@@ -20,7 +20,7 @@ move after it arrives is in [ADR-0007](decisions/0007-move-governor.md).
 ## Request: the summary
 
 The page POSTs one JSON object to `/api/leader` on the app server
-(`server/`, package `houseband_server`). It is the whole context: the server
+(`server/`, package `jamstate_server`). It is the whole context: the server
 and model keep no state between calls.
 
 ```json

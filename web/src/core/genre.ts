@@ -8,7 +8,7 @@ import { drumSteps, tokenSteps } from "./pattern";
 import { parseChord, VOICING_STYLES, type VoicingStyle } from "./theory";
 import { LEVELS, ROLES, type Part } from "./types";
 
-export const GENRE_FORMAT = "houseband-genre/0.1";
+export const GENRE_FORMAT = "jamstate-genre/0.1";
 
 export const DRUM_LINES = ["kick", "snare", "stick", "cymbal", "pedal", "tom_hi", "tom_mid", "tom_lo", "crash", "clap"] as const;
 export type DrumLine = (typeof DRUM_LINES)[number];

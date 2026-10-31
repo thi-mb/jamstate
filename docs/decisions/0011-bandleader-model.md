@@ -49,7 +49,7 @@ Measured on the Spark with `spark/bench_leader.py` at 112 bpm, llama.cpp
 | GPU memory | 18.6 GB | 11.5 GB |
 | result | PASS | MISS |
 
-Through `houseband_server` (`--via-server`, Qwen, n=20): p50 793 ms,
+Through `jamstate_server` (`--via-server`, Qwen, n=20): p50 793 ms,
 p95 860 ms, 0 invalid. PASS.
 
 Notes:

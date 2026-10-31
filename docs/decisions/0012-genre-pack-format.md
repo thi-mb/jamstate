@@ -13,7 +13,7 @@ the server later (text-to-song in v0.6, leader taste in v0.4).
 
 ## Decision
 One JSON file per genre in `genres/` at the repo root, format
-`houseband-genre/0.1`, schema [schema/genre.schema.json](../../schema/genre.schema.json),
+`jamstate-genre/0.1`, schema [schema/genre.schema.json](../../schema/genre.schema.json),
 validated with readable errors by `web/src/core/genre.ts`. The page bundles
 every file in the folder at build time, so adding a genre is adding a file.
 
@@ -51,7 +51,7 @@ section (so a section keeps its character); ghost notes, approaches and
 timing are seeded by the absolute bar (so they vary). Same seed, same notes.
 
 Later layers add top-level keys (`instruments`, `production`, `listening`,
-`leading`, `songs`) and bump the format to `houseband-genre/0.2` and so on;
+`leading`, `songs`) and bump the format to `jamstate-genre/0.2` and so on;
 a pack without a layer gets the engine's defaults.
 
 ## Consequences
