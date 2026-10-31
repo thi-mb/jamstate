@@ -218,7 +218,10 @@ function showBrainSettings(): void {
   field("jev-relay").checked = settings.jev.relay;
   field("jev-url").disabled = !settings.jev.relay;
   for (const k of ["openai", "claude", "jev", "laya", "blind"]) $(`brain-${k}`).hidden = settings.kind !== k;
-  if (settings.kind === "blind") showBlindPool();
+  if (settings.kind === "blind") {
+    showBlindPool();
+    if (!blindReady && !blindChecking && serverChecked) void checkBlind();
+  }
   $("brain-keys-note").hidden = !["openai", "claude", "jev"].includes(settings.kind);
   $<HTMLButtonElement>("brain-test").disabled = settings.kind === "none";
 }
@@ -285,6 +288,9 @@ async function checkServer(): Promise<void> {
     el.textContent = "Standalone: no jamstate server. Rules, Claude and direct LLM endpoints work; Jev needs the server's relay.";
   }
   $("session-save").hidden = !server?.sessions;
+  serverChecked = true;
+  blindReady = null;
+  showBrainSettings();
   void listSessions();
 }
 
@@ -301,18 +307,23 @@ function showBlindPool(): void {
     openai: blindReady ? "didn't answer" : "needs the Spark's relay or a direct endpoint",
     claude: blindReady && (settings.claude.apiKey || server?.relay.anthropic) ? "didn't answer" : "no key: pick Claude above and paste one, or give the server ANTHROPIC_API_KEY",
     jev: blindReady ? "didn't answer" : "needs the jamstate server's relay",
-    laya: "not in blind tests yet: it runs on your machine (localbrain/)",
+    laya: blindReady ? "not answering: start localbrain/laya_server.py on this machine, then Test" : "press Test to look for it on this machine (localbrain/)",
   };
   const out = all.filter((k) => !pool.includes(k)).map((k) => `${BLIND_NAMES[k]} (${why[k]})`);
   $("blind-pool").textContent = `In the pool: ${pool.map((k) => BLIND_NAMES[k]).join(", ")}${blindReady ? " (checked)" : ""}.${out.length ? ` Left out: ${out.join("; ")}.` : ""}`;
 }
 
 /** Ask each candidate once; only the ones that answer go in the pool. */
+let blindChecking = false;
+/** The server probe is done, so the blind check knows which relays exist. */
+let serverChecked = false;
 async function checkBlind(): Promise<void> {
+  blindChecking = true;
   const out = $("brain-result");
   out.className = "small dim";
   out.textContent = "Checking each brain…";
-  const cands = blindCandidates(settings, blindEnv());
+  // Laya runs on the player's machine, so it can only be found by asking it.
+  const cands: BrainKind[] = [...blindCandidates(settings, blindEnv()), "laya"];
   const ok = await Promise.all(
     cands.map(async (k) => {
       try {
@@ -324,6 +335,7 @@ async function checkBlind(): Promise<void> {
     }),
   );
   blindReady = ok.filter((k): k is BrainKind => !!k);
+  blindChecking = false;
   out.className = "small";
   out.textContent = `${blindReady.length} of ${cands.length} brains answered.`;
   showBlindPool();
