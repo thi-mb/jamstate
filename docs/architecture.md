@@ -48,7 +48,7 @@ URL, plug in a MIDI keyboard (or use the computer keyboard), and play.
  │        intensity, layers, feel, stingers      │
  │                          │                    │
  │  MID   Part generators: next bar per part     │
- │        from the loop bank, by commit deadline │
+ │        from the genre pack, by commit deadline│
  │                          │ committed bars     │
  │  FAST  Scheduler (Web Audio clock, lookahead) │
  │           ├──► built-in synth / sampler       │
@@ -86,9 +86,14 @@ Ableton Link is not available in a browser. It returns later through a small
 local bridge. See [ADR-0004](decisions/0004-ableton-link-deferred.md).
 
 ### Part generators (mid layer)
-One generator per part (drums, bass, chords). In v0 each picks from a bank of
-pre-made loops and layers indexed by section and intensity, transposed to the
-current chord. Each generator hands the scheduler bar N+1 before the commit
+One generator per part role (drums, bass, chords), walking the genre's
+lineup. Since v0.1 each reads its vocabulary from the song's genre pack
+([ADR-0012](decisions/0012-genre-pack-format.md)): step patterns per
+intensity level with seeded variations, ghost notes and fills for the drums,
+bass degrees and approaches (or a walking line), comping rhythms with
+voice-led voicings. Generators write on a straight grid; the engine then
+applies the genre's swing and humanize (`feel.ts`), and a ritardando on an
+ending bar. Each generator hands the scheduler bar N+1 before the commit
 deadline of bar N. Missing it means the previous bar repeats.
 
 ### Arranger (slow-layer state)

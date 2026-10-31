@@ -2,7 +2,10 @@
 
 import type { BarPlan, MoveRecord } from "../core/engine";
 import type { BarFeatures } from "../core/features";
+import { getGenre } from "../core/genres";
 import { PARTS } from "../core/types";
+
+const genreName = (id: string) => getGenre(id).name.toLowerCase();
 
 const $ = (id: string) => document.getElementById(id)!;
 
@@ -28,10 +31,18 @@ export class Overlay {
   }
 
   bar(plan: BarPlan): void {
-    $("section").textContent = plan.section;
+    if (plan.kind === "count_in") {
+      $("section").textContent = "count-in";
+      $("bar").textContent = plan.sectionBars > 1 ? `bar ${plan.barInSection + 1} of ${plan.sectionBars}` : "1, 2, 3, 4…";
+      $("chord").textContent = "–";
+      $("feel").textContent = `${genreName(plan.genre)} · swing ${plan.swing}`;
+      return;
+    }
+    $("section").textContent = plan.kind === "ending" ? `${plan.section} · ending` : plan.section;
     $("bar").textContent = `bar ${plan.barInSection + 1} of ${plan.sectionBars}${plan.repeated.length ? ` · repeated ${plan.repeated.join(", ")}` : ""}`;
     $("chord").textContent = plan.chords.join("  ");
-    $("feel").textContent = FEEL_LABEL[plan.feel] + (plan.stingers.length ? ` · ${plan.stingers.join(" + ")}` : "");
+    $("feel").textContent =
+      `${genreName(plan.genre)} · swing ${plan.swing} · ${FEEL_LABEL[plan.feel]}` + (plan.stingers.length ? ` · ${plan.stingers.join(" + ")}` : "");
     ($("intensity") as HTMLElement).style.width = `${plan.intensity * 100}%`;
     ($("target") as HTMLElement).style.left = `calc(${plan.target * 100}% - 1px)`;
     $("intensity-num").textContent = `${plan.intensity.toFixed(2)} → ${plan.target.toFixed(2)}`;

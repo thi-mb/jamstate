@@ -52,6 +52,8 @@ export class Transport {
   private started = 0; // bars whose start has been announced
   private ended = 0; // bars whose end has been announced
   private formDone = false;
+  /** Clock time the last scheduled note ends (an ending's ring-out runs past its bar). */
+  private lastNoteEnd = 0;
 
   constructor(
     private engine: Engine,
@@ -107,7 +109,11 @@ export class Transport {
     const startBeat = this.committed.length * this.bpb;
     this.committed.push({ plan, startBeat });
     const spb = this.secondsPerBeat;
-    for (const ev of plan.events) this.queue.push({ time: this.timeAt(startBeat + ev.start), dur: ev.dur * spb, ev });
+    for (const ev of plan.events) {
+      const time = this.timeAt(startBeat + ev.start);
+      this.queue.push({ time, dur: ev.dur * spb, ev });
+      this.lastNoteEnd = Math.max(this.lastNoteEnd, time + ev.dur * spb);
+    }
     this.queue.sort((a, b) => a.time - b.time);
     this.events.onCommit?.(plan, startBeat);
     return true;
@@ -139,8 +145,10 @@ export class Transport {
     }
     if (i) this.queue.splice(0, i);
 
-    while (this.started < this.committed.length && now >= this.timeAt(this.committed[this.started].startBeat))
-      this.events.onBarStart?.(this.committed[this.started++].plan);
+    while (this.started < this.committed.length && now >= this.timeAt(this.committed[this.started].startBeat)) {
+      const plan = this.committed[this.started++].plan; // outside the ?. call, which skips its arguments when there's no handler
+      this.events.onBarStart?.(plan);
+    }
 
     // Close a bar a little after it ends so late note-offs make it in.
     while (this.ended < this.started && now >= this.timeAt(this.committed[this.ended].startBeat + this.bpb) + 0.03) {
@@ -148,7 +156,7 @@ export class Transport {
       this.events.onBarEnd?.(c.plan, c.startBeat);
     }
 
-    if (this.formDone && this.ended === this.committed.length) {
+    if (this.formDone && this.ended === this.committed.length && !this.queue.length && now >= this.lastNoteEnd + 0.2) {
       this.running = false;
       this.events.onEnd?.();
     }

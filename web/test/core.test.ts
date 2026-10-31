@@ -617,6 +617,23 @@ describe("transport", () => {
   });
 });
 
+describe("transport endings", () => {
+  it("lets the final hit ring out before reporting the end", () => {
+    let now = 0;
+    let endedAt = -1;
+    const played: number[] = [];
+    const sink: Sink = { play: (_ev, time) => played.push(time), panic: () => {} };
+    const short: ChartJSON = { title: "t", bpm: 120, time_sig: "4/4", genre: "blues-rock", sections: [{ name: "a", bars: 2, chords: ["C"] }], form: ["a"] };
+    const t = new Transport(new Engine(loadChart(short)), { now: () => now }, sink, { onEnd: () => (endedAt = now) }, { lookahead: 0.1, startDelay: 0 });
+    t.start();
+    for (; now < 12 && endedAt < 0; now += 0.025) t.tick();
+    // Two bars of 2 s; the ritardando and a 4-beat ring push the last note well past 4 s.
+    const lastNote = Math.max(...played);
+    expect(lastNote).toBeGreaterThan(4.5);
+    expect(endedAt).toBeGreaterThan(lastNote + 1);
+  });
+});
+
 describe("midi inputs", () => {
   const ins = [
     { id: "in-kk", name: "KOMPLETE KONTROL M32" },

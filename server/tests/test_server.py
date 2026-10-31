@@ -205,3 +205,42 @@ def test_schemas_accept_examples_and_match_validator():
     jsonschema.validate(good, moves_schema)
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate({"moves": [{"move": "change_feel", "feel": "waltz", "reason": "x"}]}, moves_schema)
+
+
+def test_genre_packs_match_their_schema():
+    jsonschema = pytest.importorskip("jsonschema")
+    schema = json.loads((SCHEMA_DIR / "genre.schema.json").read_text())
+    packs = sorted((REPO / "genres").glob("*.json"))
+    assert {p.stem for p in packs} >= {"funk", "blues-rock", "jazz"}
+    for p in packs:
+        jsonschema.validate(json.loads(p.read_text()), schema)
+
+
+def test_end_song_is_not_a_leader_move():
+    # The player ends songs; the LLM's schema and the server both leave end_song out.
+    assert validate_move({"move": "end_song", "reason": "bye"})
+    assert "end_song" not in (SCHEMA_DIR / "moves.schema.json").read_text()
+
+
+def test_sessions_are_saved_listed_and_loaded(static_dir, tmp_path):
+    from houseband_server.sessions import SessionStore
+
+    store = SessionStore(tmp_path / "sessions")
+    httpd = serve(App(static_dir, None, store), "127.0.0.1", 0)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    base = f"http://127.0.0.1:{httpd.server_address[1]}"
+    try:
+        session = {"format": "houseband-session/0.1", "title": "Night Shift!", "chart": {}, "player": [[0, 60, 90]], "controls": [], "bars": [{"bar": 0}] * 3}
+        status, body = post(f"{base}/api/sessions", session)
+        assert status == 200 and body["name"].endswith("-night-shift.json")
+        status, _, raw = get(f"{base}/api/sessions")
+        listed = json.loads(raw)["sessions"]
+        assert listed[0]["name"] == body["name"] and listed[0]["bars"] == 3
+        status, _, raw = get(f"{base}/api/sessions/{body['name']}")
+        assert status == 200 and json.loads(raw)["player"] == [[0, 60, 90]]
+        assert post(f"{base}/api/sessions", {"format": "nope"})[0] == 400
+        assert get(f"{base}/api/sessions/..%2F..%2Fetc%2Fpasswd")[0] == 404
+        # The LLM endpoints still say no LLM while sessions work.
+        assert post(f"{base}/api/leader", SUMMARY)[0] == 503
+    finally:
+        httpd.shutdown()

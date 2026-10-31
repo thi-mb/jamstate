@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/thi-mb/jamstate/schema/genre.schema.json",
+  "title": "houseband genre pack",
+  "description": "One genre: how the band composes in it (v0.1). Later releases add instrumentation, production, listening and leading layers to the same file. Format: docs/decisions/0012-genre-pack-format.md. The browser (web/src/core/genre.ts) enforces the same rules with clearer messages.",
+  "type": "object",
+  "required": ["format", "id", "name", "drums", "bass", "chords"],
+  "additionalProperties": false,
+  "$defs": {
+    "perLevel": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "type": "number", "minimum": 0, "maximum": 1 },
+      "description": "One value per intensity level (0 = sparsest, 3 = fullest)."
+    },
+    "grid": { "enum": [2, 3, 4], "default": 4, "description": "Steps per beat: 2 = eighths, 3 = triplets, 4 = sixteenths." },
+    "drumRow": {
+      "type": "string",
+      "pattern": "^[.xXgoh |]+$",
+      "description": "One character per step: . rest, x hit, X accent, h soft, g ghost, o open (open hat, or bell on the ride). Spaces and | are ignored."
+    },
+    "drumLines": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kick": { "$ref": "#/$defs/drumRow" },
+        "snare": { "$ref": "#/$defs/drumRow" },
+        "stick": { "$ref": "#/$defs/drumRow" },
+        "cymbal": { "$ref": "#/$defs/drumRow", "description": "The time-keeping line, played on the hi-hat or ride depending on the section." },
+        "pedal": { "$ref": "#/$defs/drumRow" },
+        "tom_hi": { "$ref": "#/$defs/drumRow" },
+        "tom_mid": { "$ref": "#/$defs/drumRow" },
+        "tom_lo": { "$ref": "#/$defs/drumRow" },
+        "crash": { "$ref": "#/$defs/drumRow" },
+        "clap": { "$ref": "#/$defs/drumRow" }
+      }
+    },
+    "drumVariant": {
+      "oneOf": [
+        { "$ref": "#/$defs/drumLines" },
+        {
+          "type": "object",
+          "required": ["lines"],
+          "additionalProperties": false,
+          "properties": {
+            "lines": { "$ref": "#/$defs/drumLines" },
+            "weight": { "type": "number", "minimum": 0, "maximum": 100 },
+            "phrase_end": { "type": "boolean", "description": "Only on the last bar of a phrase." }
+          }
+        }
+      ]
+    },
+    "tokenVariant": {
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "required": ["steps"],
+          "additionalProperties": false,
+          "properties": {
+            "steps": { "type": "string", "minLength": 1 },
+            "weight": { "type": "number", "minimum": 0, "maximum": 100 },
+            "phrase_end": { "type": "boolean" }
+          }
+        }
+      ]
+    },
+    "levels": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "description": "Pattern variants for each intensity level; one is picked per bar, seeded."
+    },
+    "humanize": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "offset_ms": { "type": "number", "minimum": -30, "maximum": 30, "description": "Negative pushes ahead of the beat, positive lays back." },
+        "jitter_ms": { "type": "number", "minimum": 0, "maximum": 20 },
+        "velocity": { "type": "number", "minimum": 0, "maximum": 30 },
+        "spread_ms": { "type": "number", "minimum": 0, "maximum": 40, "description": "Chords: roll the notes low to high." },
+        "lines": { "type": "object", "additionalProperties": { "type": "number", "minimum": -30, "maximum": 30 }, "description": "Drums: offset per line, ms." }
+      }
+    }
+  },
+  "properties": {
+    "format": { "const": "houseband-genre/0.1" },
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "parts": { "type": "array", "items": { "enum": ["drums", "bass", "chords"] }, "minItems": 1, "description": "The lineup (roles). v0.2 adds instruments and more roles." },
+    "feel": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "swing": { "type": "number", "minimum": 0, "maximum": 1, "description": "0 = straight, 0.66 = triplet, 1 = dotted." },
+        "swing_unit": { "enum": [8, 16], "description": "Swing eighths or sixteenths." }
+      }
+    },
+    "humanize": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "drums": { "$ref": "#/$defs/humanize" }, "bass": { "$ref": "#/$defs/humanize" }, "chords": { "$ref": "#/$defs/humanize" } }
+    },
+    "drums": {
+      "type": "object",
+      "required": ["levels", "fills"],
+      "additionalProperties": false,
+      "properties": {
+        "grid": { "$ref": "#/$defs/grid" },
+        "cymbal": { "enum": ["hat", "ride"] },
+        "cymbal_sections": { "type": "object", "additionalProperties": { "enum": ["hat", "ride"] }, "description": "Section name → hat or ride." },
+        "levels": { "allOf": [{ "$ref": "#/$defs/levels" }, { "items": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/drumVariant" } } }] },
+        "ghosts": { "$ref": "#/$defs/perLevel", "description": "Chance of an extra ghost snare on each empty off-beat sixteenth." },
+        "phrase_fills": { "$ref": "#/$defs/perLevel", "description": "Chance of a short fill at the end of a phrase (not a section)." },
+        "fills": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["beats", "lines"],
+            "additionalProperties": false,
+            "properties": {
+              "beats": { "type": "number", "minimum": 0.5, "maximum": 4 },
+              "levels": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "integer", "minimum": 0, "maximum": 3 } },
+              "lines": { "$ref": "#/$defs/drumLines" }
+            }
+          }
+        },
+        "pickup": { "$ref": "#/$defs/drumLines", "description": "One beat played at the end of the count-in." }
+      }
+    },
+    "bass": {
+      "type": "object",
+      "required": ["levels"],
+      "additionalProperties": false,
+      "properties": {
+        "grid": { "$ref": "#/$defs/grid" },
+        "levels": {
+          "allOf": [{ "$ref": "#/$defs/levels" }, { "items": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/tokenVariant" } } }],
+          "description": "Space-separated steps: . rest, - hold, R root, 2 b3 3 4 b5 5 6 b7 7 8 degrees of the current chord (suffix ' up an octave, , down), A approach to the next chord, N the next chord's root early, x dead note, g ghost; ! accents."
+        },
+        "approach": { "enum": ["chromatic", "scale", "fifth", "mixed"] },
+        "approach_chance": { "$ref": "#/$defs/perLevel", "description": "Chance the last note of a bar becomes an approach to the next chord." },
+        "walk": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "levels": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 3 }, "description": "Levels at which the bass walks quarter notes instead of the patterns." },
+            "skip_chance": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+    "chords": {
+      "type": "object",
+      "required": ["levels"],
+      "additionalProperties": false,
+      "properties": {
+        "grid": { "$ref": "#/$defs/grid" },
+        "voicing": { "enum": ["close", "shell", "triad", "stab"] },
+        "range": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "integer", "minimum": 24, "maximum": 108 } },
+        "levels": {
+          "allOf": [{ "$ref": "#/$defs/levels" }, { "items": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/tokenVariant" } } }],
+          "description": "Steps: . rest, - hold, x hit, X accent, g muted ghost, p push (play the next chord early)."
+        }
+      }
+    },
+    "ending": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rit": { "type": "number", "minimum": 0, "maximum": 0.5, "description": "Tempo drop across the last bar (0.3 = to 70%)." },
+        "ring_beats": { "type": "number", "minimum": 0.5, "maximum": 8 },
+        "chord": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "major": { "type": "string" }, "minor": { "type": "string" } },
+          "description": "Chord quality of the final tonic chord, e.g. 9, 69, m9, m6."
+        },
+        "drums": { "enum": ["hit", "roll"] }
+      }
+    },
+    "forms": { "type": "array", "items": { "type": "string" }, "description": "Typical forms, for writing songs in this genre (v0.6)." },
+    "progressions": { "type": "array", "items": { "type": "string" }, "description": "Typical progressions in Roman numerals (v0.6)." }
+  }
+}
