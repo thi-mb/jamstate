@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { BrainLeader, makeBrain, mergeSettings, RulesBrain, splitMoves, checkMove, extractJson, DEFAULT_SETTINGS, type BrainProvider, type Fetch } from "../src/core/brain";
 import { ClaudeBrain } from "../src/core/brain/claude";
 import { changeOptions, JevBrain, jevMoves, jevQuestions, jevState, LEVELS } from "../src/core/brain/jev";
+import { LayaBrain, layaChangeOptions, layaMoves, layaQuestions, layaState } from "../src/core/brain/laya";
 import { OpenAIBrain } from "../src/core/brain/openai";
 import { chartSchema, LEADER_SYSTEM, movesSchema, strictSchema } from "../src/core/brain/prompt";
 import { MemorySessionStore, MemoryStore, sessionName } from "../src/core/platform";
@@ -190,6 +191,46 @@ describe("Jev brain", () => {
     expect(sent[0].body.model).toBe("jev-latest");
     expect(sent[0].body.state.band.not_playing).toEqual([]);
     await expect(b.decide(CTX)).rejects.toThrow(/HTTP 401/);
+  });
+});
+
+describe("Laya brain", () => {
+  it("states the player in words and offers changes that fit them", () => {
+    expect(layaState(SILENT)).toMatch(/^The player has stopped playing: 4 silent bars/);
+    expect(layaState(CTX)).toMatch(/busy and loud.*getting louder/);
+    expect(layaState(CTX)).not.toMatch(/intensity/); // told the band's level, Laya repeats it
+    expect(layaState({ ...CTX, layers: ["bass"] })).toMatch(/drums and chords are out/);
+    const q = layaQuestions(CTX) as any;
+    expect(q.level.type).toBe("choice");
+    expect(Object.keys(q.level.criteria)).toEqual(["silent", "soft", "medium", "strong", "full"]);
+    // Busy player, everyone in: keep or a fill, nothing to drop.
+    expect([...layaChangeOptions(CTX).keys()]).toEqual(["keep", "fill"]);
+    // Stopped: drops only, never the last part.
+    expect([...layaChangeOptions(SILENT).keys()]).toEqual(["keep", "drop_drums", "drop_bass", "drop_chords"]);
+    expect([...layaChangeOptions({ ...SILENT, layers: ["bass"] }).keys()]).toEqual(["keep"]);
+    expect([...layaChangeOptions({ ...CTX, layers: ["bass"] }).keys()]).toEqual(["keep", "add_drums", "add_chords", "fill"]);
+    for (const c of [CTX, SILENT, { ...CTX, layers: ["bass"] as LeaderContext["layers"] }])
+      for (const opt of layaChangeOptions(c).values()) if (opt.move) expect(checkMove(opt.move, c.sections)).toBeNull();
+  });
+
+  it("maps its top picks to moves", () => {
+    const down = layaMoves(SILENT, { level: { choice: "silent" }, change: { choice: "drop_drums" } });
+    expect(down.moves).toEqual([
+      { move: "set_intensity", value: 0.1, reason: "You went quiet, giving you space" },
+      { move: "drop_layer", part: "drums", reason: "You went quiet, drums out so it can breathe" },
+    ]);
+    expect(layaMoves({ ...CTX, target: 0.5 }, { level: { choice: "medium" }, change: { choice: "keep" } }).moves).toEqual([]);
+    expect(layaMoves(CTX, { level: { choice: "loud" } }).rejected[0].error).toBe("unknown level");
+    expect(layaMoves(CTX, { change: { choice: "drop_drums" } }).rejected[0].error).toBe("unknown option"); // not offered to a busy player
+  });
+
+  it("posts to the local server on Jev's wire", async () => {
+    const { fn, sent } = fakeFetch([{ body: { model: "laya@mlx", answers: { level: { type: "choice", choice: "strong" }, change: { type: "choice", choice: "fill" } } } }]);
+    const a = await new LayaBrain({ url: "http://127.0.0.1:8010/v1/systemone" }, fn).decide(CTX);
+    expect(a.model).toBe("laya@mlx");
+    expect(a.moves.map((m) => m.move)).toEqual(["set_intensity", "fire_stinger"]);
+    expect(typeof sent[0].body.state).toBe("string");
+    expect(sent[0].init.headers).not.toHaveProperty("authorization");
   });
 });
 

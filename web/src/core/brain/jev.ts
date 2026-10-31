@@ -23,6 +23,8 @@ export interface JevConfig {
   model?: string;
   /** Endpoint: the TypeSafe API, or the companion relay (e.g. api/relay/jev). */
   url?: string;
+  /** Overlay label; "Jev" unless another model answers on the same wire. */
+  label?: string;
 }
 
 /**
@@ -142,35 +144,50 @@ export function jevMoves(ctx: LeaderContext, answers: JevAnswers): { moves: Move
 
 export class JevBrain implements BrainProvider {
   readonly kind = "jev" as const;
-  readonly label = "Jev";
+  readonly label: string;
 
   constructor(
     private cfg: JevConfig,
     private fetchFn: Fetch = globalThis.fetch.bind(globalThis),
-  ) {}
+  ) {
+    this.label = cfg.label ?? "Jev";
+  }
 
   async decide(ctx: LeaderContext, signal?: AbortSignal): Promise<BrainAnswer> {
     const t0 = now();
-    const res = await this.fetchFn(this.cfg.url ?? JEV_API, {
-      method: "POST",
-      headers: { "content-type": "application/json", ...(this.cfg.apiKey ? { authorization: `Bearer ${this.cfg.apiKey}` } : {}) },
-      body: JSON.stringify({ model: this.cfg.model ?? "jev-latest", state: jevState(ctx), questions: jevQuestions(ctx) }),
-      signal,
-    });
-    const text = await res.text();
-    let body: { model?: string; answers?: JevAnswers; usage?: unknown; error?: unknown; message?: unknown } = {};
-    try {
-      body = JSON.parse(text);
-    } catch {
-      /* plain-text error */
-    }
-    if (!res.ok) throw new BrainError(`HTTP ${res.status} from Jev: ${String(body.message ?? body.error ?? text).slice(0, 200)}`, res.status);
-    if (!body.answers) throw new BrainError(`Jev returned no answers: ${text.slice(0, 200)}`);
+    const body = await postSystemOne(this.fetchFn, this.cfg.url ?? JEV_API, this.cfg.apiKey, { model: this.cfg.model ?? "jev-latest", state: jevState(ctx), questions: jevQuestions(ctx) }, this.label, signal);
     return {
-      ...jevMoves(ctx, body.answers),
+      ...jevMoves(ctx, body.answers as JevAnswers),
       model: body.model,
       latencyMs: Math.round(now() - t0),
       meta: { answers: body.answers, usage: body.usage },
     };
   }
+}
+
+/** One call on TypeSafe's System One wire (Jev, or Laya on this machine). */
+export async function postSystemOne(
+  fetchFn: Fetch,
+  url: string,
+  apiKey: string | undefined,
+  req: { model: string; state: unknown; questions: Record<string, unknown> },
+  who: string,
+  signal?: AbortSignal,
+): Promise<{ model?: string; answers: Record<string, unknown>; usage?: unknown }> {
+  const res = await fetchFn(url, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...(apiKey ? { authorization: `Bearer ${apiKey}` } : {}) },
+    body: JSON.stringify(req),
+    signal,
+  });
+  const text = await res.text();
+  let body: { model?: string; answers?: Record<string, unknown>; usage?: unknown; error?: unknown; message?: unknown } = {};
+  try {
+    body = JSON.parse(text);
+  } catch {
+    /* plain-text error */
+  }
+  if (!res.ok) throw new BrainError(`HTTP ${res.status} from ${who}: ${String(body.message ?? body.error ?? text).slice(0, 200)}`, res.status);
+  if (!body.answers) throw new BrainError(`${who} returned no answers: ${text.slice(0, 200)}`);
+  return { model: body.model, answers: body.answers, usage: body.usage };
 }

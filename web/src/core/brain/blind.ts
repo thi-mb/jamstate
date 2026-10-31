@@ -5,7 +5,7 @@ import type { SessionFile } from "../session";
 import type { BrainKind } from "./types";
 import type { BrainSettings } from "./index";
 
-export const BLIND_NAMES: Record<BrainKind, string> = { rules: "Rules", openai: "Qwen / LLM", claude: "Claude", jev: "Jev" };
+export const BLIND_NAMES: Record<BrainKind, string> = { rules: "Rules", openai: "Qwen / LLM", claude: "Claude", jev: "Jev", laya: "Laya" };
 
 /** What a recording says played in a blind jam: "blind:jev". */
 export const blindLeader = (k: BrainKind) => `blind:${k}`;

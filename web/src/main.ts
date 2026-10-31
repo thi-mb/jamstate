@@ -207,6 +207,7 @@ const BRAIN_FIELDS: [string, (s: BrainSettings) => string, (s: BrainSettings, v:
   ["jev-model", (s) => s.jev.model, (s, v) => (s.jev.model = v)],
   ["jev-key", (s) => s.jev.apiKey, (s, v) => (s.jev.apiKey = v)],
   ["jev-url", (s) => s.jev.url, (s, v) => (s.jev.url = v)],
+  ["laya-url", (s) => s.laya.url, (s, v) => (s.laya.url = v)],
 ];
 
 function showBrainSettings(): void {
@@ -216,7 +217,7 @@ function showBrainSettings(): void {
   for (const [id, get] of BRAIN_FIELDS) field(id).value = get(settings);
   field("jev-relay").checked = settings.jev.relay;
   field("jev-url").disabled = !settings.jev.relay;
-  for (const k of ["openai", "claude", "jev", "blind"]) $(`brain-${k}`).hidden = settings.kind !== k;
+  for (const k of ["openai", "claude", "jev", "laya", "blind"]) $(`brain-${k}`).hidden = settings.kind !== k;
   if (settings.kind === "blind") showBlindPool();
   $("brain-keys-note").hidden = !["openai", "claude", "jev"].includes(settings.kind);
   $<HTMLButtonElement>("brain-test").disabled = settings.kind === "none";
@@ -293,13 +294,14 @@ const blindEnv = () => ({ llmRelay: !!server?.relay.llm, jevRelay: !!server?.rel
 const blindPool = () => blindReady ?? blindCandidates(settings, blindEnv());
 
 function showBlindPool(): void {
-  const all: BrainKind[] = ["rules", "openai", "claude", "jev"];
+  const all: BrainKind[] = ["rules", "openai", "claude", "jev", "laya"];
   const pool = blindPool();
   const why: Record<BrainKind, string> = {
     rules: "",
     openai: blindReady ? "didn't answer" : "needs the Spark's relay or a direct endpoint",
     claude: blindReady && (settings.claude.apiKey || server?.relay.anthropic) ? "didn't answer" : "no key: pick Claude above and paste one, or give the server ANTHROPIC_API_KEY",
     jev: blindReady ? "didn't answer" : "needs the jamstate server's relay",
+    laya: "not in blind tests yet: it runs on your machine (localbrain/)",
   };
   const out = all.filter((k) => !pool.includes(k)).map((k) => `${BLIND_NAMES[k]} (${why[k]})`);
   $("blind-pool").textContent = `In the pool: ${pool.map((k) => BLIND_NAMES[k]).join(", ")}${blindReady ? " (checked)" : ""}.${out.length ? ` Left out: ${out.join("; ")}.` : ""}`;

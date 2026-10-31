@@ -5,6 +5,7 @@
 import { RuleLeader, type LeaderContext } from "../rules";
 import { ClaudeBrain, DEFAULT_CLAUDE_MODEL } from "./claude";
 import { JevBrain, JEV_API } from "./jev";
+import { LayaBrain, LAYA_URL } from "./laya";
 import { OpenAIBrain } from "./openai";
 import { now, type BrainAnswer, type BrainKind, type BrainProvider, type Fetch } from "./types";
 
@@ -33,6 +34,8 @@ export interface BrainSettings {
   claude: { model: string; apiKey: string };
   /** `relay`: go through the companion server (needed in the browser). */
   jev: { model: string; apiKey: string; relay: boolean; url: string };
+  /** Laya on the player's machine (localbrain/laya_server.py); no key. */
+  laya: { url: string };
 }
 
 /**
@@ -44,6 +47,7 @@ export const DEFAULT_SETTINGS: BrainSettings = {
   openai: { url: "api/relay/llm", model: "leader", apiKey: "" },
   claude: { model: DEFAULT_CLAUDE_MODEL, apiKey: "" },
   jev: { model: "jev-latest", apiKey: "", relay: true, url: "api/relay/jev" },
+  laya: { url: LAYA_URL },
 };
 
 export const BRAIN_LABELS: Record<LeaderChoice, string> = {
@@ -51,6 +55,7 @@ export const BRAIN_LABELS: Record<LeaderChoice, string> = {
   openai: "OpenAI-compatible LLM (Qwen on the Spark, Ollama…)",
   claude: "Claude (your key, or the server's)",
   jev: "Jev decision model (your TypeSafe key)",
+  laya: "Laya decision model (on this machine)",
   none: "None (you drive it)",
   blind: "Blind test (a hidden brain each jam)",
 };
@@ -63,6 +68,7 @@ export function mergeSettings(raw: unknown): BrainSettings {
     openai: { ...DEFAULT_SETTINGS.openai, ...(r.openai ?? {}) },
     claude: { ...DEFAULT_SETTINGS.claude, ...(r.claude ?? {}) },
     jev: { ...DEFAULT_SETTINGS.jev, ...(r.jev ?? {}) },
+    laya: { ...DEFAULT_SETTINGS.laya, ...(r.laya ?? {}) },
   };
 }
 
@@ -90,5 +96,7 @@ export function makeBrain(s: BrainSettings, fetchFn?: Fetch): BrainProvider | nu
       );
     case "jev":
       return new JevBrain({ apiKey: s.jev.apiKey || undefined, model: s.jev.model || undefined, url: s.jev.relay ? s.jev.url : JEV_API }, fetchFn);
+    case "laya":
+      return new LayaBrain({ url: s.laya.url || LAYA_URL }, fetchFn);
   }
 }

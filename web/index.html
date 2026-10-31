@@ -112,6 +112,10 @@
             <div class="row wrap"><button id="blind-results-btn">Show results</button></div>
             <div id="blind-results" class="small"></div>
           </div>
+          <div id="brain-laya" class="brain-cfg" hidden>
+            <label>Endpoint <input id="laya-url" type="text" placeholder="http://127.0.0.1:8010/v1/systemone" /></label>
+            <p class="dim small">Laya runs on your machine: <code>python localbrain/laya_server.py</code> (see <code>localbrain/README.md</code>).</p>
+          </div>
           <p class="dim small" id="brain-keys-note" hidden>Keys are stored in this browser only and sent only to that provider.</p>
           <div class="row wrap"><button id="brain-test" title="Ask the brain once with a sample phrase">Test</button></div>
           <div id="brain-result" class="small"></div>
