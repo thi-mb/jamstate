@@ -186,7 +186,7 @@ async function checkServer(): Promise<void> {
     const h = await r.json();
     el.textContent = h.llm_url ? `Server up · model ${h.model ?? "?"} at ${h.llm_url}` : "Server up · no LLM configured";
   } catch {
-    el.textContent = "No Jam State server reachable: the LLM leader will fall back to rules.";
+    el.textContent = "No jamstate server reachable: the LLM leader will fall back to rules.";
   }
 }
 
