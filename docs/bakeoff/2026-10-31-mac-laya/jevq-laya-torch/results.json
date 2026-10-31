@@ -1,0 +1,2563 @@
+{
+ "host": "Thiago's MacBook Pro (M4 Max), localhost",
+ "created": "2026-10-31T14:27:34.963Z",
+ "brains": [
+  "Laya (Jev's questions)"
+ ],
+ "turns": [
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 157,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "solo",
+     "reason": "Taking it to the solo"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 69,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "solo",
+     "reason": "Taking it to the solo"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "solo",
+     "reason": "Taking it to the solo"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 81,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 74,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.61,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.61,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.62,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.53,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 81,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.52,
+     "reason": "You're building, the band lifts with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 84,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 81,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.53,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "solo",
+     "reason": "Taking it to the solo"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.49,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "solo",
+     "reason": "Taking it to the solo"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 74,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.49,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "solo",
+     "reason": "Taking it to the solo"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 80,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.59,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 74,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 74,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.62,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 82,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.61,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 74,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.53,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 74,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.52,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 70,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.63,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "solo",
+     "reason": "Taking it to the solo"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.62,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "solo",
+     "reason": "Taking it to the solo"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 72,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.57,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "solo",
+     "reason": "Taking it to the solo"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.62,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.59,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 74,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.51,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 87,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "You're building, the band lifts with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.48,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "You're building, the band lifts with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "head",
+     "reason": "Taking it to the head"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.62,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "A",
+     "reason": "Taking it to the A"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 76,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 82,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.64,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 82,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.68,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.69,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 89,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.55,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 85,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.59,
+     "reason": "You're building, the band lifts with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 86,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.64,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 83,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.69,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.63,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 77,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.58,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the intro a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 77,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 82,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 81,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.58,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 77,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.68,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.67,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.68,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.71,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.61,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.61,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.69,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the intro a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.68,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 81,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 83,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.64,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.63,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 82,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.57,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.53,
+     "reason": "You're building, the band lifts with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.53,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 82,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.66,
+     "reason": "You're building, the band lifts with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 70,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.59,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "verse",
+     "reason": "Taking it to the verse"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 80,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.52,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 84,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.64,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.63,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 76,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "You're building, the band lifts with you"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.61,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 82,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.62,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 75,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.56,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 71,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "verse",
+     "reason": "Taking it to the verse"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 68,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 78,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.51,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 76,
+   "moves": [
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 80,
+   "moves": [
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 77,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.61,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 76,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.63,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 76,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.62,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 80,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.64,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the bridge a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 10,
+   "bar": 44,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.57,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "index": 11,
+   "bar": 48,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 77,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.54,
+     "reason": "Easing back to give you room"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 0,
+   "bar": 4,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 71,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.64,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "verse",
+     "reason": "Taking it to the verse"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 1,
+   "bar": 8,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 81,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.66,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 2,
+   "bar": 12,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 81,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.57,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 3,
+   "bar": 16,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 76,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.62,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 4,
+   "bar": 20,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 80,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.6,
+     "reason": "Leaving you some headroom"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 5,
+   "bar": 24,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 76,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.54,
+     "reason": "You went quiet, giving you space"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 6,
+   "bar": 28,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 77,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "You're building, the band lifts with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 7,
+   "bar": 32,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.5,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 8,
+   "bar": 36,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 82,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.58,
+     "reason": "You're building, the band lifts with you"
+    },
+    {
+     "move": "extend_section",
+     "bars": 4,
+     "reason": "Staying in the chorus a bit longer"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "index": 9,
+   "bar": 40,
+   "brain": "Laya (Jev's questions)",
+   "model": "laya@torch",
+   "latencyMs": 79,
+   "moves": [
+    {
+     "move": "set_intensity",
+     "value": 0.63,
+     "reason": "Picking the energy up with you"
+    },
+    {
+     "move": "jump_to_section",
+     "section": "intro",
+     "reason": "Taking it to the intro"
+    }
+   ],
+   "rejected": 0,
+   "late": false
+  }
+ ],
+ "loops": [
+  {
+   "session": "sim-blues-in-a-arc",
+   "brain": "Laya (Jev's questions)",
+   "turns": 12,
+   "errors": 0,
+   "moves": 17,
+   "follow": 0.6572061916516674,
+   "silentDrop": 0,
+   "busyLift": 0.8
+  },
+  {
+   "session": "sim-blues-in-a-slowburn",
+   "brain": "Laya (Jev's questions)",
+   "turns": 12,
+   "errors": 0,
+   "moves": 14,
+   "follow": 0.13941549917788912,
+   "silentDrop": null,
+   "busyLift": 0.25
+  },
+  {
+   "session": "sim-blues-in-a-stopstart",
+   "brain": "Laya (Jev's questions)",
+   "turns": 10,
+   "errors": 0,
+   "moves": 12,
+   "follow": -0.34653591225033453,
+   "silentDrop": 0,
+   "busyLift": 0.5
+  },
+  {
+   "session": "sim-late-set-arc",
+   "brain": "Laya (Jev's questions)",
+   "turns": 12,
+   "errors": 0,
+   "moves": 18,
+   "follow": 0.6818836863306998,
+   "silentDrop": 0,
+   "busyLift": 0.6
+  },
+  {
+   "session": "sim-late-set-slowburn",
+   "brain": "Laya (Jev's questions)",
+   "turns": 12,
+   "errors": 0,
+   "moves": 16,
+   "follow": 0.520910455961669,
+   "silentDrop": null,
+   "busyLift": 0.75
+  },
+  {
+   "session": "sim-late-set-stopstart",
+   "brain": "Laya (Jev's questions)",
+   "turns": 10,
+   "errors": 0,
+   "moves": 14,
+   "follow": 0.8184979977798202,
+   "silentDrop": 0,
+   "busyLift": 1
+  },
+  {
+   "session": "sim-night-shift-arc",
+   "brain": "Laya (Jev's questions)",
+   "turns": 12,
+   "errors": 0,
+   "moves": 17,
+   "follow": 0.4214147397641125,
+   "silentDrop": 0,
+   "busyLift": 0.6
+  },
+  {
+   "session": "sim-night-shift-slowburn",
+   "brain": "Laya (Jev's questions)",
+   "turns": 12,
+   "errors": 0,
+   "moves": 16,
+   "follow": 0.4972266159715616,
+   "silentDrop": null,
+   "busyLift": 0.75
+  },
+  {
+   "session": "sim-night-shift-stopstart",
+   "brain": "Laya (Jev's questions)",
+   "turns": 10,
+   "errors": 0,
+   "moves": 13,
+   "follow": 0.002810108720291694,
+   "silentDrop": 0,
+   "busyLift": 0.25
+  }
+ ],
+ "key": {
+  "sim-blues-in-a-arc#0": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#1": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#2": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#3": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#4": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#5": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#6": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#7": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#8": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#9": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#10": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-arc#11": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#0": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#1": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#2": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#3": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#4": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#5": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#6": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#7": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#8": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#9": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#10": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-slowburn#11": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#0": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#1": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#2": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#3": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#4": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#5": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#6": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#7": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#8": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-blues-in-a-stopstart#9": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#0": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#1": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#2": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#3": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#4": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#5": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#6": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#7": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#8": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#9": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#10": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-arc#11": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#0": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#1": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#2": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#3": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#4": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#5": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#6": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#7": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#8": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#9": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#10": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-slowburn#11": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#0": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#1": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#2": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#3": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#4": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#5": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#6": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#7": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#8": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-late-set-stopstart#9": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#0": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#1": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#2": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#3": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#4": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#5": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#6": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#7": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#8": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#9": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#10": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-arc#11": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#0": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#1": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#2": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#3": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#4": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#5": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#6": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#7": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#8": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#9": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#10": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-slowburn#11": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#0": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#1": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#2": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#3": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#4": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#5": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#6": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#7": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#8": {
+   "A": "Laya (Jev's questions)"
+  },
+  "sim-night-shift-stopstart#9": {
+   "A": "Laya (Jev's questions)"
+  }
+ }
+}

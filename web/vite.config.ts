@@ -1,11 +1,12 @@
 import { defineConfig } from "vitest/config";
 
-// In dev, /api is forwarded to the Python server (server/), which proxies the
-// bandleader to the LLM on the DGX Spark. In production the Python server
-// serves the built app itself, so the page and /api share an origin.
+// The build is static and relative (base "./"), so it plays from any host or
+// folder with no jamstate server (ADR-0015). In dev, /api is forwarded to the
+// optional companion server (server/) for its relays and session sync.
 const apiTarget = process.env.JAMSTATE_API ?? "http://localhost:8765";
 
 export default defineConfig({
+  base: "./",
   server: {
     port: 5173,
     proxy: { "/api": { target: apiTarget, changeOrigin: true } },
