@@ -270,7 +270,7 @@ describe("brain settings", () => {
   it("merges stored settings over defaults and builds providers", () => {
     const s = mergeSettings({ kind: "jev", jev: { apiKey: "x" } });
     expect(s.jev).toEqual({ ...DEFAULT_SETTINGS.jev, apiKey: "x" });
-    expect(mergeSettings({ kind: "wat" }).kind).toBe("rules");
+    expect(mergeSettings({ kind: "wat" }).kind).toBe("jev");
     expect(makeBrain({ ...s, kind: "none" })).toBeNull();
     expect(makeBrain(s)?.kind).toBe("jev");
     expect(makeBrain({ ...s, kind: "openai" })?.kind).toBe("openai");
