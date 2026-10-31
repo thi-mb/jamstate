@@ -61,6 +61,11 @@ Scope:
   intensity, ride vs hat by section.
 - **Chords:** comping rhythms per style instead of block chords on the beat,
   voice leading between chords.
+- **Intros, endings and count-in:** the band counts you in, plays a pickup
+  or intro, and ends the song on cue (ritardando, final hit, ring-out)
+  instead of just stopping. New `end_song` move; endings land on the next
+  phrase.
+
 Done when:
 - Through MIDI out to Ableton (so the synth isn't judged), the band sounds
   like players.
@@ -68,6 +73,8 @@ Done when:
   quarter or all eighth notes over a 16-bar section.
 - Unit tests pin the generators (seeded) and the timing offsets stay inside
   the commit deadline ([ADR-0005](decisions/0005-bar-commit-deadline.md)).
+- An "end the song" cue gives a proper ending, and a song starts with a
+  count-in.
 - v0 tests 1–9 still pass.
 
 ## v0.2: Sound and lineup
@@ -138,6 +145,24 @@ Scope:
   MIDI CC / pad (e.g. "next section", "break", "build", "end the song"),
   and keyboard shortcuts. Cues go through the governor like any move, with
   priority over the LLM.
+- **Voice cues:** say "take it down" or "one more chorus"; speech-to-text
+  (Whisper) on the Spark turns it into the same cue moves. Advisory and late
+  like any leader output, so a slow transcription never touches timing.
+- **The band follows your tempo:** detect the player rushing or dragging and
+  let the band drift with them within limits, with "strict tempo" as an
+  option. The fast layer already converts beats with the current tempo, so
+  this is a smoothed tempo move, not a new clock.
+- **Song-level arc:** the leader gets a short memory of the song so far
+  (what each section did, where the peak was) and plans the coming sections,
+  so chorus 2 isn't a copy of chorus 1. Still stateless on the Spark: the
+  page sends the arc summary with each request.
+- **Bandleader personality:** a few presets (steady, supportive,
+  adventurous) that set how often and how boldly the leader moves, through
+  the prompt and the governor's dwell times.
+- **Trading fours:** when you lay out at a phrase boundary, a band
+  instrument takes a short solo or answers your last phrase, then hands it
+  back when you come in. Needs the phrasing signals above and a simple solo
+  generator; stretch goal for this release.
 
 Done when:
 - A replayed session gives the same band output twice (determinism).
@@ -147,7 +172,10 @@ Done when:
   summary.
 - A footswitch or pad cue lands on the next phrase.
 - Hands-on: Thiago plays a call-and-response and a build into a chorus and
-  the band follows.
+  the band follows; a spoken "one more chorus" works; slowing down a little
+  brings the band with him.
+- Two runs of the same song with different personalities sound different in
+  how much the band moves.
 
 ## v0.4: Guitar
 
@@ -199,6 +227,9 @@ Scope, in order of value:
   recogniser). Structure only; the recording is never played back
   (design principle 5). This is the heaviest piece and can slip to v0.6 or
   later without blocking the rest.
+- **Free jam, no chart:** start playing and the band works out the key,
+  tempo and a progression from you (using v0.4's pitch and chord input),
+  then locks into it and saves it as a chart you can edit.
 
 Done when:
 - Thiago makes a new song from a sentence, edits it and jams on it in under
@@ -219,6 +250,9 @@ Scope:
   between sessions.
 - Recording: export the band's MIDI and a mixdown of the built-in sound for
   the video.
+- **Session recap:** after a jam, the move log as a timeline over the form,
+  a short written summary from Qwen ("you built through the second chorus,
+  the band went to half time when you dropped out"), and the export above.
 - Works on a tablet on a music stand (layout only; the engine stays in the
   browser that has the audio).
 
@@ -234,23 +268,13 @@ Done when:
 - Decision records brought up to date (the Proposed ones accepted or
   superseded).
 
-## More ideas
+## Ideas considered
 
-Ideas beyond Thiago's list, with the release each one would fit. Not
-committed yet; pull them in or drop them.
-
-| Idea | What it is | Fits |
-|------|------------|------|
-| Intros, endings, count-in | The band counts you in, plays a pickup or intro, and ends the song properly on cue (ritardando, final hit, ring-out) instead of just stopping | v0.1 |
-| Band follows your tempo | Detect the player rushing or dragging and let the band drift with them inside limits, or hold steady as a "strict" option | v0.3 |
-| Voice cues | Say "take it down" or "one more chorus" to the band; speech-to-text (Whisper) on the Spark turns it into a cue through the governor | v0.3 |
-| Song-level arc | The leader remembers the shape of the song so far (it already built up in chorus 1) and plans the next sections, instead of only reacting phrase by phrase | v0.3 |
-| Bandleader personality | A knob or a few presets (steady, supportive, adventurous) that change how often and how boldly the leader moves | v0.3 |
-| Trading fours | When you lay out, a band instrument takes a short solo or answers your phrase, then hands it back | after v0.3 (needs phrasing signals) |
-| Free jam, no chart | Start playing and the band works out the key, tempo and a progression from you, then locks into it | after v0.4 (needs pitch/chords from input) |
-| Practice mode | Loop a section, slow it down, count bars, and keep the band on just that part | v0.6 |
-| Phone as remote | Open a page on the phone and use it as a footswitch / cue pad over the same server | v0.6 |
-| Session recap | After a jam: the move log as a timeline, a short written summary from Qwen, and MIDI/audio export | v0.6 |
+Thiago picked from a list of extra ideas on 2026-10-31. The ones he kept are
+in the releases above (intros/endings, tempo following, voice cues, song arc,
+personality, trading fours, free jam, session recap). Dropped for now:
+practice mode (loop and slow down a section) and using a phone as a cue
+remote.
 
 ## Later
 
