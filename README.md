@@ -49,10 +49,10 @@ browser only and sent only to that provider. **Test** asks it once.
 
 | Brain | Needs | Notes |
 |-------|-------|-------|
-| Rules | nothing | the default and the fallback |
+| Rules | nothing | the fallback, and what plays when Jev can't be reached |
 | OpenAI-compatible | an endpoint | Qwen on the Spark through the server's relay (`api/relay/llm`, the default), Ollama (`http://localhost:11434/v1`, with `OLLAMA_ORIGINS` set to the page's origin), or OpenAI |
 | Claude | an Anthropic API key | called from the page; model `claude-haiku-5-5` by default, editable |
-| Jev | a TypeSafe API key, or the server's | TypeSafe blocks calls from web pages, so it goes through the jamstate server's relay (`api/relay/jev`) |
+| Jev | a TypeSafe API key, or the server's | **the default** (won the [bake-off](docs/bakeoff/README.md)). TypeSafe blocks calls from web pages, so it goes through the jamstate server's relay (`api/relay/jev`); with no server the page plays with rules |
 
 Only the LLM brains can write charts from a description (**Write**).
 

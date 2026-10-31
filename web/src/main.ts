@@ -288,13 +288,18 @@ async function checkServer(): Promise<void> {
     el.textContent = `jamstate server here${relays ? ` · relays ${relays}` : ""}${server.sessions ? " · session sync" : ""}`;
   } catch {
     server = null;
-    el.textContent = "Standalone: no jamstate server. Rules, Claude and direct LLM endpoints work; Jev needs the server's relay.";
+    el.textContent = "Standalone: no jamstate server. Rules, Claude and direct LLM endpoints work; Jev (the default) needs the server's relay, so the band plays with rules here.";
   }
   $("session-save").hidden = !server?.sessions;
   serverChecked = true;
   blindReady = null;
   showBrainSettings();
   void listSessions();
+}
+
+/** Jev goes through the server's relay; a page without one plays with rules instead of failing every phrase. */
+function jevReachable(): boolean {
+  return settings.kind !== "jev" || !settings.jev.relay || !serverChecked || !!server?.relay.jev;
 }
 
 // ---------- blind test ----------
@@ -411,7 +416,7 @@ function makeLeader(c: Chart): { leader: Leader | null; remote: BrainLeader | nu
     jamKind = pickBlind(blindPool(), blindTried);
     jamFallback = false;
   }
-  const brain = makeBrain(blind ? { ...settings, kind: jamKind! } : settings);
+  const brain = makeBrain(blind ? { ...settings, kind: jamKind! } : jevReachable() ? settings : { ...settings, kind: "rules" });
   if (!brain) return { leader: null, remote: null, every: 4 };
   if (brain.kind === "rules") return { leader: ruleLeader(rules), remote: null, every: 2 };
   const phraseMs = (c.phraseBars * c.beatsPerBar * 60_000) / c.bpm;
@@ -430,7 +435,7 @@ function makeLeader(c: Chart): { leader: Leader | null; remote: BrainLeader | nu
 function leaderLabel(s: Session): string {
   if (!s.conductor.leader) return "off";
   if (jamKind && !s.replay) return "hidden brain (blind test)";
-  if (!s.remote) return "rules";
+  if (!s.remote) return jevReachable() ? "rules" : "rules (Jev needs the jamstate server)";
   const st = s.remote.status;
   const name = s.remote.brain.label;
   if (st.mode === "fallback") return `rules (${name} down: ${st.lastError ?? "?"})`;
@@ -641,6 +646,7 @@ function leaderName(): string {
   if (settings.kind === "blind" && jamKind) return blindLeader(jamKind);
   if (settings.kind === "openai") return `openai:${settings.openai.model}`;
   if (settings.kind === "claude") return `claude:${settings.claude.model}`;
+  if (!jevReachable()) return "rules";
   return settings.kind;
 }
 
