@@ -122,7 +122,10 @@ What we learned about Jev on the way:
       `ANTHROPIC_API_KEY` or `JAMSTATE_ANTHROPIC_API_KEY`.
 - [ ] Claude: try explicit levels for silence in the prompt and rerun; it
       currently never drops below 0.4 when the player stops.
-- [ ] Thiago blind-rates the disagreements (A/B/C per turn,
-      24 items across three brains), on his phone.
+- [ ] Thiago blind-rates 24 turns where at least three of the four brains
+      (rules, Jev, Qwen, Claude) disagree, on his phone. Items are in
+      [rating-items.json](rating-items.json) (labels A to D shuffled per
+      item); the key is [rating-key.json](rating-key.json). Picks are saved
+      on the rating page and read back from there.
 - [ ] Pick the default and record it here and in ADR-0016.
 - [ ] Laya-in-the-browser spike (ONNX), alongside.
