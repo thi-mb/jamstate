@@ -7,8 +7,11 @@ puts a language model in the bandleader's chair.
 
 It runs in the browser: open the page, plug in a MIDI keyboard (or use the
 computer keyboard), press Start and play. The band counts you in and plays
-in the song's genre (funk, blues rock or jazz in v0.1): swung or straight,
-with ghost notes, fills, moving bass lines and voice-led comping. Go sparse
+in the song's genre (funk, blues rock or jazz): swung or straight, with
+ghost notes, fills, moving bass lines and voice-led comping, on sampled
+instruments with a mix per genre. Each song says who plays (a jazz trio on
+brushes, upright and piano; a blues band with organ and crunch guitar), and
+you can change the lineup or swap a sound while it plays. Go sparse
 and the band lays back into half time; dig in and it builds; stop and the
 drums drop out; press **End song** and it finishes the phrase and ends.
 Every decision shows on screen with its reason, and every jam is recorded
@@ -40,6 +43,19 @@ web host or folder and it plays with the rule bandleader, keeps your sessions
 in the browser, and needs nothing else
 ([ADR-0015](docs/decisions/0015-no-server-required.md)). Web MIDI needs HTTPS
 or localhost.
+
+## The band and its sound
+
+Under **Band**, pick a lineup (the song's, the genre's, or one of the genre's
+alternatives) or build your own: each part (drums, bass, keys, guitar, pad,
+percussion) on or off, its instrument, volume and pan. Changes land on the
+next bar, also mid-song, and are recorded with the jam. Instruments are
+samples rendered from MuseScore General (MIT), 2.7 to 3.5 MB per default
+lineup, loaded when needed and kept in the browser
+([samples.md](docs/samples.md), [ADR-0018](docs/decisions/0018-lineups-and-sound.md)).
+MIDI out sends each part on its own channel (keys 3, guitar 4, pad 5,
+drums 10, percussion 11). `npm run sound-check` renders songs in headless
+Chrome and checks levels, clipping and switches; `--clips <dir>` writes MP3s.
 
 ## Picking the bandleader's brain
 

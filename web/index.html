@@ -8,7 +8,7 @@
   </head>
   <body>
     <header>
-      <h1>jamstate <small>v0.1.1</small></h1>
+      <h1>jamstate <small>v0.2</small></h1>
       <p class="tag">An AI backing band that follows the song and reacts to how you play.</p>
     </header>
 
@@ -84,6 +84,15 @@
           </div>
           <div id="chart-errors" class="errors"></div>
           <div id="chart-info" class="dim"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Band</legend>
+          <label>Lineup <select id="lineup-select"></select></label>
+          <div id="band-parts" class="band-parts"></div>
+          <label>Your sound <select id="player-sound"></select></label>
+          <p class="dim small">Changes land from the next bar, also while playing. A new sound loads first; the old one plays until it's ready.</p>
+          <div id="sample-status" class="dim small"></div>
         </fieldset>
 
         <fieldset>

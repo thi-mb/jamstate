@@ -198,6 +198,11 @@ before new features land on the old shape
 
 ### v0.2: Sound and lineup
 
+Status: built (2026-10-31), waiting on the listening test in
+[testing/v0.2.md](testing/v0.2.md). Samples from MuseScore General (MIT),
+rendered small ([samples.md](samples.md)); lineups as data
+([ADR-0018](decisions/0018-lineups-and-sound.md)).
+
 **Goal:** the built-in band sounds good with nothing installed, has more
 instruments, and each song says who plays.
 
@@ -475,7 +480,9 @@ Tauri vs. Electron, whether to build a DAW plugin, hosting and pricing.
 1. **Order of phase 1.** Groove before sound is the recommendation: the
    groove work is engine-only and shapes what the new instruments play.
    Sound first would fix test 10 sooner.
-2. **Sample set for v0.2:** which one (license and size).
+2. ~~**Sample set for v0.2:** which one (license and size).~~ Decided
+   2026-10-31: MuseScore General 0.2 (MIT), rendered to 11.9 MB of Opus; see
+   [samples.md](samples.md). Better single instruments can replace any of it.
 3. **Genres:** the first three are decided (funk, blues rock, jazz); the
    other two for v1.0 are open.
 4. **Link:** can a local helper app run on the work Mac at all?

@@ -1,11 +1,21 @@
 /**
- * Part roles the engine has a generator for. A genre's lineup is a subset of
- * these, and the engine only ever walks the lineup, so a new role (v0.2) is a
- * new entry here plus a generator in groove.ts.
+ * Part roles the engine has a generator for. A song's lineup (its `band`) is
+ * a subset of these, and the engine only ever walks the lineup, so a new role
+ * is a new entry here plus a generator in groove.ts. `chords` is the keys
+ * player (piano, electric piano, organ, clavinet); the id stays `chords` so
+ * v0.1 sessions and brains keep working.
  */
-export const PARTS = ["drums", "bass", "chords"] as const;
+export const PARTS = ["drums", "bass", "chords", "guitar", "pad", "percussion"] as const;
 export const ROLES = PARTS;
 export type Part = (typeof PARTS)[number];
+
+/** The v0.1 band: every session recorded before lineups existed played these. */
+export const V01_PARTS: Part[] = ["drums", "bass", "chords"];
+
+/** What the page calls each part. */
+export const PART_LABELS: Record<Part, string> = {
+  drums: "drums", bass: "bass", chords: "keys", guitar: "guitar", pad: "pad", percussion: "percussion",
+};
 
 export const FEELS = ["normal", "half_time", "double_time"] as const;
 export type Feel = (typeof FEELS)[number];

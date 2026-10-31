@@ -11,7 +11,7 @@
 
 import type { Move } from "../moves";
 import type { LeaderContext } from "../rules";
-import { FEELS, PARTS, STINGERS } from "../types";
+import { FEELS, STINGERS, V01_PARTS } from "../types";
 import { checkMove } from "./check";
 import { BrainError, now, type BrainAnswer, type BrainProvider, type Fetch, type Rejected } from "./types";
 
@@ -51,7 +51,7 @@ export function changeOptions(ctx: LeaderContext): Map<string, { text: string; m
   const opts = new Map<string, { text: string; move: Move | null }>();
   opts.set("keep", { text: "keep the band as it is", move: null });
   const silent = ctx.player.silent_bars > 0;
-  for (const p of PARTS) {
+  for (const p of ctx.lineup ?? V01_PARTS) {
     if (!ctx.layers.includes(p)) opts.set(`add_${p}`, { text: `bring the ${p} back in`, move: { move: "add_layer", part: p, reason: silent ? `${cap(p)} back in to pick things up` : `Bringing the ${p} back in with you` } });
   }
   if (ctx.layers.length > 1) {
@@ -85,7 +85,7 @@ export function jevState(ctx: LeaderContext): Record<string, unknown> {
   const sounds = p.bars > 0 && p.silent_bars >= Math.min(p.bars, 2) ? "stopped" : p.energy >= 0.62 ? "busy and loud" : p.energy < 0.3 ? "sparse and soft" : "steady, medium";
   return {
     player: { ...p, sounds },
-    band: { intensity: ctx.intensity, playing: ctx.layers, not_playing: PARTS.filter((p) => !ctx.layers.includes(p)), feel: ctx.feel, recent_moves: ctx.recent_moves },
+    band: { intensity: ctx.intensity, playing: ctx.layers, not_playing: (ctx.lineup ?? V01_PARTS).filter((p) => !ctx.layers.includes(p)), feel: ctx.feel, recent_moves: ctx.recent_moves },
     song: { section: ctx.section, bar_in_section: ctx.bar_in_section + 1, section_bars: ctx.section_bars, form: ctx.form, form_position: ctx.form_pos },
   };
 }

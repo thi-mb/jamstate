@@ -3,6 +3,7 @@
 // Pure and clock-free: the transport calls nextBar() once per bar, ahead of
 // time, and plays what comes back.
 
+import { bandParts, cloneBand, type Band } from "./band";
 import type { Chart, ChordSlot } from "./chart";
 import { applyFeel, applyRit } from "./feel";
 import type { GenrePack } from "./genre";
@@ -78,6 +79,8 @@ export interface BarContext {
   level: number;
   feel: Feel;
   parts: Part[];
+  /** The lineup with its instruments (a generator may play to the instrument). */
+  band: Band;
   /** This bar's chords. */
   slots: ChordSlot[];
   /** First chord of the next bar (the tonic on an ending bar), null at the end of the form. */
@@ -118,6 +121,9 @@ export interface BarPlan {
   target: number;
   level: number;
   layers: Part[];
+  /** Who is in the band (playing or sitting out), and on what. */
+  lineup: Part[];
+  band: Band;
   feel: Feel;
   genre: string;
   swing: number;
@@ -137,7 +143,8 @@ export interface BarPlan {
 export type Control =
   | { at: number; kind: "moves"; source: string; requestedBar: number; moves: unknown[] }
   | { at: number; kind: "genre"; genre: string }
-  | { at: number; kind: "swing"; swing: number | null };
+  | { at: number; kind: "swing"; swing: number | null }
+  | { at: number; kind: "band"; band: Band };
 
 export interface EngineOptions {
   config?: Partial<GovernorConfig>;
@@ -150,6 +157,8 @@ export interface EngineOptions {
   genre?: GenrePack;
   /** Swing override for the whole song; null uses the chart and genre. */
   swing?: number | null;
+  /** Lineup; defaults to the chart's band, then the genre's. */
+  band?: Band;
   /** Count-in bars before the form (the page uses the chart's count_in; tests default to none). */
   countIn?: number;
   /** Controls to replay (a recorded session), applied at their bar. */
@@ -185,6 +194,7 @@ export class Engine {
   /** Bandleader's intensity target; null until it sets one (section hints rule until then). */
   private target: number | null = null;
   private layers: Set<Part>;
+  band: Band;
   private feel: Feel = "normal";
   private lastLayerChange = new Map<Part, number>();
   private lastFeelChange = -Infinity;
@@ -207,7 +217,8 @@ export class Engine {
     this.genre = opts.genre ?? getGenre(chart.genre);
     this.swingOverride = opts.swing ?? null;
     this.intensity = opts.intensity ?? this.sectionAt(0).intensity ?? 0.5;
-    this.layers = new Set(opts.layers ?? this.genre.parts);
+    this.band = cloneBand(opts.band ?? chart.band ?? this.genre.band);
+    this.layers = new Set(opts.layers ?? this.lineup);
     this.countInLeft = this.countInTotal = opts.countIn ?? 0;
     this.script = [...(opts.script ?? [])].sort((a, b) => a.at - b.at);
   }
@@ -230,6 +241,25 @@ export class Engine {
   setGenre(genre: GenrePack): void {
     this.controls.push({ at: this.bar, kind: "genre", genre: genre.id });
     this.genre = genre;
+  }
+
+  /** Who is in the band: the band's parts that the genre has grooves for. */
+  get lineup(): Part[] {
+    return bandParts(this.band).filter((p) => this.genre.parts.includes(p));
+  }
+
+  /**
+   * Change the lineup from the next bar on: parts that join start playing,
+   * parts that leave stop. Instrument, volume and pan changes are sound-only
+   * but are recorded too, so a replay sounds like the jam.
+   */
+  setBand(band: Band): void {
+    const next = cloneBand(band);
+    this.controls.push({ at: this.bar, kind: "band", band: cloneBand(next) });
+    const before = new Set(bandParts(this.band));
+    this.band = next;
+    for (const p of bandParts(next)) if (!before.has(p)) this.layers.add(p);
+    for (const p of [...this.layers]) if (!next[p]) this.layers.delete(p);
   }
 
   /** Override the swing from the next bar on (null: back to the chart's and genre's). */
@@ -292,7 +322,7 @@ export class Engine {
       }
       case "add_layer":
       case "drop_layer": {
-        if (!this.genre.parts.includes(m.part)) return reject(`no ${m.part} in the ${this.genre.name} lineup`);
+        if (!this.lineup.includes(m.part)) return reject(`no ${m.part} in the lineup`);
         const has = this.layers.has(m.part);
         if (m.move === "add_layer" && has) return reject("already playing");
         if (m.move === "drop_layer" && !has) return reject("already out");
@@ -366,6 +396,7 @@ export class Engine {
       const c = this.script[this.scriptPos++];
       if (c.kind === "moves") this.submit(c.moves, c.source, c.requestedBar);
       else if (c.kind === "genre") this.setGenre(getGenre(c.genre));
+      else if (c.kind === "band") this.setBand(c.band);
       else this.setSwing(c.swing);
     }
   }
@@ -391,9 +422,10 @@ export class Engine {
     return out;
   }
 
-  private context(partial: Omit<BarContext, "bpb" | "genre" | "seed" | "phraseBars" | "firstChord">): BarContext {
+  private context(partial: Omit<BarContext, "bpb" | "genre" | "seed" | "phraseBars" | "firstChord" | "band">): BarContext {
     return {
       ...partial,
+      band: this.band,
       bpb: this.chart.beatsPerBar,
       genre: this.genre,
       seed: this.seed,
@@ -407,7 +439,8 @@ export class Engine {
     const i = this.countInTotal - this.countInLeft;
     this.countInLeft--;
     const isLast = this.countInLeft === 0;
-    const parts = this.genre.parts.filter((p) => p !== "chords");
+    // Sticks click on every count-in (even with the drums sitting out); the bass joins the pickup.
+    const parts: Part[] = this.lineup.includes("bass") ? ["drums", "bass"] : ["drums"];
     const ctx = this.context({
       bar: this.bar, kind: "count_in", section: "count-in", barInSection: i, sectionBars: this.countInTotal, barInPhrase: 0,
       lastBarOfSection: isLast, level: 1, feel: "normal", parts: isLast ? parts : ["drums"], slots: this.sectionAt(0).barChords(0),
@@ -418,7 +451,7 @@ export class Engine {
     for (const p of ctx.parts) byPart[p] = gen[p] ?? [];
     return {
       bar: this.bar, kind: "count_in", section: "count-in", formPos: 0, barInSection: i, sectionBars: this.countInTotal, chords: [],
-      intensity: this.intensity, target: this.target ?? this.intensity, level: 1, layers: [], feel: this.feel, genre: this.genre.id,
+      intensity: this.intensity, target: this.target ?? this.intensity, level: 1, layers: [], lineup: this.lineup, band: this.band, feel: this.feel, genre: this.genre.id,
       swing: this.swingFor(this.chart.form[0]), events: this.feelBar(byPart, this.bar, this.swingFor(this.chart.form[0]), false),
       stingers: [], moves: resolved, repeated: [],
     };
@@ -512,7 +545,7 @@ export class Engine {
     if (ending && this.layers.has("drums") && !stingers.includes("fill")) stingers.push("fill");
 
     // Mid layer: one bar per active part, repeating the last bar on a miss.
-    const parts = this.genre.parts.filter((p) => this.layers.has(p));
+    const parts = this.lineup.filter((p) => this.layers.has(p));
     const ctx = this.context({
       bar: this.bar, kind: ending ? "ending" : "play", section: name, barInSection: this.barInSection, sectionBars: this.sectionLength(),
       barInPhrase, lastBarOfSection, level, feel: this.feel, parts, slots: section.barChords(this.barInSection), next, stingers,
@@ -532,7 +565,7 @@ export class Engine {
       this.lastBars[p] = byPart[p];
     }
     // Drums out but a stinger (or the final hit) asked for: drums play just that.
-    if (!parts.includes("drums") && this.genre.parts.includes("drums") && (stingers.length || ending)) {
+    if (!parts.includes("drums") && this.lineup.includes("drums") && (stingers.length || ending)) {
       const only = this.generator.generate({ ...ctx, parts: ["drums"], stingersOnly: true }).drums;
       if (only) byPart.drums = only;
     }
@@ -552,6 +585,8 @@ export class Engine {
       target: goal,
       level,
       layers: parts,
+      lineup: this.lineup,
+      band: this.band,
       feel: this.feel,
       genre: this.genre.id,
       swing,

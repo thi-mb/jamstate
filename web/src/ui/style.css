@@ -77,3 +77,12 @@ code { font-size: 12px; }
 
 .blind-rate { border: 1px solid currentColor; border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; }
 #blind-stars button.on { outline: 2px solid currentColor; font-weight: 600; }
+
+.band-parts { display: grid; gap: 6px; margin-top: 6px; }
+.band-part { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 4px 8px; align-items: center; border-top: 1px solid var(--line); padding-top: 6px; }
+.band-part label.inline { font-size: 13px; }
+.band-part select { padding: 3px 6px; font-size: 13px; }
+.band-part .sliders { grid-column: 2; display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 4px; align-items: center; font-size: 11px; color: var(--dim); }
+.band-part input[type=range] { width: 100%; accent-color: var(--accent); }
+.band-part.out select, .band-part.out .sliders { opacity: 0.4; }
+.band-part .state { grid-column: 2; font-size: 11px; color: var(--dim); }
