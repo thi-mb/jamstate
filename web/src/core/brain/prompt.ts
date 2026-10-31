@@ -14,7 +14,7 @@ make space; when they stop, drop back. Prefer small changes. Saying nothing is
 often right. Never move more than two things at once.
 
 Answer only with JSON matching the schema. Each move needs a short, friendly
-reason addressed to the player.`;
+reason addressed to the player, under 100 characters.`;
 
 export function chartSystem(genres: string[]): string {
   return `You write chord charts for a backing band. Given a description, return one
