@@ -1,6 +1,6 @@
-# houseband architecture
+# jamstate architecture
 
-houseband is an AI backing band that follows a song's structure and reacts to
+jamstate is an AI backing band that follows a song's structure and reacts to
 what you play. It borrows adaptive-music techniques from games (vertical
 layering, horizontal resequencing, bar-quantized transitions, stingers) and
 puts a language model in the role of bandleader.

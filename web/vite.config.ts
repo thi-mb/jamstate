@@ -3,7 +3,7 @@ import { defineConfig } from "vitest/config";
 // In dev, /api is forwarded to the Python server (server/), which proxies the
 // bandleader to the LLM on the DGX Spark. In production the Python server
 // serves the built app itself, so the page and /api share an origin.
-const apiTarget = process.env.HOUSEBAND_API ?? "http://localhost:8765";
+const apiTarget = process.env.JAMSTATE_API ?? "http://localhost:8765";
 
 export default defineConfig({
   server: {
