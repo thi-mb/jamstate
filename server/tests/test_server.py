@@ -234,3 +234,26 @@ def test_sessions_are_saved_listed_and_loaded(static_dir, tmp_path):
         assert post(f"{base}/api/sessions", session, {"origin": "https://evil.example"})[0] == 403
     finally:
         httpd.shutdown()
+
+
+def lower(h):
+    return {k.lower(): v for k, v in h.items()}
+
+
+def test_claude_relay_uses_the_servers_key_only_same_origin(static_dir):
+    model = FakeModel(['{"moves":[]}', '{"moves":[]}', '{"moves":[]}'])
+    httpd, base = start_app(static_dir, {"anthropic": Relay(model.url.removesuffix("/v1"), "server-key")})
+    try:
+        req = {"model": "claude-x", "max_tokens": 10, "messages": [{"role": "user", "content": "hi"}]}
+        hdr = {"x-api-key": "relay", "anthropic-version": "2023-06-01"}
+        assert post(base + "/api/relay/anthropic/v1/messages", req, hdr)[0] == 200
+        assert model.paths[0] == "/v1/messages"
+        assert lower(model.headers[0]).get("x-api-key") == "server-key"
+        assert lower(model.headers[0]).get("anthropic-version") == "2023-06-01"
+        post(base + "/api/relay/anthropic/v1/messages", req, {**hdr, "x-api-key": "mine"})
+        assert lower(model.headers[1]).get("x-api-key") == "mine"
+        assert post(base + "/api/relay/anthropic/v1/models", req, hdr)[0] == 404
+        assert post(base + "/api/relay/anthropic/v1/messages", req, {**hdr, "origin": "https://evil.example"})[0] == 403
+    finally:
+        httpd.shutdown()
+        model.close()

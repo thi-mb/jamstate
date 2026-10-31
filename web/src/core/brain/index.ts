@@ -49,7 +49,7 @@ export const DEFAULT_SETTINGS: BrainSettings = {
 export const BRAIN_LABELS: Record<LeaderChoice, string> = {
   rules: "Rules (in the page)",
   openai: "OpenAI-compatible LLM (Qwen on the Spark, Ollama…)",
-  claude: "Claude (your Anthropic key)",
+  claude: "Claude (your key, or the server's)",
   jev: "Jev decision model (your TypeSafe key)",
   none: "None (you drive it)",
   blind: "Blind test (a hidden brain each jam)",
@@ -66,6 +66,10 @@ export function mergeSettings(raw: unknown): BrainSettings {
   };
 }
 
+/** The companion server's Claude relay, used when the page has no key of its own. */
+export const CLAUDE_RELAY = "api/relay/anthropic";
+const absolute = (u: string) => (typeof location !== "undefined" ? new URL(u, location.href).href.replace(/\/$/, "") : u);
+
 /** A provider for these settings, or null for "none". */
 export function makeBrain(s: BrainSettings, fetchFn?: Fetch): BrainProvider | null {
   switch (s.kind) {
@@ -77,7 +81,13 @@ export function makeBrain(s: BrainSettings, fetchFn?: Fetch): BrainProvider | nu
     case "openai":
       return new OpenAIBrain({ url: s.openai.url, model: s.openai.model, apiKey: s.openai.apiKey || undefined }, fetchFn);
     case "claude":
-      return new ClaudeBrain({ apiKey: s.claude.apiKey, model: s.claude.model || DEFAULT_CLAUDE_MODEL }, fetchFn);
+      // No key in the page: go through the companion server's relay, which adds its own.
+      return new ClaudeBrain(
+        s.claude.apiKey
+          ? { apiKey: s.claude.apiKey, model: s.claude.model || DEFAULT_CLAUDE_MODEL }
+          : { apiKey: "relay", model: s.claude.model || DEFAULT_CLAUDE_MODEL, baseURL: absolute(CLAUDE_RELAY) },
+        fetchFn,
+      );
     case "jev":
       return new JevBrain({ apiKey: s.jev.apiKey || undefined, model: s.jev.model || undefined, url: s.jev.relay ? s.jev.url : JEV_API }, fetchFn);
   }

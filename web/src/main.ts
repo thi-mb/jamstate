@@ -32,7 +32,7 @@ const getAudio = () => (audio ??= new AudioContext({ latencyHint: "interactive" 
 const platform = webPlatform(getAudio);
 const midi = platform.midi;
 /** The companion server (the Spark, or a local one), if this page was served by one. */
-let server: { sessions: boolean; relay: { llm: boolean; jev: boolean } } | null = null;
+let server: { sessions: boolean; relay: { llm: boolean; jev: boolean; anthropic: boolean } } | null = null;
 const spark: SessionStore = new ServerSessionStore();
 let chart: Chart | null = null;
 let chartRaw: ChartJSON | null = null;
@@ -276,8 +276,8 @@ async function checkServer(): Promise<void> {
     const r = await fetch("api/health", { signal: AbortSignal.timeout(2000) });
     const h = await r.json();
     if (!h.ok) throw new Error("not a jamstate server");
-    server = { sessions: !!h.sessions, relay: { llm: !!h.relay?.llm, jev: !!h.relay?.jev } };
-    const relays = [server.relay.llm && `LLM ${h.model ?? ""}`.trim(), server.relay.jev && "Jev"].filter(Boolean).join(", ");
+    server = { sessions: !!h.sessions, relay: { llm: !!h.relay?.llm, jev: !!h.relay?.jev, anthropic: !!h.relay?.anthropic } };
+    const relays = [server.relay.llm && `LLM ${h.model ?? ""}`.trim(), server.relay.jev && "Jev", server.relay.anthropic && "Claude"].filter(Boolean).join(", ");
     el.textContent = `jamstate server here${relays ? ` · relays ${relays}` : ""}${server.sessions ? " · session sync" : ""}`;
   } catch {
     server = null;
@@ -289,7 +289,7 @@ async function checkServer(): Promise<void> {
 
 // ---------- blind test ----------
 
-const blindEnv = () => ({ llmRelay: !!server?.relay.llm, jevRelay: !!server?.relay.jev });
+const blindEnv = () => ({ llmRelay: !!server?.relay.llm, jevRelay: !!server?.relay.jev, claudeRelay: !!server?.relay.anthropic });
 const blindPool = () => blindReady ?? blindCandidates(settings, blindEnv());
 
 function showBlindPool(): void {
@@ -298,7 +298,7 @@ function showBlindPool(): void {
   const why: Record<BrainKind, string> = {
     rules: "",
     openai: blindReady ? "didn't answer" : "needs the Spark's relay or a direct endpoint",
-    claude: blindReady && settings.claude.apiKey ? "didn't answer" : "no key: pick Claude above and paste one",
+    claude: blindReady && (settings.claude.apiKey || server?.relay.anthropic) ? "didn't answer" : "no key: pick Claude above and paste one, or give the server ANTHROPIC_API_KEY",
     jev: blindReady ? "didn't answer" : "needs the jamstate server's relay",
   };
   const out = all.filter((k) => !pool.includes(k)).map((k) => `${BLIND_NAMES[k]} (${why[k]})`);
