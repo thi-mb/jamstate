@@ -97,7 +97,7 @@
           </div>
           <div id="brain-claude" class="brain-cfg" hidden>
             <label>Model <input id="claude-model" type="text" /></label>
-            <label>Anthropic API key <input id="claude-key" type="password" autocomplete="off" placeholder="sk-ant-…" /></label>
+            <label>Anthropic API key <input id="claude-key" type="password" autocomplete="off" placeholder="empty: the server's key" /></label>
           </div>
           <div id="brain-jev" class="brain-cfg" hidden>
             <label>Model <input id="jev-model" type="text" placeholder="jev-latest" /></label>
@@ -107,7 +107,7 @@
             <p class="dim small">TypeSafe doesn't accept calls straight from a web page, so Jev goes through the jamstate server's relay (on the Spark, or <code>python -m jamstate_server</code> on your machine).</p>
           </div>
           <div id="brain-blind" class="brain-cfg" hidden>
-            <p class="dim small">Each jam secretly uses one of the brains that work here, the least-tried first. Moves show without names or reasons. When you stop, rate how the band felt; <b>Show results</b> unblinds. To add Claude, pick it above, paste a key, then come back to Blind test. <b>Test</b> checks which brains answer.</p>
+            <p class="dim small">Each jam secretly uses one of the brains that work here, the least-tried first. Moves show without names or reasons. When you stop, rate how the band felt; <b>Show results</b> unblinds. Claude joins when the server has a Claude key, or after you pick Claude above and paste one. <b>Test</b> checks which brains answer.</p>
             <div id="blind-pool" class="small"></div>
             <div class="row wrap"><button id="blind-results-btn">Show results</button></div>
             <div id="blind-results" class="small"></div>

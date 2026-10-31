@@ -13,14 +13,15 @@ export const isBlind = (leader: string | undefined) => !!leader?.startsWith("bli
 
 /**
  * Brains that can run from this page: rules always; the OpenAI-compatible one
- * when its endpoint is reachable (the relay needs a server); Claude with a key;
+ * when its endpoint is reachable (the relay needs a server); Claude with a key
+ * or the server's Claude relay;
  * Jev only through a server relay (TypeSafe refuses browser origins).
  */
-export function blindCandidates(s: BrainSettings, env: { llmRelay: boolean; jevRelay: boolean }): BrainKind[] {
+export function blindCandidates(s: BrainSettings, env: { llmRelay: boolean; jevRelay: boolean; claudeRelay?: boolean }): BrainKind[] {
   const out: BrainKind[] = ["rules"];
   const relayUrl = (u: string) => u.startsWith("api/") || u.startsWith("./api/");
   if (s.openai.url && (!relayUrl(s.openai.url) || env.llmRelay)) out.push("openai");
-  if (s.claude.apiKey) out.push("claude");
+  if (s.claude.apiKey || env.claudeRelay) out.push("claude");
   if (s.jev.relay && env.jevRelay) out.push("jev");
   return out;
 }
