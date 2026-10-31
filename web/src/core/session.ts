@@ -60,6 +60,8 @@ export interface SessionFile {
   player: PlayerEvent[];
   controls: Control[];
   bars: SessionBar[];
+  /** The player's rating of a blind-test jam (see brain/blind.ts). */
+  rating?: { stars: number; note?: string; fallback?: boolean };
 }
 
 export interface SessionSetup {

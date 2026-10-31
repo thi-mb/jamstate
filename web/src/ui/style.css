@@ -74,3 +74,6 @@ input[type=text] { flex: 1; min-width: 0; }
 input[type=password] { font: inherit; color: var(--text); background: #0b0d11; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
 .brain-cfg label input[type=text], .brain-cfg label input[type=password] { display: block; width: 100%; margin-top: 3px; }
 code { font-size: 12px; }
+
+.blind-rate { border: 1px solid currentColor; border-radius: 6px; padding: 6px 8px; margin-bottom: 8px; }
+#blind-stars button.on { outline: 2px solid currentColor; font-weight: 600; }

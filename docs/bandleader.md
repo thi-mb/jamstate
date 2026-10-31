@@ -152,6 +152,16 @@ and soft", "steady, medium" or "busy and loud", words for the numbers),
 `song`. Reasons come from a template per move. TypeSafe blocks browser calls,
 so the page reaches Jev through the companion server's `/api/relay/jev`.
 
+## Blind test
+
+**Blind test** under Bandleader is a choice, not a brain: each jam secretly
+uses one of the brains that answer from this page (the least-tried first;
+`web/src/core/brain/blind.ts`), the overlay hides who made each move and the
+reasons, and after Stop the player rates the jam 1 to 5. The session is
+recorded with `leader: "blind:<brain>"` and a `rating`, kept in the browser,
+and synced to the server when there is one. **Show results** unblinds the
+per-brain means.
+
 ## Rule-based leader (reference behavior)
 
 The in-page fallback (`web/src/core/rules.ts`) implements the same contract
