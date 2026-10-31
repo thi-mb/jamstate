@@ -2,7 +2,7 @@
 
 Picks the default bandleader brain by measurement
 ([ADR-0016](../decisions/0016-brain-providers.md)). Status: **in progress**.
-Rules, Jev and Claude (from the cloud) and Qwen (on the Spark) are measured
+Rules, Jev and Claude (from the cloud), Qwen (on the Spark) and Laya (local, on the Mac) are measured
 on simulated sessions; there are no real recorded jams on the Spark yet;
 Thiago's blind test (by playing) is still to do. Until
 it's done the default stays **rules**.
@@ -89,6 +89,62 @@ the same prompt as v0, so this is the v0 LLM's behavior too; it was never
 measured this way before. Prompting or tuning Qwen is v0.4 work; for now it
 is the weakest brain here.
 
+[2026-10-31-mac-laya/](2026-10-31-mac-laya/), same 9 sessions on Thiago's
+MacBook Pro (M4 Max), Laya local through
+[localbrain/](../../localbrain/README.md) (no key, no network):
+
+| Brain | Runtime | p50 | p95 | max | Errors | Moves per turn | follow | silent→drop | busy→lift |
+|-------|---------|-----|-----|-----|--------|----------------|--------|-------------|-----------|
+| Laya (English, 0.4B) | MLX fp16 | 21 ms | 22 ms | 44 ms | 0 | 1.07 | 0.96 | 1.00 | 1.00 |
+| Laya multilingual (0.3B) | MLX fp16 | 10 ms | 11 ms | 25 ms | 0 | 0.92 | 0.96 | 1.00 | 1.00 |
+| Laya (English) | PyTorch MPS | 28 ms | 29 ms | 95 ms | 0 | 1.07 | 0.96 | 1.00 | 1.00 |
+| Laya multilingual | PyTorch MPS | 16 ms | 17 ms | 46 ms | 0 | 0.92 | 0.96 | 1.00 | 1.00 |
+| Laya typed-decisions (0.4B) | PyTorch MPS | 29 ms | 29 ms | 77 ms | 0 | 1.25 | 0.45 | 0.00 | 1.00 |
+
+A small local LLM for comparison, same Mac, `mlx_lm.server` with
+Qwen3-4B-Instruct-2507 (4-bit), the shared `LEADER_SYSTEM` prompt:
+
+| Brain | p50 | p95 | max | Errors | Rejected | follow | silent→drop | busy→lift |
+|-------|-----|-----|-----|--------|----------|--------|-------------|-----------|
+| Qwen3-4B (MLX) | 657 ms | 854 ms | 1509 ms | 0 | 102 of 102 | 0.08 | 0.00 | 0.58 |
+
+Every answer was rejected: `mlx_lm.server` ignores `response_format`, so
+nothing holds the model to the move schema, and Qwen3-4B answers with its own
+shape (`{"drums": "soft brush on snare…"}`). It would need constrained
+decoding (llama.cpp with a grammar, as on the Spark) to be a fair test; as
+served here it isn't a usable brain.
+
+What we learned about Laya:
+
+- **Jev's questions don't work for it.** Asked exactly what Jev is asked
+  (`--brains laya-jevq`), every checkpoint is valid and fast but barely
+  follows (follow −0.02 to 0.53, silent→drop 0.00): its level probabilities
+  are almost flat whether the player stopped or plays all out, and it jumps
+  sections nearly every turn (`jevq-*` runs).
+- **What fixed it:** its own question set
+  ([laya.ts](../../web/src/core/brain/laya.ts)). The state is two plain
+  sentences (what the player is doing, who in the band plays); the level is
+  a choice of five named levels, read as the top pick; the change is a short
+  choice built from the band and the player (drops while they stop or play
+  sparse, comebacks and a fill while they play; no jumps or extends, which
+  rules don't make either). Two details mattered: telling Laya the band's
+  current loudness made it repeat it after the player stopped, and offering
+  drops to a steady player made it drop parts.
+- Caveat, as for Jev: tuned on these same nine sessions, so optimistic until
+  it holds on real recordings. Part of the "when to drop" logic now sits in
+  which options are offered, so Laya chooses less than Jev does.
+- **MLX is about 1.5× faster than PyTorch on the Mac** with the same answers:
+  [laya_mlx.py](../../localbrain/laya_mlx.py) reimplements the network and
+  keeps laya's tokenizing and decoding; its probabilities match PyTorch within
+  0.0011. ONNX wasn't tried here; it matters for running Laya inside the page
+  (the spike below).
+- Like Jev it makes few structural moves (no feel changes or stingers in
+  practice) and its reasons are templates. Multilingual moves the intensity less
+  often than English (59 vs 74 of 102 turns) and both drop a part 26 times.
+- In the page: pick **Laya decision model (on this machine)** with
+  `localbrain/laya_server.py` running; it's called straight from the browser
+  at `127.0.0.1:8010`.
+
 What we learned about Jev on the way:
 
 - **First questions failed.** Asked "how hard should the band play?" with the
@@ -132,4 +188,6 @@ What we learned about Jev on the way:
       and **Show results** unblinds. The sessions are also real jams for the
       replay bake-off.
 - [ ] Pick the default and record it here and in ADR-0016.
+- [x] Laya local on the Mac (MLX and PyTorch), simulated sessions (2026-10-31).
+- [ ] Laya on real jams, and in the blind rating (not in `rating-items.json` yet).
 - [ ] Laya-in-the-browser spike (ONNX), alongside.

@@ -8,7 +8,7 @@
 import type { Move } from "../moves";
 import type { LeaderContext } from "../rules";
 
-export type BrainKind = "rules" | "openai" | "claude" | "jev";
+export type BrainKind = "rules" | "openai" | "claude" | "jev" | "laya";
 
 export interface Rejected {
   move: unknown;

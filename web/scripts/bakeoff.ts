@@ -1,5 +1,5 @@
-// npm run bakeoff -- <session files or dirs...> [--brains rules,jev,claude,openai] [--out dir]
-//                    [--url http://127.0.0.1:8080/v1] [--model leader] [--claude-model M] [--label host] [--rate 24]
+// npm run bakeoff -- <session files or dirs...> [--brains rules,jev,claude,openai,laya] [--out dir]
+//                    [--url http://127.0.0.1:8080/v1] [--model leader] [--claude-model M] [--laya-url U] [--label host] [--rate 24]
 //
 // The brain bake-off (ADR-0016). For every session:
 //   1. Same question: replay with the rule leader asked once per phrase and
@@ -30,7 +30,7 @@ const opt = (name: string) => {
 const brainNames = (opt("brains") ?? "rules,jev").split(",").map((s) => s.trim()).filter(Boolean);
 const out = opt("out") ?? "bakeoff";
 const host = opt("label") ?? "unlabelled host";
-const brainArgs = { url: opt("url"), model: opt("model"), claudeModel: opt("claude-model"), jevModel: opt("jev-model") };
+const brainArgs = { url: opt("url"), model: opt("model"), claudeModel: opt("claude-model"), jevModel: opt("jev-model"), layaUrl: opt("laya-url") };
 const TIMEOUT_MS = Number(opt("timeout") ?? 20_000);
 const RATE_N = Number(opt("rate") ?? 24);
 
