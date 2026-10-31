@@ -53,13 +53,15 @@ changes everything about how the band plays and sounds.
 | Songs | Text-to-song and free jam know the genre's forms and harmony ("bossa nova in D" gives a bossa form, chords and lineup) | v0.6 |
 
 The pack format is a decision record in v0.1, so genres can be added without
-code once the engine supports the layers. The genre count stays at the first two or three through
-v0.5: each release adds its layer to those same genres, and they act as
+code once the engine supports the layers. The first three genres are
+**funk, blues rock and jazz** (Thiago, 2026-10-31): they differ in swing,
+harmony, lineup and how a bandleader behaves, so between them they test
+every layer. The count stays at those three through v0.5: each release adds its layer to those same genres, and they act as
 test cases that keep the engine from assuming one style. The remaining
 genres are added in v0.6–v0.7, when the format is stable and a new genre is
 mostly data and samples. Target for v1.0: about five genres
-that are clearly different (for example blues/shuffle, funk, rock, jazz
-swing, bossa or Latin), picked with Thiago. Community genre packs after
+that are clearly different (the first three plus, for example, bossa or
+Latin and a ballad/soul style), picked with Thiago. Community genre packs after
 v1.0.
 
 ## Where v0 left us
@@ -128,7 +130,7 @@ Scope:
   room for more) instead of three hard-wired parts, so v0.2 can add
   instruments without touching the arranger.
 - **Genre packs, composition layer:** the pack format (decision record) and
-  the first two or three genres' groove vocabularies. A song picks a genre;
+  the groove vocabularies for funk, blues rock and jazz. A song picks a genre;
   a section can override feel. Chart format v0.1, superseding
   [ADR-0010](decisions/0010-chart-format-v0.md) additively.
 - **Feel in the chart and arranger:** `swing` (0 = straight, 0.66 = triplet
@@ -227,12 +229,21 @@ Scope:
   are read against the genre (what's "busy" in a ballad isn't in bebop). Scores Qwen
   and the rule leader, run next to `spark/bench_leader.py`. This release
   gets the baseline score; v0.4 improves it.
+- **Fretboard view:** a guitar neck (and a keyboard view for keys players)
+  showing the scale for the current chord with chord tones highlighted, and
+  the next chord's tones coming up before the change. The scale choice comes
+  from the genre (blues scale and minor pentatonic for blues rock, dorian
+  and mixolydian for funk, chord-scale and bebop scales for jazz). What you
+  play on MIDI shows on it live, coloured by how it fits (chord tone, scale
+  tone, outside), using the same harmony signal the leader gets.
 
 Done when:
 - Hands-on: a call-and-response and a build into a chorus get followed;
   slowing down a little brings the band along; a pad cue and a spoken "one
   more chorus" both land on the next phrase.
 - The eval set runs on the Spark and reports a score for both leaders.
+- The fretboard shows the right scale and chord tones for each chord in the
+  three genres, and changes on the beat of the chord change.
 - p95 latency stays inside
   [ADR-0006](decisions/0006-bandleader-latency-contract.md) with the bigger
   summary.
@@ -294,10 +305,16 @@ each usable on its own, all feeding the v0.3 signals:
 4. **Bleed:** headphones are the default; gating the band's own output from
    the mic is a stretch goal.
 
+**Fretboard, live:** the notes and chords detected from the guitar show on
+the v0.3 fretboard as you play, in a likely position on the neck (picked to
+stay near where you've been playing), coloured by fit.
+
 Done when:
 - Guitar through an audio interface drives the band like the MIDI keyboard
   does in v0 tests 2, 4 and 5, and the v0.3 hands-on tests pass on guitar.
 - Audio sessions record and replay like MIDI ones.
+- Single notes and strummed chords show on the fretboard within about a beat
+  and in a plausible position.
 
 ### v0.6: Song creator
 
@@ -333,6 +350,8 @@ Done when:
 Scope:
 - **Stage view:** big section / chord / next-chord display, bar and beat
   counter, count-in, the form as a timeline with the current position.
+- **Fretboard on stage:** the fretboard/keyboard view as a panel in the
+  stage view, sized to read from a music stand.
 - **Band panel:** the lineup with per-part mute/solo, volume and intensity,
   and the move log with reasons as the "bandleader's thoughts".
 - **Setup flow:** inputs (MIDI / audio / keys / mic for voice cues), outputs,
@@ -407,6 +426,6 @@ Not scheduled; each can slot in once its question is answered:
    groove work is engine-only and shapes what the new instruments play.
    Sound first would fix test 10 sooner.
 2. **Sample set for v0.2:** which one (license and size).
-3. **Genres:** which two or three come first in v0.1, and the five for
-   v1.0.
+3. **Genres:** the first three are decided (funk, blues rock, jazz); the
+   other two for v1.0 are open.
 4. **Link:** can a local helper app run on the work Mac at all?
