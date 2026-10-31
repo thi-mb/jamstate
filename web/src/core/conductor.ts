@@ -4,7 +4,7 @@
 
 import type { BarPlan, Engine } from "./engine";
 import { barFeatures, summarize, type BarFeatures, type PlayedNote, type PlayerSummary } from "./features";
-import type { Move } from "./moves";
+import { PLAYER_ONLY_MOVES, type Move } from "./moves";
 import type { LeaderContext } from "./rules";
 
 export interface LeaderReply {
@@ -41,8 +41,9 @@ export class Conductor {
     return this.inFlight;
   }
 
-  /** Call once a bar has finished sounding, with what the player played in it. */
-  barFinished(plan: BarPlan, notes: PlayedNote[]): BarFeatures {
+  /** Call once a bar has finished sounding, with what the player played in it. Count-in bars are skipped. */
+  barFinished(plan: BarPlan, notes: PlayedNote[]): BarFeatures | null {
+    if (plan.kind === "count_in") return null;
     const f = barFeatures(notes, this.engine.chart.beatsPerBar, this.history);
     this.history.push(f);
     if (this.history.length > 8) this.history.shift();
@@ -79,7 +80,9 @@ export class Conductor {
     const ctx = this.context(plan, player);
     const done = (reply: LeaderReply) => {
       this.inFlight = false;
-      this.engine.submit(reply.moves, reply.source, plan.bar);
+      // Ending the song is the player's call; a leader can't make it.
+      const moves = reply.moves.filter((m) => !PLAYER_ONLY_MOVES.includes((m as { move?: string })?.move as Move["move"]));
+      if (moves.length) this.engine.submit(moves, reply.source, plan.bar);
       this.events.onDecision?.(reply, plan.bar);
     };
     let result: Promise<LeaderReply> | LeaderReply;

@@ -8,7 +8,8 @@ export type Move =
   | { move: "jump_to_section"; section: string; reason: string }
   | { move: "extend_section"; bars: number; reason: string }
   | { move: "change_feel"; feel: Feel; reason: string }
-  | { move: "fire_stinger"; stinger: Stinger; reason: string };
+  | { move: "fire_stinger"; stinger: Stinger; reason: string }
+  | { move: "end_song"; reason: string };
 
 export type MoveKind = Move["move"];
 
@@ -20,7 +21,15 @@ export const MOVE_KINDS: MoveKind[] = [
   "extend_section",
   "change_feel",
   "fire_stinger",
+  "end_song",
 ];
+
+/**
+ * Moves only the player (buttons, cues) may make. The LLM's schema
+ * (schema/moves.schema.json) leaves them out, and the conductor drops them
+ * from any leader's reply.
+ */
+export const PLAYER_ONLY_MOVES: MoveKind[] = ["end_song"];
 
 const isObj = (x: unknown): x is Record<string, unknown> => typeof x === "object" && x !== null && !Array.isArray(x);
 
@@ -49,6 +58,8 @@ export function parseMove(raw: unknown): { move: Move } | { error: string } {
     case "fire_stinger":
       if (!STINGERS.includes(raw.stinger as Stinger)) return { error: `stinger must be one of ${STINGERS.join(", ")}` };
       return { move: { move: raw.move, stinger: raw.stinger as Stinger, reason } };
+    case "end_song":
+      return { move: { move: raw.move, reason } };
     default:
       return { error: `unknown move "${String(raw.move)}"` };
   }
@@ -70,5 +81,7 @@ export function describeMove(m: Move): string {
       return `change_feel(${m.feel})`;
     case "fire_stinger":
       return `fire_stinger(${m.stinger})`;
+    case "end_song":
+      return "end_song";
   }
 }

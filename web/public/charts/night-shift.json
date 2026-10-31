@@ -1,15 +1,17 @@
 {
+  "version": "0.1",
   "title": "Night Shift",
   "bpm": 112,
   "time_sig": "4/4",
   "key": "F minor",
+  "genre": "funk",
   "phrase_bars": 4,
   "sections": [
-    { "name": "intro", "bars": 4, "chords": ["Fm", "Db", "Ab", "Eb"], "intensity": 0.3 },
-    { "name": "verse", "bars": 8, "chords": ["Fm", "Fm", "Db", "Eb"], "intensity": 0.45 },
-    { "name": "chorus", "bars": 8, "chords": ["Db", "Eb", "Fm", "Fm"], "intensity": 0.75 },
-    { "name": "bridge", "bars": 4, "chords": ["Bbm", "Bbm", "C7", "C7"], "intensity": 0.55 },
-    { "name": "outro", "bars": 4, "chords": ["Fm Eb", "Db C7", "Fm", "Fm"], "intensity": 0.3 }
+    {"name": "intro", "bars": 4, "chords": ["Fm", "Db", "Ab", "Eb"], "intensity": 0.3},
+    {"name": "verse", "bars": 8, "chords": ["Fm", "Fm", "Db", "Eb"], "intensity": 0.45},
+    {"name": "chorus", "bars": 8, "chords": ["Db", "Eb", "Fm", "Fm"], "intensity": 0.75},
+    {"name": "bridge", "bars": 4, "chords": ["Bbm", "Bbm", "C7", "C7"], "intensity": 0.55},
+    {"name": "outro", "bars": 4, "chords": ["Fm Eb", "Db C7", "Fm", "Fm"], "intensity": 0.3}
   ],
   "form": ["intro", "verse", "chorus", "verse", "chorus", "bridge", "chorus", "outro"]
 }
