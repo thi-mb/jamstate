@@ -1,11 +1,11 @@
 # Brain bake-off (v0.1.1)
 
 Picks the default bandleader brain by measurement
-([ADR-0016](../decisions/0016-brain-providers.md)). Status: **in progress**.
+([ADR-0016](../decisions/0016-brain-providers.md)). Status: **decided: Jev is the default** (Thiago, 2026-10-31).
 Rules, Jev and Claude (from the cloud), Qwen (on the Spark) and Laya (local, on the Mac) are measured
 on simulated sessions; there are no real recorded jams on the Spark yet;
-Thiago's blind test (by playing) is still to do. Until
-it's done the default stays **rules**.
+Thiago picked **Jev** as the default; rules, Qwen, Claude and Laya stay
+selectable, and the blind test keeps comparing them by playing.
 
 ## How it works
 
@@ -187,7 +187,7 @@ What we learned about Jev on the way:
       session (`rating` in the file) in the browser and synced to the Spark,
       and **Show results** unblinds. The sessions are also real jams for the
       replay bake-off.
-- [ ] Pick the default and record it here and in ADR-0016.
+- [x] Pick the default: Jev (Thiago, 2026-10-31), recorded in ADR-0016.
 - [x] Laya local on the Mac (MLX and PyTorch), simulated sessions (2026-10-31).
-- [ ] Laya on real jams, and in the blind rating (not in `rating-items.json` yet).
+- [ ] Laya on real jams (it joins the blind test when its local server answers).
 - [ ] Laya-in-the-browser spike (ONNX), alongside.
