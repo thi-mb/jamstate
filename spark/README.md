@@ -1,4 +1,4 @@
-# Running houseband on the DGX Spark
+# Running Jam State on the DGX Spark
 
 The Spark hosts everything except the music itself: the built web app, the
 app server with the `/api/leader` proxy, and the bandleader model. The
@@ -9,7 +9,7 @@ browser on your laptop owns all timing
 laptop browser ──HTTPS (tailnet)──► tailscale serve :443
                                         │
                                         ▼
-                         houseband_server :8765  (static web/dist + /api/leader)
+                         jamstate_server :8765  (static web/dist + /api/leader)
                                         │
                                         ▼
                          llama-server :8080  (OpenAI-compatible, bandleader model)
@@ -89,7 +89,7 @@ Run the server (from `server/`, see its README for install):
 
 ```bash
 cd server
-python -m houseband_server --static ../web/dist \
+python -m jamstate_server --static ../web/dist \
   --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b --port 8765
 ```
 
@@ -118,12 +118,12 @@ To stop serving: `sudo tailscale serve --https=443 off`.
 
 ## 5. Keep it running
 
-Two systemd user services, as set up on the houseband Spark. The model:
+Two systemd user services, as set up on the Jam State Spark. The model:
 
 ```ini
-# ~/.config/systemd/user/houseband-llm.service
+# ~/.config/systemd/user/jamstate-llm.service
 [Unit]
-Description=houseband bandleader model (llama-server, qwen3-30b-a3b) on 127.0.0.1:8080
+Description=Jam State bandleader model (llama-server, qwen3-30b-a3b) on 127.0.0.1:8080
 
 [Service]
 ExecStart=%h/llama.cpp/build/bin/llama-server -m %h/models/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf --alias qwen3-30b-a3b --host 127.0.0.1 --port 8080 -ngl 99 -c 8192 --parallel 1 --jinja
@@ -136,15 +136,15 @@ WantedBy=default.target
 The app server, which starts after the model:
 
 ```ini
-# ~/.config/systemd/user/houseband-app.service
+# ~/.config/systemd/user/jamstate-app.service
 [Unit]
-Description=houseband app server (web/dist + /api) on 127.0.0.1:8765
-After=network-online.target houseband-llm.service
-Wants=houseband-llm.service
+Description=Jam State app server (web/dist + /api) on 127.0.0.1:8765
+After=network-online.target jamstate-llm.service
+Wants=jamstate-llm.service
 
 [Service]
 WorkingDirectory=%h/dev/jamstate/server
-ExecStart=/usr/bin/python3 -m houseband_server --static ../web/dist --port 8765 --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b
+ExecStart=/usr/bin/python3 -m jamstate_server --static ../web/dist --port 8765 --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b
 Restart=on-failure
 RestartSec=3
 
@@ -154,12 +154,12 @@ WantedBy=default.target
 
 ```bash
 systemctl --user daemon-reload
-systemctl --user enable --now houseband-llm houseband-app
+systemctl --user enable --now jamstate-llm jamstate-app
 loginctl enable-linger "$USER"   # keep them running when you're logged out
 ```
 
 To deploy new code: `git pull`, `cd web && npm ci && npm run build`, then
-`systemctl --user restart houseband-app`. The model takes 5–10 s to load
+`systemctl --user restart jamstate-app`. The model takes 5–10 s to load
 after a restart; until then the page uses the rule leader.
 
 If the Spark boots a new kernel and `nvidia-smi` can't see the GPU, the
@@ -170,4 +170,4 @@ driver modules for that kernel are missing:
 
 No Spark needed: run `npm run dev` in `web/` and the in-page rule-based
 leader plays bandleader. Point the Vite proxy at the Spark with
-`HOUSEBAND_LLM_URL` to use the real model from a dev build.
+`JAMSTATE_LLM_URL` to use the real model from a dev build.

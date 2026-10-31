@@ -1,6 +1,6 @@
 """Recorded jam sessions, saved as JSON files on the Spark.
 
-The page records every jam (houseband-session/0.1, ADR-0014) and can save it
+The page records every jam (jamstate-session/0.1, ADR-0014) and can save it
 here; replay runs in the browser or with `npm run replay` in web/. The
 server only stores files: it never reads the music in them.
 """
@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-SESSION_FORMAT = "houseband-session/0.1"
+SESSION_FORMAT = "jamstate-session/0.1"
 MAX_SESSION_BYTES = 8 * 1024 * 1024
 NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,120}\.json$")
 
@@ -23,7 +23,7 @@ class SessionError(ValueError):
 
 
 def default_dir() -> Path:
-    return Path.home() / ".local" / "share" / "houseband" / "sessions"
+    return Path.home() / ".local" / "share" / "jamstate" / "sessions"
 
 
 class SessionStore:

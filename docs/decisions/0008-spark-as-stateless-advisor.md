@@ -11,7 +11,7 @@ are connected over Tailscale.
 ## Decision
 The Spark runs everything that isn't real-time:
 
-- **App server** (Python, `server/`, package `houseband_server`): serves the built web app, chart files and the loop
+- **App server** (Python, `server/`, package `jamstate_server`): serves the built web app, chart files and the loop
   bank, and exposes a small API. The laptop browser opens
   `http://<spark>.<tailnet>.ts.net:<port>`.
 - **Bandleader endpoint**: the API proxies `/api/leader` to an
@@ -28,7 +28,7 @@ The Spark holds no session timing state. Each leader request carries the full
 summary it needs, so a restarted server loses nothing.
 
 Current state of v0: the Vite dev server on the laptop proxies leader calls to
-the Spark (`HOUSEBAND_LLM_URL`). That is the dev mode. Moving the built app
+the Spark (`JAMSTATE_LLM_URL`). That is the dev mode. Moving the built app
 and the proxy onto the Spark is the target, so testing only needs a browser.
 
 For local development without the Spark, the same server runs on the laptop

@@ -1,4 +1,4 @@
-"""The houseband app server: serves the built web app and the /api endpoints.
+"""The Jam State app server: serves the built web app and the /api endpoints.
 
 Runs on the DGX Spark next to the model. Holds no session state: every
 request carries everything it needs, so restarting it loses nothing.
@@ -20,7 +20,7 @@ from .leader import ask_leader, write_chart
 from .llm import LLMClient, LLMError
 from .sessions import MAX_SESSION_BYTES, SessionError, SessionStore
 
-log = logging.getLogger("houseband")
+log = logging.getLogger("jamstate")
 
 MAX_BODY = 64 * 1024
 
@@ -43,7 +43,7 @@ class App:
 
 def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
     class Handler(BaseHTTPRequestHandler):
-        server_version = "houseband"
+        server_version = "jamstate"
 
         def log_message(self, fmt: str, *args: Any) -> None:  # route through logging
             log.debug("%s %s", self.address_string(), fmt % args)

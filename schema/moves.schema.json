@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/thi-mb/jamstate/schema/moves.schema.json",
-  "title": "houseband bandleader response",
+  "title": "Jam State bandleader response",
   "description": "What the bandleader returns every few bars. Zero to two moves, each with a short reason shown to the player.",
   "type": "object",
   "required": ["moves"],
