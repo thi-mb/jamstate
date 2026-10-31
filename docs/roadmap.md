@@ -27,22 +27,22 @@ v0 is done and tested (11 of 12 pass). The open items it handed over:
 
 | Release | Theme | You'll notice | Mostly in |
 |---------|-------|---------------|-----------|
-| **v0.1** | Groove | The band swings, breathes and sounds like instruments | browser (`web/src/core`, `web/src/audio`) |
-| **v0.2** | Listening | The band reacts to *how* you play, and to cues you give it | browser features + Qwen on the Spark |
-| **v0.3** | Guitar | Plug in a guitar (or any instrument with a mic) instead of MIDI | browser (AudioWorklet), Spark optional |
-| **v0.4** | Song creator | Make a song from a sentence, a form editor, or a recording | Spark (LLM, audio analysis) + browser editor |
-| **v0.5** | Stage | A UI you'd play from and record a demo with | browser |
+| **v0.1** | Groove | The band swings and breathes instead of playing on the grid | browser (`web/src/core`) |
+| **v0.2** | Sound and lineup | Better built-in instruments, more of them, and you pick who plays on each song | browser (`web/src/audio`, `web/src/core`) |
+| **v0.3** | Listening | The band reacts to *how* you play, and to cues you give it | browser features + Qwen on the Spark |
+| **v0.4** | Guitar | Plug in a guitar (or any instrument with a mic) instead of MIDI | browser (AudioWorklet), Spark optional |
+| **v0.5** | Song creator | Make a song from a sentence, a form editor, or a recording | Spark (LLM, audio analysis) + browser editor |
+| **v0.6** | Stage | A UI you'd play from and record a demo with | browser |
 | **v1.0** | Public | Repo goes public with a demo video | docs, packaging |
 
 "Better UI" is spread across the releases (each one ships the screens it
-needs) and gets its own pass in v0.5. Link and the generative mid layer are
+needs) and gets its own pass in v0.6. Link and the generative mid layer are
 under [Later](#later).
 
 ## v0.1: Groove
 
-**Goal:** the band sounds like people playing, not a sequencer. This is the
-biggest gap in the demo and it's all engine work, which is where the
-attention is.
+**Goal:** the band plays like people, not a sequencer. It's all engine
+work, which is where the attention is. How the instruments *sound* is v0.2.
 
 Scope:
 - **Feel parameters in the chart and arranger:** `swing` (0 = straight,
@@ -61,21 +61,50 @@ Scope:
   intensity, ride vs hat by section.
 - **Chords:** comping rhythms per style instead of block chords on the beat,
   voice leading between chords.
-- **Better sounds (test 10):** a sampled instrument set in the page
-  (SoundFont or a small CC0/CC-BY sample pack for bass, keys and a kit),
-  loaded lazily, with the current synth as the fallback. MIDI out to a DAW
-  stays the "best sound" path.
-
 Done when:
-- Thiago's 30-second recording through the built-in sound is something he'd
-  post (re-run test 10).
+- Through MIDI out to Ableton (so the synth isn't judged), the band sounds
+  like players.
 - Swing at 0 and 0.66 are clearly different; the bass doesn't sound like all
   quarter or all eighth notes over a 16-bar section.
 - Unit tests pin the generators (seeded) and the timing offsets stay inside
   the commit deadline ([ADR-0005](decisions/0005-bar-commit-deadline.md)).
 - v0 tests 1–9 still pass.
 
-## v0.2: Listening
+## v0.2: Sound and lineup
+
+**Goal:** the built-in band sounds good with nothing installed, has more
+instruments, and each song says which instruments play.
+
+Scope:
+- **Better built-in instruments (test 10):** move from the simple synths to
+  sampled instruments (SoundFont/SFZ or a small CC0/CC-BY sample set) with
+  velocity layers, round robins for drums, release tails, and a light mix
+  bus (per-part EQ, compression, a shared reverb). Loaded lazily, with the
+  current synth as the fallback while samples load or if they fail.
+- **More instruments:** several patches per existing part (bass: electric,
+  upright, synth; keys: piano, electric piano, organ; drums: kit, brushes,
+  electronic) and new parts with their own generators: rhythm guitar
+  comping, pad/strings, and percussion (shaker, congas). Each new part gets
+  the same intensity layers and feels as the v0 parts, and the v0.1 groove
+  work.
+- **Choose who plays on the track:** a `band` (lineup) field in the chart:
+  which parts play and with which instrument, plus per-part volume and pan.
+  A lineup picker in the page to change it live. Chart format change,
+  additive like v0.1's. The leader's `add_layer`/`drop_layer` work on
+  whatever parts the lineup has, and MIDI out gets one channel per part.
+- Sample sizes and licenses are written down in `docs/` before any sample
+  set is added; samples are served from the Spark and cached by the browser.
+
+Done when:
+- Thiago's 30-second recording through the built-in sound is something he'd
+  post (re-run test 10).
+- He can pick, say, upright bass + brushes + piano for one song and electric
+  bass + kit + organ + guitar for another, and switch a part's instrument
+  while the band plays without a click or a dropped bar.
+- First load stays reasonable (target under ~10 MB of samples for the
+  default lineup) and the page plays on the synth until they arrive.
+
+## v0.3: Listening
 
 **Goal:** the leader responds to more than loud/soft and busy/sparse, and its
 choices are measured, not eyeballed. This is where the Qwen tuning lands.
@@ -84,7 +113,7 @@ Scope:
 - **Session recording and replay:** record the player's input (MIDI events
   with beat stamps) plus the band's state per bar to a file; replay a
   recording through the engine and any leader offline. This is the base for
-  everything else in this release and for testing guitar input in v0.3.
+  everything else in this release and for testing guitar input in v0.4.
 - **Leader eval harness on the Spark:** a set of recorded or scripted
   situations ("goes sparse for 8 bars", "builds to the chorus", "stops"),
   each with the moves a good bandleader would or wouldn't make. Score Qwen
@@ -120,7 +149,7 @@ Done when:
 - Hands-on: Thiago plays a call-and-response and a build into a chorus and
   the band follows.
 
-## v0.3: Guitar
+## v0.4: Guitar
 
 **Goal:** play a guitar (or voice, sax, anything with a mic or audio
 interface) and the band follows, with no MIDI pickup.
@@ -146,17 +175,18 @@ layers, each usable on its own:
 Done when:
 - Guitar through an audio interface into Chrome drives the band like the MIDI
   keyboard does in v0 tests 2, 4 and 5.
-- A recorded audio session can be replayed (v0.2's replay, audio flavour).
+- A recorded audio session can be replayed (v0.3's replay, audio flavour).
 - Measured input latency is shown and doesn't matter for the moves (they land
   on phrases anyway).
 
-## v0.4: Song creator
+## v0.5: Song creator
 
 **Goal:** make a new song to jam over in a minute, without writing JSON.
 
 Scope, in order of value:
 - **Form and chord editor in the page:** sections, bars, chords per bar,
-  form order, tempo, key, feel and swing (from v0.1), with live validation
+  form order, tempo, key, feel and swing (from v0.1), the lineup (from v0.2),
+  with live validation
   against `schema/chart.schema.json`. Save charts on the Spark and list them.
 - **Text to chart on the Spark:** "slow 12/8 blues in G, two verses and a
   solo" → a valid chart via Qwen with schema-constrained output, then opened
@@ -167,7 +197,7 @@ Scope, in order of value:
 - **Audio to chart on the Spark** (from the original v1 plan): upload a
   recording, get tempo, key, sections and chords (Demucs, allin1 and a chord
   recogniser). Structure only; the recording is never played back
-  (design principle 5). This is the heaviest piece and can slip to v0.5 or
+  (design principle 5). This is the heaviest piece and can slip to v0.6 or
   later without blocking the rest.
 
 Done when:
@@ -176,7 +206,7 @@ Done when:
 - Bad generated charts are caught by the schema and fixed or rejected with a
   clear message.
 
-## v0.5: Stage
+## v0.6: Stage
 
 **Goal:** a UI good enough to play from and to film for the demo.
 
@@ -204,6 +234,24 @@ Done when:
 - Decision records brought up to date (the Proposed ones accepted or
   superseded).
 
+## More ideas
+
+Ideas beyond Thiago's list, with the release each one would fit. Not
+committed yet; pull them in or drop them.
+
+| Idea | What it is | Fits |
+|------|------------|------|
+| Intros, endings, count-in | The band counts you in, plays a pickup or intro, and ends the song properly on cue (ritardando, final hit, ring-out) instead of just stopping | v0.1 |
+| Band follows your tempo | Detect the player rushing or dragging and let the band drift with them inside limits, or hold steady as a "strict" option | v0.3 |
+| Voice cues | Say "take it down" or "one more chorus" to the band; speech-to-text (Whisper) on the Spark turns it into a cue through the governor | v0.3 |
+| Song-level arc | The leader remembers the shape of the song so far (it already built up in chorus 1) and plans the next sections, instead of only reacting phrase by phrase | v0.3 |
+| Bandleader personality | A knob or a few presets (steady, supportive, adventurous) that change how often and how boldly the leader moves | v0.3 |
+| Trading fours | When you lay out, a band instrument takes a short solo or answers your phrase, then hands it back | after v0.3 (needs phrasing signals) |
+| Free jam, no chart | Start playing and the band works out the key, tempo and a progression from you, then locks into it | after v0.4 (needs pitch/chords from input) |
+| Practice mode | Loop a section, slow it down, count bars, and keep the band on just that part | v0.6 |
+| Phone as remote | Open a page on the phone and use it as a footswitch / cue pad over the same server | v0.6 |
+| Session recap | After a jam: the move log as a timeline, a short written summary from Qwen, and MIDI/audio export | v0.6 |
+
 ## Later
 
 Kept from the original plan in [architecture.md](architecture.md), not
@@ -216,7 +264,7 @@ scheduled yet:
   side task once that's answered.
 - **Generative mid layer on the Spark:** a symbolic model writing the next
   1–2 bars under the same commit-deadline contract. Natural follow-up to
-  v0.1's rule-based groove once the eval harness from v0.2 can tell whether
+  v0.1's rule-based groove once the eval harness from v0.3 can tell whether
   it's better.
 - **Audio mode with Magenta RealTime**, after the spike in
   [ADR-0009](decisions/0009-magenta-realtime-spike.md). The spike can run on
@@ -231,7 +279,7 @@ scheduled yet:
    sounds better because of it. The alternative is Listening first, since
    its recording/replay and eval harness make the other releases easier to
    test.
-2. **Sound source for v0.1:** which sample set (license and size), or rely on
+2. **Sound source for v0.2:** which sample set (license and size), or rely on
    MIDI out to Ableton for "good sound" and keep the built-in sound modest.
 3. **Styles:** which two or three groove styles matter most to Thiago (this
    decides what the bass and drum vocabularies cover first).
