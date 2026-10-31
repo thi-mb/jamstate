@@ -1,4 +1,4 @@
-// The LLM bandleader, reached through /api/leader on the houseband server
+// The LLM bandleader, reached through /api/leader on the Jam State server
 // (which proxies to the model on the DGX Spark). Never trusted for timing:
 // short timeout, and after a few failures the rule leader takes over until
 // the LLM answers again.

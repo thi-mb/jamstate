@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from houseband_server.app import App, serve
-from houseband_server.leader import SCHEMA_DIR, split_moves, validate_move
-from houseband_server.llm import LLMClient, LLMError, extract_json
+from jamstate_server.app import App, serve
+from jamstate_server.leader import SCHEMA_DIR, split_moves, validate_move
+from jamstate_server.llm import LLMClient, LLMError, extract_json
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -71,7 +71,7 @@ class FakeModel:
 
 @pytest.fixture
 def static_dir(tmp_path):
-    (tmp_path / "index.html").write_text("<!doctype html><title>houseband</title>")
+    (tmp_path / "index.html").write_text("<!doctype html><title>Jam State</title>")
     (tmp_path / "charts").mkdir()
     (tmp_path / "charts" / "a.json").write_text('{"x":1}')
     return tmp_path
@@ -154,7 +154,7 @@ def test_static_files_and_no_path_traversal(static_dir, tmp_path_factory):
     httpd, base = start_app(static_dir, None)
     try:
         status, ctype, data = get(base + "/")
-        assert status == 200 and b"houseband" in data and ctype.startswith("text/html")
+        assert status == 200 and b"Jam State" in data and ctype.startswith("text/html")
         status, ctype, data = get(base + "/charts/a.json")
         assert status == 200 and json.loads(data) == {"x": 1}
         status, _, data = get(base + "/../secret.txt")
@@ -223,14 +223,14 @@ def test_end_song_is_not_a_leader_move():
 
 
 def test_sessions_are_saved_listed_and_loaded(static_dir, tmp_path):
-    from houseband_server.sessions import SessionStore
+    from jamstate_server.sessions import SessionStore
 
     store = SessionStore(tmp_path / "sessions")
     httpd = serve(App(static_dir, None, store), "127.0.0.1", 0)
     threading.Thread(target=httpd.serve_forever, daemon=True).start()
     base = f"http://127.0.0.1:{httpd.server_address[1]}"
     try:
-        session = {"format": "houseband-session/0.1", "title": "Night Shift!", "chart": {}, "player": [[0, 60, 90]], "controls": [], "bars": [{"bar": 0}] * 3}
+        session = {"format": "jamstate-session/0.1", "title": "Night Shift!", "chart": {}, "player": [[0, 60, 90]], "controls": [], "bars": [{"bar": 0}] * 3}
         status, body = post(f"{base}/api/sessions", session)
         assert status == 200 and body["name"].endswith("-night-shift.json")
         status, _, raw = get(f"{base}/api/sessions")

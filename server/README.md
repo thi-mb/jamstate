@@ -1,4 +1,4 @@
-# houseband_server
+# jamstate_server
 
 The app server that runs on the DGX Spark. Python standard library only.
 
@@ -11,10 +11,10 @@ The app server that runs on the DGX Spark. Python standard library only.
 - `POST /api/chart`: `{prompt}` in, `{chart, latency_ms, model}` out. The
   browser validates the chart before using it. The prompt and schema offer
   the installed genre packs (`../genres`).
-- `POST /api/sessions`: a recorded jam (`houseband-session/0.1`) in, `{name}`
+- `POST /api/sessions`: a recorded jam (`jamstate-session/0.1`) in, `{name}`
   out. `GET /api/sessions` lists them, `GET /api/sessions/<name>` returns one.
-  Files go to `--sessions-dir` (default `~/.local/share/houseband/sessions`,
-  or `HOUSEBAND_SESSIONS`). This is the only thing the server writes.
+  Files go to `--sessions-dir` (default `~/.local/share/jamstate/sessions`,
+  or `JAMSTATE_SESSIONS`). This is the only thing the server writes.
 
 It keeps no jam state (saved sessions are just files), so restarting it
 never affects a jam in progress.
@@ -23,12 +23,12 @@ model is unavailable.
 
 ```bash
 pip install -e server            # from the repo root; reads ../schema at runtime
-python -m houseband_server --static web/dist \
+python -m jamstate_server --static web/dist \
   --llm-url http://127.0.0.1:8080/v1 --model leader --port 8765
 ```
 
-Options can also come from the environment: `HOUSEBAND_LLM_URL`,
-`HOUSEBAND_LLM_MODEL`, `HOUSEBAND_LLM_KEY`, `HOUSEBAND_HOST`, `HOUSEBAND_PORT`.
+Options can also come from the environment: `JAMSTATE_LLM_URL`,
+`JAMSTATE_LLM_MODEL`, `JAMSTATE_LLM_KEY`, `JAMSTATE_HOST`, `JAMSTATE_PORT`.
 It binds to `127.0.0.1` by default; expose it with `tailscale serve` (HTTPS,
 which Web MIDI needs).
 

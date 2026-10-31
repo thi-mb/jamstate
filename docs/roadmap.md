@@ -11,7 +11,7 @@ at the end.
 
 ## The shape of it
 
-houseband is three things: a **band** that plays, a **bandleader** that
+Jam State is three things: a **band** that plays, a **bandleader** that
 listens and decides, and **your music** (what you play and what you play
 over). v0 proved the loop works end to end. The roadmap makes each of the
 three good, in that order:

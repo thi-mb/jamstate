@@ -9,7 +9,7 @@ Stdlib only. Examples:
 
     python3 spark/bench_leader.py --url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b
     python3 spark/bench_leader.py --url http://127.0.0.1:8080/v1 --model gpt-oss-20b -n 50 --bpm 112
-    python3 spark/bench_leader.py --via-server http://127.0.0.1:8765   # through houseband_server
+    python3 spark/bench_leader.py --via-server http://127.0.0.1:8765   # through jamstate_server
 """
 
 import argparse
@@ -180,7 +180,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--url", default="http://127.0.0.1:8080/v1", help="OpenAI-compatible base URL")
     ap.add_argument("--model", default="default")
-    ap.add_argument("--via-server", help="hit houseband_server's /api/leader at this base URL instead")
+    ap.add_argument("--via-server", help="hit jamstate_server's /api/leader at this base URL instead")
     ap.add_argument("-n", type=int, default=30, help="number of requests")
     ap.add_argument("--bpm", type=float, default=112)
     ap.add_argument("--beats-per-bar", type=int, default=4)

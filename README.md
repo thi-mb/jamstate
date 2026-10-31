@@ -1,4 +1,4 @@
-# houseband
+# Jam State
 
 An open-source AI backing band that follows a song's structure and reacts to
 what you play. It borrows adaptive-music tricks from games (vertical
@@ -43,7 +43,7 @@ llama-server -m ~/models/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf --alias qwen3-3
 # app server: serves web/dist and proxies /api/leader to the model
 cd web && npm ci && npm run build && cd ..
 pip install -e server
-python -m houseband_server --static web/dist --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b --port 8765
+python -m jamstate_server --static web/dist --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b --port 8765
 ```
 
 Then pick **LLM on the Spark** under Bandleader. Web MIDI needs a secure
@@ -52,7 +52,7 @@ context, so from the laptop open the app on localhost through an SSH tunnel
 HTTPS (`tailscale serve`). The bandleader model is Qwen3-30B-A3B-Instruct-2507
 ([ADR-0011](docs/decisions/0011-bandleader-model.md): p95 about 0.85 s, 0.4
 bars at 112 bpm). For development, run `npm run dev` on the laptop and point Vite at
-the Spark's server with `HOUSEBAND_API=http://<spark>:8765 npm run dev`.
+the Spark's server with `JAMSTATE_API=http://<spark>:8765 npm run dev`.
 
 If the model is slow or down, the page falls back to the in-page rule leader
 after three failures and switches back as soon as the LLM answers again.
@@ -85,7 +85,7 @@ in on "all inputs" the page skips any input named like the selected MIDI out.
  browser                                                         DGX Spark
  ──────────────────────────────────────────────────────────      ─────────────────────
  MIDI in / keys ─► player features (per bar) ─► summary/N bars ─► /api/leader ─► LLM
-                                                    │                 (houseband_server)
+                                                    │                 (jamstate_server)
  rule leader (fallback) ─────────────────┐          ▼ moves (JSON)
                                          ▼
                            move governor (validate, TTL, dwell, deadband, quantize)
@@ -172,14 +172,14 @@ plays, bar by bar.
 Every jam is recorded: the chart, genre, seed, your notes, every move and
 genre or swing switch, and a hash of what the band played in each bar
 ([ADR-0014](docs/decisions/0014-session-recording.md)). After you stop,
-**Download** it or **Save to Spark** (`~/.local/share/houseband/sessions`).
+**Download** it or **Save to Spark** (`~/.local/share/jamstate/sessions`).
 Open one under **Replay**: **Check** replays it offline and confirms every
 bar plays the same; **Play** plays it back with your recorded notes. From
 the command line:
 
 ```bash
 cd web
-npm run replay -- ~/.local/share/houseband/sessions/<file>.json                 # exact replay, exit 1 on a mismatch
+npm run replay -- ~/.local/share/jamstate/sessions/<file>.json                 # exact replay, exit 1 on a mismatch
 npm run replay -- <file>.json --leader rules                                    # same playing, rule leader decides again
 npm run replay -- <file>.json --leader llm --server http://127.0.0.1:8765       # or the LLM via the app server
 ```
@@ -189,7 +189,7 @@ npm run replay -- <file>.json --leader llm --server http://127.0.0.1:8765       
 | Path | What |
 |------|------|
 | `web/` | the browser app (TypeScript + Vite). Engine in `web/src/core/` is DOM-free and unit tested |
-| `server/` | `houseband_server`: Python stdlib server for the Spark (static app + `/api/leader`, `/api/chart`, `/api/sessions`) |
+| `server/` | `jamstate_server`: Python stdlib server for the Spark (static app + `/api/leader`, `/api/chart`, `/api/sessions`) |
 | `genres/` | genre packs (funk, blues rock, jazz), read by the page and the server |
 | `schema/` | JSON schemas for charts, genre packs and bandleader moves, shared by both sides |
 | `spark/` | Spark setup: model serving, latency benchmark, HTTPS via Tailscale |

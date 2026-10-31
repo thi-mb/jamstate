@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/thi-mb/jamstate/schema/chart.schema.json",
-  "title": "houseband chart",
+  "title": "Jam State chart",
   "description": "A song skeleton: tempo, meter, key, genre, sections with chords, and the form. Never audio. Format v0.1 (docs/decisions/0013-chart-format-v0.1.md); every v0 chart is valid. The browser (web/src/core/chart.ts) enforces the same rules and also checks that chord symbols parse and the genre exists.",
   "type": "object",
   "required": [

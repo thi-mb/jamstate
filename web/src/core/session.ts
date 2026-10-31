@@ -19,7 +19,7 @@ import { getGenre } from "./genres";
 import { hash } from "./rand";
 import type { NoteEvent } from "./types";
 
-export const SESSION_FORMAT = "houseband-session/0.1";
+export const SESSION_FORMAT = "jamstate-session/0.1";
 
 /** What the band did in one bar. */
 export interface SessionBar {
