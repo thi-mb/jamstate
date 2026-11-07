@@ -15,14 +15,21 @@ interface Strip {
   low: BiquadFilterNode;
   mid: BiquadFilterNode;
   high: BiquadFilterNode;
-  comp: DynamicsCompressorNode;
+  /** Absent on the player's strip: a compressor delays its signal by its lookahead. */
+  comp?: DynamicsCompressorNode;
   fader: GainNode;
   pan: StereoPannerNode;
   send: GainNode;
 }
 
-/** The player's monitoring strip: their own notes, a little room, centered. */
-const PLAYER_MIX: PartMix = { volume: 0.6, pan: 0, eq: [0, 0, 0], comp: 0.2, reverb: 0.1, tune: 0 };
+/**
+ * The player's monitoring strip: their own notes, a little room, centered.
+ * No compression, and it skips the master chain: every DynamicsCompressor
+ * holds its signal back by a fixed lookahead (6 ms in Chrome and Firefox), and
+ * three in a row made each key press sound about 20 ms late. The band is
+ * scheduled ahead, so its share of that delay is never heard.
+ */
+const PLAYER_MIX: PartMix = { volume: 0.65, pan: 0, eq: [0, 0, 0], comp: 0, reverb: 0.1, tune: 0 };
 
 export class Mixer {
   private strips = new Map<Voice, Strip>();
@@ -51,26 +58,29 @@ export class Mixer {
     this.shaper = ctx.createWaveShaper();
     this.shaper.oversample = "2x";
     this.master = ctx.createGain();
-    // The compressor-limiter can overshoot on a fast transient; a soft ceiling after it keeps the output under 0 dBFS.
+    // The compressor-limiter can overshoot on a fast transient, and the player joins after it; a soft
+    // ceiling (no oversampling, so no delay) keeps the sum under 0 dBFS.
     const ceiling = ctx.createWaveShaper();
     ceiling.curve = ceilingCurve();
-    this.master.connect(this.shaper).connect(glue).connect(limiter).connect(ceiling).connect(this.output);
+    const sum = ctx.createGain();
+    this.master.connect(this.shaper).connect(glue).connect(limiter).connect(sum).connect(ceiling).connect(this.output);
     this.reverb = ctx.createConvolver();
     const ret = ctx.createGain();
     ret.gain.value = 0.9;
     this.reverb.connect(ret).connect(this.master);
-    for (const v of [...PARTS, "player"] as Voice[]) this.strips.set(v, this.strip());
+    for (const v of PARTS) this.strips.set(v, this.strip(this.master, true));
+    this.strips.set("player", this.strip(sum, false));
     this.setStrip("player", PLAYER_MIX, true);
   }
 
-  private strip(): Strip {
+  private strip(out: AudioNode, compress: boolean): Strip {
     const c = this.ctx;
     const s: Strip = {
       input: c.createGain(),
       low: c.createBiquadFilter(),
       mid: c.createBiquadFilter(),
       high: c.createBiquadFilter(),
-      comp: c.createDynamicsCompressor(),
+      comp: compress ? c.createDynamicsCompressor() : undefined,
       fader: c.createGain(),
       pan: c.createStereoPanner(),
       send: c.createGain(),
@@ -82,9 +92,13 @@ export class Mixer {
     s.mid.Q.value = 0.8;
     s.high.type = "highshelf";
     s.high.frequency.value = 8000;
-    s.comp.attack.value = 0.005;
-    s.comp.release.value = 0.12;
-    s.input.connect(s.low).connect(s.mid).connect(s.high).connect(s.comp).connect(s.fader).connect(s.pan).connect(this.master);
+    const eq = s.input.connect(s.low).connect(s.mid).connect(s.high);
+    if (s.comp) {
+      s.comp.attack.value = 0.005;
+      s.comp.release.value = 0.12;
+      eq.connect(s.comp).connect(s.fader);
+    } else eq.connect(s.fader);
+    s.fader.connect(s.pan).connect(out);
     s.fader.connect(s.send).connect(this.reverb);
     return s;
   }
@@ -105,8 +119,10 @@ export class Mixer {
     this.set(s.mid.gain, m.eq[1], now);
     this.set(s.high.gain, m.eq[2], now);
     // comp 0 → off (ratio 1); 1 → threshold -30 dB at 6:1. Makeup gain keeps the level.
-    this.set(s.comp.threshold, -30 * m.comp, now);
-    this.set(s.comp.ratio, 1 + 5 * m.comp, now);
+    if (s.comp) {
+      this.set(s.comp.threshold, -30 * m.comp, now);
+      this.set(s.comp.ratio, 1 + 5 * m.comp, now);
+    }
     this.set(s.fader.gain, m.volume * (1 + 0.6 * m.comp), now);
     this.set(s.pan.pan, m.pan, now);
     this.set(s.send.gain, m.reverb, now);
