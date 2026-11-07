@@ -654,6 +654,18 @@ function playerNote(on: boolean, note: number, vel: number, audioTime?: number):
 
 attachKeyboard((on, note, vel) => playerNote(on, note, vel));
 
+/**
+ * What the browser and OS add between a key press and the speaker, which the
+ * page can't remove: Bluetooth headphones and some Linux audio setups add 100 ms or more.
+ */
+function showLatency(): void {
+  if (!audio || audio.state !== "running") return;
+  const ms = Math.round(((audio.baseLatency ?? 0) + (audio.outputLatency ?? 0)) * 1000);
+  $("audio-latency").textContent = ms
+    ? `Audio output delay: ${ms} ms (browser and system)${ms > 40 ? ". Wired headphones or a lower-latency audio output will feel tighter." : ""}`
+    : "";
+}
+
 // ---------- session ----------
 
 function simModeFor(bar: number): SimMode | null {
@@ -698,7 +710,7 @@ async function start(replay?: SessionFile): Promise<void> {
   if (!chart && !replay) return;
   stop();
   audio = getAudio();
-  void audio.resume();
+  void audio.resume().then(() => setTimeout(showLatency, 500));
   const myStart = ++starting;
   const startBand = replay ? sessionBand(replay) : cloneBand(band);
   if ($<HTMLInputElement>("builtin").checked) await soundsReady([...bandParts(startBand).map((p) => startBand[p]!.instrument), playerSound()]);
