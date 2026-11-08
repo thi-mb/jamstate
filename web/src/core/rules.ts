@@ -3,7 +3,7 @@
 // with separate enter/exit thresholds so it doesn't flap.
 
 import type { PlayerSummary } from "./features";
-import type { SongPosition } from "./listening";
+import type { Rhythm, SongPosition } from "./listening";
 import type { Move } from "./moves";
 import { V01_PARTS, type Feel, type Part } from "./types";
 
@@ -27,6 +27,7 @@ export interface LeaderContext {
   recent_moves: string[];
   /** Listening layer (v0.3), present when its group is on. */
   position?: SongPosition;
+  rhythm?: Rhythm;
 }
 
 export type Mood = "silent" | "sparse" | "groove" | "busy";
