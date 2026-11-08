@@ -9,6 +9,7 @@ import { Conductor, type Leader, type LeaderReply } from "../conductor";
 import { Engine, type BarPlan } from "../engine";
 import { NoteTracker } from "../features";
 import { getGenre } from "../genres";
+import { DEFAULT_LISTENING, type Listening } from "../listening";
 import type { LeaderContext } from "../rules";
 import { SimPlayer, type SimMode } from "../simplayer";
 
@@ -21,6 +22,8 @@ export interface RunSpec {
   /** Leader cadence in bars: the page asks the rule leader every 2 bars and a brain every phrase. */
   everyBars: number;
   seed: number;
+  /** Listening groups in the summary; the page's defaults when left out. */
+  listening?: Listening;
 }
 
 export interface Turn {
@@ -69,6 +72,7 @@ export async function runScenario(spec: RunSpec): Promise<RunResult> {
       }
     : null;
   const conductor = new Conductor(engine, leader, spec.everyBars);
+  conductor.listening = { ...(spec.listening ?? DEFAULT_LISTENING) };
   const sim = new SimPlayer(spec.seed & 0xffff);
   const tracker = new NoteTracker();
   const bpb = chart.beatsPerBar;
