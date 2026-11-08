@@ -6,7 +6,7 @@
 
 import { loadChart, type ChartJSON } from "../chart";
 import { Conductor, type Leader, type LeaderReply } from "../conductor";
-import { Engine, type BarPlan } from "../engine";
+import { Engine, type BarPlan, type Cue } from "../engine";
 import { NoteTracker } from "../features";
 import { getGenre } from "../genres";
 import { DEFAULT_LISTENING, type Listening } from "../listening";
@@ -24,6 +24,8 @@ export interface RunSpec {
   seed: number;
   /** Listening groups in the summary; the page's defaults when left out. */
   listening?: Listening;
+  /** Cues pressed during a bar, before the bar after it is committed (as live: the deadline is its last beat). */
+  cues?: { bar: number; cue: Cue }[];
 }
 
 export interface Turn {
@@ -102,6 +104,8 @@ export async function runScenario(spec: RunSpec): Promise<RunResult> {
       await Promise.resolve();
       pending = null;
     }
+    // Bar k+2 is committed next: cues pressed during bar k+1 go in first.
+    for (const c of spec.cues ?? []) if (c.bar === k + 1) engine.cue(c.cue);
     commit();
   }
   return { plans, turns };
