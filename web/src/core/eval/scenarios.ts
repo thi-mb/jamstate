@@ -9,7 +9,7 @@
 // player's cues).
 
 import type { ChartJSON } from "../chart";
-import type { BarPlan, MoveRecord } from "../engine";
+import type { BarPlan, Cue, MoveRecord } from "../engine";
 import { PLAYER_SOURCES } from "../session";
 import { parseScript, type SimMode } from "../simplayer";
 import type { Part } from "../types";
@@ -29,6 +29,8 @@ export interface ScenarioRun {
   modes: SimMode[];
   bars: number;
   checks: Check[];
+  /** Cues the player gives, pressed during `bar` (before the next bar is committed). */
+  cues?: { bar: number; cue: Cue }[];
 }
 
 export interface Song {
@@ -211,6 +213,136 @@ const firstSolo = (s: SongShape) => s.spans.find((x) => x.name === "solo")!;
 const soloBeforeHead = (s: SongShape) => s.spans.find((x, i) => x.name === "solo" && s.spans[i + 1] && s.spans[i + 1].name !== "solo")!;
 
 const SOLO_SONGS = ["blues-in-a", "late-set"];
+
+// ---------- cues (v0.3) ----------
+
+/** Pressed during bar 9, inside a phrase; "next bar" is 10, "next phrase" 12. */
+const CUE_BAR = 9;
+const cueAt = (cue: Cue, bar = CUE_BAR) => [{ bar, cue }];
+const targetNeverRises = (a: number, b: number): Check => ({
+  kind: "must_not",
+  text: `bars ${a}–${b}, target goes up`,
+  test: (v) => !v.bars(a, b).some((i) => v.target(i) > v.target(i - 1) + 1e-9),
+});
+const targetNeverFalls = (a: number, b: number): Check => ({
+  kind: "must_not",
+  text: `bars ${a}–${b}, target goes down`,
+  test: (v) => !v.bars(a, b).some((i) => v.target(i) < v.target(i - 1) - 1e-9),
+});
+const PERC: Part[] = ["drums", "percussion"];
+/** A section longer than a phrase, from bar 8 on, so the next phrase isn't the next section anyway. */
+const longSection = (s: SongShape) => {
+  const span = s.spans.find((x) => x.start >= 8 && x.bars > s.phraseBars);
+  if (!span) throw new Error(`${s.id}: no section longer than a phrase`);
+  return span;
+};
+
+const CUE_SCENARIOS: Scenario[] = [
+  {
+    id: "C1",
+    title: "Take it down",
+    group: "cues",
+    build: () => ({
+      modes: script("busy:16"),
+      bars: 16,
+      cues: cueAt("take_down"),
+      checks: [targetFallsBy(10, 9, 0.2), targetNeverRises(10, 14)],
+    }),
+  },
+  {
+    id: "C2",
+    title: "Build",
+    group: "cues",
+    build: () => ({
+      modes: script("sparse:16"),
+      bars: 16,
+      cues: cueAt("build"),
+      checks: [
+        targetRisesBy(10, 9, 0.2),
+        { kind: "must", text: "a riser or fill on bar 10 or 11", test: (v) => [10, 11].some((i) => v.at(i).stingers.some((x) => x === "riser" || x === "fill")) },
+        targetNeverFalls(10, 14),
+      ],
+    }),
+  },
+  {
+    id: "C3",
+    title: "Drums/perc break",
+    group: "cues",
+    build: () => ({
+      modes: script("medium:16"),
+      bars: 16,
+      cues: cueAt("drums_break"),
+      checks: [
+        { kind: "must", text: "bars 10–11, drums and percussion out, the rest of the band in", test: (v) => v.bars(10, 11).every((i) => !v.at(i).layers.some((p) => PERC.includes(p)) && v.at(i).layers.length > 0) },
+        { kind: "must", text: "bar 12, drums back", test: (v) => v.at(12).layers.includes("drums") },
+      ],
+    }),
+  },
+  {
+    id: "C4",
+    title: "Drums/perc only",
+    group: "cues",
+    build: () => ({
+      modes: script("medium:16"),
+      bars: 16,
+      cues: cueAt("drums_only"),
+      checks: [
+        { kind: "must", text: "bars 10–11, only drums and percussion", test: (v) => v.bars(10, 11).every((i) => v.at(i).layers.includes("drums") && v.at(i).layers.every((p) => PERC.includes(p))) },
+        { kind: "must", text: "bar 12, the bass back", test: (v) => v.at(12).layers.includes("bass") },
+      ],
+    }),
+  },
+  {
+    id: "C5",
+    title: "Next section",
+    group: "cues",
+    build: (s) => {
+      const span = longSection(s);
+      const land = span.start + s.phraseBars;
+      return {
+        modes: script(`medium:${land + 4}`),
+        bars: land + 4,
+        cues: cueAt("next_section", span.start + 1),
+        checks: [
+          {
+            kind: "must",
+            text: `bar ${land} is the first bar of the section after the ${span.name}`,
+            test: (v) => v.at(land).barInSection === 0 && v.at(land).formPos === (span.formPos + 1) % s.spans.length,
+          },
+        ],
+      };
+    },
+  },
+  {
+    id: "C6",
+    title: "One more",
+    group: "cues",
+    build: (s) => {
+      const span = longSection(s);
+      const end = span.start + span.bars;
+      return {
+        modes: script(`medium:${end + span.bars + 2}`),
+        bars: end + span.bars + 2,
+        cues: cueAt("one_more", end - 2),
+        checks: [
+          { kind: "must", text: `bars ${end}–${end + span.bars - 1}, the ${span.name} again`, test: (v) => v.bars(end, end + span.bars - 1).every((i) => v.at(i).formPos === span.formPos) },
+          { kind: "must", text: `bar ${end + span.bars}, the form goes on`, test: (v) => v.at(end + span.bars).formPos === (span.formPos + 1) % s.spans.length && v.at(end + span.bars).barInSection === 0 },
+        ],
+      };
+    },
+  },
+  {
+    id: "C7",
+    title: "End song",
+    group: "cues",
+    build: () => ({
+      modes: script("medium:16"),
+      bars: 16,
+      cues: cueAt("end_song"),
+      checks: [{ kind: "must", text: "bar 11 is the ending and the song stops there", test: (v) => v.plans.length === 12 && v.at(11).kind === "ending" }],
+    }),
+  },
+];
 
 export const SCENARIOS: Scenario[] = [
   // ---------- follow the player ----------
@@ -435,6 +567,7 @@ export const SCENARIOS: Scenario[] = [
     group: "tempo",
     build: () => ({ modes: script("medium:4, drag:12"), bars: 17, checks: [tempoHolds(0, 16)] }),
   },
+  ...CUE_SCENARIOS,
 ];
 
 /** Scenario runs for a song, with the scenario each belongs to. */
