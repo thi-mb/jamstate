@@ -15,6 +15,8 @@ const FEEL_LABEL = { normal: "normal feel", half_time: "half time", double_time:
 export class Overlay {
   private formEl = $("form");
   private log = $("log");
+  /** The chart's tempo; the overlay shows the band's when it differs (follow my tempo). */
+  chartBpm = 0;
   /** Blind test: hide who made each move and why (the wording gives brains away). */
   blind = false;
 
@@ -46,7 +48,9 @@ export class Overlay {
     $("bar").textContent = `bar ${plan.barInSection + 1} of ${plan.sectionBars}${plan.repeated.length ? ` · repeated ${plan.repeated.join(", ")}` : ""}`;
     $("chord").textContent = plan.chords.join("  ");
     $("feel").textContent =
-      `${genreName(plan.genre)} · swing ${plan.swing} · ${FEEL_LABEL[plan.feel]}` + (plan.stingers.length ? ` · ${plan.stingers.join(" + ")}` : "");
+      `${genreName(plan.genre)} · swing ${plan.swing} · ${FEEL_LABEL[plan.feel]}` +
+      (plan.bpm !== this.chartBpm ? ` · ${plan.bpm.toFixed(1)} bpm (chart ${this.chartBpm})` : "") +
+      (plan.stingers.length ? ` · ${plan.stingers.join(" + ")}` : "");
     ($("intensity") as HTMLElement).style.width = `${plan.intensity * 100}%`;
     ($("target") as HTMLElement).style.left = `calc(${plan.target * 100}% - 1px)`;
     $("intensity-num").textContent = `${plan.intensity.toFixed(2)} → ${plan.target.toFixed(2)}`;
