@@ -292,7 +292,10 @@ describe("amps", () => {
 
   it("the crunch guitar is the clean guitar's samples through an amp", () => {
     expect(ampFor("crunch")?.drive).toBeGreaterThan(0.4);
-    expect(ampFor("clean")).toBeUndefined();
+    // Every guitar plays through an amp; only the crunch one is driven hard.
+    for (const g of instrumentsFor("guitar")) expect(ampFor(g.id), g.id).toBeDefined();
+    for (const id of ["clean", "funk", "jazz-guitar"]) expect(ampFor(id)!.drive).toBeLessThan(0.2);
+    expect(ampFor("jazz-guitar")!.tone).toBeLessThan(ampFor("funk")!.tone); // a dark jazz box, a bright funk spank
     const crunch = manifest.instruments.crunch.zones as { file: string }[];
     expect(crunch.length).toBe(manifest.instruments.clean.zones.length);
     expect(crunch.every((z) => z.file.startsWith("clean/"))).toBe(true);

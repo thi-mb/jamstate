@@ -89,6 +89,17 @@ down), and distortion on a chord sounds better than distortion baked into
 each note. The **picked bass** plays through a light amp (drive 0.3, dark
 speaker), which takes the click off the pick.
 
+The other guitars play through light amps too, each voiced for its job:
+
+| Guitar | Drive | Tone | What it does |
+|---|---|---|---|
+| clean | 0.15 | 0.55 | Evens out the attack (peaks 5 dB closer to the body) and warms it |
+| funk | 0.12 | 0.7 | Bright speaker, keeps the spank; rounds off the sharpest chanks |
+| jazz-guitar | 0.04 | 0.05 | Almost clean through a dark speaker: less top, more low end. The jazz mix also cuts the guitar's mids (the SoundFont's jazz guitar honks at 1–2 kHz) |
+
+The amp's makeup gain keeps every instrument within about 1 dB of its dry
+level, so lineups and genre mixes stay balanced.
+
 ## Replacing an instrument
 
 Any SoundFont or SFZ that renders through FluidSynth works the same way: add
