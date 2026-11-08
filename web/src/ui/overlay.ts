@@ -83,6 +83,10 @@ export class Overlay {
     const next = p.next_section === null ? "the end" : `${p.next_section}${lift}`;
     // Heard after the bar before the one sounding now, so bars_left counts from the bar playing.
     const parts = [p.bars_left ? `${p.bars_left} bar${p.bars_left > 1 ? "s" : ""} to ${next}` : `${next} next`, `phrase ${p.phrase}`, `${p.pass}`];
+    const r = h.rhythm;
+    if (r.syncopation !== null) parts.push(`syncopation ${r.syncopation.toFixed(2)}${r.swing ? ` · swing ${r.swing.toFixed(2)}` : ""}`);
+    if (r.timing && r.timing !== "on") parts.push(`${r.timing} ${Math.abs(r.timing_ms ?? 0)} ms`);
+    if (r.tempo && r.tempo !== "steady") parts.push(r.tempo);
     $("heard").textContent = `hearing: ${parts.join(" · ")}`;
   }
 
