@@ -3,6 +3,7 @@
 import type { BarPlan, MoveRecord } from "../core/engine";
 import type { BarFeatures } from "../core/features";
 import { getGenre } from "../core/genres";
+import type { Heard } from "../core/listening";
 import { PART_LABELS, V01_PARTS, type Part } from "../core/types";
 
 const genreName = (id: string) => getGenre(id).name.toLowerCase();
@@ -28,6 +29,7 @@ export class Overlay {
     $("last-move").textContent = "–";
     $("last-reason").textContent = "";
     this.setEnergy(null);
+    this.heard(null);
     this.log.replaceChildren();
     this.renderLayers(this.lineup, this.lineup);
   }
@@ -71,6 +73,17 @@ export class Overlay {
   setEnergy(f: BarFeatures | null): void {
     ($("energy") as HTMLElement).style.width = `${(f?.energy ?? 0) * 100}%`;
     $("energy-num").textContent = f ? `${f.energy.toFixed(2)} · ${f.noteCount} note${f.noteCount === 1 ? "" : "s"}` : "";
+  }
+
+  /** Everything the listening layer heard, whichever groups go to the leader. */
+  heard(h: Heard | null): void {
+    if (!h) return void ($("heard").textContent = "");
+    const p = h.position;
+    const lift = p.next_lift === "up" ? " ↑" : p.next_lift === "down" ? " ↓" : "";
+    const next = p.next_section === null ? "the end" : `${p.next_section}${lift}`;
+    // Heard after the bar before the one sounding now, so bars_left counts from the bar playing.
+    const parts = [p.bars_left ? `${p.bars_left} bar${p.bars_left > 1 ? "s" : ""} to ${next}` : `${next} next`, `phrase ${p.phrase}`, `${p.pass}`];
+    $("heard").textContent = `hearing: ${parts.join(" · ")}`;
   }
 
   move(m: MoveRecord, bar: number): void {

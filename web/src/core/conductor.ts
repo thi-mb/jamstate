@@ -4,6 +4,7 @@
 
 import type { BarPlan, Engine } from "./engine";
 import { barFeatures, summarize, type BarFeatures, type PlayedNote, type PlayerSummary } from "./features";
+import { DEFAULT_LISTENING, songPosition, type Heard, type Listening } from "./listening";
 import { PLAYER_ONLY_MOVES, type Move } from "./moves";
 import type { LeaderContext } from "./rules";
 
@@ -22,6 +23,8 @@ export interface ConductorEvents {
   onFeatures?(bar: number, f: BarFeatures): void;
   onDecision?(reply: LeaderReply, requestedBar: number): void;
   onSkip?(bar: number): void;
+  /** Everything the listening layer heard after a bar, whichever groups are on (for the overlay). */
+  onHeard?(bar: number, heard: Heard): void;
 }
 
 export class Conductor {
@@ -29,6 +32,8 @@ export class Conductor {
   private history: BarFeatures[] = [];
   private inFlight = false;
   private bars = 0;
+  /** Which listening groups go into the summary leaders read. */
+  listening: Listening = { ...DEFAULT_LISTENING };
 
   constructor(
     private engine: Engine,
@@ -50,14 +55,21 @@ export class Conductor {
     this.window.push(f);
     if (this.window.length > this.everyBars) this.window.shift();
     this.events.onFeatures?.(plan.bar, f);
+    this.events.onHeard?.(plan.bar, this.heard(plan));
     this.bars++;
     if (this.leader && this.bars % this.everyBars === 0) this.ask(plan, summarize(this.window));
     return f;
   }
 
+  /** All listening groups for the bar just played. */
+  heard(plan: BarPlan): Heard {
+    return { position: songPosition(this.engine.chart, plan, this.engine.config.loop) };
+  }
+
   context(plan: BarPlan, player: PlayerSummary): LeaderContext {
     const chart = this.engine.chart;
-    return {
+    const heard = this.heard(plan);
+    const ctx: LeaderContext = {
       bar: plan.bar,
       section: plan.section,
       bar_in_section: plan.barInSection,
@@ -74,6 +86,8 @@ export class Conductor {
       player,
       recent_moves: this.engine.log.filter((r) => r.status === "applied").slice(-4).map((r) => r.label),
     };
+    if (this.listening.position) ctx.position = heard.position;
+    return ctx;
   }
 
   private ask(plan: BarPlan, player: PlayerSummary): void {
