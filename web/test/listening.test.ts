@@ -1,0 +1,114 @@
+import { describe, expect, it } from "vitest";
+import { loadChart, type ChartJSON } from "../src/core/chart";
+import { Conductor, type Leader } from "../src/core/conductor";
+import { Engine } from "../src/core/engine";
+import { getGenre } from "../src/core/genres";
+import { leaderSystem, LEADER_SYSTEM } from "../src/core/brain/prompt";
+import { jevState } from "../src/core/brain/jev";
+import { listeningKey, NO_LISTENING, parseListening, songPosition } from "../src/core/listening";
+import type { LeaderContext } from "../src/core/rules";
+import { RuleLeader } from "../src/core/rules";
+import { replaySession, SessionRecorder } from "../src/core/session";
+import { defaultBand } from "../src/core/band";
+import { V01_PARTS } from "../src/core/types";
+
+import nightShift from "../public/charts/night-shift.json";
+
+const chartJson = nightShift as ChartJSON;
+const chart = loadChart(chartJson);
+
+/** Every bar of the song, once through. */
+function plans() {
+  const e = new Engine(chart, { seed: 1, genre: getGenre("funk"), config: { loop: false }, countIn: 0 });
+  const out = [];
+  for (let p = e.nextBar(); p; p = e.nextBar()) out.push(p);
+  return out;
+}
+
+describe("listening groups", () => {
+  it("parses and prints the groups", () => {
+    expect(listeningKey(parseListening("none"))).toBe("none");
+    expect(listeningKey(parseListening("harmony,position"))).toBe("position,harmony");
+    expect(listeningKey(parseListening("all"))).toBe("position,rhythm,harmony,phrasing,dynamics");
+    expect(() => parseListening("vibes")).toThrow(/vibes/);
+  });
+});
+
+describe("song position", () => {
+  const ps = plans();
+
+  it("counts down to the next section and knows what it is", () => {
+    // Night Shift: intro 4, verse 8 (bars 4–11), chorus 8 (12–19), …
+    const at = (bar: number) => songPosition(chart, ps[bar], false);
+    expect(at(4)).toMatchObject({ bars_left: 7, next_section: "chorus", next_lift: "up", phrase: "start", pass: "1 of 2", section_level: 0.45 });
+    expect(at(7)).toMatchObject({ bars_left: 4, phrase: "end" });
+    expect(at(11)).toMatchObject({ bars_left: 0, next_section: "chorus" });
+    expect(at(12)).toMatchObject({ next_section: "verse", next_lift: "down", pass: "1 of 3" });
+  });
+
+  it("knows the last section, and wraps when the form loops", () => {
+    const last = ps[ps.length - 1];
+    expect(songPosition(chart, last, false)).toMatchObject({ last_section: true, next_section: null, next_lift: null });
+    expect(songPosition(chart, last, true)).toMatchObject({ last_section: true, next_section: "intro" });
+  });
+
+  it("goes into the summary only when its group is on", () => {
+    const seen: LeaderContext[] = [];
+    const leader: Leader = { decide: (ctx) => (seen.push(ctx), { moves: [], source: "test" }) };
+    const e = new Engine(chart, { seed: 1, genre: getGenre("funk"), countIn: 0 });
+    const c = new Conductor(e, leader, 1);
+    c.listening = { ...NO_LISTENING };
+    c.barFinished(e.nextBar()!, []);
+    c.listening = parseListening("position");
+    c.barFinished(e.nextBar()!, []);
+    expect(seen[0].position).toBeUndefined();
+    expect(seen[1].position?.next_section).toBe("verse");
+    // The prompt notes follow the fields; the fixed prompt stays the prefix.
+    expect(leaderSystem(seen[0])).toBe(LEADER_SYSTEM);
+    expect(leaderSystem(seen[1]).startsWith(LEADER_SYSTEM)).toBe(true);
+    expect(leaderSystem(seen[1])).toContain('"position"');
+    expect((jevState(seen[1]).song as Record<string, unknown>).next_section).toBe("verse");
+  });
+});
+
+describe("rule leader with song position", () => {
+  const base = (over: Partial<LeaderContext>): LeaderContext => ({
+    bar: 10, section: "verse", bar_in_section: 6, section_bars: 8, phrase_bars: 4, intensity: 0.5, target: 0.5,
+    layers: ["drums", "bass", "chords"], lineup: ["drums", "bass", "chords"], feel: "normal", form: chart.form, form_pos: 1, sections: [...chart.sections.keys()],
+    player: { bars: 2, energy: 0.5, density: 1, mean_velocity: 0.6, rest_ratio: 0.2, repetition: 0.2, register: "mid", trend: "steady", silent_bars: 0 },
+    recent_moves: [],
+    ...over,
+  });
+  const pos = { bars_left: 1, next_section: "chorus", next_lift: "up" as const, phrase: "end" as const, pass: "1 of 2", last_section: false, section_level: 0.45 };
+
+  it("lifts into a bigger section when the player builds", () => {
+    const r = new RuleLeader();
+    const moves = r.decide(base({ position: pos, player: { ...base({}).player, energy: 0.5, trend: "rising" } }));
+    expect(moves[0]).toMatchObject({ move: "set_intensity", reason: "Lifting into the chorus" });
+    expect((moves[0] as { value: number }).value).toBeGreaterThanOrEqual(0.7);
+  });
+
+  it("doesn't lift for a steady player, and doesn't drop parts right before a change", () => {
+    expect(new RuleLeader().decide(base({ position: pos })).some((m) => m.reason.startsWith("Lifting"))).toBe(false);
+    const quiet = { ...base({}).player, energy: 0, silent_bars: 2, bars: 2, density: 0 };
+    const without = new RuleLeader().decide(base({ player: quiet }));
+    const withPos = new RuleLeader().decide(base({ player: quiet, position: { ...pos, bars_left: 0 } }));
+    expect(without.some((m) => m.move === "drop_layer")).toBe(true);
+    expect(withPos.some((m) => m.move === "drop_layer")).toBe(false);
+  });
+});
+
+describe("listening in sessions", () => {
+  it("records the setting and its changes, and a leader replay hears the same", async () => {
+    const setup = { chart: chartJson, genre: "funk", swing: null, band: defaultBand(V01_PARTS), seed: 1, countIn: 0, config: {}, leader: "rules", everyBars: 1, listening: "none" };
+    const rec = new SessionRecorder(setup);
+    const e = new Engine(chart, { seed: 1, genre: getGenre("funk"), countIn: 0 });
+    for (let i = 0; i < 4; i++) rec.bar(e.nextBar()!);
+    rec.listening(1, "position");
+    const file = rec.finish(e);
+    expect(file.listening).toEqual([{ at: -1, groups: "none" }, { at: 1, groups: "position" }]);
+    const seen: LeaderContext[] = [];
+    await replaySession(file, { leader: { decide: (ctx) => (seen.push(ctx), { moves: [], source: "t" }) }, everyBars: 1 });
+    expect(seen.map((c) => c.position !== undefined)).toEqual([false, false, true, true]);
+  });
+});

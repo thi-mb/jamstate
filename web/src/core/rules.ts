@@ -3,6 +3,7 @@
 // with separate enter/exit thresholds so it doesn't flap.
 
 import type { PlayerSummary } from "./features";
+import type { SongPosition } from "./listening";
 import type { Move } from "./moves";
 import { V01_PARTS, type Feel, type Part } from "./types";
 
@@ -24,6 +25,8 @@ export interface LeaderContext {
   sections: string[];
   player: PlayerSummary;
   recent_moves: string[];
+  /** Listening layer (v0.3), present when its group is on. */
+  position?: SongPosition;
 }
 
 export type Mood = "silent" | "sparse" | "groove" | "busy";
@@ -39,6 +42,8 @@ export const DEFAULT_THRESHOLDS: RuleThresholds = { busyEnter: 0.62, busyExit: 0
 
 export class RuleLeader {
   mood: Mood = "groove";
+  /** Bar where the section we last lifted into the next one started (song position). */
+  private liftedAt = -1;
   constructor(private t: RuleThresholds = DEFAULT_THRESHOLDS) {}
 
   private classify(p: PlayerSummary): Mood {
@@ -51,6 +56,31 @@ export class RuleLeader {
   }
 
   decide(ctx: LeaderContext): Move[] {
+    return this.withPosition(ctx, this.byMood(ctx));
+  }
+
+  /**
+   * Song position (v0.3): lift in the last phrase before a bigger section,
+   * and hold the band together in the two bars before any change.
+   */
+  private withPosition(ctx: LeaderContext, moves: Move[]): Move[] {
+    const pos = ctx.position;
+    if (!pos || pos.next_section === null) return moves;
+    if (pos.bars_left < 2) moves = moves.filter((m) => m.move !== "drop_layer" && m.move !== "change_feel");
+    const sectionStart = ctx.bar - ctx.bar_in_section;
+    // Only when the player is building or already digging in: a steady player keeps the band where it is.
+    const building = this.mood === "busy" || (this.mood === "groove" && ctx.player.trend === "rising");
+    if (pos.next_lift === "up" && pos.bars_left < ctx.phrase_bars && building && this.liftedAt !== sectionStart) {
+      this.liftedAt = sectionStart;
+      const set = moves.find((m) => m.move === "set_intensity") as Extract<Move, { move: "set_intensity" }> | undefined;
+      const lift = Math.min(1, Math.max(ctx.target, set?.value ?? 0) + (ctx.player.trend === "rising" ? 0.25 : 0.15));
+      const move: Move = { move: "set_intensity", value: Math.round(lift * 100) / 100, reason: `Lifting into the ${pos.next_section}` };
+      moves = [move, ...moves.filter((m) => m.move !== "set_intensity")];
+    }
+    return moves.slice(0, 2);
+  }
+
+  private byMood(ctx: LeaderContext): Move[] {
     const prev = this.mood;
     const mood = this.classify(ctx.player);
     this.mood = mood;
@@ -67,7 +97,12 @@ export class RuleLeader {
     if (mood === prev) {
       // Same mood: just track energy within the mood's band.
       if (mood === "busy") intensity(Math.min(1, 0.7 + ctx.player.energy * 0.3), "Still pushing, staying with you");
-      else if (mood === "groove") intensity(0.35 + ctx.player.energy * 0.4, "Following your dynamics");
+      else if (mood === "groove") {
+        // Song position: a steady player in a big section (a chorus) keeps the section's level.
+        const floor = ctx.position && ctx.player.trend !== "falling" ? (ctx.position.section_level ?? 0) : 0;
+        const v = 0.35 + ctx.player.energy * 0.4;
+        if (v >= floor || ctx.target < floor) intensity(Math.max(v, Math.min(floor, ctx.target)), "Following your dynamics");
+      }
       return moves.slice(0, 2);
     }
 

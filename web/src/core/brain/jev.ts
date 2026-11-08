@@ -86,7 +86,7 @@ export function jevState(ctx: LeaderContext): Record<string, unknown> {
   return {
     player: { ...p, sounds },
     band: { intensity: ctx.intensity, playing: ctx.layers, not_playing: (ctx.lineup ?? V01_PARTS).filter((p) => !ctx.layers.includes(p)), feel: ctx.feel, recent_moves: ctx.recent_moves },
-    song: { section: ctx.section, bar_in_section: ctx.bar_in_section + 1, section_bars: ctx.section_bars, form: ctx.form, form_position: ctx.form_pos },
+    song: { section: ctx.section, bar_in_section: ctx.bar_in_section + 1, section_bars: ctx.section_bars, form: ctx.form, form_position: ctx.form_pos, ...(ctx.position ?? {}) },
   };
 }
 
