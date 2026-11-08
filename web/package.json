@@ -1,7 +1,7 @@
 {
   "name": "jamstate-web",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "description": "jamstate: an AI backing band in the browser",
   "scripts": {
@@ -14,7 +14,10 @@
     "replay": "vite-node scripts/replay.ts",
     "dump": "vite-node scripts/dump.ts",
     "make-sessions": "vite-node scripts/make-sessions.ts",
-    "bakeoff": "vite-node scripts/bakeoff.ts"
+    "bakeoff": "vite-node scripts/bakeoff.ts",
+    "sound-check": "node scripts/sound-check.mjs",
+    "page-check": "node scripts/page-check.mjs",
+    "latency-check": "node scripts/latency-check.mjs"
   },
   "devDependencies": {
     "typescript": "5.9.3",

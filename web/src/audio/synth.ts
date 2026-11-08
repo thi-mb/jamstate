@@ -1,19 +1,33 @@
-// Built-in sound: small Web Audio voices so the band plays with nothing
-// installed. Every note is scheduled at an exact AudioContext time.
+// Built-in sound: sampled instruments (sampler.ts) through the mix bus
+// (mixer.ts), with small Web Audio synth voices that play any part whose
+// samples haven't loaded (or can't), so the band always plays. Every note is
+// scheduled at an exact AudioContext time.
 
-import { DRUM } from "../core/groove";
+import { defaultInstrument, type Band } from "../core/band";
+import { DEFAULT_MIX, type MixPreset } from "../core/genre";
+import { DRUM, PERC } from "../core/groove";
 import type { Sink } from "../core/transport";
-import type { NoteEvent, Voice } from "../core/types";
+import { PARTS, type NoteEvent, type Voice } from "../core/types";
+import { Mixer } from "./mixer";
+import type { SampleLibrary } from "./sampler";
 
 const mtof = (n: number) => 440 * Math.pow(2, (n - 69) / 12);
 
 export class Synth implements Sink {
-  private master!: GainNode;
-  private buses = new Map<Voice, GainNode>();
+  private mixer!: Mixer;
   private noise: AudioBuffer;
+  private mix: MixPreset = DEFAULT_MIX;
+  private band: Band = {};
+  /** The instrument each part plays right now (switches once the new one has loaded). */
+  private active: Partial<Record<Voice, string>> = {};
+  /** The player's own sound. */
+  playerInstrument = defaultInstrument("player");
   readonly muted = new Set<Voice>();
 
-  constructor(readonly ctx: AudioContext) {
+  constructor(
+    readonly ctx: BaseAudioContext,
+    readonly library: SampleLibrary | null = null,
+  ) {
     const len = ctx.sampleRate;
     this.noise = ctx.createBuffer(1, len, ctx.sampleRate);
     const d = this.noise.getChannelData(0);
@@ -22,43 +36,77 @@ export class Synth implements Sink {
   }
 
   private buildBus(): void {
-    const ctx = this.ctx;
-    const comp = ctx.createDynamicsCompressor();
-    comp.threshold.value = -14;
-    comp.ratio.value = 4;
-    this.master = ctx.createGain();
-    this.master.gain.value = 0.8;
-    this.master.connect(comp).connect(ctx.destination);
-    const levels: Record<Voice, number> = { drums: 0.9, bass: 0.7, chords: 0.32, player: 0.45 };
-    this.buses.clear();
-    for (const [v, g] of Object.entries(levels) as [Voice, number][]) {
-      const bus = ctx.createGain();
-      bus.gain.value = g;
-      bus.connect(this.master);
-      this.buses.set(v, bus);
+    this.mixer = new Mixer(this.ctx);
+    this.mixer.apply(this.mix, this.band, true);
+  }
+
+  /** The genre's production: EQ, compression, room, saturation. */
+  setMix(mix: MixPreset): void {
+    this.mix = mix;
+    this.mixer.apply(mix, this.band);
+  }
+
+  /**
+   * The lineup's sounds, volumes and pans. A part keeps its old instrument
+   * until the new one has loaded, so switching mid-song never drops notes.
+   */
+  setBand(band: Band): void {
+    this.band = band;
+    this.mixer.apply(this.mix, band);
+    for (const p of PARTS) {
+      const id = band[p]?.instrument;
+      if (id) this.use(p, id);
     }
+    this.use("player", this.playerInstrument);
+  }
+
+  setPlayerInstrument(id: string): void {
+    this.playerInstrument = id;
+    this.use("player", id);
+  }
+
+  private use(v: Voice, id: string): void {
+    if (this.active[v] === id) return;
+    if (!this.library) return void (this.active[v] = id);
+    if (this.library.get(id) || !this.active[v]) this.active[v] = id;
+    void this.library.load(id).then((inst) => {
+      const want = v === "player" ? this.playerInstrument : this.band[v]?.instrument;
+      if (inst && want === id) this.active[v] = id;
+    });
+  }
+
+  /** Which instrument plays a part: the sample set's id, or null while the synth covers for it. */
+  sounding(v: Voice): string | null {
+    const id = this.active[v];
+    return id && this.library?.get(id) ? id : null;
   }
 
   setVolume(v: Voice, gain: number): void {
-    this.buses.get(v)!.gain.value = gain;
+    this.mixer.setVolume(v, gain);
+  }
+
+  setPan(v: Voice, pan: number): void {
+    this.mixer.setPan(v, pan);
   }
 
   play(ev: NoteEvent, time: number, duration: number): void {
     if (this.muted.has(ev.part)) return;
-    const out = this.buses.get(ev.part)!;
+    const out = this.mixer.input(ev.part);
+    const id = this.active[ev.part];
+    const inst = id ? this.library?.get(id) : undefined;
+    const tune = ev.part === "drums" ? this.mix.parts.drums.tune : 0;
+    if (inst && inst.play(this.ctx, out, ev.note, ev.vel, time, duration, { tune })) return;
     const v = ev.vel / 127;
-    if (ev.part === "drums") this.drum(ev.note, v, time, out);
+    if (ev.part === "drums" || ev.part === "percussion") this.drum(ev.note, v, time, out);
     else if (ev.part === "bass") this.bass(ev.note, v, time, duration, out);
-    else if (ev.part === "chords") this.pad(ev.note, v, time, duration, out);
+    else if (ev.part === "chords" || ev.part === "pad") this.pad(ev.note, v * (ev.part === "pad" ? 0.7 : 1), time, duration, out);
+    else if (ev.part === "guitar") this.pluck(ev.note, v, time, duration, out);
     else this.keys(ev.note, v, time, duration, out);
   }
 
   /** Fade the current mix out and start a fresh one, cutting every scheduled note. */
   panic(): void {
-    const old = this.master;
-    const t = this.ctx.currentTime;
-    old.gain.setTargetAtTime(0, t, 0.02);
-    setTimeout(() => old.disconnect(), 200);
+    this.mixer.dispose();
     this.buildBus();
   }
 
@@ -123,6 +171,15 @@ export class Synth implements Sink {
         const f = note === DRUM.tomHi ? 200 : note === DRUM.tomMid ? 150 : 110;
         return this.tone(t, "sine", f * 1.6, f, 0.08, v, 0.3, out);
       }
+      case PERC.conga_hi:
+      case PERC.conga_mute:
+      case PERC.bongo_hi:
+        return this.tone(t, "sine", 420, 330, 0.03, v * 0.6, note === PERC.conga_mute ? 0.06 : 0.18, out);
+      case PERC.conga_lo:
+      case PERC.bongo_lo:
+        return this.tone(t, "sine", 300, 230, 0.03, v * 0.6, 0.22, out);
+      case PERC.tambourine:
+        return this.noiseBurst(t, v * 0.35, 0.12, "highpass", 6500, out);
       default:
         return this.noiseBurst(t, v * 0.3, 0.05, "bandpass", 3000, out);
     }
@@ -172,6 +229,27 @@ export class Synth implements Sink {
     }
   }
 
+  /** A plucked string (the guitar until its samples load). */
+  private pluck(note: number, v: number, t: number, dur: number, out: AudioNode): void {
+    const ctx = this.ctx;
+    const o = ctx.createOscillator();
+    o.type = "sawtooth";
+    o.frequency.value = mtof(note);
+    const f = ctx.createBiquadFilter();
+    f.type = "lowpass";
+    f.frequency.setValueAtTime(800 + 3000 * v, t);
+    f.frequency.exponentialRampToValueAtTime(500, t + 0.3);
+    const g = ctx.createGain();
+    const end = t + Math.max(dur, 0.05);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.25 * v + 0.02, t + 0.004);
+    g.gain.setTargetAtTime(0.08 * v, t + 0.01, 0.3);
+    g.gain.setTargetAtTime(0.0001, end, 0.04);
+    o.connect(f).connect(g).connect(out);
+    o.start(t);
+    o.stop(end + 0.3);
+  }
+
   /** The player's own notes (monitoring). */
   private keys(note: number, v: number, t: number, dur: number, out: AudioNode): void {
     const ctx = this.ctx;
@@ -198,13 +276,16 @@ export class Synth implements Sink {
   liveNote(note: number, vel: number): () => void {
     if (this.muted.has("player")) return () => {};
     const ctx = this.ctx;
+    const inst = this.active.player ? this.library?.get(this.active.player) : undefined;
+    const sampled = inst?.hold(ctx, this.mixer.input("player"), note, vel);
+    if (sampled) return sampled;
     const t = ctx.currentTime;
     const v = vel / 127;
     const g = ctx.createGain();
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(0.5 * v + 0.02, t + 0.005);
     g.gain.setTargetAtTime(0.15 * v, t + 0.01, 0.4);
-    g.connect(this.buses.get("player")!);
+    g.connect(this.mixer.input("player"));
     const oscs = (["triangle", "sine"] as const).map((type, i) => {
       const o = ctx.createOscillator();
       o.type = type;

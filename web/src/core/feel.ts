@@ -64,7 +64,9 @@ export function applyFeel(events: NoteEvent[], part: Part, o: FeelOptions): Note
     const groups = new Map<number, NoteEvent[]>();
     for (const e of events) groups.set(e.start, [...(groups.get(e.start) ?? []), e]);
     for (const [start, g] of groups) {
-      g.sort((a, b) => a.note - b.note).forEach((e, i) => rollIndex.set(e, i));
+      // Guitar: downstrokes on the beat, upstrokes (high to low) off it.
+      const up = part === "guitar" && Math.abs(start - Math.round(start)) > 1e-6;
+      g.sort((a, b) => (up ? b.note - a.note : a.note - b.note)).forEach((e, i) => rollIndex.set(e, i));
       rollSize.set(start, g.length);
     }
   }
@@ -79,7 +81,7 @@ export function applyFeel(events: NoteEvent[], part: Part, o: FeelOptions): Note
       let ms = h.offsetMs;
       if (part === "drums") ms += h.lines[DRUM_LINE_OF[e.note]] ?? 0;
       if (!onsetJitter.has(e.start)) onsetJitter.set(e.start, (o.rand() * 2 - 1) * h.jitterMs);
-      ms += part === "drums" ? (o.rand() * 2 - 1) * h.jitterMs : onsetJitter.get(e.start)!;
+      ms += part === "drums" || part === "percussion" ? (o.rand() * 2 - 1) * h.jitterMs : onsetJitter.get(e.start)!;
       const n = rollSize.get(e.start) ?? 1;
       if (n > 1) ms += (rollIndex.get(e)! / (n - 1)) * h.spreadMs;
       ms = clamp(ms, -MAX_OFFSET_MS, MAX_OFFSET_MS);

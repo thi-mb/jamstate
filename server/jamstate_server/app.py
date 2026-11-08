@@ -231,8 +231,8 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
             if target.is_dir():
                 target = target / "index.html"
             if not target.is_file():
-                if rel.startswith("assets/"):
-                    # A missing build file (an old page after a rebuild) must fail as such, not load the page.
+                if rel.startswith(("assets/", "samples/")):
+                    # A missing build or sample file (an old page after a rebuild) must fail as such, not load the page.
                     return self._json(404, {"error": "not found"})
                 target = app.static_dir / "index.html"  # single-page app fallback
                 if not target.is_file():
@@ -242,7 +242,8 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
             self.send_response(HTTPStatus.OK)
             self.send_header("content-type", ctype)
             self.send_header("content-length", str(len(data)))
-            self.send_header("cache-control", "no-cache" if target.name == "index.html" else "public, max-age=3600")
+            fresh = target.name in ("index.html", "manifest.json")  # the page and the sample list must never be stale
+            self.send_header("cache-control", "no-cache" if fresh else "public, max-age=3600")
             self.end_headers()
             self.wfile.write(data)
 

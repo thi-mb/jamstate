@@ -1,14 +1,37 @@
 {
-  "format": "jamstate-genre/0.1",
+  "format": "jamstate-genre/0.2",
   "id": "blues-rock",
   "name": "Blues rock",
   "description": "Shuffle on triplet-swung eighths with a heavy, laid-back backbeat, a root-fifth-sixth boogie in the bass, and keys comping on two and four. Ends with a slowdown and a big roll.",
-  "parts": ["drums", "bass", "chords"],
+  "parts": ["drums", "bass", "chords", "guitar", "pad", "percussion"],
+  "band": {"drums": "rock", "bass": "pick", "chords": "rock-organ", "guitar": "crunch"},
+  "lineups": [
+    {"id": "trio", "name": "Power trio", "band": {"drums": "rock", "bass": "pick", "guitar": "crunch"}},
+    {"id": "piano", "name": "Piano and guitar", "band": {"drums": "rock", "bass": "electric", "chords": "piano", "guitar": "crunch"}},
+    {"id": "soul", "name": "Soul blues (organ, clean guitar, tambourine)", "band": {"drums": "kit", "bass": "electric", "chords": "organ", "guitar": "clean", "percussion": "hand"}},
+    {"id": "keys", "name": "Keys band (no guitar)", "band": {"drums": "rock", "bass": "pick", "chords": "rock-organ"}}
+  ],
+  "mix": {
+    "reverb": {"seconds": 1.6, "tone": 0.45},
+    "saturation": 0.35,
+    "gain": 0.15,
+    "parts": {
+      "drums": {"volume": 0.95, "eq": [2, 1, 1], "comp": 0.5, "reverb": 0.18},
+      "bass": {"volume": 0.68, "eq": [2, 0, -2], "comp": 0.6, "reverb": 0.02},
+      "chords": {"volume": 0.42, "pan": -0.35, "eq": [-1, 0, 0], "comp": 0.2, "reverb": 0.2},
+      "guitar": {"volume": 0.5, "pan": 0.4, "eq": [-2, 2, 0], "comp": 0.3, "reverb": 0.15},
+      "pad": {"volume": 0.3, "reverb": 0.35},
+      "percussion": {"volume": 0.4, "pan": 0.5, "reverb": 0.2}
+    }
+  },
   "feel": { "swing": 0.66, "swing_unit": 8 },
   "humanize": {
     "drums": { "jitter_ms": 4, "velocity": 8, "lines": { "snare": 6, "kick": 2 } },
     "bass": { "offset_ms": 6, "jitter_ms": 4, "velocity": 7 },
-    "chords": { "offset_ms": 5, "jitter_ms": 5, "velocity": 7, "spread_ms": 8 }
+    "chords": { "offset_ms": 5, "jitter_ms": 5, "velocity": 7, "spread_ms": 8 },
+    "guitar": {"offset_ms": 4, "jitter_ms": 4, "velocity": 7, "spread_ms": 12},
+    "pad": {"offset_ms": 8, "jitter_ms": 4, "velocity": 4},
+    "percussion": {"offset_ms": 3, "jitter_ms": 4, "velocity": 8}
   },
   "drums": {
     "grid": 2,
@@ -66,6 +89,37 @@
       ["x - - - x - - -", ". . x - . . x -"],
       [". . x - . . x -", "x - . x - . x .", ". . x . . . x p"],
       ["x . X . x . X .", ". x X . . x X .", "x . X . x . X p"]
+    ]
+  },
+  "guitar": {
+    "grid": 2,
+    "voicing": "power",
+    "range": [40, 64],
+    "levels": [
+      ["x - - - - - - -"],
+      ["x - - - x - - -", "x - - . x - x ."],
+      ["x . x . x . x .", "x - . x - . x ."],
+      ["x x x x x x x x", "X . x x X . x x", {"steps": "x x x x X . X .", "phrase_end": true}]
+    ]
+  },
+  "pad": {
+    "grid": 2,
+    "voicing": "triad",
+    "range": [55, 76],
+    "levels": [
+      ["x - - - - - - -"],
+      ["x - - - - - - -"],
+      ["x - - - - - - -"],
+      ["x - - - x - - -"]
+    ]
+  },
+  "percussion": {
+    "grid": 2,
+    "levels": [
+      [{"tambourine": "..x...x."}],
+      [{"tambourine": "..x...x."}],
+      [{"tambourine": "..x...x.", "shaker": "xxxxxxxx"}],
+      [{"tambourine": "x.X.x.X.", "shaker": "xxxxxxxx"}]
     ]
   },
   "ending": { "rit": 0.3, "ring_beats": 4, "chord": { "major": "9", "minor": "m7" }, "drums": "roll" },

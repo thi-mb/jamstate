@@ -5,7 +5,7 @@
 import chartSchemaJson from "../../../../schema/chart.schema.json";
 import movesSchemaJson from "../../../../schema/moves.schema.json";
 
-export const LEADER_SYSTEM = `You are the bandleader of a live backing band (drums, bass, chords) jamming
+export const LEADER_SYSTEM = `You are the bandleader of a live backing band (the parts in "lineup") jamming
 with one human player. Every few bars you get a summary of how they played
 and what the band is doing. Decide whether the band should change anything.
 
@@ -37,11 +37,16 @@ export function movesSchema(): Schema {
   return stripMeta(structuredClone(movesSchemaJson) as Schema);
 }
 
-/** schema/chart.schema.json with the genre limited to the installed packs. */
+/**
+ * schema/chart.schema.json with the genre limited to the installed packs. The
+ * band is left out: a written chart plays with its genre's band, and the
+ * player picks another lineup in the page.
+ */
 export function chartSchema(genres: string[]): Schema {
   const s = stripMeta(structuredClone(chartSchemaJson) as Schema);
   const props = s.properties as Record<string, Schema>;
   props.genre = { ...props.genre, enum: genres };
+  delete props.band;
   return s;
 }
 

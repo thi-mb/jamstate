@@ -26,5 +26,6 @@ Status values: **Proposed** (recommended, waiting on Thiago), **Accepted**,
 | [0015](0015-no-server-required.md) | jamstate runs without a server; the Spark is optional | Accepted |
 | [0016](0016-brain-providers.md) | The bandleader is a pluggable brain the player picks | Accepted |
 | [0017](0017-one-core-thin-shells.md) | One core, thin shells: web now, desktop app when tests say so | Accepted |
+| [0018](0018-lineups-and-sound.md) | Lineups and the built-in sound: rendered samples, mix bus, band as data | Proposed |
 
 New record: copy [template.md](template.md).
