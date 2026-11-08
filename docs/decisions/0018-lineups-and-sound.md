@@ -1,6 +1,6 @@
 # 0018. Lineups and the built-in sound
 
-- Status: Proposed (Accepted once Thiago re-runs test 10, [testing/v0.2.md](../testing/v0.2.md))
+- Status: Accepted (2026-11-08, Thiago signed off on v0.2 after playing it)
 - Date: 2026-10-31
 
 ## Context
