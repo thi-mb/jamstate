@@ -157,6 +157,18 @@ export function degreeSemis(chord: Chord, name: string): number {
   }
 }
 
+export type ChordClass = "major" | "minor" | "dominant" | "half_diminished" | "diminished";
+export const CHORD_CLASSES: ChordClass[] = ["major", "minor", "dominant", "half_diminished", "diminished"];
+
+/** The family a chord belongs to, for genre scales (v0.3 listening). */
+export function chordClass(chord: Chord): ChordClass {
+  if (has(chord, 3) && has(chord, 6) && has(chord, 9) && !has(chord, 10)) return "diminished";
+  if (has(chord, 3) && has(chord, 6) && !has(chord, 7)) return "half_diminished";
+  if (has(chord, 3) && !has(chord, 4)) return "minor";
+  if (has(chord, 10)) return "dominant";
+  return "major";
+}
+
 /** Chord scale as semitones above the root, picked from the chord's quality. */
 export function chordScale(chord: Chord): number[] {
   if (has(chord, 3) && has(chord, 6) && has(chord, 9) && !has(chord, 10)) return [0, 2, 3, 5, 6, 8, 9, 11]; // diminished
