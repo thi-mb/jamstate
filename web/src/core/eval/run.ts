@@ -7,6 +7,7 @@
 import { loadChart, type ChartJSON } from "../chart";
 import { Conductor, type Leader, type LeaderReply } from "../conductor";
 import { Engine, type BarPlan, type Cue } from "../engine";
+import { TempoFollower } from "../tempo";
 import { NoteTracker } from "../features";
 import { getGenre } from "../genres";
 import { DEFAULT_LISTENING, type Listening } from "../listening";
@@ -26,6 +27,8 @@ export interface RunSpec {
   listening?: Listening;
   /** Cues pressed during a bar, before the bar after it is committed (as live: the deadline is its last beat). */
   cues?: { bar: number; cue: Cue }[];
+  /** Follow my tempo on (the band follows the player's tempo drift). */
+  followTempo?: boolean;
 }
 
 export interface Turn {
@@ -75,6 +78,7 @@ export async function runScenario(spec: RunSpec): Promise<RunResult> {
     : null;
   const conductor = new Conductor(engine, leader, spec.everyBars);
   conductor.listening = { ...(spec.listening ?? DEFAULT_LISTENING) };
+  if (spec.followTempo) conductor.follower = new TempoFollower(chart.bpm);
   const sim = new SimPlayer(spec.seed & 0xffff);
   const tracker = new NoteTracker();
   const bpb = chart.beatsPerBar;
@@ -87,7 +91,7 @@ export async function runScenario(spec: RunSpec): Promise<RunResult> {
     if (!p) return;
     plans.push(p);
     const start = p.bar * bpb;
-    for (const n of sim.play(p, modeAt(p.bar), bpb, { bpm: chart.bpm, chartBpm: chart.bpm, phraseBars: chart.phraseBars })) {
+    for (const n of sim.play(p, modeAt(p.bar), bpb, { bpm: p.bpm, chartBpm: chart.bpm, phraseBars: chart.phraseBars })) {
       tracker.noteOn(start + n.start, n.note, n.vel);
       tracker.noteOff(start + n.start + n.dur, n.note);
     }

@@ -5,6 +5,7 @@
 import type { BarPlan, Engine } from "./engine";
 import { barFeatures, summarize, type BarFeatures, type PlayedNote, type PlayerSummary } from "./features";
 import { getGenre } from "./genres";
+import { TempoFollower } from "./tempo";
 import { DEFAULT_LISTENING, dynamicsOf, harmonyOf, phrasingOf, rhythmOf, songPosition, type Heard, type HeardBar, type Listening } from "./listening";
 import { PLAYER_ONLY_MOVES, type Move } from "./moves";
 import type { LeaderContext } from "./rules";
@@ -37,6 +38,8 @@ export class Conductor {
   private recent: HeardBar[] = [];
   /** Which listening groups go into the summary leaders read. */
   listening: Listening = { ...DEFAULT_LISTENING };
+  /** Follow my tempo (v0.3, opt-in); null: the band keeps its tempo. */
+  follower: TempoFollower | null = null;
 
   constructor(
     private engine: Engine,
@@ -59,6 +62,8 @@ export class Conductor {
     this.recent.push({ plan, notes });
     if (this.recent.length > 8) this.recent.shift();
     if (this.window.length > this.everyBars) this.window.shift();
+    // Follow my tempo: a new tempo lands on the next bar not yet committed.
+    if (this.follower) this.engine.setTempo(this.follower.next(this.engine.bpm, this.recent.map((b) => b.notes), this.engine.chart.beatsPerBar));
     this.events.onFeatures?.(plan.bar, f);
     this.events.onHeard?.(plan.bar, this.heard(plan));
     this.bars++;
@@ -78,7 +83,7 @@ export class Conductor {
     const bars = this.recent.slice(-chart.phraseBars);
     return {
       position: songPosition(chart, plan, this.engine.config.loop),
-      rhythm: rhythmOf(bars.map((b) => b.notes), chart.beatsPerBar, chart.bpm),
+      rhythm: rhythmOf(bars.map((b) => b.notes), chart.beatsPerBar, plan.bpm),
       harmony: harmonyOf(bars, chart.beatsPerBar, this.chordAt, getGenre(plan.genre).listening),
       phrasing: phrasingOf(this.recent.map((b) => b.notes), chart.beatsPerBar),
       dynamics: dynamicsOf(bars.map((b) => b.notes), chart.beatsPerBar),

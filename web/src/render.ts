@@ -64,7 +64,6 @@ export async function renderSong(job: RenderJob): Promise<RenderResult> {
   synth.setBand(engine.band);
   const sim = new SimPlayer(3);
   const script = job.player ? parseScript(job.player) : null;
-  const secPerBeat = 60 / chart.bpm;
   const bars: RenderResult["bars"] = [];
   let time = 0.05;
   for (let i = 0; time < job.seconds; i++) {
@@ -75,6 +74,7 @@ export async function renderSong(job: RenderJob): Promise<RenderResult> {
     for (const m of job.moves ?? []) if (m.bar === i) engine.submit(m.moves, "render");
     const plan = engine.nextBar();
     if (!plan) break;
+    const secPerBeat = 60 / plan.bpm;
     bars.push({ bar: plan.bar, time, kind: plan.kind, layers: plan.layers });
     for (const ev of plan.events) synth.play(ev, time + Math.max(0, ev.start) * secPerBeat, ev.dur * secPerBeat);
     if (script && plan.kind !== "count_in") {

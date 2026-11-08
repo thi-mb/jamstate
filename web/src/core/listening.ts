@@ -135,6 +135,34 @@ const DRIFT = 0.015;
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
 const r2 = (x: number) => Math.round(x * 100) / 100;
 
+/**
+ * How the player's on-beat notes drift against the band's beat, in beats per
+ * beat: negative is rushing (each beat comes earlier), positive dragging.
+ * Bar by bar, each bar centred on its own mean, so a constant push or a jump
+ * back to the band between bars doesn't count. Null with too few on-beat notes.
+ */
+export function driftOf(bars: PlayedNote[][], beatsPerBar: number): number | null {
+  let num = 0;
+  let den = 0;
+  let n = 0;
+  for (const ns of bars) {
+    const b = ns.flatMap((note) => {
+      const t = note.start;
+      const beat = Math.round(t);
+      return Math.abs(t - beat) <= ON_BEAT && beat >= 0 && beat < beatsPerBar ? [{ x: beat, y: t - beat }] : [];
+    });
+    if (b.length < 2) continue;
+    const mx = mean(b.map((p) => p.x));
+    const my = mean(b.map((p) => p.y));
+    for (const p of b) {
+      num += (p.x - mx) * (p.y - my);
+      den += (p.x - mx) ** 2;
+    }
+    n += b.length;
+  }
+  return den > 0 && n >= 4 ? num / den : null;
+}
+
 export function rhythmOf(bars: PlayedNote[][], beatsPerBar: number, bpm: number): Rhythm {
   const onsets = bars.map((ns) => ns.filter((n) => n.start > -0.5 && n.start < beatsPerBar).map((n) => n.start));
   const all = onsets.flat();
@@ -156,23 +184,8 @@ export function rhythmOf(bars: PlayedNote[][], beatsPerBar: number, bpm: number)
     const shift = mean(pts.map((p) => p.y));
     timingMs = Math.round((shift * 60000) / bpm);
     timing = timingMs < -TIMING_MS ? "ahead" : timingMs > TIMING_MS ? "behind" : "on";
-    // Slope of offset against beat position, bar by bar (each bar centred on its own mean).
-    let num = 0;
-    let den = 0;
-    for (const os of onsets) {
-      const b = os.flatMap((t) => (Math.abs(t - Math.round(t)) <= ON_BEAT && Math.round(t) < beatsPerBar ? [{ x: Math.round(t), y: t - Math.round(t) }] : []));
-      if (b.length < 2) continue;
-      const mx = mean(b.map((p) => p.x));
-      const my = mean(b.map((p) => p.y));
-      for (const p of b) {
-        num += (p.x - mx) * (p.y - my);
-        den += (p.x - mx) ** 2;
-      }
-    }
-    if (den > 0) {
-      const slope = num / den;
-      tempo = slope < -DRIFT ? "rushing" : slope > DRIFT ? "dragging" : "steady";
-    }
+    const slope = driftOf(bars, beatsPerBar);
+    if (slope !== null) tempo = slope < -DRIFT ? "rushing" : slope > DRIFT ? "dragging" : "steady";
   }
 
   // Syncopation and swing. A note within ON_BEAT of a beat, once the bar's
