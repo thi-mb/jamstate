@@ -40,6 +40,7 @@
         </div>
         <div id="layers" class="chips"></div>
         <div id="heard" class="reason dim small"></div>
+        <div id="fretboard" class="fretboard" aria-label="Chord and scale tones"></div>
 
         <div class="move">
           <div class="label">bandleader <span id="leader-status" class="dim"></span></div>
@@ -154,6 +155,9 @@
             Computer keys: <kbd>A</kbd>–<kbd>'</kbd> white keys, <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> <kbd>O</kbd> <kbd>P</kbd> black,
             <kbd>Z</kbd>/<kbd>X</kbd> octave, hold <kbd>Shift</kbd> to play loud.
           </p>
+          <label title="Chord tones strong, the genre's scale faint, the next chord fades in on the beat before it changes. Your notes: green inside, yellow colour, red outside.">Fretboard
+            <select id="fretboard-kind"><option value="guitar">guitar</option><option value="piano">piano</option><option value="off">off</option></select>
+          </label>
           <div id="midi-status" class="dim small"></div>
           <div id="audio-latency" class="dim small"></div>
         </fieldset>
