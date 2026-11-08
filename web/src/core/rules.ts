@@ -3,7 +3,7 @@
 // with separate enter/exit thresholds so it doesn't flap.
 
 import type { PlayerSummary } from "./features";
-import type { Harmony, Rhythm, SongPosition } from "./listening";
+import type { Harmony, Phrasing, Rhythm, SongPosition } from "./listening";
 import type { Move } from "./moves";
 import { V01_PARTS, type Feel, type Part } from "./types";
 
@@ -29,6 +29,7 @@ export interface LeaderContext {
   position?: SongPosition;
   rhythm?: Rhythm;
   harmony?: Harmony;
+  phrasing?: Phrasing;
 }
 
 export type Mood = "silent" | "sparse" | "groove" | "busy";
@@ -58,7 +59,13 @@ export class RuleLeader {
   }
 
   decide(ctx: LeaderContext): Move[] {
-    return this.withHarmony(ctx, this.withPosition(ctx, this.byMood(ctx)));
+    return this.withHarmony(ctx, this.withPosition(ctx, this.withPhrasing(ctx, this.byMood(ctx))));
+  }
+
+  /** Phrasing (v0.3): trading phrases with the band, keep the level steady and the feel as it is. */
+  private withPhrasing(ctx: LeaderContext, moves: Move[]): Move[] {
+    if (!ctx.phrasing?.call_response) return moves;
+    return moves.filter((m) => m.move !== "change_feel" && !(m.move === "set_intensity" && Math.abs(m.value - ctx.target) > 0.2) && !(m.move === "drop_layer" && (m.part === "drums" || m.part === "bass")));
   }
 
   /**
@@ -104,9 +111,19 @@ export class RuleLeader {
 
   private byMood(ctx: LeaderContext): Move[] {
     const prev = this.mood;
-    const mood = this.classify(ctx.player);
-    this.mood = mood;
+    let mood = this.classify(ctx.player);
+    const ph = ctx.phrasing;
     const has = (p: Part) => ctx.layers.includes(p);
+    // Phrasing (v0.3): a short gap after playing is a breath, or room left for
+    // the band to answer. Keep the mood and fill the gap instead of dropping out.
+    if (ph && mood === "silent" && ph.state === "breathing" && prev !== "silent") {
+      this.mood = prev;
+      // Trading phrases: answer in the gap. A plain breath: hold and wait.
+      return ph.call_response && has("drums") ? [{ move: "fire_stinger", stinger: "fill", reason: "Answering in your gap" }] : [];
+    }
+    // Long held notes are a lyrical line: lay back under it.
+    if (ph && mood === "groove" && (ph.held ?? 0) >= 0.6) mood = "sparse";
+    this.mood = mood;
     const missing = (ctx.lineup ?? V01_PARTS).filter((p) => !has(p));
     const moves: Move[] = [];
     const intensity = (value: number, reason: string) => {

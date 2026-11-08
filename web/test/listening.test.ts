@@ -5,7 +5,7 @@ import { Engine } from "../src/core/engine";
 import { getGenre } from "../src/core/genres";
 import { leaderSystem, LEADER_SYSTEM } from "../src/core/brain/prompt";
 import { jevState } from "../src/core/brain/jev";
-import { harmonyOf, listeningKey, noteFit, NO_LISTENING, parseListening, rhythmOf, songPosition } from "../src/core/listening";
+import { harmonyOf, listeningKey, noteFit, NO_LISTENING, parseListening, phrasingOf, rhythmOf, songPosition } from "../src/core/listening";
 import { loadGenre } from "../src/core/genre";
 import { parseChord } from "../src/core/theory";
 import { SimPlayer, type SimMode } from "../src/core/simplayer";
@@ -198,5 +198,40 @@ describe("harmony", () => {
     const raw = structuredClone(getGenreRaw());
     raw.listening = { scales: { minor: [0, 13] }, outside: "maybe" };
     expect(() => loadGenre(raw)).toThrow(/listening.scales.minor[\s\S]*listening.outside/);
+  });
+});
+
+describe("phrasing", () => {
+  const plan = plans()[4];
+  const note = (start: number, dur = 0.5) => ({ start, dur, note: 60, vel: 80 });
+  const bar = (on: boolean, dur = 0.5) => (on ? [note(0, dur), note(1, dur), note(2, dur)] : []);
+  const of = (pattern: string, dur = 0.5) => phrasingOf([...pattern].map((c) => bar(c === "x", dur)), 4);
+
+  it("tells a breath from a stop, and waits before the first note", () => {
+    expect(of("xxxx")).toMatchObject({ state: "playing", gap_bars: 0, playing_bars: 4 });
+    expect(of("xxx.")).toMatchObject({ state: "breathing", gap_bars: 1 });
+    expect(of("xx..")).toMatchObject({ state: "breathing", gap_bars: 2 });
+    expect(of("x...")).toMatchObject({ state: "stopped", gap_bars: 3 });
+    expect(of("....")).toMatchObject({ state: "waiting" });
+  });
+
+  it("hears call and response, and long notes", () => {
+    expect(of("xx..xx..").call_response).toBe(true);
+    expect(of("xxxxxx..").call_response).toBe(false);
+    expect(of("xxxx", 2).held).toBeGreaterThan(0.9);
+    expect(of("xxxx", 0.25).held).toBe(0);
+    void plan;
+  });
+
+  it("rules hold through a breath, answer a trade, and still drop on a stop", () => {
+    const ctx = (silent: number, phrasing: ReturnType<typeof of>): LeaderContext => ({
+      bar: 10, section: "verse", bar_in_section: 6, section_bars: 8, phrase_bars: 4, intensity: 0.5, target: 0.5,
+      layers: ["drums", "bass", "chords"], lineup: ["drums", "bass", "chords"], feel: "normal", form: chart.form, form_pos: 1, sections: [...chart.sections.keys()],
+      player: { bars: 2, energy: silent ? 0 : 0.5, density: silent ? 0 : 1, mean_velocity: 0.6, rest_ratio: 0.2, repetition: 0.2, register: "mid", trend: "steady", silent_bars: silent },
+      recent_moves: [], phrasing,
+    });
+    expect(new RuleLeader().decide(ctx(2, of("xx..")))).toEqual([]);
+    expect(new RuleLeader().decide(ctx(2, of("xx..xx..")))[0]).toMatchObject({ move: "fire_stinger", stinger: "fill" });
+    expect(new RuleLeader().decide(ctx(2, of("x...")))).toContainEqual(expect.objectContaining({ move: "drop_layer", part: "drums" }));
   });
 });

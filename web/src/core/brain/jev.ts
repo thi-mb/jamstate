@@ -82,12 +82,14 @@ const ROLE =
 export function jevState(ctx: LeaderContext): Record<string, unknown> {
   const p = ctx.player;
   // Words for the numbers, so the model doesn't have to read scales (the same idea as `trend`).
-  const sounds = p.bars > 0 && p.silent_bars >= Math.min(p.bars, 2) ? "stopped" : p.energy >= 0.62 ? "busy and loud" : p.energy < 0.3 ? "sparse and soft" : "steady, medium";
+  const breathing = ctx.phrasing?.state === "breathing";
+  const sounds = breathing && p.silent_bars > 0 ? "breathing between phrases, about to come back" : p.bars > 0 && p.silent_bars >= Math.min(p.bars, 2) ? "stopped" : p.energy >= 0.62 ? "busy and loud" : p.energy < 0.3 ? "sparse and soft" : "steady, medium";
   return {
     player: { ...p, sounds },
     band: { intensity: ctx.intensity, playing: ctx.layers, not_playing: (ctx.lineup ?? V01_PARTS).filter((p) => !ctx.layers.includes(p)), feel: ctx.feel, recent_moves: ctx.recent_moves },
     ...(ctx.rhythm ? { rhythm: ctx.rhythm } : {}),
     ...(ctx.harmony ? { harmony: ctx.harmony } : {}),
+    ...(ctx.phrasing ? { phrasing: ctx.phrasing } : {}),
     song: { section: ctx.section, bar_in_section: ctx.bar_in_section + 1, section_bars: ctx.section_bars, form: ctx.form, form_position: ctx.form_pos, ...(ctx.position ?? {}) },
   };
 }
