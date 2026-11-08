@@ -4,7 +4,8 @@
 
 import type { BarPlan, Engine } from "./engine";
 import { barFeatures, summarize, type BarFeatures, type PlayedNote, type PlayerSummary } from "./features";
-import { DEFAULT_LISTENING, rhythmOf, songPosition, type Heard, type HeardBar, type Listening } from "./listening";
+import { getGenre } from "./genres";
+import { DEFAULT_LISTENING, harmonyOf, rhythmOf, songPosition, type Heard, type HeardBar, type Listening } from "./listening";
 import { PLAYER_ONLY_MOVES, type Move } from "./moves";
 import type { LeaderContext } from "./rules";
 
@@ -65,6 +66,12 @@ export class Conductor {
     return f;
   }
 
+  /** The chord the chart has at a beat of a played bar. */
+  private chordAt = (plan: BarPlan, beat: number) => {
+    const slots = this.engine.chart.sections.get(plan.section)?.barChords(plan.barInSection) ?? [];
+    return (slots.find((s) => beat >= s.start && beat < s.start + s.dur) ?? slots[0])?.chord ?? null;
+  };
+
   /** All listening groups for the bar just played. */
   heard(plan: BarPlan): Heard {
     const chart = this.engine.chart;
@@ -72,6 +79,7 @@ export class Conductor {
     return {
       position: songPosition(chart, plan, this.engine.config.loop),
       rhythm: rhythmOf(bars.map((b) => b.notes), chart.beatsPerBar, chart.bpm),
+      harmony: harmonyOf(bars, chart.beatsPerBar, this.chordAt, getGenre(plan.genre).listening),
     };
   }
 
@@ -97,6 +105,7 @@ export class Conductor {
     };
     if (this.listening.position) ctx.position = heard.position;
     if (this.listening.rhythm) ctx.rhythm = heard.rhythm;
+    if (this.listening.harmony) ctx.harmony = heard.harmony;
     return ctx;
   }
 

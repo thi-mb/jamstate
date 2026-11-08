@@ -307,6 +307,26 @@
       }
     },
     "forms": { "type": "array", "items": { "type": "string" }, "description": "Typical forms, for writing songs in this genre (v0.6)." },
-    "progressions": { "type": "array", "items": { "type": "string" }, "description": "Typical progressions in Roman numerals (v0.6)." }
+    "progressions": { "type": "array", "items": { "type": "string" }, "description": "Typical progressions in Roman numerals (v0.6)." },
+    "listening": {
+      "description": "What the band listens for (v0.3, docs/decisions/0019-listening-layer.md): per chord class, the scale (semitones above the chord's root) whose notes count as colour rather than outside, and whether the rule leader holds or lifts when the player plays outside. Without it: the chord's own scale, and hold.",
+      "type": "object",
+      "required": ["scales"],
+      "additionalProperties": false,
+      "properties": {
+        "scales": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "major": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 11 }, "uniqueItems": true },
+            "minor": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 11 }, "uniqueItems": true },
+            "dominant": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 11 }, "uniqueItems": true },
+            "half_diminished": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 11 }, "uniqueItems": true },
+            "diminished": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 11 }, "uniqueItems": true }
+          }
+        },
+        "outside": { "enum": ["hold", "lift"] }
+      }
+    }
   }
 }

@@ -6,19 +6,21 @@
 //
 //   position  where we are in the song: bars left, what comes next, phrase
 //   rhythm    syncopation, swing, ahead of / behind the beat, rushing or dragging
-//   harmony   (PR 3c)
+//   harmony   how their notes sit on the chord: inside, colour (genre scale) or outside
 //   phrasing  (PR 3d)
 //   dynamics  (PR 3e)
 
 import type { Chart } from "./chart";
 import type { BarPlan } from "./engine";
 import type { PlayedNote } from "./features";
+import type { GenreListening } from "./genre";
+import { chordClass, chordScale, type Chord } from "./theory";
 
 export const LISTENING_GROUPS = ["position", "rhythm", "harmony", "phrasing", "dynamics"] as const;
 export type ListeningGroup = (typeof LISTENING_GROUPS)[number];
 export type Listening = Record<ListeningGroup, boolean>;
 /** The groups built so far (the page offers these). */
-export const LISTENING_READY: ListeningGroup[] = ["position", "rhythm"];
+export const LISTENING_READY: ListeningGroup[] = ["position", "rhythm", "harmony"];
 
 export const LISTENING_LABELS: Record<ListeningGroup, string> = {
   position: "Song position",
@@ -57,6 +59,7 @@ export function listeningKey(l: Listening): string {
 export interface Heard {
   position: SongPosition;
   rhythm: Rhythm;
+  harmony: Harmony;
 }
 
 /** The bars the note-based groups listen over: the last phrase, oldest first. */
@@ -197,4 +200,55 @@ export function rhythmOf(bars: PlayedNote[][], beatsPerBar: number, bpm: number)
   const sd = eighths.length ? Math.sqrt(mean(eighths.map((f) => (f - mean(eighths)) ** 2))) : 1;
   const swing = eighths.length >= 3 && sd < 0.06 ? r2(Math.min(1, Math.max(0, (mean(eighths) - 0.5) * 4))) : null;
   return { syncopation: r2(sync / all.length), swing, timing, timing_ms: timingMs, tempo };
+}
+
+// ---------- harmony ----------
+
+export type NoteFit = "inside" | "colour" | "outside";
+
+/**
+ * How a note sits on a chord: a chord tone is inside; a note of the genre's
+ * scale for the chord's class is colour; anything else is outside. Without a
+ * genre scale, the chord's own scale. Shared with the fretboard (v0.3).
+ */
+export function noteFit(pc: number, chord: Chord, genre?: GenreListening): NoteFit {
+  const iv = (((pc - chord.root) % 12) + 12) % 12;
+  if (chord.intervals.some((i) => i % 12 === iv)) return "inside";
+  const scale = genre?.scales[chordClass(chord)] ?? chordScale(chord);
+  return scale.includes(iv) ? "colour" : "outside";
+}
+
+export interface Harmony {
+  /** Shares of what they played, weighted by how long each note sounded. Null when silent. */
+  inside: number | null;
+  colour: number | null;
+  outside: number | null;
+  /** In a word: inside, colourful or outside. */
+  fit: "inside" | "colourful" | "outside" | null;
+  /** What a band in this genre does when the player goes outside: hold steady or lift with them. */
+  genre_outside: "hold" | "lift";
+}
+
+/** A share of outside playing at or above this reads as "outside". */
+export const OUTSIDE_SHARE = 0.35;
+
+/** The chord sounding at a beat of a bar. */
+export type ChordAt = (bar: BarPlan, beat: number) => Chord | null;
+
+export function harmonyOf(bars: HeardBar[], beatsPerBar: number, chordAt: ChordAt, genre: GenreListening): Harmony {
+  const w = { inside: 0, colour: 0, outside: 0 };
+  for (const { plan, notes } of bars)
+    for (const n of notes) {
+      const start = Math.max(0, n.start);
+      if (start >= beatsPerBar) continue;
+      const chord = chordAt(plan, start);
+      if (!chord) continue;
+      w[noteFit(n.note % 12, chord, genre)] += Math.max(0.25, Math.min(n.start + n.dur, beatsPerBar) - start);
+    }
+  const total = w.inside + w.colour + w.outside;
+  if (!total) return { inside: null, colour: null, outside: null, fit: null, genre_outside: genre.outside };
+  const share = (x: number) => r2(x / total);
+  const outside = w.outside / total;
+  const fit = outside >= OUTSIDE_SHARE ? "outside" : (w.colour + w.outside) / total >= 0.5 ? "colourful" : "inside";
+  return { inside: share(w.inside), colour: share(w.colour), outside: share(w.outside), fit, genre_outside: genre.outside };
 }
