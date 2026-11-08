@@ -178,6 +178,14 @@ nudged, which undid a lift or a let-down made in the bars before a section
 change (E7, E8, E12j in the eval). Sessions from before v0.3 replay with the
 old rule (`holdFreshTarget: false`).
 
+### Cues and the lockout (v0.3)
+
+The player's cues (keys 1–7, [ADR-0020](decisions/0020-cues-and-lockout.md))
+change the band directly. For a phrase after one lands, the governor rejects
+leader moves that would undo it, with the note "undoes the … cue"; the
+summary's `recent_moves` shows the applied cue (source `cue`), so a brain can
+see why. Nothing in the prompt changes.
+
 ## Jev (decision model)
 
 Jev answers typed questions instead of writing text

@@ -160,36 +160,41 @@ Player: `medium:4, drag:12`. Same checks as E16, slower.
 
 ## Cues
 
-Each cue is pressed in the middle of beat 3 of bar 9 (inside a phrase that
-started at bar 8), while the player plays `busy`, so the leader is pushing
-the other way for the cues that bring the band down. "Next bar" is bar 10,
-"next phrase" is bar 12. The lockout is the window after a cue in which the
-governor rejects leader moves that undo it.
+Each cue is pressed in bar 9 (inside a phrase that started at bar 8), before
+bar 10 is committed, while the player pushes the other way where there is
+one. "Next bar" is bar 10, "next phrase" is bar 12. The lockout is the phrase
+after a cue in which the governor rejects leader moves that undo it
+([ADR-0020](../decisions/0020-cues-and-lockout.md)). Keys in brackets.
 
-### C1 Take it down
+### C1 Take it down (5)
+Player plays `busy`.
 - Must: by bar 10, target ≤ the target at bar 9 − 0.2.
 - Must not: bars 10–14, target goes up (lockout).
 
-### C2 Build
-Player plays `sparse` instead, so the leader pulls the other way.
+### C2 Build (4)
+Player plays `sparse`.
 - Must: by bar 10, target ≥ the target at bar 9 + 0.2; a riser or fill
   lands on bar 10 or 11.
 - Must not: bars 10–14, target goes down.
 
-### C3 Break
-- Must: bar 10 is a break (drums, or the whole band but one part, out for
-  that bar), and the band is back by bar 12.
+### C3 Drums/perc break (2)
+- Must: bars 10–11, drums and percussion out and the rest of the band in;
+  drums back on bar 12.
 
-### C4 Next section
-- Must: bar 12 is the first bar of the next section in the form.
+### C4 Drums/perc only (3)
+- Must: bars 10–11, only drums and percussion; the bass back on bar 12.
 
-### C5 One more chorus
-Pressed in the last phrase of a section.
-- Must: the same section plays once more from its end, then the form goes
-  on.
+### C5 Next section (1)
+Pressed in the second bar of the first section longer than a phrase from
+bar 8 on, so the next phrase isn't a section change anyway.
+- Must: the next phrase is the first bar of the next section in the form.
 
-### C6 End song
-- Must: the song ends at the end of the phrase (as `end_song` does today).
+### C6 One more (6)
+Pressed two bars before the end of that same section.
+- Must: the section plays once more, then the form goes on.
+
+### C7 End song (7)
+- Must: bar 11 is the ending and the song stops there.
 
 ## Real jams
 
@@ -209,3 +214,5 @@ on.
   separately and left out of the score.
 - Jazz under outside playing: stay in, mostly; a lift is a stretch check.
 - The break is two cues: drums/perc break (C3) and drums/perc only (C4).
+  Cues are numbered C1–C7 by scenario and keyed 1–7 by how often they're
+  reached for (next section on 1).
