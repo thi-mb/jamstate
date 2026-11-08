@@ -29,6 +29,8 @@ export interface ScenarioRun {
   modes: SimMode[];
   bars: number;
   checks: Check[];
+  /** Follow my tempo on for this run. */
+  followTempo?: boolean;
   /** Cues the player gives, pressed during `bar` (before the next bar is committed). */
   cues?: { bar: number; cue: Cue }[];
 }
@@ -91,9 +93,9 @@ export class RunView {
   target(bar: number): number {
     return this.at(bar).target;
   }
-  /** The band's tempo at a bar (the chart's, until tempo following lands). */
+  /** The band's tempo at a bar. */
   tempo(bar: number): number {
-    return (this.at(bar) as BarPlan & { bpm?: number }).bpm ?? this.chartBpm;
+    return this.at(bar).bpm;
   }
   playing(bar: number, part: Part): boolean {
     const p = this.at(bar);
@@ -193,6 +195,26 @@ const tempoHolds = (a: number, b: number): Check => ({
   test: (v) => v.bars(a, b).every((i) => Math.abs(v.tempo(i) - v.chartBpm) < 1e-6),
   observe: (v) => Math.max(...v.bars(a, b).map((i) => Math.abs(v.tempo(i) / v.chartBpm - 1))),
 });
+
+/** Follow my tempo: moved the player's way by `bar`, within ±5%, at most 1% a bar. */
+const followChecks = (bar: number, way: "up" | "down"): Check[] => [
+  {
+    kind: "must",
+    text: `by bar ${bar}, tempo ${way === "up" ? "above" : "below"} the chart tempo`,
+    test: (v) => (way === "up" ? v.tempo(bar) > v.chartBpm : v.tempo(bar) < v.chartBpm),
+    observe: (v) => v.tempo(bar) / v.chartBpm - 1,
+  },
+  {
+    kind: "must",
+    text: "every bar within 5% of the chart tempo",
+    test: (v) => v.bars(0, bar).every((i) => Math.abs(v.tempo(i) / v.chartBpm - 1) <= 0.05 + 1e-9),
+  },
+  {
+    kind: "must",
+    text: "tempo changes by at most 1% from one bar to the next",
+    test: (v) => v.bars(1, bar).every((i) => Math.abs(v.tempo(i) / v.tempo(i - 1) - 1) <= 0.01 + 1e-9),
+  },
+];
 
 /** "medium:4, sparse:8" → modes. */
 const script = (s: string) => parseScript(s.replace(/\s+/g, ""));
@@ -566,6 +588,24 @@ export const SCENARIOS: Scenario[] = [
     title: "Dragging (strict tempo)",
     group: "tempo",
     build: () => ({ modes: script("medium:4, drag:12"), bars: 17, checks: [tempoHolds(0, 16)] }),
+  },
+  {
+    id: "E15f",
+    title: "Pushing and laying back (follow my tempo)",
+    group: "tempo",
+    build: () => ({ modes: script("push:8, layback:8"), bars: 17, followTempo: true, checks: [tempoHolds(0, 16)] }),
+  },
+  {
+    id: "E16f",
+    title: "Rushing (follow my tempo)",
+    group: "tempo",
+    build: () => ({ modes: script("medium:4, rush:12"), bars: 17, followTempo: true, checks: [...followChecks(16, "up")] }),
+  },
+  {
+    id: "E17f",
+    title: "Dragging (follow my tempo)",
+    group: "tempo",
+    build: () => ({ modes: script("medium:4, drag:12"), bars: 17, followTempo: true, checks: [...followChecks(16, "down")] }),
   },
   ...CUE_SCENARIOS,
 ];
