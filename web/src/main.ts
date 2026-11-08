@@ -7,6 +7,7 @@ import { bandParts, cloneBand, defaultInstrument, getInstrument, instrumentsFor,
 import { Ticker } from "./audio/ticker";
 import { ChartError, loadChart, type Chart, type ChartJSON } from "./core/chart";
 import { Conductor, ruleLeader, type Leader } from "./core/conductor";
+import { DEFAULT_LISTENING, LISTENING_LABELS, LISTENING_READY, listeningKey, NO_LISTENING, parseListening, type Listening } from "./core/listening";
 import { Engine } from "./core/engine";
 import { NoteTracker } from "./core/features";
 import { allGenres, getGenre } from "./core/genres";
@@ -347,6 +348,33 @@ function buildManualMoves(): void {
 }
 
 // ---------- brain (bandleader) ----------
+
+// ---------- listening groups (v0.3) ----------
+
+const LISTENING_KEY = "jamstate.listening";
+let listening: Listening = { ...DEFAULT_LISTENING, ...(platform.settings.get<Partial<Listening>>(LISTENING_KEY) ?? {}) };
+/** Last bar the conductor heard, to stamp listening changes in the recording. */
+let lastHeardBar = -1;
+
+function renderListening(): void {
+  $("listening").replaceChildren(
+    ...LISTENING_READY.map((g) => {
+      const box = Object.assign(document.createElement("input"), { type: "checkbox", checked: listening[g] });
+      box.onchange = () => {
+        listening = { ...listening, [g]: box.checked };
+        platform.settings.set(LISTENING_KEY, listening);
+        if (session && !session.replay) {
+          session.conductor.listening = { ...listening };
+          session.recorder?.listening(lastHeardBar, listeningKey(listening));
+        }
+      };
+      const label = Object.assign(document.createElement("label"), { className: "inline" });
+      label.append(box, LISTENING_LABELS[g]);
+      return label;
+    }),
+  );
+}
+renderListening();
 
 const SETTINGS_KEY = "jamstate.brain";
 let settings: BrainSettings = mergeSettings(platform.settings.get(SETTINGS_KEY));
@@ -735,7 +763,7 @@ async function start(replay?: SessionFile): Promise<void> {
   const { leader, remote, every } = replay ? { leader: null, remote: null, every: replay.every_bars } : makeLeader(c);
   const recorder = replay
     ? null
-    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every });
+    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every, listening: listeningKey(listening) });
   if (recorder) lastJam = { recorder, engine };
   const tracker = new NoteTracker();
   const sim = new SimPlayer(seed & 0xffff);
@@ -748,7 +776,12 @@ async function start(replay?: SessionFile): Promise<void> {
       overlay.leaderStatus(leaderLabel(session!));
     },
     onSkip: (bar) => overlay.note(`bar ${bar}: bandleader still thinking, skipped a turn`),
+    onHeard: (bar, heard) => {
+      lastHeardBar = bar;
+      overlay.heard(heard);
+    },
   });
+  conductor.listening = replay ? (replay.listening?.length ? parseListening(replay.listening[0].groups) : { ...NO_LISTENING }) : { ...listening };
   const ctx = audio;
   const replayNotes = replay ? pairNotes(replay) : [];
   let mismatches = 0;

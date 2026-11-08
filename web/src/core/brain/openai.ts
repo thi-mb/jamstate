@@ -4,7 +4,7 @@
 
 import type { LeaderContext } from "../rules";
 import { extractJson, splitMoves } from "./check";
-import { chartSchema, chartSystem, LEADER_SYSTEM, movesSchema } from "./prompt";
+import { chartSchema, chartSystem, leaderSystem, movesSchema } from "./prompt";
 import { BrainError, now, type BrainAnswer, type BrainProvider, type ChartAnswer, type Fetch } from "./types";
 
 export interface OpenAIConfig {
@@ -79,7 +79,7 @@ export class OpenAIBrain implements BrainProvider {
 
   async decide(ctx: LeaderContext, signal?: AbortSignal): Promise<BrainAnswer> {
     const t0 = now();
-    const { text, model } = await this.chat(LEADER_SYSTEM, JSON.stringify(ctx), movesSchema(), "moves", signal);
+    const { text, model } = await this.chat(leaderSystem(ctx), JSON.stringify(ctx), movesSchema(), "moves", signal);
     let payload: unknown;
     try {
       payload = extractJson(text);

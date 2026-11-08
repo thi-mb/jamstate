@@ -1,5 +1,6 @@
 // npm run eval -- [--brains rules,jev,claude,qwen,laya] [--seeds 3] [--only E1,E5] [--songs night-shift,...]
 //                 [--out dir] [--label host] [--parallel 4] [--url U] [--model M] [--claude-model M] [--laya-url U]
+//                 [--listening default|none|all|position,harmony,...]
 //
 // The leader eval (docs/eval/scenarios.md). Every scenario runs on its songs,
 // with each seed, for each brain: a pretend player plays and the brain leads
@@ -12,6 +13,7 @@ import type { ChartJSON } from "../src/core/chart";
 import { ruleLeader, type Leader } from "../src/core/conductor";
 import { runScenario, type RunResult } from "../src/core/eval/run";
 import { judge, RunView, scenariosFor, scoreOf, SCENARIOS, type CheckResult, type ScenarioGroup, type Song } from "../src/core/eval/scenarios";
+import { listeningKey, parseListening } from "../src/core/listening";
 import { describeMove } from "../src/core/moves";
 import { RuleLeader } from "../src/core/rules";
 import { nodeBrain } from "./brains";
@@ -29,6 +31,7 @@ const out = opt("out") ?? "eval-out";
 const host = opt("label") ?? "unlabelled host";
 const parallel = Number(opt("parallel") ?? 4);
 const TIMEOUT_MS = Number(opt("timeout") ?? 20_000);
+const listening = parseListening(opt("listening") ?? "default");
 const brainArgs = { url: opt("url"), model: opt("model"), claudeModel: opt("claude-model"), jevModel: opt("jev-model"), layaUrl: opt("laya-url") };
 
 const SONGS: Song[] = ["night-shift", "blues-in-a", "late-set"]
@@ -100,7 +103,7 @@ for (const c of contenders)
     for (const { scenario, run } of scenariosFor(song, only))
       for (let seed = 1; seed <= seeds; seed++)
         jobs.push(async () => {
-          const res: RunResult = await runScenario({ chart: song.chart, modes: run.modes, bars: run.bars, leader: c.leader(), everyBars: c.everyBars(song), seed });
+          const res: RunResult = await runScenario({ chart: song.chart, modes: run.modes, bars: run.bars, leader: c.leader(), everyBars: c.everyBars(song), seed, listening });
           const checks = judge(run, new RunView(res.plans, song.chart.bpm));
           return {
             brain: c.name,
@@ -153,7 +156,7 @@ const stretchOf = (rs: RunRecord[]) => {
 };
 
 const L: string[] = [];
-L.push(`# Leader eval`, ``, `${new Date().toISOString().slice(0, 16)}Z · ${records.length} runs · ${seeds} seeds · measured from: ${host}`, ``);
+L.push(`# Leader eval`, ``, `${new Date().toISOString().slice(0, 16)}Z · ${records.length} runs · ${seeds} seeds · listening: ${listeningKey(listening)} · measured from: ${host}`, ``);
 L.push(`Score: checks passed / checks over every run (stretch checks left out), mean over runs. Scenarios: [scenarios.md](../../scenarios.md).`, ``);
 L.push(`| Brain | Score | ${groupsPresent.map(([, n]) => n).join(" | ")} | ${genres.join(" | ")} | Stretch | Turns | Errors | p50 ms | p95 ms |`);
 L.push(`|---|---|${groupsPresent.map(() => "---").join("|")}|${genres.map(() => "---").join("|")}|---|---|---|---|---|`);
@@ -211,5 +214,5 @@ if (errs.length) L.push(``, `## Errors`, ``, ...errs.slice(0, 20).map((e) => `- 
 
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, "summary.md"), L.join("\n") + "\n");
-writeFileSync(join(out, "results.json"), JSON.stringify({ host, created: new Date().toISOString(), seeds, brains: contenders.map((c) => c.name), runs: records }));
+writeFileSync(join(out, "results.json"), JSON.stringify({ host, listening: listeningKey(listening), created: new Date().toISOString(), seeds, brains: contenders.map((c) => c.name), runs: records }));
 console.log(`\n${L.slice(0, 12 + contenders.length).join("\n")}\n\nwrote ${out}/summary.md and results.json`);

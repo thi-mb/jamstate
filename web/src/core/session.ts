@@ -17,6 +17,7 @@ import { Conductor, type Leader, type LeaderReply } from "./conductor";
 import { Engine, type BarPlan, type Control, type GovernorConfig } from "./engine";
 import { NoteTracker } from "./features";
 import { getGenre } from "./genres";
+import { NO_LISTENING, parseListening } from "./listening";
 import { hash } from "./rand";
 import { V01_PARTS, type NoteEvent } from "./types";
 
@@ -63,6 +64,12 @@ export interface SessionFile {
   player: PlayerEvent[];
   controls: Control[];
   bars: SessionBar[];
+  /**
+   * Listening groups in the leader's summary (v0.3): the setting at the start
+   * (`at` -1) and every change, stamped with the last bar played. Missing in
+   * older files: none (the v0.2 summary).
+   */
+  listening?: { at: number; groups: string }[];
   /** The player's rating of a blind-test jam (see brain/blind.ts). */
   rating?: { stars: number; note?: string; fallback?: boolean };
 }
@@ -77,6 +84,8 @@ export interface SessionSetup {
   config: Partial<GovernorConfig>;
   leader: string;
   everyBars: number;
+  /** Listening groups at the start ("position,harmony", "none"). */
+  listening?: string;
 }
 
 const r4 = (x: number) => Math.round(x * 1e4) / 1e4;
@@ -110,9 +119,17 @@ export function summarizeBar(plan: BarPlan): SessionBar {
 export class SessionRecorder {
   private player: PlayerEvent[] = [];
   private bars: SessionBar[] = [];
+  private listeningLog: { at: number; groups: string }[] = [];
   readonly created = new Date().toISOString();
 
-  constructor(readonly setup: SessionSetup) {}
+  constructor(readonly setup: SessionSetup) {
+    if (setup.listening !== undefined) this.listeningLog.push({ at: -1, groups: setup.listening });
+  }
+
+  /** The player switched listening groups; `at` is the last bar played. */
+  listening(at: number, groups: string): void {
+    this.listeningLog.push({ at, groups });
+  }
 
   note(beat: number, note: number, vel: number): void {
     this.player.push([r4(beat), note, vel]);
@@ -144,6 +161,7 @@ export class SessionRecorder {
       player: [...this.player].sort((a, b) => a[0] - b[0]),
       controls: [...engine.controls],
       bars: [...this.bars],
+      ...(this.listeningLog.length ? { listening: [...this.listeningLog] } : {}),
     };
   }
 }
@@ -218,6 +236,9 @@ export async function replaySession(f: SessionFile, opts: { leader?: Leader; eve
       }
     : null;
   const conductor = new Conductor(engine, leader, opts.everyBars ?? f.every_bars);
+  conductor.listening = { ...NO_LISTENING };
+  const listening = f.listening ?? [];
+  let li = 0;
   const tracker = new NoteTracker();
   let pi = 0;
   const commit = () => {
@@ -236,6 +257,8 @@ export async function replaySession(f: SessionFile, opts: { leader?: Leader; eve
       if (vel > 0) tracker.noteOn(beat, note, vel);
       else tracker.noteOff(beat, note);
     }
+    // Listening changes made while this bar played (stamped with the bar before).
+    for (; li < listening.length && listening[li].at < plans[k].bar; li++) conductor.listening = parseListening(listening[li].groups);
     conductor.barFinished(plans[k], tracker.bar(k * bpb, bpb));
     if (pending) {
       await pending;
