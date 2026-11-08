@@ -149,10 +149,34 @@ the same groups.
 | Group | Field | What it holds |
 |---|---|---|
 | Song position | `position` | `bars_left` in the section, `next_section` (null: the song ends), `next_lift` (up/down/same, from the chart's section intensities), `section_level`, `phrase` (start/middle/end), `pass` ("2 of 3"), `last_section` |
+| Rhythm | `rhythm` | `syncopation` (0 on the beat, 1 all off-beat sixteenths), `swing` (0 straight, 0.66 triplet; null without enough eighths), `timing` (ahead/on/behind) and `timing_ms`, `tempo` (rushing/dragging/steady inside the bar) |
+| Harmony | `harmony` | `inside` / `colour` / `outside` shares of note time against the chord sounding (colour: the genre's scale for the chord class, from the pack's `listening` section), `fit` (inside/colourful/outside), `genre_outside` (hold/lift) |
+| Phrasing | `phrasing` | `state` (playing, breathing: a gap of up to 2 bars, stopped, waiting), `gap_bars`, `call_response` (short phrases and short gaps, twice in 8 bars), `held` (share of note time in notes of a beat or more), `playing_bars` |
+| Dynamics | `dynamics` | `level` (last bar's mean velocity, 0–1), `shape` (crescendo/decrescendo/steady: across bars, or inside bars when the bars agree), `change` (last bar against the first), `accents` |
 
-The rule leader uses song position to lift in the last phrase before a bigger
-section when the player is building, to keep a steady player at a big
-section's level, and to keep parts in during the two bars before a change.
+All groups but phrasing listen over the last phrase; phrasing over the last
+8 bars. The rule leader uses:
+
+- song position: lift in the last phrase before a bigger section when the
+  player is building, keep a steady player at a big section's level, keep
+  parts in during the two bars before a change;
+- harmony: when the player goes outside, a "hold" genre doesn't lift, add
+  parts or fire a riser; a "lift" genre keeps drums and bass and lifts 0.1;
+- phrasing: a breath keeps the mood (no drop-out), a gap while trading
+  phrases gets a fill, held notes count as sparse, and while trading there
+  are no big level jumps, feel changes, or drums/bass drops;
+- dynamics: a crescendo or decrescendo moves the level 0.1 per turn the same
+  way (down to 0.15, up to 0.9), without fills or new parts on the way down.
+
+Rhythm goes to the brains only: the rules have nothing to change for it (the
+band keeps its tempo; tempo following is opt-in, below).
+
+**The chart's nudge (v0.3).** At a new section with an intensity, the
+governor moves the target halfway toward it, except when the leader set the
+target within the last phrase: a fresh decision stands. Before v0.3 it always
+nudged, which undid a lift or a let-down made in the bars before a section
+change (E7, E8, E12j in the eval). Sessions from before v0.3 replay with the
+old rule (`holdFreshTarget: false`).
 
 ## Jev (decision model)
 

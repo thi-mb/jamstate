@@ -36,6 +36,12 @@ export interface GovernorConfig {
   autoFills: boolean;
   /** Go back to the top of the form at the end instead of stopping. */
   loop: boolean;
+  /**
+   * The chart's section intensity nudges the target at a new section, except
+   * when the leader set the target within the last phrase (v0.3). Off: always
+   * nudge (v0.2 and older sessions).
+   */
+  holdFreshTarget: boolean;
 }
 
 export const DEFAULT_GOVERNOR: GovernorConfig = {
@@ -49,6 +55,7 @@ export const DEFAULT_GOVERNOR: GovernorConfig = {
   oneStingerPerPhrase: true,
   autoFills: true,
   loop: false,
+  holdFreshTarget: true,
 };
 
 export type MoveStatus = "applied" | "pending" | "rejected";
@@ -193,6 +200,8 @@ export class Engine {
   swingOverride: number | null;
   /** Bandleader's intensity target; null until it sets one (section hints rule until then). */
   private target: number | null = null;
+  /** Bar the leader last set the target on (the chart doesn't nudge a fresh decision). */
+  private targetSetAt = -Infinity;
   private layers: Set<Part>;
   band: Band;
   private feel: Feel = "normal";
@@ -318,6 +327,7 @@ export class Engine {
         const current = this.target ?? this.intensity;
         if (Math.abs(m.value - current) < cfg.intensityDeadband) return reject("within deadband");
         this.target = m.value;
+        this.targetSetAt = upcoming;
         return apply();
       }
       case "add_layer":
@@ -505,8 +515,10 @@ export class Engine {
 
     const name = this.chart.form[this.formPos];
     const section = this.sectionAt(this.formPos);
-    if (newSection && this.bar > this.countInTotal && section.intensity !== undefined && this.target !== null)
-      this.target = (this.target + section.intensity) / 2; // the chart nudges, the leader still leads
+    // The chart nudges, the leader still leads: a target the leader set within
+    // the last phrase is a fresh decision and stands (v0.3).
+    if (newSection && this.bar > this.countInTotal && section.intensity !== undefined && this.target !== null && !(cfg.holdFreshTarget && this.bar - this.targetSetAt <= this.chart.phraseBars))
+      this.target = (this.target + section.intensity) / 2;
 
     // Smooth intensity toward the goal.
     const goal = this.target ?? section.intensity ?? this.intensity;

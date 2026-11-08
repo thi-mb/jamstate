@@ -155,7 +155,7 @@ export class SessionRecorder {
       band: bandJSON(s.band),
       seed: s.seed,
       count_in: s.countIn,
-      config: s.config,
+      config: { ...s.config, holdFreshTarget: engine.config.holdFreshTarget },
       leader: s.leader,
       every_bars: s.everyBars,
       player: [...this.player].sort((a, b) => a[0] - b[0]),
@@ -191,7 +191,8 @@ export function sessionEngine(f: SessionFile, controls: Control[]): Engine {
     swing: f.swing,
     band: sessionBand(f),
     countIn: f.count_in,
-    config: f.config,
+    // Files from before v0.3 don't say: they were played with the chart always nudging.
+    config: { holdFreshTarget: false, ...f.config },
     script: controls,
   });
 }
