@@ -103,7 +103,7 @@ for (const c of contenders)
     for (const { scenario, run } of scenariosFor(song, only))
       for (let seed = 1; seed <= seeds; seed++)
         jobs.push(async () => {
-          const res: RunResult = await runScenario({ chart: song.chart, modes: run.modes, bars: run.bars, leader: c.leader(), everyBars: c.everyBars(song), seed, listening });
+          const res: RunResult = await runScenario({ chart: song.chart, modes: run.modes, bars: run.bars, cues: run.cues, leader: c.leader(), everyBars: c.everyBars(song), seed, listening });
           const checks = judge(run, new RunView(res.plans, song.chart.bpm));
           return {
             brain: c.name,

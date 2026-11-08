@@ -8,7 +8,7 @@ import { Ticker } from "./audio/ticker";
 import { ChartError, loadChart, type Chart, type ChartJSON } from "./core/chart";
 import { Conductor, ruleLeader, type Leader } from "./core/conductor";
 import { DEFAULT_LISTENING, LISTENING_LABELS, LISTENING_READY, listeningKey, NO_LISTENING, parseListening, type Listening } from "./core/listening";
-import { Engine } from "./core/engine";
+import { CUE_LABELS, CUES, cueForKey, Engine, type Cue } from "./core/engine";
 import { NoteTracker } from "./core/features";
 import { allGenres, getGenre } from "./core/genres";
 import type { Move } from "./core/moves";
@@ -346,6 +346,39 @@ function buildManualMoves(): void {
     btn("extend 4", { move: "extend_section", bars: 4, reason: "Manual" }),
   );
 }
+
+// ---------- cues (v0.3) ----------
+
+function giveCue(c: Cue): void {
+  if (!session) return overlay.note("Start the band first");
+  if (session.replay) return overlay.note("This is a replay: it plays what was recorded");
+  session.engine.cue(c);
+  overlay.note(`Cue: ${CUE_LABELS[c].toLowerCase()}`);
+}
+
+function buildCues(): void {
+  $("cues").replaceChildren(
+    ...CUES.map((c, i) => {
+      const b = document.createElement("button");
+      const k = document.createElement("kbd");
+      k.textContent = String(i + 1);
+      b.append(k, CUE_LABELS[c]);
+      b.onclick = () => giveCue(c);
+      return b;
+    }),
+  );
+}
+buildCues();
+
+window.addEventListener("keydown", (e) => {
+  const t = e.target as HTMLElement | null;
+  if (!t || t.tagName === "TEXTAREA" || t.tagName === "INPUT" || t.tagName === "SELECT" || t.isContentEditable) return;
+  if (e.metaKey || e.ctrlKey || e.altKey || e.repeat || !e.code.startsWith("Digit")) return;
+  const c = cueForKey(e.code.slice(5));
+  if (!c) return;
+  e.preventDefault();
+  giveCue(c);
+});
 
 // ---------- brain (bandleader) ----------
 
