@@ -8,7 +8,7 @@
 
 import { defaultBand, parseBand, type Band } from "./band";
 import { drumSteps, tokenSteps } from "./pattern";
-import { parseChord, VOICING_STYLES, type VoicingStyle } from "./theory";
+import { CHORD_CLASSES, parseChord, VOICING_STYLES, type ChordClass, type VoicingStyle } from "./theory";
 import { LEVELS, ROLES, V01_PARTS, type Part } from "./types";
 
 export const GENRE_FORMAT = "jamstate-genre/0.2";
@@ -165,6 +165,15 @@ export interface GenrePack {
   /** Typical forms and progressions, for writing songs in this genre (text-to-song, v0.6). */
   forms: string[];
   progressions: string[];
+  /** What the band listens for (v0.3); packs without it get the defaults. */
+  listening: GenreListening;
+}
+
+export interface GenreListening {
+  /** Per chord class, the notes (semitones above the root) that count as colour rather than outside. Missing: the chord's own scale. */
+  scales: Partial<Record<ChordClass, number[]>>;
+  /** What the rule leader does when the player plays outside. */
+  outside: "hold" | "lift";
 }
 
 const isObj = (x: unknown): x is Record<string, unknown> => typeof x === "object" && x !== null && !Array.isArray(x);
@@ -172,8 +181,26 @@ const isNum = (x: unknown, lo: number, hi: number): x is number => typeof x === 
 
 const TOP_KEYS = new Set([
   "format", "id", "name", "description", "parts", "band", "lineups", "mix", "feel", "humanize", "drums", "bass", "chords", "guitar", "pad", "percussion",
-  "ending", "forms", "progressions",
+  "ending", "forms", "progressions", "listening",
 ]);
+
+function listeningPack(raw: unknown, errs: string[]): GenreListening {
+  if (raw === undefined) return { scales: {}, outside: "hold" };
+  if (!isObj(raw)) return errs.push("listening must be an object"), { scales: {}, outside: "hold" };
+  for (const k of Object.keys(raw)) if (k !== "scales" && k !== "outside") errs.push(`listening: unknown field "${k}"`);
+  const scales: GenreListening["scales"] = {};
+  if (!isObj(raw.scales)) errs.push("listening.scales must be an object");
+  else
+    for (const [k, v] of Object.entries(raw.scales)) {
+      if (!CHORD_CLASSES.includes(k as ChordClass)) errs.push(`listening.scales: unknown chord class "${k}" (${CHORD_CLASSES.join(", ")})`);
+      else if (!Array.isArray(v) || !v.every((x) => Number.isInteger(x) && x >= 0 && x <= 11) || new Set(v).size !== v.length)
+        errs.push(`listening.scales.${k} must be distinct semitones 0–11`);
+      else scales[k as ChordClass] = v as number[];
+    }
+  const outside = raw.outside ?? "hold";
+  if (outside !== "hold" && outside !== "lift") errs.push('listening.outside must be "hold" or "lift"');
+  return { scales, outside: outside as GenreListening["outside"] };
+}
 const BASS_TOKEN = /^([.\-xgAN]|(R|1|2|9|b3|3|4|11|b5|5|6|13|b7|7|8)[,']?)!?$/;
 const CHORD_TOKEN = /^[.\-xXgp]$/;
 const DRUM_CHAR = /^[.xXgoh]$/;
@@ -493,6 +520,7 @@ export function loadGenre(raw: unknown): GenrePack {
     },
     forms: strings(raw.forms, "forms"),
     progressions: strings(raw.progressions, "progressions"),
+    listening: listeningPack(raw.listening, errs),
   };
   if (errs.length) throw new GenreError(errs, typeof raw.id === "string" ? raw.id : undefined);
   return pack;
