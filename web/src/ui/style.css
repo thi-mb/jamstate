@@ -87,3 +87,42 @@ code { font-size: 12px; }
 .band-part input[type=range] { width: 100%; accent-color: var(--accent); }
 .band-part.out select, .band-part.out .sliders { opacity: 0.4; }
 .band-part .state { grid-column: 2; font-size: 11px; color: var(--dim); }
+
+/* fretboard (v0.3) */
+.fretboard { margin: 0 0 14px; --fb-chord: var(--accent); --fb-scale: #f2a54138; --fb-in: var(--ok); --fb-col: #f5d76e; --fb-out: var(--bad); }
+.fb-label { font-size: 13px; color: var(--dim); margin-bottom: 4px; white-space: pre; }
+.fb-guitar { display: grid; grid-template-columns: repeat(var(--frets), minmax(0, 1fr)); gap: 2px; max-width: 100%; }
+.fb-fret { position: relative; height: 20px; border-right: 2px solid var(--line); display: flex; align-items: center; justify-content: center; background: linear-gradient(transparent 9px, #3a404d 9px, #3a404d 11px, transparent 11px); }
+.fb-fret.fb-open { border-right: 4px solid var(--dim); }
+.fb-fretnum { font-size: 10px; color: var(--dim); text-align: center; }
+.fb-fret i, .fb-key i { font-style: normal; font-size: 9px; line-height: 1; }
+.fb-fret i { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; border-radius: 999px; color: transparent; transition: background 0.2s, box-shadow 0.2s, color 0.2s; }
+.fb-fret.fb-scale i { background: var(--fb-scale); color: var(--dim); }
+.fb-fret.fb-chord i { background: var(--fb-chord); color: #1a1205; font-weight: 600; }
+.fb-fret.fb-root i { box-shadow: 0 0 0 2px var(--text); }
+.fb-fret.fb-next-chord i { box-shadow: 0 0 0 2px var(--accent); animation: fb-fade 0.4s ease-in both; }
+.fb-fret.fb-next-chord:not(.fb-chord):not(.fb-scale) i { color: var(--accent); }
+.fb-piano { display: flex; position: relative; height: 84px; }
+.fb-key { position: relative; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; transition: background 0.2s, box-shadow 0.2s; }
+.fb-white { flex: 1 1 0; min-width: 0; background: #d8dbe2; border: 1px solid var(--line); border-radius: 0 0 4px 4px; color: #1a1205; }
+.fb-black { flex: 0 0 0; width: 0; z-index: 1; }
+.fb-black::before { content: ""; position: absolute; top: 0; left: -9px; width: 18px; height: 52px; background: #20232b; border-radius: 0 0 3px 3px; }
+.fb-black i { position: absolute; top: 36px; left: -9px; width: 18px; text-align: center; z-index: 2; color: var(--text); }
+.fb-white.fb-scale { background: #f2d8ad; }
+.fb-white.fb-chord { background: var(--fb-chord); }
+.fb-black.fb-scale::before { background: #6b5634; }
+.fb-black.fb-chord::before { background: #c7832a; }
+.fb-key.fb-root i { text-decoration: underline; font-weight: 700; }
+.fb-white.fb-next-chord { box-shadow: inset 0 -6px 0 var(--accent); }
+.fb-black.fb-next-chord::before { box-shadow: 0 0 0 2px var(--accent); }
+.fb-fret.fb-play-inside i { box-shadow: 0 0 0 3px var(--fb-in); }
+.fb-white.fb-play-inside { background: var(--fb-in); }
+.fb-fret.fb-play-colour i { box-shadow: 0 0 0 3px var(--fb-col); }
+.fb-white.fb-play-colour { background: var(--fb-col); }
+.fb-fret.fb-play-outside i { box-shadow: 0 0 0 3px var(--fb-out); }
+.fb-white.fb-play-outside { background: var(--fb-out); }
+.fb-black.fb-play-inside::before { background: var(--fb-in); }
+.fb-black.fb-play-colour::before { background: var(--fb-col); }
+.fb-black.fb-play-outside::before { background: var(--fb-out); }
+@keyframes fb-fade { from { opacity: 0.2; } to { opacity: 1; } }
+@media (max-width: 600px) { .fb-fret { height: 16px; } .fb-fret i { min-width: 12px; height: 12px; font-size: 0; } }

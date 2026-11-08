@@ -9,7 +9,7 @@ import { ChartError, loadChart, type Chart, type ChartJSON } from "./core/chart"
 import { Conductor, ruleLeader, type Leader } from "./core/conductor";
 import { TempoFollower } from "./core/tempo";
 import { DEFAULT_LISTENING, LISTENING_LABELS, LISTENING_READY, listeningKey, NO_LISTENING, parseListening, type Listening } from "./core/listening";
-import { CUE_LABELS, CUES, cueForKey, Engine, type Cue } from "./core/engine";
+import { CUE_LABELS, CUES, cueForKey, Engine, type BarPlan, type Cue } from "./core/engine";
 import { NoteTracker } from "./core/features";
 import { allGenres, getGenre } from "./core/genres";
 import type { Move } from "./core/moves";
@@ -27,13 +27,34 @@ import type { SessionMeta, SessionStore } from "./core/platform";
 import { ServerSessionStore, webPlatform } from "./platform/web";
 import { attachKeyboard } from "./ui/keyboard";
 import { Overlay } from "./ui/overlay";
+import { FretboardView } from "./ui/fretboard";
+import { FRETBOARD_KINDS, type FretboardKind } from "./core/fretboard";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
 const overlay = new Overlay();
+
+
 let audio: AudioContext | null = null;
 const getAudio = () => (audio ??= new AudioContext({ latencyHint: "interactive" }));
 const platform = webPlatform(getAudio);
+
+// ---------- fretboard (v0.3) ----------
+
+const FRETBOARD_KEY = "jamstate.fretboard";
+const fretboard = new FretboardView($("fretboard"));
+const fretboardKind = $<HTMLSelectElement>("fretboard-kind");
+{
+  const saved = platform.settings.get<FretboardKind>(FRETBOARD_KEY);
+  fretboardKind.value = saved && FRETBOARD_KINDS.includes(saved) ? saved : "guitar";
+  fretboard.setKind(fretboardKind.value as FretboardKind);
+  fretboardKind.addEventListener("change", () => {
+    platform.settings.set(FRETBOARD_KEY, fretboardKind.value);
+    fretboard.setKind(fretboardKind.value as FretboardKind);
+  });
+}
+/** Committed bars by index (startBeat / beats per bar), for the fretboard. */
+let committedPlans: BarPlan[] = [];
 /** Sampled instruments, shared by every jam on this page. */
 let library: SampleLibrary | null = null;
 const getLibrary = () => (library ??= new SampleLibrary(getAudio()));
@@ -721,6 +742,7 @@ function playerNote(on: boolean, note: number, vel: number, audioTime?: number):
   if (!audio || !session || session.replay) return;
   const beat = session.transport.beatAt(audioTime ?? audio.currentTime);
   session.recorder?.note(beat, note, on ? vel : 0);
+  fretboard.note(on, note);
   if (on) {
     held.get(note)?.();
     held.set(note, session.synth.liveNote(note, vel));
@@ -842,6 +864,7 @@ async function start(replay?: SessionFile): Promise<void> {
   let heardGenre = replay?.genre;
   const transport = new Transport(engine, { now: () => ctx.currentTime }, sink, {
     onCommit: (plan, startBeat) => {
+      committedPlans[Math.round(startBeat / c.beatsPerBar)] = plan;
       recorder?.bar(plan);
       updateSessionStatus();
       if (replay) {
@@ -888,12 +911,24 @@ async function start(replay?: SessionFile): Promise<void> {
       stop();
     },
   });
-  const ticker = new Ticker(() => transport.tick());
+  // The fretboard follows the beat on the scheduler's heartbeat (it keeps going in a background tab; it redraws only on a change).
+  const drawFretboard = () => {
+    const beat = transport.beatAt(ctx.currentTime);
+    const k = Math.floor(beat / c.beatsPerBar);
+    const plan = committedPlans[k];
+    fretboard.frame(c, plan, beat - k * c.beatsPerBar, committedPlans[k + 1], getGenre(plan?.genre ?? engine.genre.id).listening);
+  };
+  const ticker = new Ticker(() => {
+    transport.tick();
+    drawFretboard();
+  });
   session = { engine, transport, conductor, ticker, tracker, synth, remote, recorder, replay: !!replay };
   overlay.chartBpm = c.bpm;
   overlay.reset(replay ? `Replay: ${replay.title}` : c.title);
   if (replay) overlay.setForm(c.form);
   overlay.leaderStatus(replay ? "replay" : leaderLabel(session));
+  committedPlans = [];
+  fretboard.clear();
   transport.start();
   ticker.start();
   setRunning(true);
@@ -904,6 +939,7 @@ function stop(): void {
   const wasLive = !session.replay;
   session.ticker.stop();
   session.transport.stop();
+  fretboard.clear();
   for (const release of held.values()) release();
   held.clear();
   session = null;
