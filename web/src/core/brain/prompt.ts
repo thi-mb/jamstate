@@ -28,6 +28,12 @@ section is bigger, smaller or the same), the phrase position and which time
 through this section it is. When the player builds into a bigger section, lift
 with them before the change; hold the band together in the last bars of a
 section rather than dropping parts.`,
+  rhythm: `"rhythm" describes the player's feel over the last phrase, not their energy:
+syncopation (0 on the beat, 1 all off-beat sixteenths), swing (0 straight,
+0.66 triplet), timing (ahead, on or behind the beat, with timing_ms) and tempo
+(rushing or dragging inside the bar). A syncopated, pushing or laid-back
+player still wants the groove: don't drop back or go half time for it. The
+band keeps its own tempo.`,
 };
 
 /** The system prompt for a request: the fixed prompt, then notes for the listening fields it carries. */
