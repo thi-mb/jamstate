@@ -7,7 +7,7 @@
 //   position  where we are in the song: bars left, what comes next, phrase
 //   rhythm    syncopation, swing, ahead of / behind the beat, rushing or dragging
 //   harmony   how their notes sit on the chord: inside, colour (genre scale) or outside
-//   phrasing  (PR 3d)
+//   phrasing  gaps and breaths, call and response, held notes, how long they've played
 //   dynamics  (PR 3e)
 
 import type { Chart } from "./chart";
@@ -20,7 +20,7 @@ export const LISTENING_GROUPS = ["position", "rhythm", "harmony", "phrasing", "d
 export type ListeningGroup = (typeof LISTENING_GROUPS)[number];
 export type Listening = Record<ListeningGroup, boolean>;
 /** The groups built so far (the page offers these). */
-export const LISTENING_READY: ListeningGroup[] = ["position", "rhythm", "harmony"];
+export const LISTENING_READY: ListeningGroup[] = ["position", "rhythm", "harmony", "phrasing"];
 
 export const LISTENING_LABELS: Record<ListeningGroup, string> = {
   position: "Song position",
@@ -60,6 +60,7 @@ export interface Heard {
   position: SongPosition;
   rhythm: Rhythm;
   harmony: Harmony;
+  phrasing: Phrasing;
 }
 
 /** The bars the note-based groups listen over: the last phrase, oldest first. */
@@ -251,4 +252,63 @@ export function harmonyOf(bars: HeardBar[], beatsPerBar: number, chordAt: ChordA
   const outside = w.outside / total;
   const fit = outside >= OUTSIDE_SHARE ? "outside" : (w.colour + w.outside) / total >= 0.5 ? "colourful" : "inside";
   return { inside: share(w.inside), colour: share(w.colour), outside: share(w.outside), fit, genre_outside: genre.outside };
+}
+
+// ---------- phrasing ----------
+
+export interface Phrasing {
+  /**
+   * playing: notes in the last bar. breathing: a gap of up to MAX_BREATH bars
+   * after playing (a breath, or leaving room for an answer). stopped: a longer
+   * gap. waiting: nothing played yet.
+   */
+  state: "playing" | "breathing" | "stopped" | "waiting";
+  /** Bars since their last note (0 while playing). */
+  gap_bars: number;
+  /** Short phrases with short gaps between, at least twice in the last 8 bars: they're trading with the band. */
+  call_response: boolean;
+  /** Share of the time they played that was long notes (a beat or more). Null when silent. */
+  held: number | null;
+  /** Bars in a row with notes, up to the last one. */
+  playing_bars: number;
+}
+
+/** A gap up to this many bars is a breath, not a stop. */
+export const MAX_BREATH = 2;
+
+/** Over the last bars (oldest first, up to 8). */
+export function phrasingOf(bars: PlayedNote[][], beatsPerBar: number): Phrasing {
+  const played = bars.map((ns) => ns.some((n) => n.start >= 0 && n.start < beatsPerBar));
+  let gap = 0;
+  for (let i = played.length - 1; i >= 0 && !played[i]; i--) gap++;
+  let run = 0;
+  for (let i = played.length - 1 - gap; i >= 0 && played[i]; i--) run++;
+  const ever = played.some(Boolean);
+  const state = !ever ? "waiting" : gap === 0 ? "playing" : gap <= MAX_BREATH ? "breathing" : "stopped";
+  // Runs of playing / not playing; a trade is a playing run of ≤ 4 bars followed by a gap of 1–2 bars.
+  const runs: { on: boolean; n: number }[] = [];
+  for (const p of played) {
+    const last = runs[runs.length - 1];
+    if (last && last.on === p) last.n++;
+    else runs.push({ on: p, n: 1 });
+  }
+  let trades = 0;
+  for (let i = 0; i + 1 < runs.length; i++) if (runs[i].on && runs[i].n <= 4 && !runs[i + 1].on && runs[i + 1].n <= MAX_BREATH) trades++;
+  let heldBeats = 0;
+  let total = 0;
+  for (const ns of bars)
+    for (const n of ns) {
+      const start = Math.max(0, n.start);
+      if (start >= beatsPerBar) continue;
+      const d = Math.min(n.start + n.dur, beatsPerBar) - start;
+      total += d;
+      if (n.dur >= 1) heldBeats += d;
+    }
+  return {
+    state,
+    gap_bars: gap,
+    call_response: trades >= 2,
+    held: total ? r2(heldBeats / total) : null,
+    playing_bars: gap === 0 ? run : 0,
+  };
 }
