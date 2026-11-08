@@ -144,8 +144,11 @@ Player: `medium:4, syncopated:8`.
 
 ## Tempo
 
+Each tempo scenario runs twice: strict (E15–E17, the default) and with
+Follow my tempo on (E15f–E17f).
+
 ### E15 Pushing and laying back (feel, not tempo)
-Player: `push:8, layback:8`, with Follow my tempo on and off.
+Player: `push:8, layback:8`, with Follow my tempo off (E15) and on (E15f).
 - Must: tempo stays at the chart tempo at every bar, both settings.
 
 ### E16 Rushing
@@ -157,6 +160,12 @@ Player: `medium:4, rush:12`.
 
 ### E17 Dragging
 Player: `medium:4, drag:12`. Same checks as E16, slower.
+
+The follower (`web/src/core/tempo.ts`) hears how the player's beat drifts
+against the band's over the last 2 bars, smooths it, ignores differences
+under 0.4%, and moves the band at most 1% per bar, never past ±5% of the
+chart tempo. A new tempo applies from the next bar. Tempo changes are
+recorded in the session (`tempo` controls) and replay exactly.
 
 ## Cues
 

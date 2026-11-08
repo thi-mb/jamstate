@@ -118,6 +118,8 @@ export interface PartGenerator {
 
 export interface BarPlan {
   bar: number;
+  /** The band's tempo for this bar (the chart's, unless Follow my tempo moved it). */
+  bpm: number;
   kind: BarKind;
   section: string;
   formPos: number;
@@ -150,6 +152,7 @@ export interface BarPlan {
 export type Control =
   | { at: number; kind: "moves"; source: string; requestedBar: number; moves: unknown[] }
   | { at: number; kind: "cue"; cue: Cue }
+  | { at: number; kind: "tempo"; bpm: number }
   | { at: number; kind: "genre"; genre: string }
   | { at: number; kind: "swing"; swing: number | null }
   | { at: number; kind: "band"; band: Band };
@@ -227,6 +230,8 @@ export class Engine {
   private countInTotal: number;
 
   intensity: number;
+  /** The band's tempo; changes land on the next bar. */
+  bpm: number;
   genre: GenrePack;
   swingOverride: number | null;
   /** Bandleader's intensity target; null until it sets one (section hints rule until then). */
@@ -266,6 +271,7 @@ export class Engine {
     this.band = cloneBand(opts.band ?? chart.band ?? this.genre.band);
     this.layers = new Set(opts.layers ?? this.lineup);
     this.countInLeft = this.countInTotal = opts.countIn ?? 0;
+    this.bpm = chart.bpm;
     this.script = [...(opts.script ?? [])].sort((a, b) => a.at - b.at);
   }
 
@@ -287,6 +293,13 @@ export class Engine {
   cue(c: Cue): void {
     this.controls.push({ at: this.bar, kind: "cue", cue: c });
     this.cues.push(c);
+  }
+
+  /** The band's tempo from the next bar on (Follow my tempo). */
+  setTempo(bpm: number): void {
+    if (bpm === this.bpm) return;
+    this.controls.push({ at: this.bar, kind: "tempo", bpm });
+    this.bpm = bpm;
   }
 
   /** Switch genre from the next bar on. */
@@ -546,6 +559,7 @@ export class Engine {
       const c = this.script[this.scriptPos++];
       if (c.kind === "moves") this.submit(c.moves, c.source, c.requestedBar);
       else if (c.kind === "cue") this.cue(c.cue);
+      else if (c.kind === "tempo") this.setTempo(c.bpm);
       else if (c.kind === "genre") this.setGenre(getGenre(c.genre));
       else if (c.kind === "band") this.setBand(c.band);
       else this.setSwing(c.swing);
@@ -564,7 +578,7 @@ export class Engine {
       const felt = applyFeel(evs, p, {
         swing,
         unit: this.genre.swingUnit,
-        bpm: this.chart.bpm,
+        bpm: this.bpm,
         humanize: this.genre.humanize[p],
         rand: rngFor(this.seed, "feel", p, bar),
       });
@@ -601,7 +615,7 @@ export class Engine {
     const byPart: Partial<Record<Part, NoteEvent[]>> = {};
     for (const p of ctx.parts) byPart[p] = gen[p] ?? [];
     return {
-      bar: this.bar, kind: "count_in", section: "count-in", formPos: 0, barInSection: i, sectionBars: this.countInTotal, chords: [],
+      bar: this.bar, bpm: this.bpm, kind: "count_in", section: "count-in", formPos: 0, barInSection: i, sectionBars: this.countInTotal, chords: [],
       intensity: this.intensity, target: this.target ?? this.intensity, level: 1, layers: [], lineup: this.lineup, band: this.band, feel: this.feel, genre: this.genre.id,
       swing: this.swingFor(this.chart.form[0]), events: this.feelBar(byPart, this.bar, this.swingFor(this.chart.form[0]), false),
       stingers: [], moves: resolved, repeated: [],
@@ -744,6 +758,7 @@ export class Engine {
     if (ending) this.done = true;
     return {
       bar: this.bar,
+      bpm: this.bpm,
       kind: ending ? "ending" : "play",
       section: name,
       formPos: this.formPos,
