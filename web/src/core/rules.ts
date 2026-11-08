@@ -3,7 +3,7 @@
 // with separate enter/exit thresholds so it doesn't flap.
 
 import type { PlayerSummary } from "./features";
-import type { Rhythm, SongPosition } from "./listening";
+import type { Harmony, Rhythm, SongPosition } from "./listening";
 import type { Move } from "./moves";
 import { V01_PARTS, type Feel, type Part } from "./types";
 
@@ -28,6 +28,7 @@ export interface LeaderContext {
   /** Listening layer (v0.3), present when its group is on. */
   position?: SongPosition;
   rhythm?: Rhythm;
+  harmony?: Harmony;
 }
 
 export type Mood = "silent" | "sparse" | "groove" | "busy";
@@ -57,7 +58,27 @@ export class RuleLeader {
   }
 
   decide(ctx: LeaderContext): Move[] {
-    return this.withPosition(ctx, this.byMood(ctx));
+    return this.withHarmony(ctx, this.withPosition(ctx, this.byMood(ctx)));
+  }
+
+  /**
+   * Harmony (v0.3): when the player goes outside, a genre that holds keeps the
+   * band where it is (no lifts, no new parts, no riser); a genre that lifts
+   * (jazz) keeps drums and bass in and nudges up with them.
+   */
+  private withHarmony(ctx: LeaderContext, moves: Move[]): Move[] {
+    const h = ctx.harmony;
+    if (!h || h.fit !== "outside") return moves;
+    if (h.genre_outside === "hold") {
+      const held = moves.filter(
+        (m) => !(m.move === "set_intensity" && m.value > ctx.target + 0.1) && m.move !== "add_layer" && !(m.move === "fire_stinger" && m.stinger === "riser"),
+      );
+      return held;
+    }
+    const kept = moves.filter((m) => !(m.move === "drop_layer" && (m.part === "drums" || m.part === "bass")) && !(m.move === "set_intensity" && m.value < ctx.target));
+    if (!kept.some((m) => m.move === "set_intensity") && ctx.target < 0.9)
+      kept.unshift({ move: "set_intensity", value: Math.round(Math.min(1, ctx.target + 0.1) * 100) / 100, reason: "Going out with you" });
+    return kept.slice(0, 2);
   }
 
   /**
