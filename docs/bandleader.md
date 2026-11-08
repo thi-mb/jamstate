@@ -134,6 +134,26 @@ reason addressed to the player, under 100 characters.
 
 The user message is the request JSON, verbatim.
 
+### Listening groups (v0.3)
+
+Under **Bandleader → Listening** the player picks which listening groups go
+into the request; every brain gets the same request. Each group that is on adds
+its own field, and the system prompt gets one paragraph per field present,
+after the fixed prompt above (so its cached prefix doesn't change). The
+paragraphs live in `LISTENING_NOTES` in `web/src/core/brain/prompt.ts`. Jev gets
+the same fields in its state (`song` for position). The overlay always shows
+everything heard, whichever groups are on. The setting and every change are
+recorded in the session file (`listening`), and a replay with a leader hears
+the same groups.
+
+| Group | Field | What it holds |
+|---|---|---|
+| Song position | `position` | `bars_left` in the section, `next_section` (null: the song ends), `next_lift` (up/down/same, from the chart's section intensities), `section_level`, `phrase` (start/middle/end), `pass` ("2 of 3"), `last_section` |
+
+The rule leader uses song position to lift in the last phrase before a bigger
+section when the player is building, to keep a steady player at a big
+section's level, and to keep parts in during the two bars before a change.
+
 ## Jev (decision model)
 
 Jev answers typed questions instead of writing text
