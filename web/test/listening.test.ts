@@ -5,7 +5,7 @@ import { Engine } from "../src/core/engine";
 import { getGenre } from "../src/core/genres";
 import { leaderSystem, LEADER_SYSTEM } from "../src/core/brain/prompt";
 import { jevState } from "../src/core/brain/jev";
-import { harmonyOf, listeningKey, noteFit, NO_LISTENING, parseListening, phrasingOf, rhythmOf, songPosition } from "../src/core/listening";
+import { dynamicsOf, harmonyOf, listeningKey, noteFit, NO_LISTENING, parseListening, phrasingOf, rhythmOf, songPosition } from "../src/core/listening";
 import { loadGenre } from "../src/core/genre";
 import { parseChord } from "../src/core/theory";
 import { SimPlayer, type SimMode } from "../src/core/simplayer";
@@ -235,3 +235,62 @@ describe("phrasing", () => {
     expect(new RuleLeader().decide(ctx(2, of("x...")))).toContainEqual(expect.objectContaining({ move: "drop_layer", part: "drums" }));
   });
 });
+
+describe("dynamics", () => {
+  const phrase = (mode: SimMode, seed = 5) => {
+    const e = new Engine(chart, { seed: 3 });
+    const sim = new SimPlayer(seed);
+    return [0, 1, 2, 3].map(() => sim.play(e.nextBar()!, mode, 4, { bpm: 112, chartBpm: 112, phraseBars: 4 }));
+  };
+
+  it("hears a crescendo or decrescendo, and steady playing as steady", () => {
+    expect(dynamicsOf(phrase("crescendo"), 4).shape).toBe("crescendo");
+    expect(dynamicsOf(phrase("decrescendo"), 4).shape).toBe("decrescendo");
+    for (const mode of ["medium", "busy", "riff", "held", "syncopated"] as SimMode[])
+      for (const seed of [1, 2, 3, 4, 5]) expect(dynamicsOf(phrase(mode, seed), 4).shape, `${mode} ${seed}`).toBe("steady");
+    expect(dynamicsOf(phrase("silent"), 4)).toEqual({ level: null, shape: null, change: null, accents: null });
+  });
+
+  it("hears a build from bar to bar, and accents", () => {
+    const bar = (vel: number) => [0, 1, 2, 3].map((b) => ({ start: b, dur: 0.5, note: 60, vel }));
+    const d = dynamicsOf([bar(50), bar(65), bar(80), bar(100)], 4);
+    expect(d).toMatchObject({ shape: "crescendo", level: 0.79 });
+    expect(d.change).toBeCloseTo(0.39, 2);
+    const accented = [0, 1, 2, 3].map((b) => ({ start: b, dur: 0.5, note: 60, vel: b === 0 ? 120 : 70 }));
+    expect(dynamicsOf([accented, accented], 4).accents).toBe(0.25);
+  });
+
+  it("rules follow it a step at a time", () => {
+    const ctx = { ...plainCtx(), dynamics: { level: 0.5, shape: "decrescendo" as const, change: -0.2, accents: 0 } };
+    expect(new RuleLeader().decide(ctx)[0]).toMatchObject({ move: "set_intensity", value: 0.4, reason: "Coming down with you" });
+    const up = new RuleLeader().decide({ ...ctx, dynamics: { ...ctx.dynamics, shape: "crescendo" } });
+    expect(up[0]).toMatchObject({ move: "set_intensity", value: 0.6 });
+  });
+});
+
+describe("the chart's nudge at a new section", () => {
+  /** Night Shift's chorus (intensity 0.75) starts at bar 12. */
+  const targetAt12 = (setAt: number, hold = true) => {
+    const e = new Engine(chart, { seed: 1, genre: getGenre("funk"), countIn: 0, config: { holdFreshTarget: hold } });
+    let t = 0;
+    for (let b = 0; b <= 12; b++) {
+      if (b === setAt) e.submit([{ move: "set_intensity", value: 0.1, reason: "t" }], "test");
+      t = e.nextBar()!.target;
+    }
+    return t;
+  };
+  it("leaves a target the leader set in the last phrase, and nudges an older one", () => {
+    expect(targetAt12(10)).toBeCloseTo(0.1);
+    expect(targetAt12(4)).toBeCloseTo((0.1 + 0.75) / 2);
+    expect(targetAt12(10, false)).toBeCloseTo((0.1 + 0.75) / 2);
+  });
+});
+
+function plainCtx(): LeaderContext {
+  return {
+    bar: 10, section: "verse", bar_in_section: 2, section_bars: 8, phrase_bars: 4, intensity: 0.5, target: 0.5,
+    layers: ["drums", "bass", "chords"], lineup: ["drums", "bass", "chords"], feel: "normal", form: chart.form, form_pos: 1, sections: [...chart.sections.keys()],
+    player: { bars: 2, energy: 0.5, density: 1, mean_velocity: 0.6, rest_ratio: 0.2, repetition: 0.2, register: "mid", trend: "steady", silent_bars: 0 },
+    recent_moves: [],
+  };
+}

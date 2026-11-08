@@ -3,7 +3,7 @@
 // with separate enter/exit thresholds so it doesn't flap.
 
 import type { PlayerSummary } from "./features";
-import type { Harmony, Phrasing, Rhythm, SongPosition } from "./listening";
+import type { Dynamics, Harmony, Phrasing, Rhythm, SongPosition } from "./listening";
 import type { Move } from "./moves";
 import { V01_PARTS, type Feel, type Part } from "./types";
 
@@ -30,6 +30,7 @@ export interface LeaderContext {
   rhythm?: Rhythm;
   harmony?: Harmony;
   phrasing?: Phrasing;
+  dynamics?: Dynamics;
 }
 
 export type Mood = "silent" | "sparse" | "groove" | "busy";
@@ -59,7 +60,26 @@ export class RuleLeader {
   }
 
   decide(ctx: LeaderContext): Move[] {
-    return this.withHarmony(ctx, this.withPosition(ctx, this.withPhrasing(ctx, this.byMood(ctx))));
+    return this.withHarmony(ctx, this.withPosition(ctx, this.withDynamics(ctx, this.withPhrasing(ctx, this.byMood(ctx)))));
+  }
+
+  /**
+   * Dynamics (v0.3): follow a crescendo or decrescendo while it happens,
+   * a step at a time, instead of waiting for the energy band to change.
+   */
+  private withDynamics(ctx: LeaderContext, moves: Move[]): Move[] {
+    const d = ctx.dynamics;
+    if (!d?.shape || d.shape === "steady" || this.mood === "silent") return moves;
+    const set = moves.find((m) => m.move === "set_intensity") as Extract<Move, { move: "set_intensity" }> | undefined;
+    const r = (x: number) => Math.round(x * 100) / 100;
+    if (d.shape === "decrescendo") {
+      const value = r(Math.max(0.15, Math.min(set?.value ?? 1, ctx.target - 0.1)));
+      const rest = moves.filter((m) => m.move !== "set_intensity" && m.move !== "add_layer" && m.move !== "fire_stinger");
+      return value < ctx.target ? [{ move: "set_intensity", value, reason: "Coming down with you" } as Move, ...rest].slice(0, 2) : rest;
+    }
+    const value = r(Math.max(set?.value ?? 0, Math.min(0.9, ctx.target + 0.1)));
+    const rest = moves.filter((m) => m.move !== "set_intensity" && m.move !== "drop_layer" && !(m.move === "change_feel" && m.feel === "half_time"));
+    return value > ctx.target ? [{ move: "set_intensity", value, reason: set && set.value >= value ? set.reason : "Building with you" } as Move, ...rest].slice(0, 2) : rest;
   }
 
   /** Phrasing (v0.3): trading phrases with the band, keep the level steady and the feel as it is. */
