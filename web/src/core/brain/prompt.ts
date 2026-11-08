@@ -46,6 +46,12 @@ call_response (they play short phrases and leave short gaps: they are trading
 with the band, so answer in the gaps with a fill and keep the band in rather
 than dropping out), held (share of long notes: a lyrical line wants space) and
 playing_bars (how long they have been playing without a break).`,
+  dynamics: `"dynamics" says how loud the player is and where it is going: level (0-1,
+the last bar), shape (crescendo or decrescendo, across the bars or inside
+them, else steady), change (last bar against the first of the phrase) and
+accents (share of clearly louder notes). Follow a crescendo or decrescendo
+while it happens, a step at a time, even when the overall energy hasn't moved
+much yet.`,
 };
 
 /** The system prompt for a request: the fixed prompt, then notes for the listening fields it carries. */

@@ -8,7 +8,7 @@
 //   rhythm    syncopation, swing, ahead of / behind the beat, rushing or dragging
 //   harmony   how their notes sit on the chord: inside, colour (genre scale) or outside
 //   phrasing  gaps and breaths, call and response, held notes, how long they've played
-//   dynamics  (PR 3e)
+//   dynamics  how loud, getting louder or softer (across bars or inside them), accents
 
 import type { Chart } from "./chart";
 import type { BarPlan } from "./engine";
@@ -20,7 +20,7 @@ export const LISTENING_GROUPS = ["position", "rhythm", "harmony", "phrasing", "d
 export type ListeningGroup = (typeof LISTENING_GROUPS)[number];
 export type Listening = Record<ListeningGroup, boolean>;
 /** The groups built so far (the page offers these). */
-export const LISTENING_READY: ListeningGroup[] = ["position", "rhythm", "harmony", "phrasing"];
+export const LISTENING_READY: ListeningGroup[] = [...LISTENING_GROUPS];
 
 export const LISTENING_LABELS: Record<ListeningGroup, string> = {
   position: "Song position",
@@ -61,6 +61,7 @@ export interface Heard {
   rhythm: Rhythm;
   harmony: Harmony;
   phrasing: Phrasing;
+  dynamics: Dynamics;
 }
 
 /** The bars the note-based groups listen over: the last phrase, oldest first. */
@@ -311,4 +312,86 @@ export function phrasingOf(bars: PlayedNote[][], beatsPerBar: number): Phrasing 
     held: total ? r2(heldBeats / total) : null,
     playing_bars: gap === 0 ? run : 0,
   };
+}
+
+// ---------- dynamics ----------
+
+export interface Dynamics {
+  /** Mean velocity of the last bar with notes, 0–1. Null when nothing was played. */
+  level: number | null;
+  /**
+   * crescendo / decrescendo: velocity rising or falling, either across the
+   * bars of the phrase or inside the bars (a swell that restarts each phrase
+   * still counts). steady otherwise. Null with too few notes to tell.
+   */
+  shape: "crescendo" | "decrescendo" | "steady" | null;
+  /** Last bar's mean velocity minus the first bar's in the window (0–1 scale). */
+  change: number | null;
+  /** Share of notes clearly louder (≥ 0.15) than the rest of their bar. */
+  accents: number | null;
+}
+
+/** Velocity slope, in 0–1 per bar, that counts as a shape: across bars, and inside bars (stricter, fewer points). */
+const SLOPE_ACROSS = 0.04;
+const SLOPE_INSIDE = 0.06;
+const ACCENT = 0.15;
+
+/** Least-squares slope of y on x and its t statistic; 0 when x doesn't vary. */
+function fit(xs: number[], ys: number[]): { slope: number; t: number } {
+  const mx = xs.reduce((a, b) => a + b, 0) / xs.length;
+  const my = ys.reduce((a, b) => a + b, 0) / ys.length;
+  let sxy = 0;
+  let sxx = 0;
+  for (let i = 0; i < xs.length; i++) {
+    sxy += (xs[i] - mx) * (ys[i] - my);
+    sxx += (xs[i] - mx) ** 2;
+  }
+  if (!sxx) return { slope: 0, t: 0 };
+  const b = sxy / sxx;
+  let sse = 0;
+  for (let i = 0; i < xs.length; i++) sse += (ys[i] - my - b * (xs[i] - mx)) ** 2;
+  const se = xs.length > 2 ? Math.sqrt(sse / (xs.length - 2) / sxx) : Infinity;
+  return { slope: b, t: se ? Math.abs(b) / se : Infinity };
+}
+
+/** Over the last phrase (oldest first). */
+export function dynamicsOf(bars: PlayedNote[][], beatsPerBar: number): Dynamics {
+  const inBar = bars.map((ns) => ns.filter((n) => n.start >= 0 && n.start < beatsPerBar));
+  const played = inBar.map((ns, i) => ({ i, ns })).filter((b) => b.ns.length);
+  if (!played.length) return { level: null, shape: null, change: null, accents: null };
+  const mean = (ns: PlayedNote[]) => ns.reduce((a, n) => a + n.vel, 0) / ns.length / 127;
+  const means = played.map((b) => mean(b.ns));
+  const level = r2(means[means.length - 1]);
+  const change = played.length >= 2 ? r2(means[means.length - 1] - means[0]) : null;
+  // Inside bars: velocity against position in the bar, each bar's mean taken out, pooled.
+  const xs: number[] = [];
+  const ys: number[] = [];
+  let accented = 0;
+  let counted = 0;
+  played.forEach((b, k) => {
+    if (b.ns.length < 3) return;
+    for (const n of b.ns) {
+      xs.push(n.start / beatsPerBar);
+      ys.push(n.vel / 127 - means[k]);
+      counted++;
+      if (n.vel / 127 - means[k] >= ACCENT) accented++;
+    }
+  });
+  // Inside bars needs a clear trend (t ≥ 3): random accents in a steady line aren't a shape.
+  const fi = xs.length >= 6 ? fit(xs, ys) : { slope: 0, t: 0 };
+  // ... and bar means moving the same way from bar to bar (a repeated accent
+  // pattern has a slope inside the bar but the bars stay level).
+  const steps = means.slice(1).map((m, k) => m - means[k]);
+  const agree = steps.filter((d) => Math.sign(d) === Math.sign(fi.slope) && Math.abs(d) >= 0.02).length;
+  const inside = fi.t >= 3 && agree >= Math.max(1, steps.length - 1) ? fi.slope : 0;
+  const across = played.length >= 3 ? fit(played.map((b) => b.i), means).slope : 0;
+  const shape: Dynamics["shape"] =
+    xs.length < 6 && played.length < 3
+      ? null
+      : Math.abs(inside) >= SLOPE_INSIDE
+        ? inside > 0 ? "crescendo" : "decrescendo"
+        : Math.abs(across) >= SLOPE_ACROSS
+          ? across > 0 ? "crescendo" : "decrescendo"
+          : "steady";
+  return { level, shape, change, accents: counted ? r2(accented / counted) : null };
 }

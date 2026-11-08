@@ -33,7 +33,11 @@ response is followed bar by bar. v0.3 adds more listening. Three forces:
   in its state. The rule leader uses song position (lift into a bigger
   section when the player builds; hold parts in the two bars before a change),
   phrasing gaps and outside playing.
-- Groups listen over the last phrase (`phrase_bars`).
+- Groups listen over the last phrase (`phrase_bars`); phrasing over the last
+  8 bars, to see trades.
+- The governor's chart nudge at a new section leaves a target the leader set
+  within the last phrase (`holdFreshTarget`). Listening that makes the leader
+  move earlier is wasted if the chart halves the move at the section line.
 - Harmony classifies each note against the chord sounding when it starts:
   a chord tone is **inside**, a note of the genre's scale for the chord's class
   is **colour**, anything else is **outside**; shares are weighted by how long
