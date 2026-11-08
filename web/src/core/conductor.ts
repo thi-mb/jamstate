@@ -5,7 +5,7 @@
 import type { BarPlan, Engine } from "./engine";
 import { barFeatures, summarize, type BarFeatures, type PlayedNote, type PlayerSummary } from "./features";
 import { getGenre } from "./genres";
-import { DEFAULT_LISTENING, harmonyOf, phrasingOf, rhythmOf, songPosition, type Heard, type HeardBar, type Listening } from "./listening";
+import { DEFAULT_LISTENING, dynamicsOf, harmonyOf, phrasingOf, rhythmOf, songPosition, type Heard, type HeardBar, type Listening } from "./listening";
 import { PLAYER_ONLY_MOVES, type Move } from "./moves";
 import type { LeaderContext } from "./rules";
 
@@ -81,6 +81,7 @@ export class Conductor {
       rhythm: rhythmOf(bars.map((b) => b.notes), chart.beatsPerBar, chart.bpm),
       harmony: harmonyOf(bars, chart.beatsPerBar, this.chordAt, getGenre(plan.genre).listening),
       phrasing: phrasingOf(this.recent.map((b) => b.notes), chart.beatsPerBar),
+      dynamics: dynamicsOf(bars.map((b) => b.notes), chart.beatsPerBar),
     };
   }
 
@@ -108,6 +109,7 @@ export class Conductor {
     if (this.listening.rhythm) ctx.rhythm = heard.rhythm;
     if (this.listening.harmony) ctx.harmony = heard.harmony;
     if (this.listening.phrasing) ctx.phrasing = heard.phrasing;
+    if (this.listening.dynamics) ctx.dynamics = heard.dynamics;
     return ctx;
   }
 
