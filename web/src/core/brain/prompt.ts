@@ -16,6 +16,26 @@ often right. Never move more than two things at once.
 Answer only with JSON matching the schema. Each move needs a short, friendly
 reason addressed to the player, under 100 characters.`;
 
+/**
+ * One paragraph per listening group whose fields are in the request, added
+ * after the fixed prompt (so the cached prefix stays the same). Kept in step
+ * with docs/bandleader.md.
+ */
+export const LISTENING_NOTES: Record<string, string> = {
+  position: `"position" says where the song is: bars_left in this section after the
+last bar, next_section (null: the song ends), next_lift (the chart's next
+section is bigger, smaller or the same), the phrase position and which time
+through this section it is. When the player builds into a bigger section, lift
+with them before the change; hold the band together in the last bars of a
+section rather than dropping parts.`,
+};
+
+/** The system prompt for a request: the fixed prompt, then notes for the listening fields it carries. */
+export function leaderSystem(ctx: object): string {
+  const notes = Object.keys(LISTENING_NOTES).filter((k) => k in ctx).map((k) => LISTENING_NOTES[k]);
+  return notes.length ? `${LEADER_SYSTEM}\n\n${notes.join("\n\n")}` : LEADER_SYSTEM;
+}
+
 export function chartSystem(genres: string[]): string {
   return `You write chord charts for a backing band. Given a description, return one
 JSON chart matching the schema: version "0.1", title, bpm, time_sig ("4/4" or

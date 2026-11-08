@@ -6,7 +6,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import type { LeaderContext } from "../rules";
 import { extractJson, splitMoves } from "./check";
-import { chartSchema, chartSystem, LEADER_SYSTEM, movesSchema, strictSchema } from "./prompt";
+import { chartSchema, chartSystem, leaderSystem, movesSchema, strictSchema } from "./prompt";
 import { BrainError, now, type BrainAnswer, type BrainProvider, type ChartAnswer, type Fetch } from "./types";
 
 export const DEFAULT_CLAUDE_MODEL = "claude-haiku-5-5";
@@ -85,7 +85,7 @@ export class ClaudeBrain implements BrainProvider {
 
   async decide(ctx: LeaderContext, signal?: AbortSignal): Promise<BrainAnswer> {
     const t0 = now();
-    const { data, model, usage } = await this.ask(LEADER_SYSTEM, JSON.stringify(ctx), movesSchema(), 2000, signal);
+    const { data, model, usage } = await this.ask(leaderSystem(ctx), JSON.stringify(ctx), movesSchema(), 2000, signal);
     return { ...splitMoves(data, ctx.sections), model, latencyMs: Math.round(now() - t0), meta: { usage } };
   }
 
