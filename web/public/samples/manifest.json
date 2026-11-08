@@ -3373,159 +3373,160 @@
    "name": "Crunch guitar",
    "kind": "pitched",
    "release": 0.1,
-   "bytes": 1011930,
+   "bytes": 746214,
    "zones": [
     {
-     "file": "crunch/40-65.ogg",
+     "file": "clean/40-65.ogg",
      "key": 40,
      "vel": 65
     },
     {
-     "file": "crunch/40-110.ogg",
+     "file": "clean/40-110.ogg",
      "key": 40,
      "vel": 110
     },
     {
-     "file": "crunch/43-65.ogg",
+     "file": "clean/43-65.ogg",
      "key": 43,
      "vel": 65
     },
     {
-     "file": "crunch/43-110.ogg",
+     "file": "clean/43-110.ogg",
      "key": 43,
      "vel": 110
     },
     {
-     "file": "crunch/46-65.ogg",
+     "file": "clean/46-65.ogg",
      "key": 46,
      "vel": 65
     },
     {
-     "file": "crunch/46-110.ogg",
+     "file": "clean/46-110.ogg",
      "key": 46,
      "vel": 110
     },
     {
-     "file": "crunch/49-65.ogg",
+     "file": "clean/49-65.ogg",
      "key": 49,
      "vel": 65
     },
     {
-     "file": "crunch/49-110.ogg",
+     "file": "clean/49-110.ogg",
      "key": 49,
      "vel": 110
     },
     {
-     "file": "crunch/52-65.ogg",
+     "file": "clean/52-65.ogg",
      "key": 52,
      "vel": 65
     },
     {
-     "file": "crunch/52-110.ogg",
+     "file": "clean/52-110.ogg",
      "key": 52,
      "vel": 110
     },
     {
-     "file": "crunch/55-65.ogg",
+     "file": "clean/55-65.ogg",
      "key": 55,
      "vel": 65
     },
     {
-     "file": "crunch/55-110.ogg",
+     "file": "clean/55-110.ogg",
      "key": 55,
      "vel": 110
     },
     {
-     "file": "crunch/58-65.ogg",
+     "file": "clean/58-65.ogg",
      "key": 58,
      "vel": 65
     },
     {
-     "file": "crunch/58-110.ogg",
+     "file": "clean/58-110.ogg",
      "key": 58,
      "vel": 110
     },
     {
-     "file": "crunch/61-65.ogg",
+     "file": "clean/61-65.ogg",
      "key": 61,
      "vel": 65
     },
     {
-     "file": "crunch/61-110.ogg",
+     "file": "clean/61-110.ogg",
      "key": 61,
      "vel": 110
     },
     {
-     "file": "crunch/64-65.ogg",
+     "file": "clean/64-65.ogg",
      "key": 64,
      "vel": 65
     },
     {
-     "file": "crunch/64-110.ogg",
+     "file": "clean/64-110.ogg",
      "key": 64,
      "vel": 110
     },
     {
-     "file": "crunch/67-65.ogg",
+     "file": "clean/67-65.ogg",
      "key": 67,
      "vel": 65
     },
     {
-     "file": "crunch/67-110.ogg",
+     "file": "clean/67-110.ogg",
      "key": 67,
      "vel": 110
     },
     {
-     "file": "crunch/70-65.ogg",
+     "file": "clean/70-65.ogg",
      "key": 70,
      "vel": 65
     },
     {
-     "file": "crunch/70-110.ogg",
+     "file": "clean/70-110.ogg",
      "key": 70,
      "vel": 110
     },
     {
-     "file": "crunch/73-65.ogg",
+     "file": "clean/73-65.ogg",
      "key": 73,
      "vel": 65
     },
     {
-     "file": "crunch/73-110.ogg",
+     "file": "clean/73-110.ogg",
      "key": 73,
      "vel": 110
     },
     {
-     "file": "crunch/76-65.ogg",
+     "file": "clean/76-65.ogg",
      "key": 76,
      "vel": 65
     },
     {
-     "file": "crunch/76-110.ogg",
+     "file": "clean/76-110.ogg",
      "key": 76,
      "vel": 110
     },
     {
-     "file": "crunch/79-65.ogg",
+     "file": "clean/79-65.ogg",
      "key": 79,
      "vel": 65
     },
     {
-     "file": "crunch/79-110.ogg",
+     "file": "clean/79-110.ogg",
      "key": 79,
      "vel": 110
     },
     {
-     "file": "crunch/82-65.ogg",
+     "file": "clean/82-65.ogg",
      "key": 82,
      "vel": 65
     },
     {
-     "file": "crunch/82-110.ogg",
+     "file": "clean/82-110.ogg",
      "key": 82,
      "vel": 110
     }
-   ]
+   ],
+   "samples": "clean"
   },
   "strings": {
    "part": "pad",
@@ -3959,5 +3960,5 @@
   "url": "http://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf2"
  },
  "rate": 48000,
- "bytes": 11899029
+ "bytes": 10887099
 }
