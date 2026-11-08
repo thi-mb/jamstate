@@ -17,7 +17,8 @@
     "bakeoff": "vite-node scripts/bakeoff.ts",
     "sound-check": "node scripts/sound-check.mjs",
     "page-check": "node scripts/page-check.mjs",
-    "latency-check": "node scripts/latency-check.mjs"
+    "latency-check": "node scripts/latency-check.mjs",
+    "eval": "vite-node scripts/eval.ts"
   },
   "devDependencies": {
     "typescript": "5.9.3",
