@@ -1,14 +1,37 @@
 {
-  "format": "jamstate-genre/0.1",
+  "format": "jamstate-genre/0.2",
   "id": "funk",
   "name": "Funk",
   "description": "Tight sixteenth-note groove on the hi-hat with ghosted snare, a syncopated bass that locks with the kick, and short high chord stabs. Barely swung, played on top of the beat.",
-  "parts": ["drums", "bass", "chords"],
+  "parts": ["drums", "bass", "chords", "guitar", "pad", "percussion"],
+  "band": {"drums": "kit", "bass": "electric", "chords": "epiano", "guitar": "funk"},
+  "lineups": [
+    {"id": "clav", "name": "Clav and guitar", "band": {"drums": "kit", "bass": "electric", "chords": "clav", "guitar": "funk"}},
+    {"id": "big", "name": "Big funk band (organ, guitar, percussion)", "band": {"drums": "kit", "bass": "electric", "chords": "organ", "guitar": "funk", "percussion": "hand"}},
+    {"id": "synth", "name": "Synth funk", "band": {"drums": "electronic", "bass": "synth", "chords": "epiano", "pad": "warm-pad"}},
+    {"id": "trio", "name": "Rhodes trio", "band": {"drums": "kit", "bass": "electric", "chords": "epiano"}}
+  ],
+  "mix": {
+    "reverb": {"seconds": 0.9, "tone": 0.6},
+    "saturation": 0.15,
+    "gain": 0.32,
+    "parts": {
+      "drums": {"volume": 0.95, "eq": [2, 0, 2], "comp": 0.6, "reverb": 0.08},
+      "bass": {"volume": 0.75, "eq": [3, 1, -1], "comp": 0.7, "reverb": 0},
+      "chords": {"volume": 0.45, "pan": -0.3, "eq": [-2, 1, 1], "comp": 0.3, "reverb": 0.12},
+      "guitar": {"volume": 0.95, "pan": 0.45, "eq": [-3, 2, 2], "comp": 0.6, "reverb": 0.1},
+      "pad": {"volume": 0.3, "pan": 0, "reverb": 0.3},
+      "percussion": {"volume": 0.42, "pan": 0.5, "reverb": 0.12}
+    }
+  },
   "feel": { "swing": 0.15, "swing_unit": 16 },
   "humanize": {
     "drums": { "jitter_ms": 3, "velocity": 7, "lines": { "cymbal": -2, "snare": 2 } },
     "bass": { "offset_ms": 0, "jitter_ms": 3, "velocity": 7 },
-    "chords": { "offset_ms": 1, "jitter_ms": 3, "velocity": 6, "spread_ms": 4 }
+    "chords": { "offset_ms": 1, "jitter_ms": 3, "velocity": 6, "spread_ms": 4 },
+    "guitar": {"offset_ms": -1, "jitter_ms": 2, "velocity": 6, "spread_ms": 6},
+    "pad": {"offset_ms": 10, "jitter_ms": 4, "velocity": 4},
+    "percussion": {"offset_ms": -1, "jitter_ms": 3, "velocity": 8}
   },
   "drums": {
     "grid": 4,
@@ -80,6 +103,37 @@
       [". . . . x - . . . . . . x - . .", ". . x . . . . . . . x . . . . ."],
       [". . x . g . x . . . x . g . x .", ". . x . . g . x . . x . . g . .", "x . . g . . x . g . x . . g . p"],
       [". x g x . g x . . x g x . g x .", "x . g x . . x g . x . g x . p .", ". . x g x . g x . . x g x . g x"]
+    ]
+  },
+  "guitar": {
+    "grid": 4,
+    "voicing": "stab",
+    "range": [60, 77],
+    "levels": [
+      [". . . . x - . . . . . . x - . ."],
+      [". . g . x . . g . . g . x . . g", ". . . . x . g . . . . . x . g ."],
+      [". g . g x g . g . g . g x g . g", "g . g g x . g . . g g . x . g g"],
+      ["x g g x g g x g g x g g x g x g", "g g x g x g g x g g x g x g g x", {"steps": "x g g x g g x g g x g g X . p .", "phrase_end": true}]
+    ]
+  },
+  "pad": {
+    "grid": 4,
+    "voicing": "close",
+    "range": [58, 79],
+    "levels": [
+      ["x - - - - - - - - - - - - - - -"],
+      ["x - - - - - - - - - - - - - - -"],
+      ["x - - - - - - - - - - - - - - -"],
+      ["x - - - - - - - x - - - - - - -"]
+    ]
+  },
+  "percussion": {
+    "grid": 4,
+    "levels": [
+      [{"tambourine": "....x.......x..."}],
+      [{"shaker": "x.x.x.x.x.x.x.x.", "tambourine": "....x.......x..."}],
+      [{"shaker": "xgxgxgxgxgxgxgxg", "tambourine": "....x.......x...", "conga_hi": "......x.......x.", "conga_lo": "..x.......x.x..."}],
+      [{"shaker": "xgxgxgxgxgxgxgxg", "tambourine": "....X.......X...", "conga_mute": "x...x...x...x...", "conga_hi": "..x...x..x....x.", "conga_lo": ".....x.....x.x.."}]
     ]
   },
   "ending": { "rit": 0, "ring_beats": 2, "chord": { "major": "9", "minor": "m9" }, "drums": "hit" },

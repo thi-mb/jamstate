@@ -5,7 +5,12 @@ import type { MidiOutPort } from "../core/platform";
 import type { Sink } from "../core/transport";
 import type { NoteEvent, Voice } from "../core/types";
 
-export const CHANNELS: Record<Voice, number> = { player: 0, bass: 1, chords: 2, drums: 9 };
+/**
+ * One MIDI channel per part (1-based in a DAW: player 1, bass 2, keys 3,
+ * guitar 4, pad 5, drums 10, percussion 11). Drums and percussion use the
+ * General MIDI percussion map.
+ */
+export const CHANNELS: Record<Voice, number> = { player: 0, bass: 1, chords: 2, guitar: 3, pad: 4, drums: 9, percussion: 10 };
 
 export { pickInputs } from "../platform/web";
 

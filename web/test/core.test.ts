@@ -85,7 +85,7 @@ describe("groove generators", () => {
   const ctxFor = (genre: GenrePack, level: number, feel: Feel, extra: Partial<BarContext> = {}): BarContext => ({
     bar: 3, kind: "play", section: "verse", barInSection: 1, sectionBars: 8, barInPhrase: 1, phraseBars: 4, lastBarOfSection: false,
     level, feel, parts: [...PARTS], slots: chart.sections.get("outro")!.barChords(0), next: parseChord("Db"), bpb: 4, genre, seed: 1,
-    stingers: [], cymbal: genre.drums.cymbal, ending: null, firstChord: parseChord("Fm"), ...extra,
+    stingers: [], cymbal: genre.drums.cymbal, ending: null, firstChord: parseChord("Fm"), band: genre.band, ...extra,
   });
   const inBar = (evs: NoteEvent[], bpb = 4) => evs.every((e) => e.start >= 0 && e.start < bpb && e.vel >= 1 && e.vel <= 127 && e.dur > 0);
 
@@ -259,7 +259,7 @@ describe("engine + governor", () => {
     e.nextBar();
     e.submit([{ move: "drop_layer", part: "drums", reason: "" }], "t");
     let p = e.nextBar()!;
-    expect(p.layers).toEqual(["bass", "chords"]);
+    expect(p.layers).toEqual(e.lineup.filter((x) => x !== "drums"));
     expect(p.events.some((ev) => ev.part === "drums")).toBe(false);
     e.submit([{ move: "add_layer", part: "drums", reason: "" }], "t");
     p = e.nextBar()!;
@@ -315,7 +315,7 @@ describe("engine + governor", () => {
     const e = new Engine(loadChart(small), { generator: flaky, config: { autoFills: false } });
     const first = e.nextBar()!;
     const second = e.nextBar()!;
-    expect(second.repeated).toEqual(["drums", "bass", "chords"]);
+    expect(second.repeated).toEqual(e.lineup);
     expect(second.events.map((x) => x.note)).toEqual(first.events.map((x) => x.note));
   });
 
@@ -420,8 +420,8 @@ describe("session record and replay", () => {
   /** A live-like run: transport order (commit one bar ahead), rule leader, pretend player, a manual move. */
   function record(chartJson: ChartJSON, genre: string, script: string, seed = 11): SessionFile {
     const c = loadChart(chartJson);
-    const setup = { chart: chartJson, genre, swing: null, seed, countIn: 1, config: { loop: true }, leader: "rules", everyBars: 2 };
-    const engine = new Engine(c, { seed, genre: getGenre(genre), countIn: 1, config: setup.config });
+    const setup = { chart: chartJson, genre, swing: null, band: getGenre(genre).band, seed, countIn: 1, config: { loop: true }, leader: "rules", everyBars: 2 };
+    const engine = new Engine(c, { seed, genre: getGenre(genre), countIn: 1, config: setup.config, band: setup.band });
     const rec = new SessionRecorder(setup);
     const conductor = new Conductor(engine, ruleLeader(new RuleLeader()), 2);
     const sim = new SimPlayer(4);

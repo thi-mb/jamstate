@@ -8,7 +8,7 @@
   </head>
   <body>
     <header>
-      <h1>jamstate <small>v0.1.1</small></h1>
+      <h1>jamstate <small>v0.2</small></h1>
       <p class="tag">An AI backing band that follows the song and reacts to how you play.</p>
     </header>
 
@@ -87,6 +87,15 @@
         </fieldset>
 
         <fieldset>
+          <legend>Band</legend>
+          <label>Lineup <select id="lineup-select"></select></label>
+          <div id="band-parts" class="band-parts"></div>
+          <label>Your sound <select id="player-sound"></select></label>
+          <p class="dim small">Changes land from the next bar, also while playing. A new sound loads first; the old one plays until it's ready.</p>
+          <div id="sample-status" class="dim small"></div>
+        </fieldset>
+
+        <fieldset>
           <legend>Bandleader</legend>
           <select id="leader-select"></select>
           <div id="brain-openai" class="brain-cfg" hidden>
@@ -140,6 +149,7 @@
             <kbd>Z</kbd>/<kbd>X</kbd> octave, hold <kbd>Shift</kbd> to play loud.
           </p>
           <div id="midi-status" class="dim small"></div>
+          <div id="audio-latency" class="dim small"></div>
         </fieldset>
 
         <fieldset>
