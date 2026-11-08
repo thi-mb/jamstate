@@ -40,6 +40,12 @@ genre's scale) and outside, with fit in a word. genre_outside says what a band
 in this genre does when the player goes outside: "hold" (stay steady, don't
 lift or add parts) or "lift" (keep drums and bass in and lift a little with
 them). Outside playing is a choice, not a mistake.`,
+  phrasing: `"phrasing" says how the player shapes phrases: state (playing, breathing:
+a gap of up to two bars after playing, stopped: a longer gap), gap_bars,
+call_response (they play short phrases and leave short gaps: they are trading
+with the band, so answer in the gaps with a fill and keep the band in rather
+than dropping out), held (share of long notes: a lyrical line wants space) and
+playing_bars (how long they have been playing without a break).`,
 };
 
 /** The system prompt for a request: the fixed prompt, then notes for the listening fields it carries. */

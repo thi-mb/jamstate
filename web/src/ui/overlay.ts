@@ -89,6 +89,9 @@ export class Overlay {
     if (r.tempo && r.tempo !== "steady") parts.push(r.tempo);
     const hm = h.harmony;
     if (hm.fit) parts.push(`${hm.fit} (in ${Math.round((hm.inside ?? 0) * 100)}% · colour ${Math.round((hm.colour ?? 0) * 100)}% · out ${Math.round((hm.outside ?? 0) * 100)}%)`);
+    const ph = h.phrasing;
+    if (ph.state !== "waiting") parts.push(ph.call_response ? "trading phrases" : ph.state === "playing" ? `playing ${ph.playing_bars} bar${ph.playing_bars === 1 ? "" : "s"}` : `${ph.state} ${ph.gap_bars} bar${ph.gap_bars === 1 ? "" : "s"}`);
+    if ((ph.held ?? 0) >= 0.6) parts.push("long notes");
     $("heard").textContent = `hearing: ${parts.join(" · ")}`;
   }
 
