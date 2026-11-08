@@ -46,6 +46,11 @@ export interface PartMix {
   reverb: number;
   /** Drum tuning in semitones (kits only). */
   tune: number;
+  /**
+   * Amp drive added on top of the instrument's own amp (sounds/instruments.json),
+   * 0 (none) to 1. Lets a genre push its bass or guitar into an amp.
+   */
+  drive?: number;
 }
 
 /** Production: the room, the master bus and a channel strip per part. */
@@ -230,7 +235,7 @@ function compPack(raw: unknown, where: string, errs: string[], defaults: { range
   };
 }
 
-const MIX_KEYS = new Set(["volume", "pan", "eq", "comp", "reverb", "tune"]);
+const MIX_KEYS = new Set(["volume", "pan", "eq", "comp", "reverb", "tune", "drive"]);
 
 function mixPreset(raw: unknown, errs: string[]): MixPreset {
   if (raw === undefined) return DEFAULT_MIX;
@@ -264,6 +269,7 @@ function mixPreset(raw: unknown, errs: string[]): MixPreset {
       reverb: num(m.reverb, d.reverb, 0, 1, `${w}.reverb`),
       tune: num(m.tune, d.tune, -12, 12, `${w}.tune`),
     };
+    if (m.drive !== undefined) parts[part].drive = num(m.drive, 0, 0, 1, `${w}.drive`);
   }
   return {
     reverb: { seconds: num(rv.seconds, DEFAULT_MIX.reverb.seconds, 0.2, 6, "mix.reverb.seconds"), tone: num(rv.tone, DEFAULT_MIX.reverb.tone, 0, 1, "mix.reverb.tone") },

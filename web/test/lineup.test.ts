@@ -2,8 +2,8 @@
 // v0.2: lineups, instruments, the new parts and the genre packs' sound layers.
 import { describe, expect, it } from "vitest";
 import { CHANNELS } from "../src/audio/midi";
-import { ceilingCurve, saturationCurve } from "../src/audio/mixer";
-import { bandParts, defaultBand, INSTRUMENTS, instrumentsFor, parseBand, type Band } from "../src/core/band";
+import { ampCurve, ampSettings, ceilingCurve, saturationCurve } from "../src/audio/mixer";
+import { ampFor, bandParts, defaultBand, INSTRUMENTS, instrumentsFor, parseBand, type Band } from "../src/core/band";
 import { changeOptions, jevState } from "../src/core/brain/jev";
 import { loadChart, validateChart, type ChartJSON } from "../src/core/chart";
 import { Conductor, ruleLeader } from "../src/core/conductor";
@@ -267,5 +267,45 @@ describe("mix curves", () => {
     const ceil = ceilingCurve();
     expect(Math.max(...ceil)).toBeLessThan(0.97);
     expect(ceil[Math.floor(ceil.length * 0.75)]).toBeCloseTo(0.5, 2); // straight below the knee
+  });
+});
+
+describe("amps", () => {
+  it("the amp curve passes silence through, rises, and stays within full scale", () => {
+    for (const k of [4, 11, 74]) {
+      const c = ampCurve(k);
+      for (let i = 1; i < c.length; i++) expect(c[i]).toBeGreaterThanOrEqual(c[i - 1]);
+      expect(Math.max(...c.map(Math.abs))).toBeCloseTo(1, 5);
+      // The curve's middle is input 0 (the table maps -1..1 across its length).
+      const mid = (c[c.length / 2 - 1] + c[c.length / 2]) / 2;
+      expect(Math.abs(mid)).toBeLessThan(0.02);
+    }
+  });
+
+  it("more drive means more gain into the clipper, less makeup and a darker bass speaker", () => {
+    const soft = ampSettings(0.1, 0.5, false);
+    const hard = ampSettings(0.6, 0.5, false);
+    expect(hard.k).toBeGreaterThan(soft.k);
+    expect(hard.makeup).toBeLessThan(soft.makeup);
+    expect(ampSettings(0.3, 0.5, true).cab).toBeLessThan(ampSettings(0.3, 0.5, false).cab);
+  });
+
+  it("the crunch guitar is the clean guitar's samples through an amp", () => {
+    expect(ampFor("crunch")?.drive).toBeGreaterThan(0.4);
+    // Every guitar plays through an amp; only the crunch one is driven hard.
+    for (const g of instrumentsFor("guitar")) expect(ampFor(g.id), g.id).toBeDefined();
+    for (const id of ["clean", "funk", "jazz-guitar"]) expect(ampFor(id)!.drive).toBeLessThan(0.2);
+    expect(ampFor("jazz-guitar")!.tone).toBeLessThan(ampFor("funk")!.tone); // a dark jazz box, a bright funk spank
+    const crunch = manifest.instruments.crunch.zones as { file: string }[];
+    expect(crunch.length).toBe(manifest.instruments.clean.zones.length);
+    expect(crunch.every((z) => z.file.startsWith("clean/"))).toBe(true);
+  });
+
+  it("a genre can push a part into its amp; drive is checked", async () => {
+    const raw = (await import("../../genres/blues-rock.json")).default as Record<string, unknown>;
+    expect(loadGenre(raw).mix.parts.bass.drive).toBe(0.15);
+    const mix = raw.mix as { parts: Record<string, object> };
+    const bad = { ...raw, mix: { ...mix, parts: { ...mix.parts, bass: { drive: 2 } } } };
+    expect(() => loadGenre(bad)).toThrow(/mix.parts.bass.drive must be a number from 0 to 1/);
   });
 });
