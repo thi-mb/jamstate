@@ -198,7 +198,7 @@ before new features land on the old shape
 
 ### v0.2: Sound and lineup
 
-Status: built (2026-10-31), waiting on the listening test in
+Status: done (2026-11-08). Thiago signed off after playing it; live on the Spark. Test plan in
 [testing/v0.2.md](testing/v0.2.md). Samples from MuseScore General (MIT),
 rendered small ([samples.md](samples.md)); lineups as data
 ([ADR-0018](decisions/0018-lineups-and-sound.md)).
