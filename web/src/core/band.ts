@@ -15,12 +15,28 @@ export interface InstrumentInfo {
   name: string;
 }
 
+/**
+ * An amp and speaker the part's channel runs through: `drive` 0 (clean) to 1
+ * (crunch and more), `tone` 0 (dark speaker) to 1 (bright). Built in
+ * web/src/audio/mixer.ts.
+ */
+export interface Amp {
+  drive: number;
+  tone: number;
+}
+
 interface CatalogJSON {
   defaults: Record<Part | "player", string>;
-  instruments: { id: string; part: string; name: string }[];
+  instruments: { id: string; part: string; name: string; amp?: Amp }[];
 }
 
 const catalog = catalogJson as CatalogJSON;
+const amps = new Map(catalog.instruments.flatMap((i) => (i.amp ? [[i.id, i.amp] as const] : [])));
+
+/** The amp an instrument plays through, if it has one. */
+export function ampFor(id: string | undefined): Amp | undefined {
+  return id ? amps.get(id) : undefined;
+}
 
 export const INSTRUMENTS: InstrumentInfo[] = catalog.instruments.map((i) => ({ id: i.id, part: i.part as Part, name: i.name }));
 const byId = new Map(INSTRUMENTS.map((i) => [i.id, i]));

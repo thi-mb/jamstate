@@ -80,7 +80,8 @@
         "eq": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number", "minimum": -12, "maximum": 12 }, "description": "Low shelf 100 Hz, presence 1.5 kHz, high shelf 8 kHz, in dB." },
         "comp": { "type": "number", "minimum": 0, "maximum": 1, "description": "How hard the part's compressor works." },
         "reverb": { "type": "number", "minimum": 0, "maximum": 1, "description": "Send to the shared room." },
-        "tune": { "type": "number", "minimum": -12, "maximum": 12, "description": "Drum tuning in semitones." }
+        "tune": { "type": "number", "minimum": -12, "maximum": 12, "description": "Drum tuning in semitones." },
+        "drive": { "type": "number", "minimum": 0, "maximum": 1, "description": "Amp drive on top of the instrument's own amp: 0 none, 1 a lot." }
       }
     },
     "perLevel": {
