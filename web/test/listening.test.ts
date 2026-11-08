@@ -5,7 +5,9 @@ import { Engine } from "../src/core/engine";
 import { getGenre } from "../src/core/genres";
 import { leaderSystem, LEADER_SYSTEM } from "../src/core/brain/prompt";
 import { jevState } from "../src/core/brain/jev";
-import { listeningKey, NO_LISTENING, parseListening, rhythmOf, songPosition } from "../src/core/listening";
+import { harmonyOf, listeningKey, noteFit, NO_LISTENING, parseListening, rhythmOf, songPosition } from "../src/core/listening";
+import { loadGenre } from "../src/core/genre";
+import { parseChord } from "../src/core/theory";
 import { SimPlayer, type SimMode } from "../src/core/simplayer";
 import type { LeaderContext } from "../src/core/rules";
 import { RuleLeader } from "../src/core/rules";
@@ -14,6 +16,9 @@ import { defaultBand } from "../src/core/band";
 import { V01_PARTS } from "../src/core/types";
 
 import nightShift from "../public/charts/night-shift.json";
+import funkPack from "../../genres/funk.json";
+
+const getGenreRaw = () => funkPack as unknown as Record<string, unknown>;
 
 const chartJson = nightShift as ChartJSON;
 const chart = loadChart(chartJson);
@@ -145,5 +150,53 @@ describe("rhythm", () => {
     expect(rhythmOf(eighths(0.5), 4, 120).swing).toBe(0);
     expect(rhythmOf(eighths(0.5), 4, 120).syncopation).toBe(0.25);
     expect(of("busy").swing).toBeNull();
+  });
+});
+
+describe("harmony", () => {
+  const funk = getGenre("funk").listening;
+  const blues = getGenre("blues-rock").listening;
+  const jazz = getGenre("jazz").listening;
+  const pc = (name: string) => ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"].indexOf(name);
+
+  it("sorts notes into inside, colour and outside by the genre's scale", () => {
+    const fm = parseChord("Fm");
+    expect(noteFit(pc("G#"), fm, funk)).toBe("inside"); // the minor third
+    expect(noteFit(pc("D"), fm, funk)).toBe("colour"); // dorian sixth
+    expect(noteFit(pc("B"), fm, funk)).toBe("colour"); // the flat five
+    expect(noteFit(pc("F#"), fm, funk)).toBe("outside"); // flat two
+    const a7 = parseChord("A7");
+    expect(noteFit(pc("C"), a7, blues)).toBe("colour"); // the blue third
+    expect(noteFit(pc("D#"), a7, blues)).toBe("colour"); // the blue fifth
+    expect(noteFit(pc("F"), a7, blues)).toBe("outside"); // flat six
+    const g7 = parseChord("G7");
+    expect(noteFit(pc("G#"), g7, jazz)).toBe("colour"); // b9 on a dominant: everything is colour
+    expect(noteFit(pc("D#"), parseChord("Cm7"), jazz)).toBe("inside");
+    expect(noteFit(pc("C#"), parseChord("Cm7"), jazz)).toBe("outside");
+  });
+
+  it("falls back to the chord's own scale without a genre", () => {
+    expect(noteFit(pc("D"), parseChord("C"))).toBe("colour");
+    expect(noteFit(pc("C#"), parseChord("C"))).toBe("outside");
+  });
+
+  it("weights by duration and names the fit", () => {
+    const plan = plans()[4];
+    const at = () => parseChord("Fm");
+    const long = { start: 0, dur: 3, note: 60, vel: 80 }; // C: inside
+    const short = { start: 3, dur: 0.5, note: 66, vel: 80 }; // F#: outside
+    const h = harmonyOf([{ plan, notes: [long, short] }], 4, at, funk);
+    expect(h.inside).toBeCloseTo(3 / 3.5, 2);
+    expect(h.fit).toBe("inside");
+    const out = harmonyOf([{ plan, notes: [{ ...short, dur: 2 }, { ...long, dur: 1 }] }], 4, at, funk);
+    expect(out.fit).toBe("outside");
+    expect(harmonyOf([{ plan, notes: [] }], 4, at, funk)).toMatchObject({ fit: null, genre_outside: "hold" });
+    expect(harmonyOf([], 4, at, jazz).genre_outside).toBe("lift");
+  });
+
+  it("checks the genre pack's listening section", () => {
+    const raw = structuredClone(getGenreRaw());
+    raw.listening = { scales: { minor: [0, 13] }, outside: "maybe" };
+    expect(() => loadGenre(raw)).toThrow(/listening.scales.minor[\s\S]*listening.outside/);
   });
 });
