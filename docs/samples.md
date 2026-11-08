@@ -55,10 +55,10 @@ since the page adds the room.
 | clean | guitar | Clean guitar | 30 | 0.75 |
 | funk | guitar | Funk guitar | 30 | 0.44 |
 | jazz-guitar | guitar | Jazz guitar | 30 | 0.75 |
-| crunch | guitar | Crunch guitar | 30 | 1.01 |
+| crunch | guitar | Crunch guitar (the clean guitar's samples through an amp) | 30 | 0 |
 | strings | pad | Strings | 30 | 1.34 |
 | warm-pad | pad | Warm pad | 15 | 0.64 |
-| **all** | | | | **11.90** |
+| **all** | | | | **10.89** |
 
 Default lineups, plus the piano for the player's own notes (budget: under
 10 MB):
@@ -66,11 +66,39 @@ Default lineups, plus the piano for the player's own notes (budget: under
 | Genre | Lineup | MB |
 |---|---|---|
 | Funk | kit, electric bass, electric piano, funk guitar | 2.91 |
-| Blues rock | rock kit, picked bass, rock organ, crunch guitar | 3.53 |
+| Blues rock | rock kit, picked bass, rock organ, crunch guitar | 3.27 |
 | Jazz | brushes, upright bass, piano | 2.67 |
 
 Only the instruments in the lineup are fetched. The browser keeps them in
 Cache Storage (one cache per sample set), so the second visit plays from disk.
+
+## Amps
+
+An instrument can play through an amp on its part's channel: `"amp": {"drive":
+0–1, "tone": 0–1}` in `sounds/instruments.json`. The amp is in
+`web/src/audio/mixer.ts`: a high-pass and a mid push, an asymmetric soft
+clipper (oversampled 4x), then a speaker (two low-passes and a body bump).
+A genre's mix can add `drive` to a part on top (blues rock pushes its bass a
+little). Guitar and bass channels have an amp; switching to an instrument
+without one crossfades back to the dry signal.
+
+The **crunch guitar** has no samples of its own: `"samples": "clean"` makes it
+the clean guitar through the amp (drive 0.6). The SoundFont's overdriven
+guitar was harsh and thin (most of its energy at 0.8–5 kHz, the body 11 dB
+down), and distortion on a chord sounds better than distortion baked into
+each note. The **picked bass** plays through a light amp (drive 0.3, dark
+speaker), which takes the click off the pick.
+
+The other guitars play through light amps too, each voiced for its job:
+
+| Guitar | Drive | Tone | What it does |
+|---|---|---|---|
+| clean | 0.15 | 0.55 | Evens out the attack (peaks 5 dB closer to the body) and warms it |
+| funk | 0.12 | 0.7 | Bright speaker, keeps the spank; rounds off the sharpest chanks |
+| jazz-guitar | 0.04 | 0.05 | Almost clean through a dark speaker: less top, more low end. The jazz mix also cuts the guitar's mids (the SoundFont's jazz guitar honks at 1–2 kHz) |
+
+The amp's makeup gain keeps every instrument within about 1 dB of its dry
+level, so lineups and genre mixes stay balanced.
 
 ## Replacing an instrument
 
