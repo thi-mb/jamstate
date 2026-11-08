@@ -61,14 +61,15 @@ drops in the silence first).
 
 ### E4 Stays busy
 Player: `medium:4, busy:12`.
-- Must: by bar 12, target ≥ 0.6; by bar 16, every part in the lineup is
+- Must: by bar 12, target ≥ 0.6 (0.55 on jazz, whose sections sit lower;
+  tuned from the baseline); by bar 16, every part in the lineup is
   playing.
 - Must not: bars 4–16, change to half time, or target goes down.
 
 ### E5 Builds into the chorus
 Player builds over the 8 bars before a section change: `sparse:4,
 medium:2, busy:2`, timed so the busy bars end at the change (Night Shift:
-verse into chorus at bar 20; Blues in A: head into the first solo at bar 12;
+verse into chorus at bar 12; Blues in A: head into the first solo at bar 12;
 Late Set: A into B, bar 20), then `busy:8`.
 - Must: target at the new section's first bar ≥ target 8 bars earlier +
   0.2.
@@ -102,13 +103,15 @@ Player: `busy:2, silent:2` repeated for 16 bars, starting at bar 4.
   are answers, not the player leaving).
 - Must not: bars 8–20, target changes by more than 0.2 between two turns
   (don't chase the gaps), or a change of feel.
-- Must (v0.3 target, likely fails at baseline): at least two fills land in
-  the silent bars.
+- Stretch (a v0.3 target, likely fails at baseline): at least two fills
+  land in the silent bars.
 
 ### E10 Taking a chorus (Blues in A, Late Set)
 Player: `medium:N` until the first solo section, then `busy` for that whole
 section, then `medium` again.
-- Must: during the solo section, target ≥ 0.5 and drums and bass in.
+- Must: from the solo's second phrase to its end, target ≥ 0.5 (the leader
+  first hears the solo at the end of its first phrase); during the whole
+  solo section, drums and bass in.
 - Must not: during the solo section, a jump to another section, or a
   dropped layer.
 
@@ -195,13 +198,14 @@ three downloaded sessions (one per genre). Claude labels them afterwards with
 checks in the same style, Thiago reviews the labels, and they count from v0.4
 on.
 
-## Open for review
+## Decided in review
 
-- Thresholds (0.3 / 0.4 / 0.45 / 0.6, the ±0.1 and 0.2 steps) follow the
-  bake-off's existing scores. Too strict or too loose for any genre?
-- E9 and E11 have "v0.3 target" checks the baseline will fail on purpose.
-  Keep them in the score, or report them separately?
-- E12 jazz: is "anything but dropping out" right, or should the jazz band
-  lift under outside playing?
-- C3 Break: is "drums out for a bar" what you mean by break, or the whole
-  band out (stop-time)?
+- Thresholds are provisional, tuned from the baseline
+  ([results/baseline-v0.2](results/baseline-v0.2/summary.md)). So far one
+  change: E4 asks ≥ 0.55 on jazz. E1, E7 and E8 fail for every brain on
+  purpose: the v0.2 summary only carries energy, so held notes and a
+  decrescendo inside a phrase are the gaps the listening groups should close.
+- Stretch checks (the "v0.3 target" ones in E9, E11, E12 jazz) are reported
+  separately and left out of the score.
+- Jazz under outside playing: stay in, mostly; a lift is a stretch check.
+- The break is two cues: drums/perc break (C3) and drums/perc only (C4).
