@@ -72,6 +72,25 @@ browser only and sent only to that provider. **Test** asks it once.
 
 Only the LLM brains can write charts from a description (**Write**).
 
+## Leading the band yourself (v0.3)
+
+- **Cues**, keys **1–7** while playing (or the buttons under **Cues**):
+  1 next section, 2 drums/perc break, 3 drums/perc only, 4 build, 5 take it
+  down, 6 one more chorus, 7 end song. Level cues land on the next bar, form
+  cues on the next phrase, and for a phrase after one lands the bandleader
+  can't undo it ([ADR-0020](docs/decisions/0020-cues-and-lockout.md)).
+- **Follow my tempo** (off by default): the band follows your beat, within
+  5% of the chart tempo, at most 1% per bar, changing on bar lines. Off, it
+  keeps the chart tempo.
+- **Listening** under Bandleader: switch on what the bandleader hears beyond
+  your energy (song position, rhythm, harmony, phrasing, dynamics;
+  [ADR-0019](docs/decisions/0019-listening-layer.md)). Every brain gets the
+  same summary; the overlay's "hearing" line always shows all of it.
+- **Fretboard** under You: guitar (frets 0–15), piano (two octaves that
+  follow where you play) or off. Chord tones strong, the genre's scale faint,
+  the next chord fading in on the beat before it changes, your notes green
+  (chord tone), yellow (colour) or red (outside).
+
 ## With the jamstate server (optional companion)
 
 ```bash
@@ -265,8 +284,13 @@ with voice leading, count-in and endings, session recording and replay.
 
 v0.2 Sound and lineup (done 2026-11-08, see [docs/testing/v0.2.md](docs/testing/v0.2.md)):
 sampled instruments with a mix per genre, guitar, pad and percussion parts,
-and a lineup per song you can change while playing. The plan for the releases
-after this is in [docs/roadmap.md](docs/roadmap.md).
+and a lineup per song you can change while playing.
+
+v0.3 Listening and leading (hands-on test plan in [docs/testing/v0.3.md](docs/testing/v0.3.md)):
+a leader eval that scores every brain on scripted scenarios
+([docs/eval](docs/eval/scenarios.md)), five switchable listening groups,
+cues on keys 1–7, opt-in tempo following, and a fretboard / piano view. The
+plan for the releases after this is in [docs/roadmap.md](docs/roadmap.md).
 
 Not yet: Ableton Link (needs a local bridge, browsers can't do UDP),
 motif-aware reactions. Later: audio → chart on the Spark
