@@ -274,11 +274,15 @@ export class Mixer {
  */
 export function ampSettings(drive: number, tone: number, bass: boolean): { k: number; push: number; cab: number; makeup: number } {
   const k = 4 * (1 + Math.pow(drive, 1.5) * (bass ? 6 : 30));
+  // Small-signal gain is about 0.3k. From k 8 up, music's peaks already squash, so the level falls
+  // below that and needs a little more makeup (0.22k); a hard-driven amp tops out near 4x.
+  // Tuned against dry renders: every instrument lands within about 1 dB of its dry level.
+  const gain = (0.3 - 0.08 * Math.min(1, Math.max(0, (k - 4) / 4))) * k;
   return {
     k,
     push: 2 + 6 * drive,
     cab: bass ? 1800 + 2500 * tone : 2800 + 4000 * tone,
-    makeup: 1 / Math.min(0.3 * k, 4), // small-signal gain is about 0.3k; a hard-driven amp tops out near 4x
+    makeup: 1 / Math.min(gain, 4),
   };
 }
 

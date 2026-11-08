@@ -19,7 +19,7 @@
       "drums": {"volume": 1.0, "pan": 0.1, "eq": [-1, 1, 2], "comp": 0.4, "reverb": 0.2},
       "bass": {"volume": 0.5, "eq": [2, 1, -2], "comp": 0.3, "reverb": 0.06},
       "chords": {"volume": 0.65, "pan": -0.25, "eq": [0, 0, 1], "comp": 0.1, "reverb": 0.22},
-      "guitar": {"volume": 0.4, "pan": 0.35, "eq": [-2, 1, -2], "comp": 0.1, "reverb": 0.18},
+      "guitar": {"volume": 0.4, "pan": 0.35, "eq": [0, -2, -2], "comp": 0.1, "reverb": 0.18},
       "pad": {"volume": 0.28, "reverb": 0.4},
       "percussion": {"volume": 0.35, "pan": 0.45, "reverb": 0.2}
     }
