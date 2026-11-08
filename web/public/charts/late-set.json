@@ -1,11 +1,12 @@
 {
-  "version": "0.1",
+  "version": "0.2",
   "title": "Late Set",
   "bpm": 132,
   "time_sig": "4/4",
   "key": "Bb major",
   "genre": "jazz",
   "phrase_bars": 4,
+  "band": {"drums": "brushes", "bass": "upright", "chords": "piano"},
   "sections": [
     { "name": "intro", "bars": 4, "chords": ["Cm7 F7"], "intensity": 0.3 },
     { "name": "A", "bars": 8, "chords": ["Bbmaj7 G7", "Cm7 F7", "Dm7 G7", "Cm7 F7", "Fm7 Bb7", "Ebmaj7 Ab7", "Dm7 G7", "Cm7 F7"], "intensity": 0.45 },
