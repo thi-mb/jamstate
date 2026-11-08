@@ -258,15 +258,18 @@ v0 (hands-on tested 2026-10-30, see [docs/testing/v0.md](docs/testing/v0.md)):
 browser app, typed or LLM-written chart, drums, bass and chords, rule and LLM
 bandleaders reacting to energy, built-in sound and Web MIDI out, overlay.
 
-v0.1 Groove (this; hands-on test plan in [docs/testing/v0.1.md](docs/testing/v0.1.md)):
+v0.1 Groove (hands-on test plan in [docs/testing/v0.1.md](docs/testing/v0.1.md)):
 genre packs for funk, blues rock and jazz, swing and humanize, moving bass
 lines and walking bass, ghost notes, fills and ride/hat by section, comping
-with voice leading, count-in and endings, session recording and replay. The
-built-in sounds are still placeholders; better sounds are v0.2. The plan for
-the releases after this is in [docs/roadmap.md](docs/roadmap.md).
+with voice leading, count-in and endings, session recording and replay.
 
-Not yet: Ableton Link (needs a local bridge, browsers can't do UDP), FluidSynth
-or SoundFont sounds, motif-aware reactions. Later: audio → chart on the Spark
+v0.2 Sound and lineup (done 2026-11-08, see [docs/testing/v0.2.md](docs/testing/v0.2.md)):
+sampled instruments with a mix per genre, guitar, pad and percussion parts,
+and a lineup per song you can change while playing. The plan for the releases
+after this is in [docs/roadmap.md](docs/roadmap.md).
+
+Not yet: Ableton Link (needs a local bridge, browsers can't do UDP),
+motif-aware reactions. Later: audio → chart on the Spark
 (Demucs, allin1, chord recognition), a generative mid layer under the same
 commit deadline, Magenta RealTime audio mode, remote jams.
 
