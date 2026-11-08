@@ -92,6 +92,8 @@ export class Overlay {
     const ph = h.phrasing;
     if (ph.state !== "waiting") parts.push(ph.call_response ? "trading phrases" : ph.state === "playing" ? `playing ${ph.playing_bars} bar${ph.playing_bars === 1 ? "" : "s"}` : `${ph.state} ${ph.gap_bars} bar${ph.gap_bars === 1 ? "" : "s"}`);
     if ((ph.held ?? 0) >= 0.6) parts.push("long notes");
+    const d = h.dynamics;
+    if (d.level !== null) parts.push(`${d.shape && d.shape !== "steady" ? `${d.shape} · ` : ""}level ${d.level.toFixed(2)}${(d.accents ?? 0) >= 0.15 ? " · accents" : ""}`);
     $("heard").textContent = `hearing: ${parts.join(" · ")}`;
   }
 
