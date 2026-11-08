@@ -4,7 +4,7 @@
 
 import type { BarPlan, Engine } from "./engine";
 import { barFeatures, summarize, type BarFeatures, type PlayedNote, type PlayerSummary } from "./features";
-import { DEFAULT_LISTENING, songPosition, type Heard, type Listening } from "./listening";
+import { DEFAULT_LISTENING, rhythmOf, songPosition, type Heard, type HeardBar, type Listening } from "./listening";
 import { PLAYER_ONLY_MOVES, type Move } from "./moves";
 import type { LeaderContext } from "./rules";
 
@@ -32,6 +32,8 @@ export class Conductor {
   private history: BarFeatures[] = [];
   private inFlight = false;
   private bars = 0;
+  /** The last bars with what the player played in them, for the listening layer. */
+  private recent: HeardBar[] = [];
   /** Which listening groups go into the summary leaders read. */
   listening: Listening = { ...DEFAULT_LISTENING };
 
@@ -53,6 +55,8 @@ export class Conductor {
     this.history.push(f);
     if (this.history.length > 8) this.history.shift();
     this.window.push(f);
+    this.recent.push({ plan, notes });
+    if (this.recent.length > 8) this.recent.shift();
     if (this.window.length > this.everyBars) this.window.shift();
     this.events.onFeatures?.(plan.bar, f);
     this.events.onHeard?.(plan.bar, this.heard(plan));
@@ -63,7 +67,12 @@ export class Conductor {
 
   /** All listening groups for the bar just played. */
   heard(plan: BarPlan): Heard {
-    return { position: songPosition(this.engine.chart, plan, this.engine.config.loop) };
+    const chart = this.engine.chart;
+    const bars = this.recent.slice(-chart.phraseBars);
+    return {
+      position: songPosition(chart, plan, this.engine.config.loop),
+      rhythm: rhythmOf(bars.map((b) => b.notes), chart.beatsPerBar, chart.bpm),
+    };
   }
 
   context(plan: BarPlan, player: PlayerSummary): LeaderContext {
@@ -87,6 +96,7 @@ export class Conductor {
       recent_moves: this.engine.log.filter((r) => r.status === "applied").slice(-4).map((r) => r.label),
     };
     if (this.listening.position) ctx.position = heard.position;
+    if (this.listening.rhythm) ctx.rhythm = heard.rhythm;
     return ctx;
   }
 

@@ -5,7 +5,8 @@ import { Engine } from "../src/core/engine";
 import { getGenre } from "../src/core/genres";
 import { leaderSystem, LEADER_SYSTEM } from "../src/core/brain/prompt";
 import { jevState } from "../src/core/brain/jev";
-import { listeningKey, NO_LISTENING, parseListening, songPosition } from "../src/core/listening";
+import { listeningKey, NO_LISTENING, parseListening, rhythmOf, songPosition } from "../src/core/listening";
+import { SimPlayer, type SimMode } from "../src/core/simplayer";
 import type { LeaderContext } from "../src/core/rules";
 import { RuleLeader } from "../src/core/rules";
 import { replaySession, SessionRecorder } from "../src/core/session";
@@ -110,5 +111,39 @@ describe("listening in sessions", () => {
     const seen: LeaderContext[] = [];
     await replaySession(file, { leader: { decide: (ctx) => (seen.push(ctx), { moves: [], source: "t" }) }, everyBars: 1 });
     expect(seen.map((c) => c.position !== undefined)).toEqual([false, false, true, true]);
+  });
+});
+
+describe("rhythm", () => {
+  /** A phrase of one pretend-player mode on Night Shift. */
+  const phrase = (mode: SimMode) => {
+    const e = new Engine(chart, { seed: 3 });
+    const sim = new SimPlayer(5);
+    return [0, 1, 2, 3].map(() => sim.play(e.nextBar()!, mode, 4, { bpm: 112, chartBpm: 112, phraseBars: 4 }));
+  };
+  const of = (mode: SimMode) => rhythmOf(phrase(mode), 4, 112);
+
+  it("hears syncopation: none on the beat, all on off-beat sixteenths", () => {
+    expect(of("medium").syncopation).toBe(0);
+    expect(of("syncopated").syncopation).toBe(1);
+    expect(of("busy").syncopation).toBeGreaterThan(0.4);
+    expect(of("silent")).toMatchObject({ syncopation: null, timing: null });
+  });
+
+  it("hears pushing and laying back, and rushing and dragging", () => {
+    expect(of("push")).toMatchObject({ timing: "ahead", tempo: "steady" });
+    expect(of("push").timing_ms).toBeCloseTo(-40, -1);
+    expect(of("layback")).toMatchObject({ timing: "behind", tempo: "steady" });
+    expect(of("medium")).toMatchObject({ timing: "on", tempo: "steady" });
+    expect(of("rush")).toMatchObject({ timing: "ahead", tempo: "rushing", syncopation: 0 });
+    expect(of("drag")).toMatchObject({ timing: "behind", tempo: "dragging", syncopation: 0 });
+  });
+
+  it("hears swing in eighths, and none in straight eighths or sixteenths", () => {
+    const eighths = (p: number) => [[0, 1, 2, 3].flatMap((b) => [{ start: b, dur: 0.3, note: 60, vel: 80 }, { start: b + p, dur: 0.3, note: 62, vel: 80 }])];
+    expect(rhythmOf(eighths(2 / 3), 4, 120).swing).toBeCloseTo(0.67, 1);
+    expect(rhythmOf(eighths(0.5), 4, 120).swing).toBe(0);
+    expect(rhythmOf(eighths(0.5), 4, 120).syncopation).toBe(0.25);
+    expect(of("busy").swing).toBeNull();
   });
 });
