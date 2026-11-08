@@ -48,7 +48,7 @@ export class Transport {
   private t0 = 0;
   private running = false;
   private queue: Pending[] = [];
-  private committed: { plan: BarPlan; startBeat: number }[] = [];
+  private committed: { plan: BarPlan; startBeat: number; time: number; spb: number }[] = [];
   private started = 0; // bars whose start has been announced
   private ended = 0; // bars whose end has been announced
   private formDone = false;
@@ -66,8 +66,10 @@ export class Transport {
     this.startDelay = opts.startDelay ?? 0.15;
   }
 
+  /** Seconds per beat of the last bar committed (the chart's before the first). */
   get secondsPerBeat(): number {
-    return 60 / this.engine.chart.bpm;
+    const last = this.committed[this.committed.length - 1];
+    return last ? last.spb : 60 / this.engine.chart.bpm;
   }
 
   get bpb(): number {
@@ -78,13 +80,21 @@ export class Transport {
     return this.running;
   }
 
+  /** Clock time of a beat, through each bar's own tempo (past the last bar: at its tempo). */
   timeAt(beat: number): number {
-    return this.t0 + beat * this.secondsPerBeat;
+    const c = this.committed;
+    if (!c.length || beat < 0) return this.t0 + beat * (c[0]?.spb ?? 60 / this.engine.chart.bpm);
+    const b = c[Math.min(c.length - 1, Math.floor(beat / this.bpb))];
+    return b.time + (beat - b.startBeat) * b.spb;
   }
 
   /** Beat position of a clock time (can be negative before bar 0). */
   beatAt(time: number): number {
-    return (time - this.t0) / this.secondsPerBeat;
+    const c = this.committed;
+    if (!c.length || time < this.t0) return (time - this.t0) / (c[0]?.spb ?? 60 / this.engine.chart.bpm);
+    let k = c.length - 1;
+    while (k > 0 && c[k].time > time) k--;
+    return c[k].startBeat + (time - c[k].time) / c[k].spb;
   }
 
   start(): void {
@@ -107,8 +117,9 @@ export class Transport {
       return false;
     }
     const startBeat = this.committed.length * this.bpb;
-    this.committed.push({ plan, startBeat });
-    const spb = this.secondsPerBeat;
+    const prev = this.committed[this.committed.length - 1];
+    const spb = 60 / plan.bpm;
+    this.committed.push({ plan, startBeat, time: prev ? prev.time + this.bpb * prev.spb : this.t0, spb });
     for (const ev of plan.events) {
       const time = this.timeAt(startBeat + ev.start);
       this.queue.push({ time, dur: ev.dur * spb, ev });

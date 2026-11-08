@@ -7,6 +7,7 @@ import { bandParts, cloneBand, defaultInstrument, getInstrument, instrumentsFor,
 import { Ticker } from "./audio/ticker";
 import { ChartError, loadChart, type Chart, type ChartJSON } from "./core/chart";
 import { Conductor, ruleLeader, type Leader } from "./core/conductor";
+import { TempoFollower } from "./core/tempo";
 import { DEFAULT_LISTENING, LISTENING_LABELS, LISTENING_READY, listeningKey, NO_LISTENING, parseListening, type Listening } from "./core/listening";
 import { CUE_LABELS, CUES, cueForKey, Engine, type Cue } from "./core/engine";
 import { NoteTracker } from "./core/features";
@@ -88,6 +89,7 @@ function useChart(raw: unknown, source: string): boolean {
   const bars = chart.form.reduce((n, s) => n + chart!.sections.get(s)!.bars, 0);
   $("chart-info").textContent = `${source}: ${chart.bpm} bpm, ${chart.beatsPerBar}/4${chart.key ? `, ${chart.key}` : ""}, ${getGenre(chart.genre).name.toLowerCase()}, ${bars} bars`;
   overlay.setForm(chart.form);
+  overlay.chartBpm = chart.bpm;
   overlay.reset(chart.title);
   buildManualMoves();
   return true;
@@ -381,6 +383,23 @@ window.addEventListener("keydown", (e) => {
 });
 
 // ---------- brain (bandleader) ----------
+
+// ---------- follow my tempo (v0.3, opt-in) ----------
+
+const FOLLOW_KEY = "jamstate.followTempo";
+const followBox = $<HTMLInputElement>("follow-tempo");
+followBox.checked = platform.settings.get<boolean>(FOLLOW_KEY) ?? false;
+followBox.addEventListener("change", () => {
+  platform.settings.set(FOLLOW_KEY, followBox.checked);
+  const s = session;
+  if (!s || s.replay) return;
+  if (followBox.checked) s.conductor.follower = new TempoFollower(s.engine.chart.bpm);
+  else {
+    // Back to strict: the chart tempo from the next bar.
+    s.conductor.follower = null;
+    s.engine.setTempo(s.engine.chart.bpm);
+  }
+});
 
 // ---------- listening groups (v0.3) ----------
 
@@ -814,6 +833,7 @@ async function start(replay?: SessionFile): Promise<void> {
       overlay.heard(heard);
     },
   });
+  if (!replay && followBox.checked) conductor.follower = new TempoFollower(c.bpm);
   conductor.listening = replay ? (replay.listening?.length ? parseListening(replay.listening[0].groups) : { ...NO_LISTENING }) : { ...listening };
   const ctx = audio;
   const replayNotes = replay ? pairNotes(replay) : [];
@@ -870,6 +890,7 @@ async function start(replay?: SessionFile): Promise<void> {
   });
   const ticker = new Ticker(() => transport.tick());
   session = { engine, transport, conductor, ticker, tracker, synth, remote, recorder, replay: !!replay };
+  overlay.chartBpm = c.bpm;
   overlay.reset(replay ? `Replay: ${replay.title}` : c.title);
   if (replay) overlay.setForm(c.form);
   overlay.leaderStatus(replay ? "replay" : leaderLabel(session));
