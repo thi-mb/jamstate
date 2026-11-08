@@ -3,7 +3,7 @@
 // samples haven't loaded (or can't), so the band always plays. Every note is
 // scheduled at an exact AudioContext time.
 
-import { defaultInstrument, type Band } from "../core/band";
+import { ampFor, defaultInstrument, type Band } from "../core/band";
 import { DEFAULT_MIX, type MixPreset } from "../core/genre";
 import { DRUM, PERC } from "../core/groove";
 import type { Sink } from "../core/transport";
@@ -37,6 +37,7 @@ export class Synth implements Sink {
 
   private buildBus(): void {
     this.mixer = new Mixer(this.ctx);
+    for (const p of PARTS) this.mixer.setAmp(p, ampFor(this.active[p]));
     this.mixer.apply(this.mix, this.band, true);
   }
 
@@ -67,12 +68,18 @@ export class Synth implements Sink {
 
   private use(v: Voice, id: string): void {
     if (this.active[v] === id) return;
-    if (!this.library) return void (this.active[v] = id);
-    if (this.library.get(id) || !this.active[v]) this.active[v] = id;
+    if (!this.library) return void this.activate(v, id);
+    if (this.library.get(id) || !this.active[v]) this.activate(v, id);
     void this.library.load(id).then((inst) => {
       const want = v === "player" ? this.playerInstrument : this.band[v]?.instrument;
-      if (inst && want === id) this.active[v] = id;
+      if (inst && want === id) this.activate(v, id);
     });
+  }
+
+  /** Switch a part's sound, and its amp with it. */
+  private activate(v: Voice, id: string): void {
+    this.active[v] = id;
+    if (v !== "player") this.mixer.setAmp(v, ampFor(id));
   }
 
   /** Which instrument plays a part: the sample set's id, or null while the synth covers for it. */

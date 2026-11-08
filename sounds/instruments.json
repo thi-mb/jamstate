@@ -26,7 +26,7 @@
 
     { "id": "electric", "part": "bass", "name": "Electric bass", "preset": [0, 33], "range": [28, 58], "velocities": [70, 115], "hold": 2.5, "release": 0.08 },
     { "id": "upright", "part": "bass", "name": "Upright bass", "preset": [0, 32], "range": [28, 58], "velocities": [70, 115], "hold": 2.5, "release": 0.1 },
-    { "id": "pick", "part": "bass", "name": "Picked bass", "preset": [0, 34], "range": [28, 58], "velocities": [70, 115], "hold": 2.5, "release": 0.08 },
+    { "id": "pick", "part": "bass", "name": "Picked bass", "preset": [0, 34], "range": [28, 58], "velocities": [70, 115], "hold": 2.5, "release": 0.08, "amp": { "drive": 0.3, "tone": 0.35 } },
     { "id": "synth", "part": "bass", "name": "Synth bass", "preset": [0, 38], "range": [28, 58], "velocities": [70, 115], "hold": 2.0, "release": 0.06 },
 
     { "id": "piano", "part": "chords", "name": "Piano", "preset": [0, 0], "range": [36, 90], "velocities": [45, 85, 120], "hold": 3.5, "release": 0.3 },
@@ -35,10 +35,10 @@
     { "id": "rock-organ", "part": "chords", "name": "Rock organ", "preset": [0, 18], "range": [39, 87], "velocities": [100], "hold": 6, "loop": [2.0, 5.0], "release": 0.08 },
     { "id": "clav", "part": "chords", "name": "Clavinet", "preset": [0, 7], "range": [39, 87], "velocities": [60, 110], "hold": 2.0, "release": 0.05 },
 
-    { "id": "clean", "part": "guitar", "name": "Clean guitar", "preset": [0, 27], "range": [40, 82], "velocities": [65, 110], "hold": 3.0, "release": 0.12 },
-    { "id": "funk", "part": "guitar", "name": "Funk guitar", "preset": [8, 28], "range": [40, 82], "velocities": [65, 110], "hold": 1.5, "release": 0.05 },
-    { "id": "jazz-guitar", "part": "guitar", "name": "Jazz guitar", "preset": [0, 26], "range": [40, 82], "velocities": [65, 110], "hold": 3.0, "release": 0.15 },
-    { "id": "crunch", "part": "guitar", "name": "Crunch guitar", "preset": [0, 29], "range": [40, 82], "velocities": [65, 110], "hold": 3.0, "release": 0.1 },
+    { "id": "clean", "part": "guitar", "name": "Clean guitar", "preset": [0, 27], "range": [40, 82], "velocities": [65, 110], "hold": 3.0, "release": 0.12, "amp": { "drive": 0.15, "tone": 0.55 } },
+    { "id": "funk", "part": "guitar", "name": "Funk guitar", "preset": [8, 28], "range": [40, 82], "velocities": [65, 110], "hold": 1.5, "release": 0.05, "amp": { "drive": 0.12, "tone": 0.7 } },
+    { "id": "jazz-guitar", "part": "guitar", "name": "Jazz guitar", "preset": [0, 26], "range": [40, 82], "velocities": [65, 110], "hold": 3.0, "release": 0.15, "amp": { "drive": 0.04, "tone": 0.05 } },
+    { "id": "crunch", "part": "guitar", "name": "Crunch guitar", "samples": "clean", "release": 0.1, "amp": { "drive": 0.6, "tone": 0.4 } },
 
     { "id": "strings", "part": "pad", "name": "Strings", "preset": [0, 48], "range": [42, 84], "velocities": [70, 110], "hold": 6, "loop": [2.5, 5.5], "release": 0.5 },
     { "id": "warm-pad", "part": "pad", "name": "Warm pad", "preset": [0, 89], "range": [42, 84], "velocities": [90], "hold": 6, "loop": [2.5, 5.5], "release": 0.6 }
