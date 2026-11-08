@@ -16,6 +16,8 @@ import type { BarPlan } from "./engine";
 export const LISTENING_GROUPS = ["position", "rhythm", "harmony", "phrasing", "dynamics"] as const;
 export type ListeningGroup = (typeof LISTENING_GROUPS)[number];
 export type Listening = Record<ListeningGroup, boolean>;
+/** The groups built so far (the page offers these). */
+export const LISTENING_READY: ListeningGroup[] = ["position"];
 
 export const LISTENING_LABELS: Record<ListeningGroup, string> = {
   position: "Song position",
