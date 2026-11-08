@@ -90,9 +90,9 @@ v0 is done and tested (11 of 12 pass). What it handed over:
 | Band | **v0.1** | Groove | The band swings, breathes, counts you in and ends songs properly |
 | Band | **v0.1.1** | Standalone | Nothing changes in the music; the page runs without the Spark and you pick the bandleader's brain |
 | Band | **v0.2** | Sound and lineup | Good built-in instruments, more of them, and you pick who plays on each song |
-| Bandleader | **v0.3** | Listening | The band hears your phrasing, harmony and tempo, and takes cues from pedal, pad or voice |
+| Bandleader | **v0.3** | Listening | The band hears your phrasing, harmony and tempo, takes cues from the keyboard, and the leader gets a score |
 | Bandleader | **v0.4** | Leading | The leader plans the whole song, has a personality, and trades fours with you |
-| Your music | **v0.5** | Guitar | Plug in a guitar (or anything with a mic) instead of MIDI |
+| Your music | **v0.5** | Guitar | Plug in a guitar (or anything with a mic) instead of MIDI, and talk to the band |
 | Your music | **v0.6** | Song creator | Make a song from a sentence, an editor, a progression you play, or a free jam |
 | Your music | **v0.7** | Stage | A UI you'd play from and film, with a recap after each session |
 | | **v1.0** | Public | Repo goes public with a demo video |
@@ -240,51 +240,80 @@ Done when:
 
 ### v0.3: Listening
 
+Status: planned with Thiago (2026-11-08). Scenarios for the eval are in
+[eval/scenarios.md](eval/scenarios.md); test plan in
+[testing/v0.3.md](testing/v0.3.md).
+
 **Goal:** the leader hears more than loud/soft and busy/sparse, the player
 can tell it things directly, and there's a way to measure whether it
 decides well.
 
+Order: the eval set comes first, so today's summary gets a baseline score
+and every new signal has to show what it adds.
+
 Scope:
+- **Leader eval set** (first): scripted situations ("goes sparse for 8
+  bars", "builds to the chorus", "stops", "calls and waits", "rushes"),
+  each with the moves a good bandleader must or must not make inside a
+  window of bars, checked on what the band actually does through the real
+  governor. Built in TypeScript on the bake-off harness
+  (`web/scripts/bakeoff.ts`), so it runs on any machine, the Spark
+  included. Scores every reachable brain: rules, Jev, Claude, Qwen (and Laya
+  when its server answers), per genre. This release gets the baseline;
+  v0.4 improves it. Thiago's real jams join once recorded.
 - **More signals to the conductor** (added to the summary in
-  [bandleader.md](bandleader.md)):
+  [bandleader.md](bandleader.md)), one group at a time, each re-scored:
+  - Song position: bars to the next section and what it is.
   - Rhythm: on-beat vs syncopated, the player's swing, pushing or laying
     back against the band's grid.
   - Harmony: how well the player's notes fit the chord and key (inside /
-    colour / outside).
+    colour / outside), weighted by duration.
   - Phrasing: phrase start/end, call-and-response gaps, held notes, a
     soloist "taking a chorus".
   - Dynamics: crescendo/decrescendo inside a phrase, not just per phrase.
-  - Song position: bars to the next section and what it is.
-- **The band follows your tempo:** detect rushing or dragging and let the
-  band drift with the player within limits, with "strict tempo" as an
-  option. A smoothed tempo move, not a new clock.
-- **Cues from the player:** sustain pedal, a footswitch or a mapped MIDI CC /
-  pad ("next section", "break", "build", "end the song") and keyboard
-  shortcuts. Cues go through the governor with priority over the LLM.
-- **Voice cues:** say "take it down" or "one more chorus"; Whisper on the
-  Spark turns it into the same cue moves. Advisory like any leader output.
-- **Leader eval set on the Spark:** recorded and scripted situations ("goes
-  sparse for 8 bars", "builds to the chorus", "stops", "calls and waits"),
-  each with the moves a good bandleader would or wouldn't make. Features
-  are read against the genre (what's "busy" in a ballad isn't in bebop). Scores Qwen
-  and the rule leader, run next to `spark/bench_leader.py`. This release
-  gets the baseline score; v0.4 improves it.
-- **Fretboard view:** a guitar neck (and a keyboard view for keys players)
-  showing the scale for the current chord with chord tones highlighted, and
-  the next chord's tones coming up before the change. The scale choice comes
-  from the genre (blues scale and minor pentatonic for blues rock, dorian
-  and mixolydian for funk, chord-scale and bebop scales for jazz). What you
-  play on MIDI shows on it live, coloured by how it fits (chord tone, scale
-  tone, outside), using the same harmony signal the leader gets.
+
+  A **Listening** group under Bandleader has a checkbox per signal group:
+  it sets what goes into the summary for every brain, starts where the eval
+  says (a group that doesn't raise the score for any LLM brain starts off),
+  is kept in the browser and recorded with the session. The overlay always
+  shows every signal. The rule leader uses song position, phrasing gaps and
+  outside playing.
+- **Listening layer in the genre pack:** the scale per chord quality for
+  each genre (blues and minor pentatonic for blues rock, dorian/mixolydian
+  for funk, chord-scale and bebop scales for jazz) and the genre's "busy"
+  thresholds. A decision record.
+- **Cues from the player:** keyboard shortcuts 1–6 (next section, break,
+  build, take it down, one more chorus, end song), each also a button; the
+  **End song** button becomes cue 6. Break, build and take it down land on
+  the next bar; next section, one more chorus and end song on the next
+  phrase. Cues go through the governor with priority over the leader: for a
+  few bars after a cue, leader moves that undo it are rejected. The next
+  summary tells the leader about the cue. Cues are recorded in the session.
+  Mappable keys, pads, footswitches and MIDI CCs come later.
+- **The band follows your tempo** (opt-in): strict tempo is the default;
+  **Follow my tempo** lets the band drift with a rushing or dragging player
+  within ±5% of the chart tempo, as a smoothed move that lands on the next
+  bar, not a new clock. Pushing or laying back (feel) never moves the tempo.
+- **Fretboard view:** a guitar neck (standard tuning, frets 0–15) or a
+  piano (two octaves following the player's register), toggled guitar /
+  piano / off. It shows the scale for the current chord, chord tones strong
+  and scale tones faint, with the next chord's tones fading in on the last
+  beat before the change. What you play on MIDI shows on it live, coloured
+  inside / colour / outside, by the same function as the leader's harmony
+  signal. Left-handed and other tunings wait for v0.5.
+
+Moved out: **voice cues** go to v0.5, which brings microphone input anyway.
 
 Done when:
 - Hands-on: a call-and-response and a build into a chorus get followed;
-  slowing down a little brings the band along; a pad cue and a spoken "one
-  more chorus" both land on the next phrase.
-- The eval set runs on the Spark and reports a score for both leaders.
+  with Follow my tempo on, slowing down a little brings the band along, and
+  with it off the band holds; each cue key lands where it should.
+- The eval runs from the repo and reports a score for every brain, with a
+  baseline (v0.2 summary) and the v0.3 score side by side.
 - The fretboard shows the right scale and chord tones for each chord in the
-  three genres, and changes on the beat of the chord change.
-- p95 latency stays inside
+  three genres, on guitar and piano, and changes on the beat of the chord
+  change.
+- p95 latency for Jev and Qwen stays inside
   [ADR-0006](decisions/0006-bandleader-latency-contract.md) with the bigger
   summary.
 
@@ -344,6 +373,11 @@ each usable on its own, all feeding the v0.3 signals:
    the Spark if it's too heavy.
 4. **Bleed:** headphones are the default; gating the band's own output from
    the mic is a stretch goal.
+5. **Voice cues** (moved from v0.3): say "take it down" or "one more
+   chorus" and it becomes the same cue as the v0.3 keys. Speech to text in
+   the page if a small model is good enough (no server required,
+   [ADR-0015](decisions/0015-no-server-required.md)), Whisper on the Spark as
+   the lab option. Advisory like any leader output.
 
 **Fretboard, live:** the notes and chords detected from the guitar show on
 the v0.3 fretboard as you play, in a likely position on the neck (picked to
@@ -355,6 +389,7 @@ Done when:
 - Audio sessions record and replay like MIDI ones.
 - Single notes and strummed chords show on the fretboard within about a beat
   and in a plausible position.
+- A spoken "take it down" and "one more chorus" land like the v0.3 cue keys.
 
 ### v0.6: Song creator
 
