@@ -30,6 +30,13 @@ spec, so change the rules here.
   reported per genre and per signal-group setting. Cue and tempo scenarios
   are scored too but also reported in their own columns, since they mostly
   test the page, not the brain.
+- **Stretch checks** (marked "Stretch") are what we hope v0.3's signals
+  make possible. The baseline is expected to fail them, so they are
+  reported in their own column and left out of the score.
+- **Thresholds are provisional.** The numbers (0.3, 0.4, 0.45, 0.6, steps of
+  0.1 and 0.2) follow the bake-off's scores. PR 2 reports where each brain
+  actually lands per genre, and the thresholds get tuned from that before
+  the baseline is recorded.
 
 Player modes the pretend player needs (today it has `silent`, `sparse`,
 `medium`, `busy`): `held` (one or two long soft notes a bar), `crescendo` /
@@ -102,8 +109,7 @@ Player: `busy:2, silent:2` repeated for 16 bars, starting at bar 4.
   are answers, not the player leaving).
 - Must not: bars 8–20, target changes by more than 0.2 between two turns
   (don't chase the gaps), or a change of feel.
-- Must (v0.3 target, likely fails at baseline): at least two fills land in
-  the silent bars.
+- Stretch: at least two fills land in the silent bars.
 
 ### E10 Taking a chorus (Blues in A, Late Set)
 Player: `medium:N` until the first solo section, then `busy` for that whole
@@ -116,8 +122,8 @@ section, then `medium` again.
 Player: `busy` through the last solo section and its last 2 bars, then
 `busy:4` more.
 - Must not: in the solo section's last 4 bars, a jump back to the head.
-- Must (v0.3 target): the solo section is extended or repeated rather than
-  the head coming in under a busy player.
+- Stretch: the solo section is extended or repeated rather than the head
+  coming in under a busy player.
 
 ## Harmony and rhythm
 
@@ -126,9 +132,9 @@ Player: `medium:4, outside:8`.
 - Must not: bars 4–12, target goes up by more than 0.1, a layer is added,
   or a riser.
 
-In jazz, outside playing is tension the band can support, so E12 has no
-jazz run; the leader may do anything that doesn't drop the band out
-(must: drums and bass stay in, bars 4–12).
+In jazz, outside playing is tension the band can support. Jazz run:
+- Must: bars 4–12, drums and bass stay in and target doesn't go down.
+- Stretch: by bar 12, target ≥ target at bar 4 + 0.1.
 
 ### E13 Locks into a riff (Night Shift)
 Player: `riff:16`.
@@ -173,19 +179,23 @@ Player plays `sparse` instead, so the leader pulls the other way.
   lands on bar 10 or 11.
 - Must not: bars 10–14, target goes down.
 
-### C3 Break
-- Must: bar 10 is a break (drums, or the whole band but one part, out for
-  that bar), and the band is back by bar 12.
+### C3 Drums break
+- Must: bars 10–11, drums and percussion are out and the rest of the band
+  plays; by bar 12 drums and percussion are back.
 
-### C4 Next section
+### C4 Drums only
+- Must: bars 10–11, only drums and percussion play; by bar 12 the band is
+  back.
+
+### C5 Next section
 - Must: bar 12 is the first bar of the next section in the form.
 
-### C5 One more chorus
+### C6 One more chorus
 Pressed in the last phrase of a section.
 - Must: the same section plays once more from its end, then the form goes
   on.
 
-### C6 End song
+### C7 End song
 - Must: the song ends at the end of the phrase (as `end_song` does today).
 
 ## Real jams
@@ -194,14 +204,3 @@ Thiago's own jams join the set once recorded: the v0.3 hands-on test asks for
 three downloaded sessions (one per genre). Claude labels them afterwards with
 checks in the same style, Thiago reviews the labels, and they count from v0.4
 on.
-
-## Open for review
-
-- Thresholds (0.3 / 0.4 / 0.45 / 0.6, the ±0.1 and 0.2 steps) follow the
-  bake-off's existing scores. Too strict or too loose for any genre?
-- E9 and E11 have "v0.3 target" checks the baseline will fail on purpose.
-  Keep them in the score, or report them separately?
-- E12 jazz: is "anything but dropping out" right, or should the jazz band
-  lift under outside playing?
-- C3 Break: is "drums out for a bar" what you mean by break, or the whole
-  band out (stop-time)?

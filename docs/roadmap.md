@@ -282,11 +282,12 @@ Scope:
   each genre (blues and minor pentatonic for blues rock, dorian/mixolydian
   for funk, chord-scale and bebop scales for jazz) and the genre's "busy"
   thresholds. A decision record.
-- **Cues from the player:** keyboard shortcuts 1–6 (next section, break,
-  build, take it down, one more chorus, end song), each also a button; the
-  **End song** button becomes cue 6. Break, build and take it down land on
-  the next bar; next section, one more chorus and end song on the next
-  phrase. Cues go through the governor with priority over the leader: for a
+- **Cues from the player:** keyboard shortcuts 1–7 (next section, drums
+  break, drums only, build, take it down, one more chorus, end song), each
+  also a button; the **End song** button becomes cue 7. A drums break takes
+  drums and percussion out for 2 bars; drums only leaves just them for 2
+  bars. Breaks, build and take it down land on the next bar; next section,
+  one more chorus and end song on the next phrase. Cues go through the governor with priority over the leader: for a
   few bars after a cue, leader moves that undo it are rejected. The next
   summary tells the leader about the cue. Cues are recorded in the session.
   Mappable keys, pads, footswitches and MIDI CCs come later.
