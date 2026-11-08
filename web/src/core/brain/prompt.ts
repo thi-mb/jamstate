@@ -34,6 +34,12 @@ syncopation (0 on the beat, 1 all off-beat sixteenths), swing (0 straight,
 (rushing or dragging inside the bar). A syncopated, pushing or laid-back
 player still wants the groove: don't drop back or go half time for it. The
 band keeps its own tempo.`,
+  harmony: `"harmony" says how the player's notes sit on the chords over the last
+phrase, weighted by how long they sound: inside (chord tones), colour (the
+genre's scale) and outside, with fit in a word. genre_outside says what a band
+in this genre does when the player goes outside: "hold" (stay steady, don't
+lift or add parts) or "lift" (keep drums and bass in and lift a little with
+them). Outside playing is a choice, not a mistake.`,
 };
 
 /** The system prompt for a request: the fixed prompt, then notes for the listening fields it carries. */

@@ -27,5 +27,6 @@ Status values: **Proposed** (recommended, waiting on Thiago), **Accepted**,
 | [0016](0016-brain-providers.md) | The bandleader is a pluggable brain the player picks | Accepted |
 | [0017](0017-one-core-thin-shells.md) | One core, thin shells: web now, desktop app when tests say so | Accepted |
 | [0018](0018-lineups-and-sound.md) | Lineups and the built-in sound: rendered samples, mix bus, band as data | Accepted |
+| [0019](0019-listening-layer.md) | The listening layer: five switchable groups, one summary for every brain | Proposed |
 
 New record: copy [template.md](template.md).

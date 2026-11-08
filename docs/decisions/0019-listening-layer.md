@@ -1,0 +1,73 @@
+# 0019. The listening layer: five switchable groups, one summary for every brain
+
+- Status: Proposed
+- Date: 2026-11-08
+
+## Context
+Up to v0.2 the bandleader hears one number that matters: energy (density and
+velocity), plus its trend. The v0.2 baseline of the leader eval
+([results](../eval/results/baseline-v0.2/summary.md)) shows where that runs
+out: no brain lets the band down under held notes or a decrescendo inside a
+phrase, none builds into the next section with the player, and call and
+response is followed bar by bar. v0.3 adds more listening. Three forces:
+
+- Every brain must get the same input, or the eval compares prompts rather
+  than brains.
+- More fields make the request bigger and slower (ADR-0006), and a field that
+  doesn't help can make a brain worse. Each group has to earn its place.
+- The player has to be able to switch groups off to hear the difference.
+
+## Decision
+- Listening is five groups, each adding one field to the leader's request
+  when it is on: `position` (song position), `rhythm`, `harmony`, `phrasing`,
+  `dynamics`. Off, the request is the v0.2 one. Code:
+  `web/src/core/listening.ts`; the conductor computes every group after every
+  bar and puts in the ones that are on.
+- The player switches groups under **Bandleader → Listening**. The setting is
+  kept in the browser, recorded in the session file with every change
+  (`listening`), and a replay with a leader hears the same groups. Defaults
+  are the groups the eval says help (see the table in
+  [docs/eval](../eval/results)). The overlay always shows everything heard.
+- LLM brains get one fixed paragraph per field present, after the fixed
+  system prompt (its cached prefix doesn't change). Jev gets the same fields
+  in its state. The rule leader uses song position (lift into a bigger
+  section when the player builds; hold parts in the two bars before a change),
+  phrasing gaps and outside playing.
+- Groups listen over the last phrase (`phrase_bars`).
+- Harmony classifies each note against the chord sounding when it starts:
+  a chord tone is **inside**, a note of the genre's scale for the chord's class
+  is **colour**, anything else is **outside**; shares are weighted by how long
+  each note sounds. The same function (`noteFit`) colours the fretboard.
+- Genre-specific listening lives in the genre pack under a new optional
+  `listening` key (ADR-0012 reserved it): `scales` per chord class (major,
+  minor, dominant, half_diminished, diminished; semitones above the chord's
+  root) and `outside` (`hold` or `lift`: what the band does when the player
+  goes outside). A pack without it uses the chord's own scale and holds. The
+  key is optional, so the format stays `jamstate-genre/0.2`.
+
+| Genre | Colour beyond the chord | Outside |
+|---|---|---|
+| funk | dorian with the flat five on minor; mixolydian with the blue third and flat five on dominant | hold |
+| blues-rock | blues scale plus mixolydian on major and dominant; blues and dorian on minor | hold |
+| jazz | everything on a dominant; lydian and the sharp five on major; melodic and dorian on minor | lift |
+
+## Consequences
+- A brain's score can be compared group by group, on the same scenarios.
+- The request grows by up to five small objects; the latency check (v0.3 test
+  plan row 11) holds Jev and Qwen to ADR-0006 with every group on.
+- Genre authors can say what "outside" means in their genre without code.
+- Busy and sparse thresholds stay global for now: the baseline gave no
+  evidence that they should differ by genre.
+- The listening window is a phrase, so a change mid-phrase is heard late;
+  the trend fields carry the direction within it.
+
+## Alternatives considered
+- **One richer summary, always on.** Simpler, but no way to tell which part
+  helps, and no way for the player to compare.
+- **Per-brain inputs** (words for Jev, numbers for LLMs). Better for each
+  brain, but the eval would no longer compare like with like. Jev's state
+  regroups the same fields instead.
+- **Key-relative harmony** (scale degrees of the song's key). Breaks on
+  modulations and secondary dominants; chord-relative classes follow the chart.
+- **Thresholds per genre in the pack now.** Deferred until the eval shows a
+  need.

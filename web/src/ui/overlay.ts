@@ -87,6 +87,8 @@ export class Overlay {
     if (r.syncopation !== null) parts.push(`syncopation ${r.syncopation.toFixed(2)}${r.swing ? ` · swing ${r.swing.toFixed(2)}` : ""}`);
     if (r.timing && r.timing !== "on") parts.push(`${r.timing} ${Math.abs(r.timing_ms ?? 0)} ms`);
     if (r.tempo && r.tempo !== "steady") parts.push(r.tempo);
+    const hm = h.harmony;
+    if (hm.fit) parts.push(`${hm.fit} (in ${Math.round((hm.inside ?? 0) * 100)}% · colour ${Math.round((hm.colour ?? 0) * 100)}% · out ${Math.round((hm.outside ?? 0) * 100)}%)`);
     $("heard").textContent = `hearing: ${parts.join(" · ")}`;
   }
 
