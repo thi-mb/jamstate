@@ -149,9 +149,32 @@ export interface BarPlan {
  */
 export type Control =
   | { at: number; kind: "moves"; source: string; requestedBar: number; moves: unknown[] }
+  | { at: number; kind: "cue"; cue: Cue }
   | { at: number; kind: "genre"; genre: string }
   | { at: number; kind: "swing"; swing: number | null }
   | { at: number; kind: "band"; band: Band };
+
+/**
+ * The player's cues (v0.3), on keys 1–7. Breaks, build and take it down land
+ * on the next bar; next section, one more and end song on the next phrase.
+ * After a cue lands the leader can't undo it for a phrase (the lockout).
+ */
+export const CUES = ["next_section", "drums_break", "drums_only", "build", "take_down", "one_more", "end_song"] as const;
+export type Cue = (typeof CUES)[number];
+export const CUE_LABELS: Record<Cue, string> = {
+  next_section: "Next section",
+  drums_break: "Drums/perc break",
+  drums_only: "Drums/perc only",
+  build: "Build",
+  take_down: "Take it down",
+  one_more: "One more",
+  end_song: "End song",
+};
+/** The cue on key 1, 2, … 7. */
+export const cueForKey = (key: string): Cue | undefined => CUES[Number(key) - 1];
+/** How far build and take it down move the target. */
+export const CUE_STEP = 0.25;
+const PERC: Part[] = ["drums", "percussion"];
 
 export interface EngineOptions {
   config?: Partial<GovernorConfig>;
@@ -176,6 +199,14 @@ interface Queued {
   move: Move;
   source: string;
   requestedBar: number;
+  /** A cue's jump: the form position to land on, with no minimum section length. */
+  formPos?: number;
+}
+
+/** After a cue: which leader moves the governor rejects, up to and including bar `until`. */
+interface Lockout {
+  cue: Cue;
+  until: number;
 }
 
 export class Engine {
@@ -211,6 +242,12 @@ export class Engine {
   private stingers: Stinger[] = [];
   private pendingJump: Queued | null = null;
   private pendingEnd: Queued | null = null;
+  private cues: Cue[] = [];
+  private lockout: Lockout | null = null;
+  /** A drums/perc break or drums/perc only, through bar `until`. */
+  private breakCue: { cue: "drums_break" | "drums_only"; until: number } | null = null;
+  /** A stinger a cue asked for: not subject to one stinger per phrase. */
+  private cueStinger: Stinger | null = null;
   private lastBars: Partial<Record<Part, NoteEvent[]>> = {};
   readonly log: MoveRecord[] = [];
   /** Every outside change, for session recording. */
@@ -244,6 +281,12 @@ export class Engine {
       } else this.queue.push({ move: parsed.move, source, requestedBar });
     }
     return rejected;
+  }
+
+  /** A cue from the player, resolved when the next bar is prepared. */
+  cue(c: Cue): void {
+    this.controls.push({ at: this.bar, kind: "cue", cue: c });
+    this.cues.push(c);
   }
 
   /** Switch genre from the next bar on. */
@@ -321,6 +364,8 @@ export class Engine {
     const apply = (note?: string) => this.record(m, source, requestedBar, "applied", note);
     if (upcoming - requestedBar > cfg.ttlBars) return reject(`expired (${upcoming - requestedBar} bars old)`);
     if (this.pendingEnd && (m.move === "jump_to_section" || m.move === "extend_section")) return reject("the song is ending");
+    const locked = source !== "you" && source !== "cue" ? this.lockedOut(m, upcoming) : null;
+    if (locked) return reject(locked);
 
     switch (m.move) {
       case "set_intensity": {
@@ -374,6 +419,101 @@ export class Engine {
     }
   }
 
+  /** Why a leader move would undo the cue that's locking, or null. */
+  private lockedOut(m: Move, upcoming: number): string | null {
+    const lock = this.lockout;
+    if (!lock || upcoming > lock.until) return null;
+    const why = `undoes the ${CUE_LABELS[lock.cue].toLowerCase()} cue`;
+    const target = this.target ?? this.intensity;
+    switch (lock.cue) {
+      case "take_down":
+        if ((m.move === "set_intensity" && m.value > target) || m.move === "add_layer" || (m.move === "fire_stinger" && m.stinger === "riser")) return why;
+        return null;
+      case "build":
+        if ((m.move === "set_intensity" && m.value < target) || m.move === "drop_layer" || (m.move === "change_feel" && m.feel === "half_time")) return why;
+        return null;
+      case "drums_break":
+      case "drums_only":
+        return m.move === "add_layer" || m.move === "drop_layer" ? why : null;
+      case "next_section":
+      case "one_more":
+      case "end_song":
+        return m.move === "jump_to_section" || m.move === "extend_section" || m.move === "end_song" ? why : null;
+    }
+  }
+
+  /** Apply a cue for the upcoming bar. Returns its record. */
+  private resolveCue(c: Cue, upcoming: number): MoveRecord {
+    const phrase = this.chart.phraseBars;
+    const label = `cue: ${CUE_LABELS[c].toLowerCase()}`;
+    const rec = (move: Move, status: MoveStatus, note?: string) => this.record(move, "cue", upcoming - 1, status, note, label);
+    const reason = CUE_LABELS[c];
+    // The bar after the end of the phrase the upcoming bar is in (by bars in the section).
+    const pos = this.advance();
+    const barInSection = pos?.barInSection ?? 0;
+    const phraseLeft = phrase - (barInSection % phrase);
+    switch (c) {
+      case "take_down":
+      case "build": {
+        const current = this.target ?? this.intensity;
+        const value = Math.round(clamp(current + (c === "build" ? CUE_STEP : -CUE_STEP), 0.1, 1) * 100) / 100;
+        this.target = value;
+        this.targetSetAt = upcoming;
+        if (c === "build") this.cueStinger = "riser";
+        this.lockout = { cue: c, until: upcoming + phrase };
+        return rec({ move: "set_intensity", value, reason }, "applied");
+      }
+      case "drums_break":
+      case "drums_only": {
+        const has = this.lineup.filter((p) => PERC.includes(p));
+        if (!has.length) return rec({ move: "drop_layer", part: "drums", reason }, "rejected", "no drums or percussion in the lineup");
+        if (c === "drums_only" && !this.lineup.some((p) => !PERC.includes(p))) return rec({ move: "drop_layer", part: "drums", reason }, "rejected", "the band is only drums");
+        this.breakCue = { cue: c, until: upcoming + phraseLeft - 1 };
+        this.lockout = { cue: c, until: this.breakCue.until };
+        return rec({ move: "drop_layer", part: "drums", reason }, "applied", `through bar ${this.breakCue.until}`);
+      }
+      case "next_section": {
+        const next = this.formPos + 1 < this.chart.form.length ? this.formPos + 1 : this.config.loop ? 0 : -1;
+        const move: Move = { move: "jump_to_section", section: next >= 0 ? this.chart.form[next] : "", reason };
+        if (this.pendingEnd) return rec(move, "rejected", "the song is ending");
+        if (next < 0) {
+          // Last section of a song that doesn't loop: the next section is the end.
+          this.pendingEnd = { move: { move: "end_song", reason }, source: "cue", requestedBar: upcoming - 1 };
+          this.lockout = { cue: "end_song", until: upcoming + phrase };
+          return rec(move, "pending", "last section: ending at the end of this phrase");
+        }
+        if (this.pendingJump) this.record(this.pendingJump.move, this.pendingJump.source, this.pendingJump.requestedBar, "rejected", "replaced by a cue");
+        this.pendingJump = { move, source: "cue", requestedBar: upcoming - 1, formPos: next };
+        this.lockout = { cue: c, until: upcoming + phraseLeft };
+        return rec(move, "pending", "waiting for the next phrase");
+      }
+      case "one_more": {
+        const bars = this.sectionAt(this.formPos).bars;
+        const move: Move = { move: "extend_section", bars, reason };
+        if (this.pendingEnd) return rec(move, "rejected", "the song is ending");
+        if (this.extension > 0) return rec(move, "rejected", "already going round again");
+        this.extension += bars;
+        if (this.pendingJump) {
+          this.record(this.pendingJump.move, this.pendingJump.source, this.pendingJump.requestedBar, "rejected", "one more time round first");
+          this.pendingJump = null;
+        }
+        this.lockout = { cue: c, until: upcoming + this.sectionLength() - barInSection };
+        return rec(move, "applied", `${bars} more bars`);
+      }
+      case "end_song": {
+        const move: Move = { move: "end_song", reason };
+        if (this.pendingEnd) return rec(move, "rejected", "already ending");
+        this.pendingEnd = { move, source: "cue", requestedBar: upcoming - 1 };
+        if (this.pendingJump) {
+          this.record(this.pendingJump.move, this.pendingJump.source, this.pendingJump.requestedBar, "rejected", "the song is ending");
+          this.pendingJump = null;
+        }
+        this.lockout = { cue: c, until: upcoming + phrase };
+        return rec(move, "pending", "ending at the end of this phrase");
+      }
+    }
+  }
+
   /** Position the upcoming bar lands on, without jumps. Null at the end of a non-looping form. */
   private advance(): { formPos: number; barInSection: number } | null {
     if (this.barInSection < 0) return { formPos: 0, barInSection: 0 };
@@ -405,6 +545,7 @@ export class Engine {
     while (this.scriptPos < this.script.length && this.script[this.scriptPos].at <= this.bar) {
       const c = this.script[this.scriptPos++];
       if (c.kind === "moves") this.submit(c.moves, c.source, c.requestedBar);
+      else if (c.kind === "cue") this.cue(c.cue);
       else if (c.kind === "genre") this.setGenre(getGenre(c.genre));
       else if (c.kind === "band") this.setBand(c.band);
       else this.setSwing(c.swing);
@@ -478,8 +619,10 @@ export class Engine {
     const queued = this.queue;
     this.queue = [];
     for (const q of queued) resolved.push(this.resolve(q, upcoming));
-
     if (this.countInLeft > 0) return this.countInBar(resolved);
+    const cues = this.cues;
+    this.cues = [];
+    for (const c of cues) resolved.push(this.resolveCue(c, upcoming));
 
     // Horizontal resequencing: a pending jump lands on a phrase boundary once
     // the section has had its minimum length.
@@ -489,11 +632,11 @@ export class Engine {
       const pj = this.pendingJump;
       const target = (pj.move as Extract<Move, { move: "jump_to_section" }>).section;
       const atBoundary = pos === null || pos.barInSection === 0 || pos.barInSection % this.chart.phraseBars === 0;
-      if (upcoming - pj.requestedBar > cfg.ttlBars) {
+      if (pj.formPos === undefined && upcoming - pj.requestedBar > cfg.ttlBars) {
         resolved.push(this.record(pj.move, pj.source, pj.requestedBar, "rejected", "expired before a phrase boundary"));
         this.pendingJump = null;
-      } else if (atBoundary && this.barsInVisit >= cfg.minSectionBars) {
-        pos = { formPos: this.jumpTarget(target), barInSection: 0 };
+      } else if (atBoundary && (pj.formPos !== undefined || this.barsInVisit >= cfg.minSectionBars)) {
+        pos = { formPos: pj.formPos ?? this.jumpTarget(target), barInSection: 0 };
         resolved.push(this.record(pj.move, pj.source, pj.requestedBar, "applied", "on phrase boundary"));
         this.pendingJump = null;
       }
@@ -517,7 +660,7 @@ export class Engine {
     const section = this.sectionAt(this.formPos);
     // The chart nudges, the leader still leads: a target the leader set within
     // the last phrase is a fresh decision and stands (v0.3).
-    if (newSection && this.bar > this.countInTotal && section.intensity !== undefined && this.target !== null && !(cfg.holdFreshTarget && this.bar - this.targetSetAt <= this.chart.phraseBars))
+    if (newSection && this.bar > this.countInTotal && section.intensity !== undefined && this.target !== null && !(cfg.holdFreshTarget && this.bar - this.targetSetAt <= this.chart.phraseBars) && !(this.lockout && this.bar <= this.lockout.until))
       this.target = (this.target + section.intensity) / 2;
 
     // Smooth intensity toward the goal.
@@ -549,6 +692,11 @@ export class Engine {
         this.lastStingerPhrase = phraseId;
       }
     }
+    if (this.cueStinger) {
+      stingers = [this.cueStinger];
+      this.lastStingerPhrase = phraseId;
+      this.cueStinger = null;
+    }
     const next = ending ? tonic : this.peekNextChord();
     if (cfg.autoFills && this.layers.has("drums") && level >= 1) {
       if (lastBarOfSection && next && !stingers.includes("fill")) stingers.push("fill");
@@ -557,7 +705,16 @@ export class Engine {
     if (ending && this.layers.has("drums") && !stingers.includes("fill")) stingers.push("fill");
 
     // Mid layer: one bar per active part, repeating the last bar on a miss.
-    const parts = this.lineup.filter((p) => this.layers.has(p));
+    // A break cue sets the parts for its bars; the layers come back after.
+    const brk = this.breakCue && this.bar <= this.breakCue.until ? this.breakCue.cue : null;
+    if (this.breakCue && this.bar > this.breakCue.until) {
+      if (this.breakCue.cue === "drums_break" && this.layers.has("drums") && !stingers.includes("crash")) stingers.push("crash");
+      this.breakCue = null;
+    }
+    const parts = this.lineup.filter((p) =>
+      brk === "drums_break" ? this.layers.has(p) && !PERC.includes(p) : brk === "drums_only" ? PERC.includes(p) : this.layers.has(p),
+    );
+    if (brk === "drums_break") stingers = [];
     const ctx = this.context({
       bar: this.bar, kind: ending ? "ending" : "play", section: name, barInSection: this.barInSection, sectionBars: this.sectionLength(),
       barInPhrase, lastBarOfSection, level, feel: this.feel, parts, slots: section.barChords(this.barInSection), next, stingers,
@@ -577,7 +734,7 @@ export class Engine {
       this.lastBars[p] = byPart[p];
     }
     // Drums out but a stinger (or the final hit) asked for: drums play just that.
-    if (!parts.includes("drums") && this.lineup.includes("drums") && (stingers.length || ending)) {
+    if (!parts.includes("drums") && this.lineup.includes("drums") && (stingers.length || ending) && brk !== "drums_break") {
       const only = this.generator.generate({ ...ctx, parts: ["drums"], stingersOnly: true }).drums;
       if (only) byPart.drums = only;
     }
