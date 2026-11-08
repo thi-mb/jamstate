@@ -120,6 +120,8 @@ def main() -> int:
         iid = inst["id"]
         if only and iid not in only:
             continue
+        if "samples" in inst:
+            continue  # plays another instrument's samples; written after the loop
         bank, prog = inst["preset"]
         chan = 9 if bank == 128 else 0
         fs.program_select(chan, sfid, bank, prog)
@@ -166,7 +168,23 @@ def main() -> int:
         }
         print(f"{iid}: {len(zones)} samples, {total / 1e6:.2f} MB (peak was {db(peak):.1f} dBFS)")
 
-    manifest["bytes"] = sum(i["bytes"] for i in manifest["instruments"].values())
+    # Instruments that reuse another's samples (the crunch guitar is the clean one through an amp).
+    for inst in spec["instruments"]:
+        src = inst.get("samples")
+        if not src or src not in manifest["instruments"]:
+            continue
+        base = manifest["instruments"][src]
+        manifest["instruments"][inst["id"]] = {
+            "part": inst["part"],
+            "name": inst["name"],
+            "kind": base["kind"],
+            "release": inst.get("release", base["release"]),
+            "bytes": base["bytes"],
+            "zones": [dict(z) for z in base["zones"]],
+            "samples": src,
+        }
+
+    manifest["bytes"] = sum(i["bytes"] for i in manifest["instruments"].values() if "samples" not in i)
     manifest_path.write_text(json.dumps(manifest, indent=1) + "\n")
     print(f"total {manifest['bytes'] / 1e6:.2f} MB → {manifest_path}")
     return 0

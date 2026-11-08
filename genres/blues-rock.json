@@ -17,7 +17,7 @@
     "gain": 0.15,
     "parts": {
       "drums": {"volume": 0.95, "eq": [2, 1, 1], "comp": 0.5, "reverb": 0.18},
-      "bass": {"volume": 0.68, "eq": [2, 0, -2], "comp": 0.6, "reverb": 0.02},
+      "bass": {"volume": 0.68, "eq": [2, 0, -2], "comp": 0.6, "drive": 0.15, "reverb": 0.02},
       "chords": {"volume": 0.42, "pan": -0.35, "eq": [-1, 0, 0], "comp": 0.2, "reverb": 0.2},
       "guitar": {"volume": 0.5, "pan": 0.4, "eq": [-2, 2, 0], "comp": 0.3, "reverb": 0.15},
       "pad": {"volume": 0.3, "reverb": 0.35},
