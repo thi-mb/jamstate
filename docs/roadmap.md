@@ -260,7 +260,8 @@ Scope:
   (`web/scripts/bakeoff.ts`), so it runs on any machine, the Spark
   included. Scores every reachable brain: rules, Jev, Claude, Qwen (and Laya
   when its server answers), per genre. This release gets the baseline;
-  v0.4 improves it. Thiago's real jams join once recorded.
+  v0.4 improves it. Real jams join once Thiago can play guitar into it
+  (v0.5); keyboard jams wouldn't be his real playing.
 - **More signals to the conductor** (added to the summary in
   [bandleader.md](bandleader.md)), one group at a time, each re-scored:
   - Song position: bars to the next section and what it is.
@@ -296,9 +297,12 @@ Scope:
   bar, not a new clock. Pushing or laying back (feel) never moves the tempo.
 - **Fretboard view:** a guitar neck (standard tuning, frets 0–15) or a
   piano (two octaves following the player's register), toggled guitar /
-  piano / off. It shows the scale for the current chord, chord tones strong
-  and scale tones faint, with the next chord's tones fading in on the last
-  beat before the change. What you play on MIDI shows on it live, coloured
+  piano / off, in two modes (from Thiago's T7, 2026-11-09). Scale: one
+  scale for the whole song, from the chart's key and the genre's
+  `listening.key_scales` (the one that fits the chords best), held still
+  with only the chord tones moving on top. Changes: the scale for the
+  current chord, chord tones strong and scale tones faint, with the next
+  chord's tones fading in on the last beat before the change. What you play on MIDI shows on it live, coloured
   inside / colour / outside, by the same function as the leader's harmony
   signal. Left-handed and other tunings wait for v0.5.
 
@@ -387,6 +391,9 @@ Done when:
 - Guitar through an audio interface drives the band like the MIDI keyboard
   does in v0 tests 2, 4 and 5, and the v0.3 hands-on tests pass on guitar.
 - Audio sessions record and replay like MIDI ones.
+- Three guitar jams (one per genre) recorded and labelled as eval
+  scenarios: the real-jams set moved here from v0.3, since Thiago plays
+  guitar, not keys.
 - Single notes and strummed chords show on the fretboard within about a beat
   and in a plausible position.
 - A spoken "take it down" and "one more chorus" land like the v0.3 cue keys.

@@ -207,10 +207,11 @@ Pressed two bars before the end of that same section.
 
 ## Real jams
 
-Thiago's own jams join the set once recorded: the v0.3 hands-on test asks for
-three downloaded sessions (one per genre). Claude labels them afterwards with
-checks in the same style, Thiago reviews the labels, and they count from v0.4
-on.
+Thiago's own jams join the set once he can play guitar into the page
+(v0.5): he isn't a keyboard player, so keyboard jams wouldn't be his real
+playing (decided 2026-11-09, v0.3 test T9). Three downloaded sessions, one
+per genre; Claude labels them with checks in the same style, Thiago reviews
+the labels, and they count from then on.
 
 ## Decided in review
 

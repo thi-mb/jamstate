@@ -28,7 +28,7 @@ import { ServerSessionStore, webPlatform } from "./platform/web";
 import { attachKeyboard } from "./ui/keyboard";
 import { Overlay } from "./ui/overlay";
 import { FretboardView } from "./ui/fretboard";
-import { FRETBOARD_KINDS, type FretboardKind } from "./core/fretboard";
+import { FRETBOARD_KINDS, FRETBOARD_MODES, type FretboardKind, type FretboardMode } from "./core/fretboard";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -51,6 +51,19 @@ const fretboardKind = $<HTMLSelectElement>("fretboard-kind");
   fretboardKind.addEventListener("change", () => {
     platform.settings.set(FRETBOARD_KEY, fretboardKind.value);
     fretboard.setKind(fretboardKind.value as FretboardKind);
+    fretboardMode.disabled = fretboardKind.value === "off";
+  });
+}
+const FRETBOARD_MODE_KEY = "jamstate.fretboardMode";
+const fretboardMode = $<HTMLSelectElement>("fretboard-mode");
+{
+  const saved = platform.settings.get<FretboardMode>(FRETBOARD_MODE_KEY);
+  fretboardMode.value = saved && FRETBOARD_MODES.includes(saved) ? saved : "scale";
+  fretboardMode.disabled = fretboardKind.value === "off";
+  fretboard.setMode(fretboardMode.value as FretboardMode);
+  fretboardMode.addEventListener("change", () => {
+    platform.settings.set(FRETBOARD_MODE_KEY, fretboardMode.value);
+    fretboard.setMode(fretboardMode.value as FretboardMode);
   });
 }
 /** Committed bars by index (startBeat / beats per bar), for the fretboard. */

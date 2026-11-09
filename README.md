@@ -87,9 +87,14 @@ Only the LLM brains can write charts from a description (**Write**).
   [ADR-0019](docs/decisions/0019-listening-layer.md)). Every brain gets the
   same summary; the overlay's "hearing" line always shows all of it.
 - **Fretboard** under You: guitar (frets 0–15), piano (two octaves that
-  follow where you play) or off. Chord tones strong, the genre's scale faint,
-  the next chord fading in on the beat before it changes, your notes green
-  (chord tone), yellow (colour) or red (outside).
+  follow where you play) or off, in two modes. **Scale** (the default) holds
+  one scale for the whole song, picked from its key and genre (A blues for
+  Blues in A, F minor for Night Shift, B♭ major for Late Set), with the
+  current chord's tones lit on top; a ring marks a chord tone outside the
+  scale. **Changes** shows each chord's tones strong and the genre's scale
+  for that chord faint, the next chord fading in on the beat before it
+  changes. Either way your notes show green (chord tone), yellow (colour) or
+  red (outside).
 
 ## With the jamstate server (optional companion)
 
