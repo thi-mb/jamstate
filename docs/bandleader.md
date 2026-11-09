@@ -155,7 +155,8 @@ the same groups.
 | Dynamics | `dynamics` | `level` (last bar's mean velocity, 0–1), `shape` (crescendo/decrescendo/steady: across bars, or inside bars when the bars agree), `change` (last bar against the first), `accents` |
 
 All groups but phrasing listen over the last phrase; phrasing over the last
-8 bars. The rule leader uses:
+8 bars. Phrasing is on by default; the others are off (the eval per
+group: [v0.3-groups](eval/results/v0.3-groups.md)). The rule leader uses:
 
 - song position: lift in the last phrase before a bigger section when the
   player is building, keep a steady player at a big section's level, keep
