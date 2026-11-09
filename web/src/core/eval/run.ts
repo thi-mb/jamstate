@@ -52,7 +52,9 @@ function recording(leader: Leader, turns: Turn[]): Leader {
       const t0 = performance.now();
       try {
         const reply = await leader.decide(snap);
-        turns.push({ bar: ctx.bar, ctx: snap, reply, ms: Math.round(performance.now() - t0) });
+        // The brain's own request time when it reports one (the eval may hold a
+        // request back for a free slot, which the page never does).
+        turns.push({ bar: ctx.bar, ctx: snap, reply, ms: Math.round(reply.latencyMs ?? performance.now() - t0) });
         return reply;
       } catch (e) {
         turns.push({ bar: ctx.bar, ctx: snap, error: (e as Error).message, ms: Math.round(performance.now() - t0) });

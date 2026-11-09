@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { loadChart, type ChartJSON } from "../src/core/chart";
 import { Engine } from "../src/core/engine";
-import { chordView, followWindow, guitarCells, markOf, pianoCells, GUITAR_FRETS, GUITAR_STRINGS, PIANO_KEYS } from "../src/core/fretboard";
+import { chordView, followWindow, guitarCells, markOf, pianoCells, scaleMarkOf, songScale, GUITAR_FRETS, GUITAR_STRINGS, PIANO_KEYS } from "../src/core/fretboard";
 import { getGenre } from "../src/core/genres";
 import { parseChord } from "../src/core/theory";
+import bluesInA from "../public/charts/blues-in-a.json";
+import lateSet from "../public/charts/late-set.json";
+import nightShift from "../public/charts/night-shift.json";
 
 const NAMES = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"];
 
@@ -87,5 +90,50 @@ describe("chord view timing", () => {
     const e2 = new Engine(same, { countIn: 0, config: { loop: true } });
     const [p0, p1] = [e2.nextBar()!, e2.nextBar()!];
     expect(chordView(same, p0, 3.5, p1).next).toBeNull();
+  });
+});
+
+describe("scale mode", () => {
+  const charts = Object.fromEntries(
+    Object.entries({ "blues-in-a": bluesInA, "night-shift": nightShift, "late-set": lateSet }).map(([f, raw]) => {
+      const json = raw as ChartJSON;
+      return [f, { chart: loadChart(json), genre: getGenre(json.genre!).listening }];
+    }),
+  );
+  const scaleOf = (f: string) => songScale(charts[f].chart, charts[f].genre)!;
+  const names = (pcs: number[]) => [...pcs].sort((a, b) => a - b).map((pc) => NAMES[pc]);
+
+  it("each song gets its key's scale for its genre", () => {
+    expect(scaleOf("blues-in-a").name).toBe("A blues");
+    expect(names(scaleOf("blues-in-a").pcs)).toEqual(["C", "D", "Eb", "E", "G", "A"]);
+    expect(scaleOf("late-set").name).toBe("Bb major");
+  });
+
+  it("picks the genre scale that fits the chords: Night Shift's Db and Eb make it natural minor, not dorian", () => {
+    expect(scaleOf("night-shift").name).toBe("F minor");
+    const vamp = loadChart({ title: "t", bpm: 100, time_sig: "4/4", key: "F minor", genre: "funk", sections: [{ name: "a", bars: 2, chords: ["Fm7", "Bb7"] }], form: ["a"] });
+    expect(songScale(vamp, getGenre("funk").listening)!.name).toBe("F dorian");
+  });
+
+  it("no key, no song scale; a pack without key scales gets plain major or minor", () => {
+    const { key: _, ...noKey } = lateSet as ChartJSON;
+    expect(songScale(loadChart(noKey))).toBeNull();
+    expect(songScale(charts["night-shift"].chart)!.name).toBe("F minor");
+  });
+
+  it("the scale holds across chords; only the chord tones move, and a tone outside the scale is passing", () => {
+    const song = scaleOf("blues-in-a");
+    const lit = (symbol: string) =>
+      guitarCells(parseChord(symbol), undefined, song)[5].filter((c) => c.mark).map((c) => c.note % 12);
+    // Every scale note stays lit under A7 and E7.
+    for (const sym of ["A7", "E7"]) for (const pc of song.pcs) expect(lit(sym)).toContain(pc);
+    // C# (the A7's third) is outside A blues: a passing chord tone.
+    expect(scaleMarkOf(61, parseChord("A7"), song)).toEqual({ mark: "chord", passing: true });
+    expect(scaleMarkOf(64, parseChord("A7"), song)).toEqual({ mark: "chord", passing: false });
+    expect(scaleMarkOf(62, parseChord("A7"), song)).toEqual({ mark: "scale" });
+    expect(scaleMarkOf(65, parseChord("A7"), song)).toEqual({ mark: null });
+    // The ring is on the key's tonic, not the chord's root.
+    const roots = pianoCells(48, parseChord("E7"), undefined, song).filter((k) => k.root).map((k) => k.note);
+    expect(roots).toEqual([57, 69]);
   });
 });

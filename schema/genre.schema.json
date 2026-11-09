@@ -7,6 +7,19 @@
   "required": ["format", "id", "name", "drums", "bass", "chords"],
   "additionalProperties": false,
   "$defs": {
+    "keyScaleList": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "notes"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "notes": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 11 }, "uniqueItems": true, "contains": { "const": 0 } }
+        }
+      }
+    },
     "slot": {
       "oneOf": [
         { "type": "string", "description": "Instrument id (sounds/instruments.json), e.g. upright, brushes, organ." },
@@ -325,7 +338,16 @@
             "diminished": { "type": "array", "items": { "type": "integer", "minimum": 0, "maximum": 11 }, "uniqueItems": true }
           }
         },
-        "outside": { "enum": ["hold", "lift"] }
+        "outside": { "enum": ["hold", "lift"] },
+        "key_scales": {
+          "description": "Scales to hold for a whole song (the fretboard's scale mode), per key mode, in order of preference; the one that fits the chart's chords best is used. Without it: the plain major or natural minor scale.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "major": { "$ref": "#/$defs/keyScaleList" },
+            "minor": { "$ref": "#/$defs/keyScaleList" }
+          }
+        }
       }
     }
   }

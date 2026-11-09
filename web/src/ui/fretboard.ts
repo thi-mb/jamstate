@@ -1,7 +1,8 @@
 // The fretboard view (v0.3): draws what core/fretboard.ts decides. Guitar
-// (frets 0–15) or two octaves of piano following the player; chord tones
-// strong, scale tones faint, the next chord fading in on the beat before a
-// change, and the player's notes coloured by fit.
+// (frets 0–15) or two octaves of piano following the player. Scale mode: the
+// song's scale held still, the chord tones moving on top. Changes mode: chord
+// tones strong, the genre's scale for the chord faint, the next chord fading
+// in on the beat before a change. The player's notes are coloured by fit.
 
 import {
   chordView,
@@ -10,10 +11,13 @@ import {
   isBlack,
   markOf,
   pianoCells,
+  songScale,
   GUITAR_FRETS,
   type Cell,
   type ChordView,
   type FretboardKind,
+  type FretboardMode,
+  type SongScale,
 } from "../core/fretboard";
 import type { Chart } from "../core/chart";
 import type { BarPlan } from "../core/engine";
@@ -25,6 +29,9 @@ const FRET_DOTS = new Set([3, 5, 7, 9, 12, 15]);
 
 export class FretboardView {
   kind: FretboardKind = "guitar";
+  mode: FretboardMode = "scale";
+  /** The song scale, worked out once per chart and genre. */
+  private song: { chart: Chart; genre: GenreListening; scale: SongScale | null } | null = null;
   private low = 48;
   private key = "";
   private cells = new Map<number, HTMLElement[]>();
@@ -43,11 +50,23 @@ export class FretboardView {
     this.draw();
   }
 
+  setMode(mode: FretboardMode): void {
+    this.mode = mode;
+    this.key = "";
+    this.draw();
+  }
+
+  /** The scale held in scale mode; null in changes mode or when the chart has no key. */
+  private get scale(): SongScale | null {
+    return this.mode === "scale" ? (this.song?.scale ?? null) : null;
+  }
+
   /** Called every animation frame while a jam plays. Redraws only when something changed. */
   frame(chart: Chart, plan: BarPlan | undefined, beatInBar: number, nextPlan: BarPlan | undefined, genre: GenreListening): void {
     if (this.kind === "off") return;
     this.view = plan ? chordView(chart, plan, beatInBar, nextPlan) : { chord: null, next: null };
     this.genre = genre;
+    if (this.song?.chart !== chart || this.song.genre !== genre) this.song = { chart, genre, scale: songScale(chart, genre) };
     if (this.kind === "piano") this.low = followWindow(this.low, this.recent);
     this.draw();
   }
@@ -73,17 +92,25 @@ export class FretboardView {
 
   private draw(): void {
     if (this.kind === "off") return;
-    const { chord, next } = this.view;
-    const key = `${this.kind}|${this.low}|${chord?.symbol ?? ""}|${next?.symbol ?? ""}`;
+    const scale = this.scale;
+    const chord = this.view.chord;
+    // Scale mode has no next-chord fade: only the chord tones move.
+    const next = scale ? null : this.view.next;
+    const key = `${this.kind}|${this.mode}|${scale?.name ?? ""}|${this.low}|${chord?.symbol ?? ""}|${next?.symbol ?? ""}`;
     if (key === this.key) return;
     this.key = key;
     this.root.dataset.chord = chord?.symbol ?? "";
     this.root.dataset.next = next?.symbol ?? "";
+    this.root.dataset.scale = scale?.name ?? "";
     // For the page timing check (test plan row 10): when the view last changed.
     this.root.dataset.changedAt = String(performance.now());
     const label = Object.assign(document.createElement("div"), {
       className: "fb-label",
-      textContent: chord ? `${chord.symbol}${next ? `  →  ${next.symbol}` : ""}` : "–",
+      textContent: scale
+        ? `${scale.name} scale  ·  ${chord?.symbol ?? "–"}`
+        : chord
+          ? `${chord.symbol}${next ? `  →  ${next.symbol}` : ""}`
+          : "–",
     });
     this.cells.clear();
     const board = this.kind === "guitar" ? this.guitar() : this.piano();
@@ -94,7 +121,8 @@ export class FretboardView {
   private decorate(el: HTMLElement, c: Cell): void {
     if (c.mark) el.classList.add(`fb-${c.mark}`);
     if (c.root) el.classList.add("fb-root");
-    const nm = markOf(c.note, this.view.next, this.genre);
+    if (c.passing) el.classList.add("fb-passing");
+    const nm = this.scale ? null : markOf(c.note, this.view.next, this.genre);
     if (nm) el.classList.add(`fb-next-${nm}`);
     el.dataset.note = String(c.note);
     const list = this.cells.get(c.note) ?? [];
@@ -105,7 +133,7 @@ export class FretboardView {
   private guitar(): HTMLElement {
     const grid = Object.assign(document.createElement("div"), { className: "fb-guitar" });
     grid.style.setProperty("--frets", String(GUITAR_FRETS + 1));
-    for (const row of guitarCells(this.view.chord, this.genre)) {
+    for (const row of guitarCells(this.view.chord, this.genre, this.scale)) {
       for (const [f, c] of row.entries()) {
         const el = Object.assign(document.createElement("span"), { className: `fb-fret${f === 0 ? " fb-open" : ""}` });
         const dot = document.createElement("i");
@@ -122,7 +150,7 @@ export class FretboardView {
 
   private piano(): HTMLElement {
     const kb = Object.assign(document.createElement("div"), { className: "fb-piano" });
-    for (const c of pianoCells(this.low, this.view.chord, this.genre)) {
+    for (const c of pianoCells(this.low, this.view.chord, this.genre, this.scale)) {
       const el = Object.assign(document.createElement("span"), { className: isBlack(c.note) ? "fb-key fb-black" : "fb-key fb-white" });
       if (c.mark || c.root) el.append(Object.assign(document.createElement("i"), { textContent: NOTE_NAMES[c.note % 12] }));
       if (c.note % 12 === 0) el.title = `C${c.note / 12 - 1}`;
