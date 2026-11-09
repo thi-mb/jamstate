@@ -1,5 +1,7 @@
-// What the fretboard view shows (v0.3): for the chord sounding, its chord
-// tones (strong) and the genre's scale tones for it (faint), on a guitar neck
+// What the fretboard view shows (v0.3), in one of two modes. Changes: for the
+// chord sounding, its chord tones (strong) and the genre's scale tones for it
+// (faint). Scale: one scale for the whole song (from its key and genre) held
+// still, with only the chord tones moving on top. On a guitar neck
 // (standard tuning, frets 0–15) or two octaves of piano that follow where the
 // player plays. The player's notes are coloured by how they fit (noteFit, the
 // same test the harmony listening uses). The page draws it (ui/fretboard.ts);
@@ -7,12 +9,14 @@
 
 import type { BarPlan } from "./engine";
 import type { Chart } from "./chart";
-import type { GenreListening } from "./genre";
+import type { GenreListening, KeyScale } from "./genre";
 import { noteFit, type NoteFit } from "./listening";
-import type { Chord } from "./theory";
+import { noteName, parseKey, type Chord } from "./theory";
 
 export type FretboardKind = "guitar" | "piano" | "off";
 export const FRETBOARD_KINDS: FretboardKind[] = ["guitar", "piano", "off"];
+export type FretboardMode = "scale" | "changes";
+export const FRETBOARD_MODES: FretboardMode[] = ["scale", "changes"];
 
 /** chord: a chord tone; scale: in the genre's scale for the chord; null: neither. */
 export type Mark = "chord" | "scale" | null;
@@ -21,7 +25,45 @@ export interface Cell {
   /** MIDI note. */
   note: number;
   mark: Mark;
+  /** Changes mode: the chord's root. Scale mode: the key's tonic. */
   root: boolean;
+  /** Scale mode: a chord tone outside the song's scale (a passing colour). */
+  passing?: boolean;
+}
+
+/** The scale held for a whole song in scale mode. */
+export interface SongScale {
+  /** "A blues", "F dorian". */
+  name: string;
+  tonic: number;
+  /** Pitch classes. */
+  pcs: number[];
+}
+
+const MAJOR: KeyScale = { name: "major", notes: [0, 2, 4, 5, 7, 9, 11] };
+const MINOR: KeyScale = { name: "minor", notes: [0, 2, 3, 5, 7, 8, 10] };
+const pcOf = (n: number) => ((n % 12) + 12) % 12;
+
+/**
+ * The song's scale: the chart's key, and of the genre's scales for that key
+ * mode the one that holds the most chord tones over the whole chart (weighted
+ * by beats; the first listed wins a tie). Null when the chart has no key.
+ */
+export function songScale(chart: Chart, genre?: GenreListening): SongScale | null {
+  const key = parseKey(chart.key);
+  if (!key) return null;
+  const options = genre?.keyScales[key.minor ? "minor" : "major"] ?? [key.minor ? MINOR : MAJOR];
+  const tones: { pcs: number[]; beats: number }[] = [];
+  for (const sec of chart.sections.values())
+    for (let b = 0; b < sec.bars; b++)
+      for (const s of sec.barChords(b)) tones.push({ pcs: s.chord.intervals.map((i) => pcOf(s.chord.root + i - key.tonic)), beats: s.dur });
+  let best = options[0];
+  let bestScore = -1;
+  for (const o of options) {
+    const score = tones.reduce((sum, t) => sum + t.beats * t.pcs.filter((pc) => o.notes.includes(pc)).length, 0);
+    if (score > bestScore) [best, bestScore] = [o, score];
+  }
+  return { name: `${noteName(key.tonic)} ${best.name}`, tonic: key.tonic, pcs: best.notes.map((n) => pcOf(key.tonic + n)) };
 }
 
 /** Strings high to low (as tab reads): E4 B3 G3 D3 A2 E2. */
@@ -36,20 +78,28 @@ export function markOf(note: number, chord: Chord | null, genre?: GenreListening
   return fit === "inside" ? "chord" : fit === "colour" ? "scale" : null;
 }
 
-const cell = (note: number, chord: Chord | null, genre?: GenreListening): Cell => ({
-  note,
-  mark: markOf(note, chord, genre),
-  root: !!chord && ((note % 12) + 12) % 12 === chord.root,
-});
-
-/** Rows of cells, one per string (high first), frets 0..15. */
-export function guitarCells(chord: Chord | null, genre?: GenreListening): Cell[][] {
-  return GUITAR_STRINGS.map((open) => Array.from({ length: GUITAR_FRETS + 1 }, (_, f) => cell(open + f, chord, genre)));
+/** Scale mode: the song scale faint, the chord's tones strong on top, the tonic ringed. */
+export function scaleMarkOf(note: number, chord: Chord | null, song: SongScale): Pick<Cell, "mark" | "passing"> {
+  const pc = pcOf(note);
+  const inScale = song.pcs.includes(pc);
+  if (chord && chord.intervals.some((i) => pcOf(chord.root + i) === pc)) return { mark: "chord", passing: !inScale };
+  return { mark: inScale ? "scale" : null };
 }
 
-/** Keys from `low` (a C) up two octaves. */
-export function pianoCells(low: number, chord: Chord | null, genre?: GenreListening): Cell[] {
-  return Array.from({ length: PIANO_KEYS }, (_, i) => cell(low + i, chord, genre));
+/** `song` given: scale mode; otherwise changes mode. */
+function cell(note: number, chord: Chord | null, genre?: GenreListening, song?: SongScale | null): Cell {
+  if (song) return { note, ...scaleMarkOf(note, chord, song), root: pcOf(note) === song.tonic };
+  return { note, mark: markOf(note, chord, genre), root: !!chord && pcOf(note) === chord.root };
+}
+
+/** Rows of cells, one per string (high first), frets 0..15. With `song`, scale mode. */
+export function guitarCells(chord: Chord | null, genre?: GenreListening, song?: SongScale | null): Cell[][] {
+  return GUITAR_STRINGS.map((open) => Array.from({ length: GUITAR_FRETS + 1 }, (_, f) => cell(open + f, chord, genre, song)));
+}
+
+/** Keys from `low` (a C) up two octaves. With `song`, scale mode. */
+export function pianoCells(low: number, chord: Chord | null, genre?: GenreListening, song?: SongScale | null): Cell[] {
+  return Array.from({ length: PIANO_KEYS }, (_, i) => cell(low + i, chord, genre, song));
 }
 
 export const isBlack = (note: number) => [1, 3, 6, 8, 10].includes(((note % 12) + 12) % 12);
