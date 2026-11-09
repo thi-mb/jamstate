@@ -240,7 +240,7 @@ Done when:
 
 ### v0.3: Listening
 
-Status: planned with Thiago (2026-11-08). Scenarios for the eval are in
+Status: done (2026-11-09). Thiago signed off after playing it on the Spark; the fretboard got a scale mode from his test, and real jams for the eval moved to v0.5. Scenarios for the eval are in
 [eval/scenarios.md](eval/scenarios.md); test plan in
 [testing/v0.3.md](testing/v0.3.md).
 
