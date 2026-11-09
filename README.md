@@ -291,10 +291,11 @@ v0.2 Sound and lineup (done 2026-11-08, see [docs/testing/v0.2.md](docs/testing/
 sampled instruments with a mix per genre, guitar, pad and percussion parts,
 and a lineup per song you can change while playing.
 
-v0.3 Listening and leading (hands-on test plan in [docs/testing/v0.3.md](docs/testing/v0.3.md)):
+v0.3 Listening and leading (done 2026-11-09, see [docs/testing/v0.3.md](docs/testing/v0.3.md)):
 a leader eval that scores every brain on scripted scenarios
 ([docs/eval](docs/eval/scenarios.md)), five switchable listening groups,
-cues on keys 1–7, opt-in tempo following, and a fretboard / piano view. The
+cues on keys 1–7, opt-in tempo following, and a fretboard / piano view with
+a scale mode and a changes mode. The
 plan for the releases after this is in [docs/roadmap.md](docs/roadmap.md).
 
 Not yet: Ableton Link (needs a local bridge, browsers can't do UDP),
