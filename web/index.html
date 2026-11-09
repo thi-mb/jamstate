@@ -8,7 +8,7 @@
   </head>
   <body>
     <header>
-      <h1>jamstate <small>v0.2</small></h1>
+      <h1>jamstate <small>v0.3</small></h1>
       <p class="tag">An AI backing band that follows the song and reacts to how you play.</p>
     </header>
 
@@ -155,8 +155,11 @@
             Computer keys: <kbd>A</kbd>–<kbd>'</kbd> white keys, <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> <kbd>O</kbd> <kbd>P</kbd> black,
             <kbd>Z</kbd>/<kbd>X</kbd> octave, hold <kbd>Shift</kbd> to play loud.
           </p>
-          <label title="Chord tones strong, the genre's scale faint, the next chord fades in on the beat before it changes. Your notes: green inside, yellow colour, red outside.">Fretboard
+          <label title="Guitar neck or two octaves of piano. Your notes: green inside, yellow colour, red outside.">Fretboard
             <select id="fretboard-kind"><option value="guitar">guitar</option><option value="piano">piano</option><option value="off">off</option></select>
+          </label>
+          <label title="Scale: one scale for the whole song (from its key and genre) held still, the chord tones lit on top; a ring marks a chord tone outside the scale. Changes: each chord's tones and its scale, the next chord fading in on the beat before it changes.">
+            <select id="fretboard-mode"><option value="scale">scale</option><option value="changes">changes</option></select>
           </label>
           <div id="midi-status" class="dim small"></div>
           <div id="audio-latency" class="dim small"></div>

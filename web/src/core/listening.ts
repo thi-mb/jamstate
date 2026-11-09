@@ -31,7 +31,8 @@ export const LISTENING_LABELS: Record<ListeningGroup, string> = {
 };
 
 /** Groups on by default, picked from the eval (docs/eval/results). */
-export const DEFAULT_LISTENING: Listening = { position: true, rhythm: false, harmony: false, phrasing: false, dynamics: false };
+/** From the v0.3 eval: phrasing is the one group that helps or holds every brain (docs/eval/results/v0.3-groups.md). */
+export const DEFAULT_LISTENING: Listening = { position: false, rhythm: false, harmony: false, phrasing: true, dynamics: false };
 
 export const NO_LISTENING: Listening = { position: false, rhythm: false, harmony: false, phrasing: false, dynamics: false };
 

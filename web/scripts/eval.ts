@@ -1,11 +1,16 @@
 // npm run eval -- [--brains rules,jev,claude,qwen,laya] [--seeds 3] [--only E1,E5] [--songs night-shift,...]
 //                 [--out dir] [--label host] [--parallel 4] [--url U] [--model M] [--claude-model M] [--laya-url U]
-//                 [--listening default|none|all|position,harmony,...]
+//                 [--listening default|none|all|position,harmony,...] [--slots qwen=1,laya=1]
 //
 // The leader eval (docs/eval/scenarios.md). Every scenario runs on its songs,
 // with each seed, for each brain: a pretend player plays and the brain leads
 // the band through the real governor. Writes <out>/summary.md and
 // <out>/results.json. Keys come from the environment (scripts/brains.ts).
+//
+// --slots caps the requests in flight per brain. Qwen and Laya run on a
+// llama.cpp server with one slot, so they default to 1: the page never has
+// more than one request in flight (ADR-0006), and with --parallel 4 the
+// requests would queue at the server and the eval would time the queue.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { BrainProvider } from "../src/core/brain";
@@ -32,6 +37,11 @@ const host = opt("label") ?? "unlabelled host";
 const parallel = Number(opt("parallel") ?? 4);
 const TIMEOUT_MS = Number(opt("timeout") ?? 20_000);
 const listening = parseListening(opt("listening") ?? "default");
+const slots: Record<string, number> = { qwen: 1, laya: 1 };
+for (const kv of (opt("slots") ?? "").split(",").filter(Boolean)) {
+  const [k, v] = kv.split("=");
+  slots[k.trim()] = Number(v);
+}
 const brainArgs = { url: opt("url"), model: opt("model"), claudeModel: opt("claude-model"), jevModel: opt("jev-model"), layaUrl: opt("laya-url") };
 
 const SONGS: Song[] = ["night-shift", "blues-in-a", "late-set"]
@@ -45,6 +55,22 @@ interface Contender {
   name: string;
   leader(): Leader;
   everyBars(song: Song): number;
+}
+
+/** At most `n` callers inside at once; the rest wait their turn. */
+function limiter(n: number) {
+  let active = 0;
+  const waiting: (() => void)[] = [];
+  return async <T>(f: () => Promise<T>): Promise<T> => {
+    if (active >= n) await new Promise<void>((ok) => waiting.push(ok));
+    active++;
+    try {
+      return await f();
+    } finally {
+      active--;
+      waiting.shift()?.();
+    }
+  };
 }
 
 /** Ask with a retry on rate limits and overload (429/529). */
@@ -68,11 +94,13 @@ for (const name of brainNames) {
   }
   try {
     const brain = nodeBrain(name, brainArgs);
+    // The brain times its own request, so waiting for a slot isn't counted.
+    const inSlot = slots[name] > 0 ? limiter(slots[name]) : <T>(f: () => Promise<T>) => f();
     contenders.push({
       name: brain.label,
       leader: () => ({
         decide: async (ctx) => {
-          const a = await askRetry(brain, ctx);
+          const a = await inSlot(() => askRetry(brain, ctx));
           return { moves: a.moves, source: brain.kind, latencyMs: a.latencyMs };
         },
       }),

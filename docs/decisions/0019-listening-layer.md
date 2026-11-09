@@ -1,6 +1,6 @@
 # 0019. The listening layer: five switchable groups, one summary for every brain
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-08
 
 ## Context
@@ -26,8 +26,9 @@ response is followed bar by bar. v0.3 adds more listening. Three forces:
 - The player switches groups under **Bandleader → Listening**. The setting is
   kept in the browser, recorded in the session file with every change
   (`listening`), and a replay with a leader hears the same groups. Defaults
-  are the groups the eval says help (see the table in
-  [docs/eval](../eval/results)). The overlay always shows everything heard.
+  are the groups the eval says help: phrasing only
+  ([results](../eval/results/v0.3-groups.md)). The overlay always shows
+  everything heard.
 - LLM brains get one fixed paragraph per field present, after the fixed
   system prompt (its cached prefix doesn't change). Jev gets the same fields
   in its state. The rule leader uses song position (lift into a bigger
@@ -48,6 +49,13 @@ response is followed bar by bar. v0.3 adds more listening. Three forces:
   root) and `outside` (`hold` or `lift`: what the band does when the player
   goes outside). A pack without it uses the chord's own scale and holds. The
   key is optional, so the format stays `jamstate-genre/0.2`.
+- Added 2026-11-09 (Thiago's fretboard test): optional `key_scales`, per key
+  mode (major, minor) a list of named scales over the key's tonic, in order
+  of preference. The fretboard's scale mode holds the one that covers the
+  most chord tones over the whole chart (first listed wins a tie): blues for
+  blues-rock, dorian or natural minor for funk, major (minor: dorian,
+  harmonic or natural minor) for jazz. Display only; the harmony signal
+  still judges each note against the chord sounding.
 
 | Genre | Colour beyond the chord | Outside |
 |---|---|---|
@@ -56,9 +64,14 @@ response is followed bar by bar. v0.3 adds more listening. Three forces:
 | jazz | everything on a dominant; lydian and the sharp five on major; melodic and dorian on minor | lift |
 
 ## Consequences
+- The eval ([v0.3-groups](../eval/results/v0.3-groups.md)): phrasing helps
+  or holds every brain (rules 0.95 → 0.98); all five help the rules and Jev
+  but cost Qwen 0.11; dynamics alone costs Claude and Qwen 0.06. Brains
+  differ, so the player keeps the switches.
 - A brain's score can be compared group by group, on the same scenarios.
-- The request grows by up to five small objects; the latency check (v0.3 test
-  plan row 11) holds Jev and Qwen to ADR-0006 with every group on.
+- The request grows by up to five small objects. Jev stays at p95 237 ms
+  with every group on; Qwen was over ADR-0006's 1.5 s before v0.3 and gets
+  slower with each group (2.3 s → 3.4 s), Claude goes over with all five.
 - Genre authors can say what "outside" means in their genre without code.
 - Busy and sparse thresholds stay global for now: the baseline gave no
   evidence that they should differ by genre.
