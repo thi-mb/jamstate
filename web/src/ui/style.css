@@ -100,6 +100,7 @@ code { font-size: 12px; }
 .fb-fret.fb-scale i { background: var(--fb-scale); color: var(--dim); }
 .fb-fret.fb-chord i { background: var(--fb-chord); color: #1a1205; font-weight: 600; }
 .fb-fret.fb-root i { box-shadow: 0 0 0 2px var(--text); }
+.fb-fret.fb-passing i { background: transparent; color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
 .fb-fret.fb-next-chord i { box-shadow: 0 0 0 2px var(--accent); animation: fb-fade 0.4s ease-in both; }
 .fb-fret.fb-next-chord:not(.fb-chord):not(.fb-scale) i { color: var(--accent); }
 .fb-piano { display: flex; position: relative; height: 84px; }
@@ -113,6 +114,8 @@ code { font-size: 12px; }
 .fb-black.fb-scale::before { background: #6b5634; }
 .fb-black.fb-chord::before { background: #c7832a; }
 .fb-key.fb-root i { text-decoration: underline; font-weight: 700; }
+.fb-white.fb-passing { background: #d8dbe2; box-shadow: inset 0 0 0 3px var(--fb-chord); }
+.fb-black.fb-passing::before { background: #20232b; box-shadow: inset 0 0 0 2px #c7832a; }
 .fb-white.fb-next-chord { box-shadow: inset 0 -6px 0 var(--accent); }
 .fb-black.fb-next-chord::before { box-shadow: 0 0 0 2px var(--accent); }
 .fb-fret.fb-play-inside i { box-shadow: 0 0 0 3px var(--fb-in); }

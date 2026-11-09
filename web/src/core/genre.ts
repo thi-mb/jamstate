@@ -174,6 +174,18 @@ export interface GenreListening {
   scales: Partial<Record<ChordClass, number[]>>;
   /** What the rule leader does when the player plays outside. */
   outside: "hold" | "lift";
+  /**
+   * Scales to hold for a whole song (the fretboard's scale mode), per key
+   * mode, in order of preference: the one that fits the chart's chords best
+   * is used. Missing: the plain major or natural minor scale.
+   */
+  keyScales: Partial<Record<"major" | "minor", KeyScale[]>>;
+}
+
+export interface KeyScale {
+  name: string;
+  /** Semitones above the key's tonic. */
+  notes: number[];
 }
 
 const isObj = (x: unknown): x is Record<string, unknown> => typeof x === "object" && x !== null && !Array.isArray(x);
@@ -185,9 +197,9 @@ const TOP_KEYS = new Set([
 ]);
 
 function listeningPack(raw: unknown, errs: string[]): GenreListening {
-  if (raw === undefined) return { scales: {}, outside: "hold" };
-  if (!isObj(raw)) return errs.push("listening must be an object"), { scales: {}, outside: "hold" };
-  for (const k of Object.keys(raw)) if (k !== "scales" && k !== "outside") errs.push(`listening: unknown field "${k}"`);
+  if (raw === undefined) return { scales: {}, outside: "hold", keyScales: {} };
+  if (!isObj(raw)) return errs.push("listening must be an object"), { scales: {}, outside: "hold", keyScales: {} };
+  for (const k of Object.keys(raw)) if (!["scales", "outside", "key_scales"].includes(k)) errs.push(`listening: unknown field "${k}"`);
   const scales: GenreListening["scales"] = {};
   if (!isObj(raw.scales)) errs.push("listening.scales must be an object");
   else
@@ -199,7 +211,25 @@ function listeningPack(raw: unknown, errs: string[]): GenreListening {
     }
   const outside = raw.outside ?? "hold";
   if (outside !== "hold" && outside !== "lift") errs.push('listening.outside must be "hold" or "lift"');
-  return { scales, outside: outside as GenreListening["outside"] };
+  return { scales, outside: outside as GenreListening["outside"], keyScales: keyScalesPack(raw.key_scales, errs) };
+}
+
+const isSemis = (v: unknown): v is number[] =>
+  Array.isArray(v) && v.every((x) => Number.isInteger(x) && x >= 0 && x <= 11) && new Set(v).size === v.length;
+
+function keyScalesPack(raw: unknown, errs: string[]): GenreListening["keyScales"] {
+  const out: GenreListening["keyScales"] = {};
+  if (raw === undefined) return out;
+  if (!isObj(raw)) return errs.push("listening.key_scales must be an object"), out;
+  for (const [mode, list] of Object.entries(raw)) {
+    const w = `listening.key_scales.${mode}`;
+    if (mode !== "major" && mode !== "minor") errs.push(`listening.key_scales: unknown key mode "${mode}" (major, minor)`);
+    else if (!Array.isArray(list) || !list.length) errs.push(`${w} must be a non-empty list`);
+    else if (!list.every((x) => isObj(x) && typeof x.name === "string" && x.name && isSemis(x.notes) && x.notes.includes(0)))
+      errs.push(`${w}: each entry needs a name and notes (distinct semitones 0–11, with 0)`);
+    else out[mode] = list.map((x) => ({ name: x.name as string, notes: x.notes as number[] }));
+  }
+  return out;
 }
 const BASS_TOKEN = /^([.\-xgAN]|(R|1|2|9|b3|3|4|11|b5|5|6|13|b7|7|8)[,']?)!?$/;
 const CHORD_TOKEN = /^[.\-xXgp]$/;
