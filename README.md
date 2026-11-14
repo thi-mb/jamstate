@@ -323,7 +323,7 @@ a leader eval that scores every brain on scripted scenarios
 cues on keys 1–7, opt-in tempo following, and a fretboard / piano view with
 a scale mode and a changes mode.
 
-v0.4 Leading (built 2026-11-09, test plan in [docs/testing/v0.4.md](docs/testing/v0.4.md)):
+v0.4 Leading (done 2026-11-14, see [docs/testing/v0.4.md](docs/testing/v0.4.md)):
 genre taste and a personality for the bandleader, a song arc so a section
 played again differs the genre's way, trading fours on key 8, and the Qwen
 prompt tuned against the eval. The
