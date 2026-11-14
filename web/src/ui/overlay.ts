@@ -3,6 +3,7 @@
 import type { BarPlan, MoveRecord } from "../core/engine";
 import type { BarFeatures } from "../core/features";
 import { getGenre } from "../core/genres";
+import type { ArcSummary } from "../core/arc";
 import type { Heard } from "../core/listening";
 import { PART_LABELS, V01_PARTS, type Part } from "../core/types";
 
@@ -32,6 +33,7 @@ export class Overlay {
     $("last-reason").textContent = "";
     this.setEnergy(null);
     this.heard(null);
+    this.arc(null);
     this.log.replaceChildren();
     this.renderLayers(this.lineup, this.lineup);
   }
@@ -50,7 +52,8 @@ export class Overlay {
     $("feel").textContent =
       `${genreName(plan.genre)} · swing ${plan.swing} · ${FEEL_LABEL[plan.feel]}` +
       (plan.bpm !== this.chartBpm ? ` · ${plan.bpm.toFixed(1)} bpm (chart ${this.chartBpm})` : "") +
-      (plan.stingers.length ? ` · ${plan.stingers.join(" + ")}` : "");
+      (plan.stingers.length ? ` · ${plan.stingers.join(" + ")}` : "") +
+      (plan.solo ? ` · ${PART_LABELS[plan.solo.part]} solo ${plan.solo.bar + 1}/${plan.solo.of}` : plan.trading ? " · trading: your turn" : "");
     ($("intensity") as HTMLElement).style.width = `${plan.intensity * 100}%`;
     ($("target") as HTMLElement).style.left = `calc(${plan.target * 100}% - 1px)`;
     $("intensity-num").textContent = `${plan.intensity.toFixed(2)} → ${plan.target.toFixed(2)}`;
@@ -99,6 +102,14 @@ export class Overlay {
     const d = h.dynamics;
     if (d.level !== null) parts.push(`${d.shape && d.shape !== "steady" ? `${d.shape} · ` : ""}level ${d.level.toFixed(2)}${(d.accents ?? 0) >= 0.15 ? " · accents" : ""}`);
     $("heard").textContent = `hearing: ${parts.join(" · ")}`;
+  }
+
+  /** The song so far and the plan (v0.4): this section against last time, and the next one. */
+  arc(a: ArcSummary | null): void {
+    if (!a) return void ($("arc").textContent = "");
+    const plan = (p: ArcSummary["now"] | NonNullable<ArcSummary["next"]>) => `${p.section} ${p.pass}: ${p.idea}`;
+    const peak = a.peak ? ` · peak so far ${a.peak.section} ${a.peak.pass} (${a.peak.level.toFixed(2)})` : "";
+    $("arc").textContent = `plan (${a.style}): ${plan(a.now)}${a.next ? ` · next ${plan(a.next)}` : ""}${peak}`;
   }
 
   move(m: MoveRecord, bar: number): void {

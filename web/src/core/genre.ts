@@ -9,6 +9,7 @@
 import { defaultBand, parseBand, type Band } from "./band";
 import { drumSteps, tokenSteps } from "./pattern";
 import { CHORD_CLASSES, parseChord, VOICING_STYLES, type ChordClass, type VoicingStyle } from "./theory";
+import { leadingPack, type GenreLeading } from "./leading";
 import { LEVELS, ROLES, V01_PARTS, type Part } from "./types";
 
 export const GENRE_FORMAT = "jamstate-genre/0.2";
@@ -167,6 +168,8 @@ export interface GenrePack {
   progressions: string[];
   /** What the band listens for (v0.3); packs without it get the defaults. */
   listening: GenreListening;
+  /** How the bandleader leads in this genre (v0.4, ADR-0021); packs without it get the defaults. */
+  leading: GenreLeading;
 }
 
 export interface GenreListening {
@@ -193,7 +196,7 @@ const isNum = (x: unknown, lo: number, hi: number): x is number => typeof x === 
 
 const TOP_KEYS = new Set([
   "format", "id", "name", "description", "parts", "band", "lineups", "mix", "feel", "humanize", "drums", "bass", "chords", "guitar", "pad", "percussion",
-  "ending", "forms", "progressions", "listening",
+  "ending", "forms", "progressions", "listening", "leading",
 ]);
 
 function listeningPack(raw: unknown, errs: string[]): GenreListening {
@@ -551,6 +554,7 @@ export function loadGenre(raw: unknown): GenrePack {
     forms: strings(raw.forms, "forms"),
     progressions: strings(raw.progressions, "progressions"),
     listening: listeningPack(raw.listening, errs),
+    leading: leadingPack(raw.leading, errs),
   };
   if (errs.length) throw new GenreError(errs, typeof raw.id === "string" ? raw.id : undefined);
   return pack;

@@ -10,12 +10,16 @@
 
 import type { ChartJSON } from "../chart";
 import type { BarPlan, Cue, MoveRecord } from "../engine";
+import { getGenre } from "../genres";
+import { moveMatches, type Personality } from "../leading";
 import { PLAYER_SOURCES } from "../session";
 import { parseScript, type SimMode } from "../simplayer";
 import type { Part } from "../types";
 
 export type CheckKind = "must" | "must_not" | "stretch";
-export type ScenarioGroup = "follow" | "phrasing" | "harmony_rhythm" | "tempo" | "cues";
+export type ScenarioGroup = "follow" | "phrasing" | "harmony_rhythm" | "tempo" | "cues" | "arc" | "personality" | "genre" | "trading";
+/** The groups v0.4 added (leading): reported apart from the v0.3 set. */
+export const LEADING_GROUPS: ScenarioGroup[] = ["arc", "personality", "genre", "trading"];
 
 export interface Check {
   kind: CheckKind;
@@ -33,6 +37,12 @@ export interface ScenarioRun {
   followTempo?: boolean;
   /** Cues the player gives, pressed during `bar` (before the next bar is committed). */
   cues?: { bar: number; cue: Cue }[];
+  /** The leader's personality (v0.4; supportive when left out). */
+  personality?: Personality;
+  /** Trading fours on from the start (v0.4). */
+  trade?: boolean;
+  /** Play the song in another genre (v0.4's genre-taste scenarios). */
+  genre?: string;
 }
 
 export interface Song {
@@ -366,6 +376,180 @@ const CUE_SCENARIOS: Scenario[] = [
   },
 ];
 
+// ---------- leading (v0.4) ----------
+
+const meanTarget = (v: RunView, a: number, b: number) => {
+  const bs = v.bars(a, b);
+  return bs.reduce((s, i) => s + v.target(i), 0) / Math.max(1, bs.length);
+};
+/** Parts that played in most bars of a..b. */
+const partsOf = (v: RunView, a: number, b: number): Part[] => {
+  const bs = v.bars(a, b);
+  const count = new Map<Part, number>();
+  for (const i of bs) for (const p of v.at(i).layers) count.set(p, (count.get(p) ?? 0) + 1);
+  return [...count].filter(([, n]) => n * 2 > bs.length).map(([p]) => p).sort();
+};
+const sameParts = (x: Part[], y: Part[]) => x.length === y.length && x.every((p, i) => p === y[i]);
+
+/** The first section the form plays twice in a row of visits worth comparing: a chorus or a solo. */
+function repeatedSection(s: SongShape): [SectionSpan, SectionSpan] {
+  for (const name of ["chorus", "solo"]) {
+    const visits = s.spans.filter((x) => x.name === name);
+    if (visits.length >= 2) return [visits[0], visits[1]];
+  }
+  throw new Error(`${s.id}: no chorus or solo played twice`);
+}
+
+/** Moves a leader made in a..b that the genre avoids. */
+const avoided = (v: RunView, a: number, b: number, genre: string) =>
+  v.leaderMoves(a, b).filter(({ m }) => getGenre(genre).leading.avoid.some((t) => moveMatches(m.move as never, t)));
+
+const layerMoves = (v: RunView) => v.leaderMoves(0, VARIED_BARS - 1).filter(({ m }) => m.move.move === "add_layer" || m.move.move === "drop_layer").length;
+const feelMoves = (v: RunView) => v.leaderMoves(0, VARIED_BARS - 1).filter(({ m }) => m.move.move === "change_feel").length;
+
+const marks = (v: RunView) => v.leaderMoves(0, VARIED_BARS - 1).filter(({ m }) => isMove("fire_stinger", { stinger: "crash" })(m) || isMove("fire_stinger", { stinger: "riser" })(m)).length;
+
+/** One varied player for the personality and genre runs: 40 bars of everything. */
+const VARIED = "medium:4, busy:8, sparse:8, medium:8, held:4, busy:8";
+const VARIED_BARS = 41;
+const followsVaried: Check[] = [targetAtLeast(12, 0.5), targetAtMost(20, 0.45), targetAtLeast(40, 0.5)];
+const leaderMoveCount = (v: RunView) => v.leaderMoves(0, VARIED_BARS - 1).length;
+
+const personalityRun = (personality: Personality, extra: Check[]): ScenarioRun => ({
+  modes: script(VARIED),
+  bars: VARIED_BARS,
+  personality,
+  checks: [
+    ...followsVaried,
+    ...extra,
+    { kind: "stretch", text: "leader moves (count)", test: () => true, observe: leaderMoveCount },
+  ],
+});
+
+/** Trading: the band's turns (4 bars) after each of the player's, in the first 32 bars. */
+const TRADE_BARS = 32;
+const tradeModes = () => script(`${repeat("busy:4, silent:4", 4)}, busy:1`);
+const bandTurns = [4, 12, 20, 28];
+const playerTurns = [0, 8, 16, 24];
+const soloIn = (v: RunView, bar: number) => !!v.at(bar).solo;
+const groove = (v: RunView, i: number) => (v.playing(i, "drums") && v.playing(i, "bass")) || v.at(i).solo?.part === "drums";
+
+const LEADING_SCENARIOS: Scenario[] = [
+  {
+    id: "A1",
+    title: "Second time through",
+    group: "arc",
+    build: (s) => {
+      const [one, two] = repeatedSection(s);
+      const end = two.start + two.bars;
+      // The same steady playing both times: what's different is the band's plan.
+      const modes: SimMode[] = script(`medium:${end}`);
+      // Judge from the visit's third bar: the plan lands in its first bars.
+      const a = [one.start + 2, one.start + one.bars - 1] as const;
+      const b = [two.start + 2, end - 1] as const;
+      const style = getGenre(s.genre).leading.arc;
+      const differs: Check =
+        style === "build"
+          ? { kind: "must", text: `${two.name} 2 sits at least 0.05 above ${one.name} 1 (build)`, test: (v) => meanTarget(v, ...b) >= meanTarget(v, ...a) + 0.05 - 1e-9, observe: (v) => meanTarget(v, ...b) - meanTarget(v, ...a) }
+          : style === "dynamic"
+            ? { kind: "must", text: `${two.name} 2 differs from ${one.name} 1 by 0.08 or in who plays (dynamic)`, test: (v) => Math.abs(meanTarget(v, ...b) - meanTarget(v, ...a)) >= 0.08 - 1e-9 || !sameParts(partsOf(v, ...a), partsOf(v, ...b)), observe: (v) => meanTarget(v, ...b) - meanTarget(v, ...a) }
+            : { kind: "must", text: `${two.name} 2 has another texture than ${one.name} 1 at about the same level (locked)`, test: (v) => !sameParts(partsOf(v, ...a), partsOf(v, ...b)) && Math.abs(meanTarget(v, ...b) - meanTarget(v, ...a)) <= 0.15 + 1e-9, observe: (v) => meanTarget(v, ...b) - meanTarget(v, ...a) };
+      return {
+        modes,
+        bars: end,
+        checks: [
+          differs,
+          { kind: "must", text: `${two.name} 2 still follows the player: target 0.35–0.8`, test: (v) => meanTarget(v, ...b) >= 0.35 - 1e-9 && meanTarget(v, ...b) <= 0.8 + 1e-9, observe: (v) => meanTarget(v, ...b) },
+          partsIn(two.start, end - 1, ["drums", "bass"]),
+        ],
+      };
+    },
+  },
+  {
+    id: "P1",
+    title: "Steady",
+    group: "personality",
+    build: () => personalityRun("steady", [{ kind: "must", text: "at most 7 leader moves over 40 bars", test: (v) => leaderMoveCount(v) <= 7, observe: leaderMoveCount }]),
+  },
+  {
+    id: "P2",
+    title: "Supportive",
+    group: "personality",
+    build: () => personalityRun("supportive", []),
+  },
+  {
+    id: "P3",
+    title: "Adventurous",
+    group: "personality",
+    build: () => personalityRun("adventurous", [{ kind: "must", text: "at least 10 leader moves over 40 bars", test: (v) => leaderMoveCount(v) >= 10, observe: leaderMoveCount }]),
+  },
+  ...(["funk", "blues-rock", "jazz"] as const).map(
+    (genre): Scenario => ({
+      id: `G1-${genre}`,
+      title: `Same playing, ${genre}`,
+      group: "genre",
+      songs: ["night-shift"],
+      build: () => ({
+        modes: script(VARIED),
+        bars: VARIED_BARS,
+        genre,
+        checks: [
+          ...followsVaried,
+          { kind: "must_not", text: `the leader makes a move ${genre} avoids`, test: (v) => avoided(v, 0, VARIED_BARS - 1, genre).length === 0, observe: (v) => avoided(v, 0, VARIED_BARS - 1, genre).length },
+          ...(genre === "funk"
+            ? [
+                { kind: "must" as const, text: "texture over feel: the leader moves parts in or out at least as often as it changes the feel (funk locks in)", test: (v: RunView) => layerMoves(v) >= 1 && layerMoves(v) >= feelMoves(v), observe: (v: RunView) => layerMoves(v) - feelMoves(v) },
+              ]
+            : genre === "jazz"
+              ? [{ kind: "must" as const, text: "the leader answers with a fill or moves a part at least twice (jazz talks back)", test: (v: RunView) => v.leaderMoves(0, VARIED_BARS - 1).filter(({ m }) => isMove("fire_stinger", { stinger: "fill" })(m) || m.move.move === "add_layer" || m.move.move === "drop_layer").length >= 2, observe: (v: RunView) => v.leaderMoves(0, VARIED_BARS - 1).filter(({ m }) => isMove("fire_stinger", { stinger: "fill" })(m) || m.move.move === "add_layer" || m.move.move === "drop_layer").length }]
+              : [{ kind: "must" as const, text: "the leader marks a lift with a crash or a riser (rock)", test: (v: RunView) => marks(v) >= 1, observe: marks }]),
+        ],
+      }),
+    }),
+  ),
+  {
+    id: "T1",
+    title: "Trades fours",
+    group: "trading",
+    build: () => ({
+      modes: tradeModes(),
+      bars: TRADE_BARS + 1,
+      trade: true,
+      checks: [
+        { kind: "must", text: "the band takes at least 3 of its 4 turns (bars 4, 12, 20, 28)", test: (v) => bandTurns.filter((b) => soloIn(v, b)).length >= 3, observe: (v) => bandTurns.filter((b) => soloIn(v, b)).length },
+        { kind: "must_not", text: "a band solo in the player's turns", test: (v) => !playerTurns.some((t) => v.bars(t, t + 3).some((i) => soloIn(v, i))) },
+        { kind: "must", text: `bars 4–${TRADE_BARS - 1}, drums and bass in (or a drum solo)`, test: (v) => v.bars(4, TRADE_BARS - 1).every((i) => groove(v, i)) },
+        noLayerDropped(4, TRADE_BARS - 1),
+        { kind: "must", text: `bars 4–${TRADE_BARS - 1}, target stays ≥ 0.4`, test: (v) => v.bars(4, TRADE_BARS - 1).every((i) => v.target(i) >= 0.4 - 1e-9), observe: (v) => Math.min(...v.bars(4, TRADE_BARS - 1).map((i) => v.target(i))) },
+      ],
+    }),
+  },
+  {
+    id: "T2",
+    title: "Comes back in early",
+    group: "trading",
+    build: () => ({
+      modes: script("busy:4, silent:1, busy:7"),
+      bars: 12,
+      trade: true,
+      checks: [
+        { kind: "must", text: "bar 4, the band takes its turn", test: (v) => soloIn(v, 4) },
+        { kind: "must", text: "bar 7, the band has handed back", test: (v) => !soloIn(v, 7) },
+      ],
+    }),
+  },
+  {
+    id: "T3",
+    title: "Trading off",
+    group: "trading",
+    build: () => ({
+      modes: script("busy:4, silent:4, busy:4, silent:4, busy:1"),
+      bars: 17,
+      checks: [{ kind: "must_not", text: "a band solo with trading off", test: (v) => !v.bars(0, 16).some((i) => soloIn(v, i)) }],
+    }),
+  },
+];
+
 export const SCENARIOS: Scenario[] = [
   // ---------- follow the player ----------
   {
@@ -608,6 +792,7 @@ export const SCENARIOS: Scenario[] = [
     build: () => ({ modes: script("medium:4, drag:12"), bars: 17, followTempo: true, checks: [...followChecks(16, "down")] }),
   },
   ...CUE_SCENARIOS,
+  ...LEADING_SCENARIOS,
 ];
 
 /** Scenario runs for a song, with the scenario each belongs to. */

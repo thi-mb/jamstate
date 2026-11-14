@@ -142,5 +142,16 @@
     }
   },
   "forms": ["12-bar blues, head / solos / head", "verse (12-bar) / chorus (8 bars on IV and I) / solo / verse"],
-  "progressions": ["I7 IV7 I7 I7 IV7 IV7 I7 I7 V7 IV7 I7 V7", "I7 I7 I7 I7 IV7 IV7 I7 I7 V7 IV7 I7 V7", "i7 iv7 i7 i7 iv7 iv7 i7 i7 bVI7 V7 i7 V7"]
+  "progressions": ["I7 IV7 I7 I7 IV7 IV7 I7 I7 V7 IV7 I7 V7", "I7 I7 I7 I7 IV7 IV7 I7 I7 V7 IV7 I7 V7", "i7 iv7 i7 i7 iv7 iv7 i7 i7 bVI7 V7 i7 V7"],
+  "leading": {
+    "activity": [0.3, 0.75],
+    "arc": "build",
+    "favour": ["set_intensity", "fire_stinger:crash", "fire_stinger:riser", "add_layer"],
+    "avoid": ["change_feel:double_time"],
+    "trade": {
+      "bars": 4,
+      "soloists": ["guitar", "chords"]
+    },
+    "taste": "Blues rock: build each time round and peak late, at the last solo chorus or the last chorus. Mark the lifts with crashes and risers; keep the shuffle, no feel tricks."
+  }
 }

@@ -5,6 +5,8 @@
 
 import type Anthropic from "@anthropic-ai/sdk";
 import type { LeaderContext } from "../rules";
+import { guardFollow } from "../leading";
+import type { Move } from "../moves";
 import { extractJson, splitMoves } from "./check";
 import { chartSchema, chartSystem, leaderSystem, movesSchema, strictSchema } from "./prompt";
 import { BrainError, now, type BrainAnswer, type BrainProvider, type ChartAnswer, type Fetch } from "./types";
@@ -86,7 +88,9 @@ export class ClaudeBrain implements BrainProvider {
   async decide(ctx: LeaderContext, signal?: AbortSignal): Promise<BrainAnswer> {
     const t0 = now();
     const { data, model, usage } = await this.ask(leaderSystem(ctx), JSON.stringify(ctx), movesSchema(), 2000, signal);
-    return { ...splitMoves(data, ctx.sections), model, latencyMs: Math.round(now() - t0), meta: { usage } };
+    const { moves, rejected } = splitMoves(data, ctx.sections);
+    // v0.4 policy: the LLM leads, the follow guard keeps the band with the player.
+    return { moves: guardFollow(ctx, moves) as Move[], rejected, model, latencyMs: Math.round(now() - t0), meta: { usage } };
   }
 
   async writeChart(prompt: string, genres: string[], signal?: AbortSignal): Promise<ChartAnswer> {

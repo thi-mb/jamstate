@@ -3,9 +3,13 @@
 // with separate enter/exit thresholds so it doesn't flap.
 
 import type { PlayerSummary } from "./features";
+import type { ArcSummary } from "./arc";
 import type { Dynamics, Harmony, Phrasing, Rhythm, SongPosition } from "./listening";
+import type { Personality } from "./leading";
+import type { TradeState } from "./trade";
 import type { Move } from "./moves";
-import { V01_PARTS, type Feel, type Part } from "./types";
+import { moveMatches, type Follow } from "./leading";
+import { PART_LABELS as PART_NAMES, V01_PARTS, clamp, type Feel, type Part } from "./types";
 
 /** What any bandleader sees every N bars. Field names match the server API. */
 export interface LeaderContext {
@@ -31,6 +35,24 @@ export interface LeaderContext {
   harmony?: Harmony;
   phrasing?: Phrasing;
   dynamics?: Dynamics;
+  /** Leading (v0.4): the leader's personality and the genre's taste. */
+  leading?: LeadingInfo;
+  /** The song so far and the plan for this section and the next (v0.4). */
+  arc?: ArcSummary;
+  /** Trading fours, when it's on (v0.4). */
+  trading?: TradeState;
+}
+
+export interface LeadingInfo {
+  personality: Personality;
+  /** 0–1: how much this leader moves. */
+  activity: number;
+  /** The genre's taste in a sentence. */
+  taste: string;
+  favour: string[];
+  avoid: string[];
+  /** Where following the player puts the band now (precomputed). */
+  follow?: Follow;
 }
 
 export type Mood = "silent" | "sparse" | "groove" | "busy";
@@ -48,7 +70,22 @@ export class RuleLeader {
   mood: Mood = "groove";
   /** Bar where the section we last lifted into the next one started (song position). */
   private liftedAt = -1;
+  /** Song arc (v0.4): the first bar of the section visit whose plan we applied, and its level bias. */
+  private arcAt = -1;
+  private bias = 0;
+  /** Adventurous leaders add a colour move every other quiet turn; this counts turns. */
+  private extraTick = 0;
   constructor(private t: RuleThresholds = DEFAULT_THRESHOLDS) {}
+
+  /** How much this leader moves (0–1); 0.5 without a personality (v0.3). */
+  private activity(ctx: LeaderContext): number {
+    return ctx.leading?.activity ?? 0.5;
+  }
+
+  /** The smallest target change worth a move: 0.1 (v0.3) at activity 0.5 and up, bigger for a steadier leader. */
+  private threshold(ctx: LeaderContext): number {
+    return clamp(0.1 + 0.4 * (0.5 - this.activity(ctx)), 0.1, 0.25);
+  }
 
   private classify(p: PlayerSummary): Mood {
     if (p.bars > 0 && p.silent_bars >= Math.min(p.bars, Math.max(2, p.bars - 1))) return "silent";
@@ -60,7 +97,102 @@ export class RuleLeader {
   }
 
   decide(ctx: LeaderContext): Move[] {
-    return this.withHarmony(ctx, this.withPosition(ctx, this.withDynamics(ctx, this.withPhrasing(ctx, this.byMood(ctx)))));
+    const moves = this.withHarmony(ctx, this.withPosition(ctx, this.withDynamics(ctx, this.withPhrasing(ctx, this.withArc(ctx, this.byMood(ctx))))));
+    return this.withTaste(ctx, moves);
+  }
+
+  /**
+   * Song arc (v0.4): at a new section visit, follow the plan for it (bigger
+   * than last time, or different, or the same level with a new texture) as a
+   * bias on top of following the player, kept for the whole visit. Applied
+   * in the last bars before the section, so it lands on its first bar. Only
+   * while the player is playing: a quiet player gets space, not a plan.
+   */
+  private withArc(ctx: LeaderContext, moves: Move[]): Move[] {
+    const arc = ctx.arc;
+    if (!arc || ctx.trading) return moves;
+    const sectionStart = ctx.bar - ctx.bar_in_section;
+    // The plan for the section about to start (the decision lands on its first bars), else for this one.
+    const ahead = arc.now.bars_left <= 1 && arc.next;
+    const plan = ahead ? arc.next! : ctx.bar_in_section <= 1 ? arc.now : null;
+    const visit = ahead ? ctx.bar + arc.now.bars_left + 1 : sectionStart;
+    if (!plan || this.arcAt === visit) return moves;
+    this.arcAt = visit;
+    this.bias = 0;
+    const engaged = this.mood === "groove" || this.mood === "busy";
+    if (!engaged || (plan.change === 0 && !plan.add && !plan.drop)) return moves;
+    const out: Move[] = [];
+    if (plan.change !== 0) {
+      // The plan's level (last time's, changed), kept within reach of where the player is.
+      const follow = this.followLevel(ctx);
+      // Up means at least where the player is; down means at most (last time may have been a quiet one).
+      const aim = plan.aim === null ? follow + plan.change : plan.change > 0 ? Math.max(plan.aim, follow) : Math.min(plan.aim, follow);
+      const value = Math.round(clamp(aim, Math.max(0.1, follow - 0.2), Math.min(1, follow + 0.3)) * 100) / 100;
+      // Following the player through the visit keeps this offset.
+      this.bias = value - follow;
+      if (Math.abs(value - ctx.target) >= 0.05) out.push({ move: "set_intensity", value, reason: `${plan.section} ${plan.pass}: ${plan.idea}`.slice(0, 100) });
+    }
+    if (plan.add && !ctx.layers.includes(plan.add)) out.push({ move: "add_layer", part: plan.add, reason: `${plan.section} ${plan.pass}: the ${plan.add} in this time` });
+    // A busy player gets the whole band: parts lay out only while they groove.
+    else if (plan.drop && ctx.layers.includes(plan.drop) && this.mood === "groove") out.push({ move: "drop_layer", part: plan.drop, reason: `${plan.section} ${plan.pass}: the ${plan.drop} lay out this time` });
+    // The plan's moves first; anything else the mood asked for after.
+    const rest = moves.filter((m) => !out.some((o) => o.move === m.move || (o.move === "set_intensity" && m.move === "set_intensity")));
+    return [...out, ...rest].slice(0, 2);
+  }
+
+  /** Where following the player puts the level, without the arc. */
+  private followLevel(ctx: LeaderContext): number {
+    const e = ctx.player.energy;
+    return this.mood === "busy" ? Math.min(1, 0.7 + e * 0.3) : this.mood === "groove" ? 0.35 + e * 0.4 : this.mood === "sparse" ? 0.28 : 0.1;
+  }
+
+  /**
+   * Genre taste and personality (v0.4): leave out what the genre avoids; a
+   * steady leader makes one move at a time and no flourishes; an
+   * adventurous one adds a colour move the genre favours when the player is
+   * playing and nothing else is happening.
+   */
+  private withTaste(ctx: LeaderContext, moves: Move[]): Move[] {
+    const lead = ctx.leading;
+    if (!lead) return moves;
+    const a = lead.activity;
+    let out = moves.filter((m) => !lead.avoid.some((t) => moveMatches(m as never, t)) || (m.move === "change_feel" && m.feel === "normal"));
+    if (lead.personality === "steady") {
+      out = out.filter((m) => !(m.move === "fire_stinger" && m.stinger !== "crash") && !(m.move === "change_feel" && m.feel !== "normal")).slice(0, 1);
+    }
+    const engaged = this.mood === "groove" || this.mood === "busy";
+    // Adventurous: a colour move every other quiet turn, every turn in a genre that moves a lot.
+    if (lead.personality === "adventurous" && !out.length && engaged && !ctx.trading && (a >= 0.8 || this.extraTick % 2 === 0) && this.extraTick++ >= 0) {
+      const extra = this.colour(ctx, lead.favour);
+      if (extra && !lead.avoid.some((t) => moveMatches(extra as never, t))) out.push(extra);
+    }
+    return out;
+  }
+
+  /** A colour move from the genre's favourites that fits now, taken in turn. */
+  private colour(ctx: LeaderContext, favour: string[]): Move | null {
+    const has = (p: Part) => ctx.layers.includes(p);
+    const missing = (ctx.lineup ?? V01_PARTS).filter((p) => !has(p));
+    const busy = this.mood === "busy";
+    const options: Move[] = [];
+    for (const tag of favour) {
+      const [kind, arg] = tag.split(":");
+      if (kind === "fire_stinger" && has("drums")) options.push({ move: "fire_stinger", stinger: (arg ?? "fill") as "fill", reason: arg === "crash" ? "A hit to mark it" : "A fill to answer you" });
+      else if (kind === "change_feel" && arg === "double_time" && busy && ctx.feel === "normal") options.push({ move: "change_feel", feel: "double_time", reason: "Double time while you're flying" });
+      else if (kind === "change_feel" && ctx.feel !== "normal" && !busy) options.push({ move: "change_feel", feel: "normal", reason: "Back to the normal feel" });
+      else if (kind === "drop_layer" && !busy) {
+        const p = (arg as Part | undefined) ?? (["chords", "guitar", "pad", "percussion"] as Part[]).find(has);
+        if (p && has(p) && p !== "drums" && p !== "bass") options.push({ move: "drop_layer", part: p, reason: `The ${p} lays out for a bit` });
+      } else if (kind === "add_layer") {
+        const p = (arg as Part | undefined) ?? missing[0];
+        if (p && !has(p) && (ctx.lineup ?? V01_PARTS).includes(p)) options.push({ move: "add_layer", part: p, reason: `The ${p} back in` });
+      } else if (kind === "set_intensity") {
+        const up = busy || ctx.player.trend === "rising";
+        const value = Math.round(clamp(ctx.target + (up ? 0.12 : -0.12), 0.15, 1) * 100) / 100;
+        if (Math.abs(value - ctx.target) >= 0.1) options.push({ move: "set_intensity", value, reason: up ? "Pushing it a little" : "Pulling back a little" });
+      }
+    }
+    return options.length ? options[(this.extraTick >> 1) % options.length] : null;
   }
 
   /**
@@ -132,6 +264,8 @@ export class RuleLeader {
   private byMood(ctx: LeaderContext): Move[] {
     const prev = this.mood;
     let mood = this.classify(ctx.player);
+    // Trading fours (v0.4): the player's gaps are the band's turns. Hold the mood.
+    if (ctx.trading && (mood === "silent" || mood === "sparse")) return [];
     const ph = ctx.phrasing;
     const has = (p: Part) => ctx.layers.includes(p);
     // Phrasing (v0.3): a short gap after playing is a breath, or room left for
@@ -146,8 +280,14 @@ export class RuleLeader {
     this.mood = mood;
     const missing = (ctx.lineup ?? V01_PARTS).filter((p) => !has(p));
     const moves: Move[] = [];
+    const thr = this.threshold(ctx);
+    const lead = ctx.leading;
+    const fav = (tag: string) => !!lead?.favour.some((t) => t === tag || tag.startsWith(`${t}:`));
+    // The arc's bias for this section visit applies while the player is in it.
+    const bias = mood === "groove" || mood === "busy" ? this.bias : 0;
     const intensity = (value: number, reason: string) => {
-      if (Math.abs(value - ctx.target) >= 0.1) moves.push({ move: "set_intensity", value: Math.round(value * 100) / 100, reason });
+      const v = clamp(value + bias, 0, 1);
+      if (Math.abs(v - ctx.target) >= thr - 1e-9) moves.push({ move: "set_intensity", value: Math.round(v * 100) / 100, reason });
     };
     const feel = (f: Feel, reason: string) => {
       if (ctx.feel !== f) moves.push({ move: "change_feel", feel: f, reason });
@@ -170,11 +310,15 @@ export class RuleLeader {
         intensity(0.1, "You went quiet, giving you space");
         if (has("drums")) moves.push({ move: "drop_layer", part: "drums", reason: "Drums out so it can breathe" });
         break;
-      case "sparse":
+      case "sparse": {
         if (prev === "silent" && !has("drums")) moves.push({ move: "add_layer", part: "drums", reason: "You're back, drums ease in" });
         intensity(0.28, "Sparse playing, laying back");
-        feel("half_time", "Half time to match the space");
+        // Genre taste: a part lays out (funk, jazz) where the genre favours it, else half time.
+        const texture = (["chords", "guitar", "pad"] as Part[]).find((p) => has(p) && fav(`drop_layer:${p}`));
+        if (texture && prev !== "silent") moves.push({ move: "drop_layer", part: texture, reason: `The ${PART_NAMES[texture]} lays out, leaving you room` });
+        else feel("half_time", "Half time to match the space");
         break;
+      }
       case "groove":
         intensity(0.5, "Settling into the groove");
         if (missing.length) moves.push({ move: "add_layer", part: missing[0], reason: `Bringing the ${missing[0]} back` });
@@ -184,7 +328,12 @@ export class RuleLeader {
         intensity(Math.min(1, 0.75 + (ctx.player.energy - this.t.busyEnter)), "You're digging in, raising the energy");
         if (missing.length) moves.push({ move: "add_layer", part: missing[0], reason: `Full band: ${missing[0]} in` });
         else if (ctx.feel === "half_time") feel("normal", "Out of half time to keep up");
-        else moves.push({ move: "fire_stinger", stinger: prev === "silent" ? "crash" : "fill", reason: "Marking the lift" });
+        else {
+          // Genre taste: the genre's favourite way to mark a lift.
+          const mark = lead?.favour.find((t) => t.startsWith("fire_stinger:"))?.split(":")[1] as "fill" | "crash" | "riser" | undefined;
+          const stinger = mark && mark !== "riser" ? mark : prev === "silent" ? "crash" : "fill";
+          moves.push({ move: "fire_stinger", stinger, reason: "Marking the lift" });
+        }
         break;
     }
     return moves.slice(0, 2);

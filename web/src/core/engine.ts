@@ -9,8 +9,10 @@ import { applyFeel, applyRit } from "./feel";
 import type { GenrePack } from "./genre";
 import { getGenre } from "./genres";
 import { GrooveGenerator } from "./groove";
+import { DEFAULT_PERSONALITY, leadingStyle, type LeadingStyle, type Personality } from "./leading";
 import { describeMove, parseMove, type Move } from "./moves";
 import { rngFor } from "./rand";
+import { Soloist, type Solo } from "./solo";
 import { noteName, parseChord, parseKey, type Chord } from "./theory";
 import { clamp, levelFor, type Feel, type NoteEvent, type Part, type Stinger } from "./types";
 
@@ -142,6 +144,10 @@ export interface BarPlan {
   moves: MoveRecord[];
   /** Parts whose generator missed the deadline and repeated the last bar. */
   repeated: Part[];
+  /** Trading fours is on (v0.4). */
+  trading?: boolean;
+  /** A band turn while trading: who solos, and which bar of the turn this is. */
+  solo?: { part: Part; bar: number; of: number } | null;
 }
 
 /**
@@ -155,7 +161,10 @@ export type Control =
   | { at: number; kind: "tempo"; bpm: number }
   | { at: number; kind: "genre"; genre: string }
   | { at: number; kind: "swing"; swing: number | null }
-  | { at: number; kind: "band"; band: Band };
+  | { at: number; kind: "band"; band: Band }
+  | { at: number; kind: "personality"; personality: Personality }
+  | { at: number; kind: "trade"; on: boolean }
+  | { at: number; kind: "solo"; solo: Solo | null };
 
 /**
  * The player's cues (v0.3), on keys 1–7. Breaks, build and take it down land
@@ -196,6 +205,12 @@ export interface EngineOptions {
   countIn?: number;
   /** Controls to replay (a recorded session), applied at their bar. */
   script?: Control[];
+  /**
+   * The bandleader's personality (v0.4): sets the governor's dwell times and
+   * deadband within the genre's range. Left out (sessions from before v0.4),
+   * the governor keeps its own settings.
+   */
+  personality?: Personality;
 }
 
 interface Queued {
@@ -254,6 +269,13 @@ export class Engine {
   /** A stinger a cue asked for: not subject to one stinger per phrase. */
   private cueStinger: Stinger | null = null;
   private lastBars: Partial<Record<Part, NoteEvent[]>> = {};
+  /** The bandleader's personality; null: the governor as configured (pre-v0.4). */
+  personality: Personality | null;
+  /** Trading fours (v0.4): the player's gaps are the band's turns. */
+  trading = false;
+  /** The band's turn while trading, from its first bar to its last. */
+  private solo: Solo | null = null;
+  private soloist: Soloist;
   readonly log: MoveRecord[] = [];
   /** Every outside change, for session recording. */
   readonly controls: Control[] = [];
@@ -273,6 +295,58 @@ export class Engine {
     this.countInLeft = this.countInTotal = opts.countIn ?? 0;
     this.bpm = chart.bpm;
     this.script = [...(opts.script ?? [])].sort((a, b) => a.at - b.at);
+    this.personality = opts.personality ?? null;
+    this.soloist = new Soloist(this.seed);
+    this.applyLeading();
+  }
+
+  /** The genre's leading taste with the personality applied (supportive when none is set). */
+  get leading(): LeadingStyle {
+    return leadingStyle(this.genre.leading, this.personality ?? DEFAULT_PERSONALITY);
+  }
+
+  /** Set the governor's dwell times and deadband from the personality, if there is one. */
+  private applyLeading(): void {
+    if (this.personality) Object.assign(this.config, this.leading.governor);
+  }
+
+  /** The bandleader's personality from the next bar on. */
+  setPersonality(p: Personality): void {
+    this.controls.push({ at: this.bar, kind: "personality", personality: p });
+    this.personality = p;
+    this.applyLeading();
+  }
+
+  /** Trading fours on or off. Off ends a band turn from the next bar. */
+  setTrading(on: boolean): void {
+    this.controls.push({ at: this.bar, kind: "trade", on });
+    this.trading = on;
+    if (!on) this.solo = null;
+  }
+
+  /**
+   * Start a band turn (from `solo.from`, a bar not yet prepared) or end the
+   * one playing from the next bar (null). The page's trader decides (trade.ts).
+   */
+  setSolo(solo: Solo | null): void {
+    this.controls.push({ at: this.bar, kind: "solo", solo });
+    if (solo && !this.trading) return;
+    if (!solo && this.solo && this.solo.from <= this.bar + 1) this.solo = { ...this.solo, bars: Math.max(0, this.bar + 1 - this.solo.from) };
+    else this.solo = solo;
+  }
+
+  /** The band turn covering a bar, if any. */
+  soloAt(bar: number): Solo | null {
+    const s = this.solo;
+    return s && bar >= s.from && bar < s.from + s.bars ? s : null;
+  }
+
+  /** Where the next bar to be prepared lands (no jumps applied); null at the end of a form that doesn't loop. */
+  upcoming(): { formPos: number; barInSection: number; sectionBars: number } | null {
+    const pos = this.advance();
+    if (!pos) return null;
+    const bars = pos.formPos === this.formPos && this.barInSection >= 0 ? this.sectionLength() : this.sectionAt(pos.formPos).bars;
+    return { ...pos, sectionBars: bars };
   }
 
   /** Queue moves from any source. They are resolved when the next bar is prepared. */
@@ -306,6 +380,7 @@ export class Engine {
   setGenre(genre: GenrePack): void {
     this.controls.push({ at: this.bar, kind: "genre", genre: genre.id });
     this.genre = genre;
+    this.applyLeading();
   }
 
   /** Who is in the band: the band's parts that the genre has grooves for. */
@@ -377,7 +452,7 @@ export class Engine {
     const apply = (note?: string) => this.record(m, source, requestedBar, "applied", note);
     if (upcoming - requestedBar > cfg.ttlBars) return reject(`expired (${upcoming - requestedBar} bars old)`);
     if (this.pendingEnd && (m.move === "jump_to_section" || m.move === "extend_section")) return reject("the song is ending");
-    const locked = source !== "you" && source !== "cue" ? this.lockedOut(m, upcoming) : null;
+    const locked = source !== "you" && source !== "cue" ? this.lockedOut(m, upcoming) ?? this.tradeHolds(m) : null;
     if (locked) return reject(locked);
 
     switch (m.move) {
@@ -402,7 +477,8 @@ export class Engine {
       }
       case "change_feel":
         if (m.feel === this.feel) return reject("already in that feel");
-        if (upcoming - this.lastFeelChange < cfg.feelDwellBars) return reject("changed too recently");
+        // Back to the normal feel never waits longer than v0.3's dwell, whatever the personality.
+        if (upcoming - this.lastFeelChange < (m.feel === "normal" ? Math.min(cfg.feelDwellBars, DEFAULT_GOVERNOR.feelDwellBars) : cfg.feelDwellBars)) return reject("changed too recently");
         this.feel = m.feel;
         this.lastFeelChange = upcoming;
         return apply();
@@ -453,6 +529,19 @@ export class Engine {
       case "end_song":
         return m.move === "jump_to_section" || m.move === "extend_section" || m.move === "end_song" ? why : null;
     }
+  }
+
+  /**
+   * While trading, the player's gaps are the band's turns, not the player
+   * leaving: a leader can't drop parts, change the feel or take the level
+   * down far (ADR-0022).
+   */
+  private tradeHolds(m: Move): string | null {
+    if (!this.trading) return null;
+    const why = "trading fours: the band keeps going";
+    if (m.move === "drop_layer" || m.move === "change_feel") return why;
+    if (m.move === "set_intensity" && m.value < (this.target ?? this.intensity) - 0.15) return why;
+    return null;
   }
 
   /** Apply a cue for the upcoming bar. Returns its record. */
@@ -562,6 +651,9 @@ export class Engine {
       else if (c.kind === "tempo") this.setTempo(c.bpm);
       else if (c.kind === "genre") this.setGenre(getGenre(c.genre));
       else if (c.kind === "band") this.setBand(c.band);
+      else if (c.kind === "personality") this.setPersonality(c.personality);
+      else if (c.kind === "trade") this.setTrading(c.on);
+      else if (c.kind === "solo") this.setSolo(c.solo);
       else this.setSwing(c.swing);
     }
   }
@@ -725,17 +817,32 @@ export class Engine {
       if (this.breakCue.cue === "drums_break" && this.layers.has("drums") && !stingers.includes("crash")) stingers.push("crash");
       this.breakCue = null;
     }
-    const parts = this.lineup.filter((p) =>
+    let parts = this.lineup.filter((p) =>
       brk === "drums_break" ? this.layers.has(p) && !PERC.includes(p) : brk === "drums_only" ? PERC.includes(p) : this.layers.has(p),
     );
     if (brk === "drums_break") stingers = [];
+    // Trading: the band's turn. A drum solo plays alone; a melodic soloist plays over the rest of the band.
+    const solo = !brk && !ending ? this.soloAt(this.bar) : null;
+    if (this.solo && this.bar >= this.solo.from + this.solo.bars) {
+      // The player's turn starts: a drum solo hands back with a crash.
+      if (this.solo.part === "drums" && this.solo.bars > 0 && this.bar === this.solo.from + this.solo.bars && this.layers.has("drums") && !stingers.includes("crash")) stingers.push("crash");
+      this.solo = null;
+    }
+    if (solo && this.lineup.includes(solo.part)) {
+      if (solo.part === "drums") {
+        parts = ["drums"];
+        stingers = [];
+      } else if (!parts.includes(solo.part)) parts = [...parts, solo.part];
+    }
     const ctx = this.context({
       bar: this.bar, kind: ending ? "ending" : "play", section: name, barInSection: this.barInSection, sectionBars: this.sectionLength(),
       barInPhrase, lastBarOfSection, level, feel: this.feel, parts, slots: section.barChords(this.barInSection), next, stingers,
       cymbal: section.cymbal ?? this.genre.drums.cymbalSections[name] ?? this.genre.drums.cymbal,
       ending: tonic ? { tonic, ringBeats: this.genre.ending.ringBeats } : null,
     });
-    const generated = this.generator.generate(ctx);
+    const soloing = solo && this.lineup.includes(solo.part) ? solo : null;
+    const generated = this.generator.generate(soloing ? { ...ctx, parts: parts.filter((p) => p !== soloing.part) } : ctx);
+    if (soloing) generated[soloing.part] = this.soloist.bar(ctx, soloing, this.bar - soloing.from);
     const repeated: Part[] = [];
     const byPart: Partial<Record<Part, NoteEvent[]>> = {};
     for (const p of parts) {
@@ -778,6 +885,8 @@ export class Engine {
       stingers,
       moves: resolved,
       repeated,
+      trading: this.trading,
+      solo: soloing ? { part: soloing.part, bar: this.bar - soloing.from, of: soloing.bars } : null,
     };
   }
 }
