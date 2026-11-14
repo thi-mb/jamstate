@@ -29,6 +29,8 @@ export class VoicePanel {
   private bandOut: AudioNode | null = null;
   private gate: BleedGate | null = null;
   outputLatency: () => number = () => 0;
+  /** Main-thread time spent on the voice input (gate and hand-off; recognition runs in a worker) and the audio it covered. */
+  readonly cost = { dsp: 0, audio: 0 };
 
   constructor(
     private input: AudioInputPlatform,
@@ -146,6 +148,8 @@ export class VoicePanel {
 
   private frame(samples: Float32Array, ref?: Float32Array): void {
     if (!this.rec) return;
+    const t0 = performance.now();
+    this.cost.audio += samples.length / SR;
     if (this.gate && ref) samples = this.gate.push(samples, ref);
     for (let i = 0; i < samples.length; ) {
       const n = Math.min(samples.length - i, CHUNK - this.fill);
@@ -157,5 +161,6 @@ export class VoicePanel {
         this.fill = 0;
       }
     }
+    this.cost.dsp += (performance.now() - t0) / 1000;
   }
 }

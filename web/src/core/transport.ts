@@ -141,6 +141,9 @@ export class Transport {
     return this.timeAt(k * this.bpb + this.bpb - 1) - this.lookahead;
   }
 
+  /** Notes that reached the sink after their time (a busy main thread), and the worst by how much (seconds). */
+  readonly lateness = { notes: 0, worst: 0 };
+
   /** Call every ~25 ms (from a Worker timer in the page). */
   tick(): void {
     if (!this.running) return;
@@ -152,6 +155,10 @@ export class Transport {
     let i = 0;
     while (i < this.queue.length && this.queue[i].time < horizon) {
       const p = this.queue[i++];
+      if (p.time < now - 0.005) {
+        this.lateness.notes++;
+        this.lateness.worst = Math.max(this.lateness.worst, now - p.time);
+      }
       this.sink.play(p.ev, Math.max(p.time, now), p.dur);
     }
     if (i) this.queue.splice(0, i);

@@ -47,6 +47,8 @@ export class AudioInputPanel {
   /** The band's output while a jam plays, and the bleed gate against it (speakers on). */
   private bandOut: AudioNode | null = null;
   private gate: BleedGate | null = null;
+  /** Main-thread time spent on the input (gate and listener) and the audio it covered, in seconds. */
+  readonly cost = { dsp: 0, audio: 0 };
   /** The instrument's tuning sets the range of notes it listens for. */
   private tuning: TuningId = "standard";
 
@@ -216,12 +218,15 @@ export class AudioInputPanel {
     }
     this.tap?.(samples, time);
     if (!this.listener) return;
+    const t0 = performance.now();
     // The band taken out (the tape above keeps what the input really heard).
     if (this.gate && ref) {
       samples = this.gate.push(samples, ref);
       time -= this.gate.latency / SR;
     }
     for (const e of this.listener.push(samples, time)) this.emit(e);
+    this.cost.dsp += (performance.now() - t0) / 1000;
+    this.cost.audio += samples.length / SR;
   }
 
   private emit(e: ListenerEvent): void {
