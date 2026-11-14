@@ -798,6 +798,8 @@ audioIn.outputLatency = () => (audio ? (audio.baseLatency ?? 0) + (audio.outputL
 // Voice cues (v0.5, ADR-0026): the same path as the keys.
 const voice = new VoicePanel(platform.audioIn, getAudio, platform.settings);
 voice.outputLatency = audioIn.outputLatency;
+// For the page checks (npm run voice-check): main-thread time on the inputs and notes the band played late.
+(window as unknown as { jamstateStats: () => unknown }).jamstateStats = () => ({ input: audioIn.cost, voice: voice.cost, late: session?.transport.lateness ?? null });
 voice.onCue = (h) => {
   if (h.cue !== "trade_on" && h.cue !== "trade_off") return giveCue(h.cue, "voice");
   if (trading !== (h.cue === "trade_on")) toggleTrade();

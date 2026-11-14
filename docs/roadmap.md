@@ -369,7 +369,8 @@ Done when:
 
 ### v0.5: Guitar
 
-Status: in progress (started 2026-11-14). Test plan in
+Status: built 2026-11-14, waiting on Thiago's hands-on tests (T1–T11) and
+the fine-tuning pass on his guitar. Test plan in
 [testing/v0.5.md](testing/v0.5.md). Decided with Thiago before starting:
 all five layers including bleed gating; chords by chroma templates first,
 with Basic Pitch measured beside them for accuracy and cost
