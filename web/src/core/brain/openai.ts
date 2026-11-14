@@ -2,6 +2,8 @@
 // OpenAI itself. Asks for JSON constrained by the moves schema and degrades
 // to json_object, then plain text, when the server rejects the format.
 
+import { guardFollow } from "../leading";
+import type { Move } from "../moves";
 import type { LeaderContext } from "../rules";
 import { extractJson, splitMoves } from "./check";
 import { chartSchema, chartSystem, leaderSystem, movesSchema } from "./prompt";
@@ -86,7 +88,9 @@ export class OpenAIBrain implements BrainProvider {
     } catch (e) {
       throw new BrainError((e as Error).message);
     }
-    return { ...splitMoves(payload, ctx.sections), model, latencyMs: Math.round(now() - t0) };
+    const { moves, rejected } = splitMoves(payload, ctx.sections);
+    // v0.4 policy: the LLM leads, the follow guard keeps the band with the player.
+    return { moves: guardFollow(ctx, moves) as Move[], rejected, model, latencyMs: Math.round(now() - t0) };
   }
 
   async writeChart(prompt: string, genres: string[], signal?: AbortSignal): Promise<ChartAnswer> {
