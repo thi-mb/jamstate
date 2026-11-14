@@ -1,4 +1,5 @@
 // npm run guitar-eval -- pitch [--set DIR] [--out DIR] [--limit N]
+// npm run guitar-eval -- chords [...] (scripts/guitar-chords.ts)
 //
 // How well the audio listener hears a guitar (v0.5). Synthesised solo lines
 // (with hammer-ons and vibrato) and GuitarSet (CC BY 4.0; six players, five
@@ -32,8 +33,14 @@ const set = opt("set") ?? join(homedir(), ".local/share/jamstate/guitarset");
 const limit = Number(opt("limit") ?? Infinity);
 const [cmd] = args;
 const out = opt("out") ?? `../docs/eval/results/v0.5-${cmd}`;
+if (cmd === "chords") {
+  const { runChords } = await import("./guitar-chords");
+  const noModel = args.includes("--no-model");
+  await runChords({ set, out, limit, every: Number(opt("every") ?? 3), model: !noModel });
+  process.exit(0);
+}
 if (cmd !== "pitch") {
-  console.error("usage: npm run guitar-eval -- pitch [--set DIR] [--out DIR] [--limit N]");
+  console.error("usage: npm run guitar-eval -- pitch|chords [--set DIR] [--out DIR] [--limit N] [--every N] [--no-model]");
   process.exit(2);
 }
 
@@ -114,7 +121,9 @@ function listen(x: Float32Array, mode: DetectionMode): ListenerEvent[] {
   for (let i = 0; i < x.length; i += 256) ev.push(...L.push(x.subarray(i, i + 256), i / SR));
   cpu += (performance.now() - t0) / 1000;
   audioSeconds += x.length / SR;
-  return ev.filter((e) => e.kind === "on");
+  // A chord's notes share their strum's onset: count it once.
+  const seen = new Set<number>();
+  return ev.filter((e) => e.kind === "on" && !seen.has(e.time) && !!seen.add(e.time));
 }
 
 const summary: Record<string, unknown> = { detector: "jamstate-listener/0.5", date: new Date().toISOString().slice(0, 10) };

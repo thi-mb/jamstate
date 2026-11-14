@@ -21,9 +21,11 @@
     "eval": "vite-node scripts/eval.ts",
     "guitar": "vite-node scripts/guitar.ts",
     "audio-check": "node scripts/audio-check.mjs",
-    "guitar-eval": "vite-node scripts/guitar-eval.ts"
+    "guitar-eval": "vite-node scripts/guitar-eval.ts",
+    "chords-browser": "node scripts/chords-browser.mjs"
   },
   "devDependencies": {
+    "@spotify/basic-pitch": "1.0.1",
     "typescript": "5.9.3",
     "vite": "6.4.5",
     "vitest": "3.2.7"
