@@ -797,7 +797,8 @@ function playerNote(on: boolean, note: number, vel: number, audioTime?: number):
   fretboard.note(on, note);
   if (on) {
     held.get(note)?.();
-    held.set(note, session.synth.liveNote(note, vel));
+    // Built-in sound off (playing through Ableton or another synth): the page doesn't sound the player either.
+    if ($<HTMLInputElement>("builtin").checked) held.set(note, session.synth.liveNote(note, vel));
     session.tracker.noteOn(beat, note, vel);
   } else {
     held.get(note)?.();
