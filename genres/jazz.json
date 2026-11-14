@@ -145,5 +145,16 @@
     }
   },
   "forms": ["32-bar AABA: head, solo choruses, head", "12-bar jazz blues", "intro (4 bars on a ii-V) then the tune"],
-  "progressions": ["ii7 V7 Imaj7", "Imaj7 VI7 ii7 V7", "iim7b5 V7 i6", "I7 IV7 I7 v7 I7 IV7 IV7 I7 VI7 ii7 V7 I7 VI7 ii7 V7"]
+  "progressions": ["ii7 V7 Imaj7", "Imaj7 VI7 ii7 V7", "iim7b5 V7 i6", "I7 IV7 I7 v7 I7 IV7 IV7 I7 VI7 ii7 V7 I7 VI7 ii7 V7"],
+  "leading": {
+    "activity": [0.35, 0.9],
+    "arc": "dynamic",
+    "favour": ["set_intensity", "fire_stinger:fill", "drop_layer:chords", "add_layer:chords", "change_feel:double_time"],
+    "avoid": ["fire_stinger:riser"],
+    "trade": {
+      "bars": 4,
+      "soloists": ["drums", "chords"]
+    },
+    "taste": "Jazz: stay dynamic and conversational. Answer the soloist with fills, let the piano lay out for a while and come back, take each chorus up or down rather than the same, trade fours with the drums."
+  }
 }

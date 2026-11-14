@@ -574,7 +574,9 @@ describe("simulation (the X demo script)", () => {
   it("follows sparse → busy → silent → busy", () => {
     const bars = simulate(chart, parseScript("medium:4,sparse:8,busy:8,silent:6,busy:6"), { config: { loop: true } });
     const at = (i: number) => bars[i].plan;
-    expect(at(11).feel).toBe("half_time"); // sparse → half time
+    // Sparse → space: Night Shift is funk, whose taste is a part laying out rather than half time (v0.4).
+    expect(at(11).feel === "half_time" || !at(11).layers.includes("chords")).toBe(true);
+    expect(at(11).intensity).toBeLessThan(0.45);
     expect(at(19).intensity).toBeGreaterThan(0.8); // busy → build
     expect(at(19).feel).toBe("normal");
     expect(at(25).layers).not.toContain("drums"); // silent → drums out

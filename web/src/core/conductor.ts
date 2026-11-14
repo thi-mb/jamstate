@@ -2,10 +2,13 @@
 // it asks the leader for moves; the request is never awaited by the music,
 // and at most one is in flight.
 
+import { SongArc, type ArcSummary } from "./arc";
 import type { BarPlan, Engine } from "./engine";
 import { barFeatures, summarize, type BarFeatures, type PlayedNote, type PlayerSummary } from "./features";
 import { getGenre } from "./genres";
+import { avoids, followLevel } from "./leading";
 import { TempoFollower } from "./tempo";
+import type { Trader } from "./trade";
 import { DEFAULT_LISTENING, dynamicsOf, harmonyOf, phrasingOf, rhythmOf, songPosition, type Heard, type HeardBar, type Listening } from "./listening";
 import { PLAYER_ONLY_MOVES, type Move } from "./moves";
 import type { LeaderContext } from "./rules";
@@ -40,13 +43,19 @@ export class Conductor {
   listening: Listening = { ...DEFAULT_LISTENING };
   /** Follow my tempo (v0.3, opt-in); null: the band keeps its tempo. */
   follower: TempoFollower | null = null;
+  /** Trading fours (v0.4): starts and ends the band's turns; null when nobody is listening for it (a replay). */
+  trader: Trader | null = null;
+  /** The song so far, for the leader's plan (v0.4). */
+  readonly arc: SongArc;
 
   constructor(
     private engine: Engine,
     public leader: Leader | null,
     public everyBars = 4,
     private events: ConductorEvents = {},
-  ) {}
+  ) {
+    this.arc = new SongArc(engine.leading.arc, engine.chart.form);
+  }
 
   get busy(): boolean {
     return this.inFlight;
@@ -64,6 +73,8 @@ export class Conductor {
     if (this.window.length > this.everyBars) this.window.shift();
     // Follow my tempo: a new tempo lands on the next bar not yet committed.
     if (this.follower) this.engine.setTempo(this.follower.next(this.engine.bpm, this.recent.map((b) => b.notes), this.engine.chart.beatsPerBar));
+    this.arc.observe(plan);
+    this.trader?.barFinished(plan, notes);
     this.events.onFeatures?.(plan.bar, f);
     this.events.onHeard?.(plan.bar, this.heard(plan));
     this.bars++;
@@ -115,7 +126,23 @@ export class Conductor {
     if (this.listening.harmony) ctx.harmony = heard.harmony;
     if (this.listening.phrasing) ctx.phrasing = heard.phrasing;
     if (this.listening.dynamics) ctx.dynamics = heard.dynamics;
+    // Leading (v0.4): personality and genre taste, the song so far with a plan, the trade.
+    const style = this.engine.leading;
+    const follow = followLevel(player, { state: heard.phrasing.state, held: heard.phrasing.held, shape: heard.dynamics.shape }, ctx.target);
+    ctx.leading = { personality: style.personality, activity: style.activity, taste: style.taste, favour: style.favour, avoid: style.avoid, follow };
+    ctx.arc = this.arcNow(plan);
+    const trade = this.trader?.state(plan) ?? (this.engine.trading ? { turn: plan.solo ? "band" : "player", soloist: plan.solo?.part ?? null, bars_left: 0 } : null);
+    if (trade) ctx.trading = trade as LeaderContext["trading"];
     return ctx;
+  }
+
+  /** The song so far and the plan, after `plan` (for the summary and the overlay). */
+  arcNow(plan: BarPlan): ArcSummary {
+    const style = this.engine.leading;
+    this.arc.style = style.arc;
+    const form = this.engine.chart.form;
+    const nextPos = plan.formPos + 1 < form.length ? plan.formPos + 1 : this.engine.config.loop ? 0 : -1;
+    return this.arc.summary(plan, nextPos >= 0 ? form[nextPos] : null, nextPos, (m) => avoids(style, m));
   }
 
   private ask(plan: BarPlan, player: PlayerSummary): void {
