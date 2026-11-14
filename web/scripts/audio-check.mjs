@@ -6,7 +6,9 @@
 // input. Jams with audio input and "keep the audio" on, then checks the
 // recording (audio input, detected notes, the WAV and where each bar starts
 // in it) and that it replays exactly; then that input 1 (silent) hears
-// nothing. Exit code 1 when a check fails.
+// nothing. v0.5 layer 2: detected notes light one place each on the neck,
+// and the tuning and left-handed settings redraw it. Exit code 1 when a
+// check fails.
 
 import { execFileSync, spawn } from "node:child_process";
 import { mkdtempSync, readFileSync, statSync } from "node:fs";
@@ -55,12 +57,20 @@ const jam = async (seconds) => {
   await page.click("#start");
   await page.waitForFunction(() => !/ready|count-in/.test(document.querySelector("#section")?.textContent ?? ""), null, { timeout: 15000 });
   let energy = 0;
-  for (let t = 0; t < seconds * 1000; t += 500) {
+  // Lit places on the neck, sampled through the jam: how many at once, and how many different ones.
+  const lit = { most: 0, samples: 0, places: new Set() };
+  for (let t = 0; t < seconds * 1000; t += 250) {
     energy = Math.max(energy, Number(((await page.textContent("#energy-num")) ?? "").replace(/[^0-9.]/g, "")) || 0);
-    await page.waitForTimeout(500);
+    const now = await page.$$eval("#fretboard .fb-fret", (els) =>
+      els.map((e, i) => ([...e.classList].some((c) => c.startsWith("fb-play-")) ? i : -1)).filter((i) => i >= 0),
+    );
+    lit.most = Math.max(lit.most, now.length);
+    if (now.length) lit.samples++;
+    for (const i of now) lit.places.add(i);
+    await page.waitForTimeout(250);
   }
   await page.click("#stop");
-  return energy;
+  return { energy, lit };
 };
 
 try {
@@ -78,8 +88,9 @@ try {
   await page.check("#keep-audio");
   check(!(await page.isHidden("#audio-meter")), "the level meter shows");
 
-  const energy = await jam(24);
+  const { energy, lit } = await jam(24);
   check(energy > 0.2, `the band heard the guitar: peak energy ${energy}`);
+  check(lit.samples > 10 && lit.most <= 2, `the neck lights one place per note: lit in ${lit.samples} samples, at most ${lit.most} at once, ${lit.places.size} places in all`);
 
   const downloads = [];
   page.on("download", (d) => downloads.push(d));
@@ -90,8 +101,9 @@ try {
   check(!!json && !!wavDl, `downloaded ${downloads.map((d) => d.suggestedFilename()).join(" and ")}`);
   const file = JSON.parse(readFileSync(await json.path(), "utf8"));
   const ons = file.player.filter((e) => e[2] > 0);
-  check(file.input?.kind === "audio" && file.input.channel === "2" && !!file.input.calibration, `recorded as audio input: ${JSON.stringify({ ...file.input, calibration: undefined, audio: undefined })}`);
-  check(ons.length > 40, `detected notes recorded: ${ons.length} (${ons.filter((e) => e[1] < 0).length} unpitched)`);
+  check(file.input?.kind === "audio" && file.input.channel === "2" && file.input.mode === "auto" && file.input.tuning === "standard" && !!file.input.calibration, `recorded as audio input: ${JSON.stringify({ ...file.input, calibration: undefined, audio: undefined })}`);
+  const pitched = ons.filter((e) => e[1] >= 0).length;
+  check(ons.length > 40 && pitched > ons.length / 2, `detected notes recorded: ${ons.length} (${pitched} pitched)`);
   const a = file.input?.audio;
   check(!!a && a.rate === 16000 && a.bar_starts.length === file.bars.length && a.file === wavDl?.suggestedFilename(), `the audio is referenced with ${a?.bar_starts.length} bar starts`);
   const wavBytes = wavDl ? statSync(await wavDl.path()).size : 0;
@@ -108,6 +120,16 @@ try {
   await page.waitForFunction(() => /Synced|Couldn't sync/.test(document.querySelector("#session-result")?.textContent ?? ""));
   const synced = await page.textContent("#session-result");
   check(/with its audio/.test(synced ?? ""), `sync: ${synced}`);
+
+  // Tunings and a left-handed neck redraw it.
+  await page.selectOption("#fretboard-tuning", "drop-d");
+  await page.check("#fretboard-left");
+  const neck = await page.$eval("#fretboard .fb-guitar", (g) => ({ tuning: g.dataset.tuning, left: g.classList.contains("fb-left"), cells: g.querySelectorAll(".fb-fret").length }));
+  check(neck.tuning === "drop-d" && neck.left && neck.cells === 6 * 16, `drop D, left-handed: ${JSON.stringify(neck)}`);
+  await page.selectOption("#fretboard-tuning", "bass");
+  check((await page.$$eval("#fretboard .fb-fret", (e) => e.length)) === 4 * 16, "bass: four strings");
+  await page.selectOption("#fretboard-tuning", "standard");
+  await page.uncheck("#fretboard-left");
 
   // Input 1 is silent: no notes.
   await page.selectOption("#audio-channel", "1");

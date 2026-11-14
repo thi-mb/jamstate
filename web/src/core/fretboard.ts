@@ -1,9 +1,10 @@
 // What the fretboard view shows (v0.3), in one of two modes. Changes: for the
 // chord sounding, its chord tones (strong) and the genre's scale tones for it
 // (faint). Scale: one scale for the whole song (from its key and genre) held
-// still, with only the chord tones moving on top. On a guitar neck
-// (standard tuning, frets 0–15) or two octaves of piano that follow where the
-// player plays. The player's notes are coloured by how they fit (noteFit, the
+// still, with only the chord tones moving on top. On a guitar neck (frets
+// 0–15, in any tuning, v0.5) or two octaves of piano that follow where the
+// player plays. From an audio input (v0.5) a played note lights one place on
+// the neck, near where the hand has been. The player's notes are coloured by how they fit (noteFit, the
 // same test the harmony listening uses). The page draws it (ui/fretboard.ts);
 // this module only decides what goes where.
 
@@ -69,6 +70,64 @@ export function songScale(chart: Chart, genre?: GenreListening): SongScale | nul
 /** Strings high to low (as tab reads): E4 B3 G3 D3 A2 E2. */
 export const GUITAR_STRINGS = [64, 59, 55, 50, 45, 40];
 export const GUITAR_FRETS = 15;
+
+/** Tunings, strings high to low. */
+export const TUNINGS = {
+  standard: { name: "standard", strings: GUITAR_STRINGS },
+  "half-down": { name: "half step down", strings: [63, 58, 54, 49, 44, 39] },
+  "drop-d": { name: "drop D", strings: [64, 59, 55, 50, 45, 38] },
+  dadgad: { name: "DADGAD", strings: [62, 57, 55, 50, 45, 38] },
+  "open-g": { name: "open G", strings: [62, 59, 55, 50, 43, 38] },
+  "open-d": { name: "open D", strings: [62, 57, 54, 50, 45, 38] },
+  bass: { name: "bass", strings: [43, 38, 33, 28] },
+} as const satisfies Record<string, { name: string; strings: readonly number[] }>;
+export type TuningId = keyof typeof TUNINGS;
+export const TUNING_IDS = Object.keys(TUNINGS) as TuningId[];
+
+/** The notes an instrument in this tuning plays (for the listener's pitch range). */
+export function tuningRange(id: TuningId): { lowest: number; highest: number } {
+  const s = TUNINGS[id].strings;
+  return { lowest: Math.min(...s), highest: Math.max(...s) + 22 };
+}
+
+export interface Place {
+  /** Row, high string first. */
+  string: number;
+  fret: number;
+}
+
+/**
+ * Where on the neck a note from an audio input was most likely played: in
+ * the four-fret box of the hand (index finger at `pos`), on a string not
+ * already sounding. Open strings ring when the hand is low on the neck. A note
+ * outside the box moves the hand toward it, halfway, so one stretch doesn't
+ * drag the whole picture up the neck.
+ */
+export class Hand {
+  /** The fret under the index finger. */
+  pos = 1;
+
+  constructor(private strings: readonly number[] = GUITAR_STRINGS, private frets = GUITAR_FRETS) {}
+
+  place(note: number, busy: ReadonlySet<number> = new Set()): Place | null {
+    let best: Place | null = null;
+    let bestCost = Infinity;
+    for (const [string, open] of this.strings.entries()) {
+      const fret = note - open;
+      if (fret < 0 || fret > this.frets || busy.has(string)) continue;
+      const off = fret - this.pos;
+      let cost = off < -1 ? -off * 1.5 : off > 3 ? off - 2 : 0.1 * Math.abs(off - 1.5);
+      if (fret === 0) cost = Math.max(0, this.pos - 3) * 0.8;
+      if (cost < bestCost) [best, bestCost] = [{ string, fret }, cost];
+    }
+    if (best && best.fret > 0) {
+      if (best.fret < this.pos) this.pos += (best.fret - this.pos) * 0.5;
+      else if (best.fret > this.pos + 3) this.pos += (best.fret - 3 - this.pos) * 0.5;
+    }
+    return best;
+  }
+}
+
 /** Two octaves and the C on top. */
 export const PIANO_KEYS = 25;
 
@@ -93,8 +152,8 @@ function cell(note: number, chord: Chord | null, genre?: GenreListening, song?: 
 }
 
 /** Rows of cells, one per string (high first), frets 0..15. With `song`, scale mode. */
-export function guitarCells(chord: Chord | null, genre?: GenreListening, song?: SongScale | null): Cell[][] {
-  return GUITAR_STRINGS.map((open) => Array.from({ length: GUITAR_FRETS + 1 }, (_, f) => cell(open + f, chord, genre, song)));
+export function guitarCells(chord: Chord | null, genre?: GenreListening, song?: SongScale | null, strings: readonly number[] = GUITAR_STRINGS): Cell[][] {
+  return strings.map((open) => Array.from({ length: GUITAR_FRETS + 1 }, (_, f) => cell(open + f, chord, genre, song)));
 }
 
 /** Keys from `low` (a C) up two octaves. With `song`, scale mode. */

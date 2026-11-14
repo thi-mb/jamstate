@@ -131,6 +131,12 @@ without direct monitoring). **Calibrate** once per input: two seconds of
 silence (the noise gate), soft playing and hard playing (how hard maps to
 velocity), then a note on each of eight clicks (the input delay).
 
+**Hears** picks what the input listens for: single notes (lead lines), chords
+(comping) or auto. Under the fretboard, pick your **Tuning** (standard, half
+step down, drop D, DADGAD, open G, open D, bass) and **left-handed** for a
+mirrored neck; a note you play lights one place on the neck, near where your
+hand has been.
+
 What you play becomes notes, like MIDI, so everything the band listens for
 works on guitar ([ADR-0023](docs/decisions/0023-audio-input.md)). A hit with
 no pitch to hear (a muted strum, a slap) is a note with pitch -1: it counts
@@ -143,6 +149,7 @@ Spark beside the session, so the detector can be re-run over it.
 cd web
 npm run guitar -- sim public/charts/night-shift.json "busy:8,silent:4" take.wav --channels 2 --on 2   # a rendered guitar take
 npm run audio-check   # headless Chrome with that take as the microphone (after npm run build)
+npm run guitar-eval -- pitch   # onsets and pitch on synthesised lines and GuitarSet (~/.local/share/jamstate/guitarset)
 ```
 
 ## With the jamstate server (optional companion)
