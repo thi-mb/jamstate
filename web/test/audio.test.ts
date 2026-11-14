@@ -108,7 +108,8 @@ describe("onsets and levels", () => {
   it("finds plucks, strums and muted scratches on time", () => {
     for (const seed of [3, 7]) {
       const { x, truth } = mixedTake(seed);
-      const ons = listen(x).filter((e) => e.kind === "on").map((e) => e.time);
+      // A chord's notes share their strum's onset.
+      const ons = [...new Set(listen(x).filter((e) => e.kind === "on").map((e) => e.time))];
       const s = score(truth, ons);
       expect(s.recall).toBeGreaterThanOrEqual(0.93);
       expect(s.precision).toBeGreaterThanOrEqual(0.93);

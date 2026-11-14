@@ -73,11 +73,11 @@ describe("single notes", () => {
     expect(ons(x).map((e) => e.note)).toEqual([57, 57, 57]);
   });
 
-  it("muted scratches stay unpitched, and chord mode leaves pitch to the chord layer", () => {
+  it("muted scratches stay unpitched, and chord mode hears chords, not notes", () => {
     const muted = renderGuitar([0.2, 0.5, 0.8].flatMap((t) => strum(t, [45, 52, 57, 60], { muted: true, dur: 0.06, vel: 90 })), 1.2, { seed: 3 });
     expect(ons(muted).map((e) => e.note)).toEqual([-1, -1, -1]);
     const line = renderGuitar([{ time: 0.2, note: 60, vel: 90, dur: 0.4 }], 0.8, { seed: 3 });
-    expect(ons(line, { mode: "chords" }).map((e) => e.note)).toEqual([-1]);
+    expect(ons(line, { mode: "chords" }).every((e) => e.kind === "on" && e.chord)).toBe(true);
   });
 
   it("a bass's low notes with the bass range", () => {

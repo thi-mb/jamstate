@@ -6,7 +6,8 @@
 // input. Jams with audio input and "keep the audio" on, then checks the
 // recording (audio input, detected notes, the WAV and where each bar starts
 // in it) and that it replays exactly; then that input 1 (silent) hears
-// nothing. v0.5 layer 2: detected notes light one place each on the neck,
+// nothing. v0.5 layer 2: detected notes light one place each on the neck
+// (layer 3: chords light a shape, one place per string),
 // and the tuning and left-handed settings redraw it. Exit code 1 when a
 // check fails.
 
@@ -58,13 +59,15 @@ const jam = async (seconds) => {
   await page.waitForFunction(() => !/ready|count-in/.test(document.querySelector("#section")?.textContent ?? ""), null, { timeout: 15000 });
   let energy = 0;
   // Lit places on the neck, sampled through the jam: how many at once, and how many different ones.
-  const lit = { most: 0, samples: 0, places: new Set() };
+  const lit = { most: 0, samples: 0, places: new Set(), stacked: 0 };
   for (let t = 0; t < seconds * 1000; t += 250) {
     energy = Math.max(energy, Number(((await page.textContent("#energy-num")) ?? "").replace(/[^0-9.]/g, "")) || 0);
     const now = await page.$$eval("#fretboard .fb-fret", (els) =>
       els.map((e, i) => ([...e.classList].some((c) => c.startsWith("fb-play-")) ? i : -1)).filter((i) => i >= 0),
     );
     lit.most = Math.max(lit.most, now.length);
+    // Two lit on one string (16 frets a row) would be no hand's shape.
+    if (new Set(now.map((i) => Math.floor(i / 16))).size < now.length) lit.stacked++;
     if (now.length) lit.samples++;
     for (const i of now) lit.places.add(i);
     await page.waitForTimeout(250);
@@ -130,6 +133,13 @@ try {
   check((await page.$$eval("#fretboard .fb-fret", (e) => e.length)) === 4 * 16, "bass: four strings");
   await page.selectOption("#fretboard-tuning", "standard");
   await page.uncheck("#fretboard-left");
+
+  // Chords mode: the same playing heard as chords lights shapes, one place per string.
+  await page.selectOption("#audio-channel", "2");
+  await page.selectOption("#audio-mode", "chords");
+  const chords = await jam(10);
+  check(chords.lit.samples > 5 && chords.lit.most >= 3 && chords.lit.most <= 6 && chords.lit.stacked === 0, `chords light shapes: lit in ${chords.lit.samples} samples, up to ${chords.lit.most} at once, never two on a string`);
+  await page.selectOption("#audio-mode", "auto");
 
   // Input 1 is silent: no notes.
   await page.selectOption("#audio-channel", "1");
