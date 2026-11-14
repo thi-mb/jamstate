@@ -41,14 +41,37 @@ export interface AudioInputDevice {
   label: string;
 }
 
-/** Mono frames from an input, with the audio-clock time of the first sample. */
-export type AudioFrameHandler = (samples: Float32Array, time: number) => void;
+/** 16 kHz mono frames from an input, with the audio-clock time of the first sample; `ref` is the band's mix (bleed gate). */
+export type AudioFrameHandler = (samples: Float32Array, time: number, ref?: Float32Array) => void;
+
+/** Which channel of the device: 0 (input 1), 1 (input 2) or both mixed. */
+export type InputChannel = 0 | 1 | "mix";
+
+export interface AudioInputOptions {
+  deviceId?: string;
+  channel?: InputChannel;
+}
+
+export interface AudioInputHandle {
+  /** Channels the device gave (1 or 2). */
+  readonly channels: number;
+  /** Seconds the browser says the input runs behind (0 when it doesn't say). */
+  readonly latency: number;
+  readonly label: string;
+  setChannel(c: InputChannel): void;
+  /** Route the input to the speakers (for interfaces without direct monitoring). */
+  setMonitor(on: boolean): void;
+  /** Feed the band's mix in as the bleed reference (null to stop). */
+  setReference(node: unknown | null): void;
+  stop(): void;
+}
 
 export interface AudioInputPlatform {
   available(): boolean;
+  /** Labels show once the player has allowed an input. */
   devices(): Promise<AudioInputDevice[]>;
-  /** Start streaming frames from a device (default when omitted). Returns a stop function. */
-  open(onFrame: AudioFrameHandler, deviceId?: string): Promise<() => void>;
+  /** Start streaming 16 kHz frames from a device (the default when omitted). */
+  open(onFrame: AudioFrameHandler, opts?: AudioInputOptions): Promise<AudioInputHandle>;
 }
 
 // ---------- storage ----------

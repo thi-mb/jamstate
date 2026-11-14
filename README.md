@@ -120,6 +120,31 @@ Only the LLM brains can write charts from a description (**Write**).
   piano); come back in and it hands back. Off, laying out means you stopped,
   as before ([ADR-0022](docs/decisions/0022-trading-fours.md)).
 
+## Playing a guitar (v0.5)
+
+Plug a guitar (or a bass, a mic, anything) into an audio interface and pick
+it under **You → Audio in**, with the **Channel** it's on (on a Scarlett Solo,
+2 is the instrument input and 1 the mic). Wear headphones and listen to your
+instrument through the interface's direct monitoring; the page doesn't sound
+what it hears (**hear input** routes it through the page for interfaces
+without direct monitoring). **Calibrate** once per input: two seconds of
+silence (the noise gate), soft playing and hard playing (how hard maps to
+velocity), then a note on each of eight clicks (the input delay).
+
+What you play becomes notes, like MIDI, so everything the band listens for
+works on guitar ([ADR-0023](docs/decisions/0023-audio-input.md)). A hit with
+no pitch to hear (a muted strum, a slap) is a note with pitch -1: it counts
+for energy, density, rhythm and phrasing, not harmony. Audio jams record and
+replay like MIDI ones; tick **keep the audio** under Session to keep what the
+input heard (16 kHz WAV, about 2 MB a minute), downloaded and synced to the
+Spark beside the session, so the detector can be re-run over it.
+
+```bash
+cd web
+npm run guitar -- sim public/charts/night-shift.json "busy:8,silent:4" take.wav --channels 2 --on 2   # a rendered guitar take
+npm run audio-check   # headless Chrome with that take as the microphone (after npm run build)
+```
+
 ## With the jamstate server (optional companion)
 
 ```bash
@@ -282,7 +307,7 @@ npm run bakeoff -- <sessions dir> --brains rules,jev,openai --label spark       
 | Path | What |
 |------|------|
 | `web/` | the browser app (TypeScript + Vite). Engine in `web/src/core/` is DOM-free and unit tested |
-| `server/` | `jamstate_server`: optional Python stdlib companion (static app, brain relays `/api/relay/llm` and `/api/relay/jev`, session sync `/api/sessions`) |
+| `server/` | `jamstate_server`: optional Python stdlib companion (static app, brain relays `/api/relay/llm` and `/api/relay/jev`, session sync `/api/sessions`, with a jam's audio at `/api/sessions/<name>/audio`) |
 | `genres/` | genre packs (funk, blues rock, jazz), read by the page and the server |
 | `schema/` | JSON schemas for charts, genre packs and bandleader moves, shared by both sides |
 | `spark/` | Spark setup: model serving, latency benchmark, HTTPS via Tailscale |

@@ -30,6 +30,8 @@ import { ServerSessionStore, webPlatform } from "./platform/web";
 import { attachKeyboard } from "./ui/keyboard";
 import { Overlay } from "./ui/overlay";
 import { FretboardView } from "./ui/fretboard";
+import { AudioInputPanel } from "./ui/audio-input";
+import { SR } from "./core/audio/dsp";
 import { FRETBOARD_KINDS, FRETBOARD_MODES, type FretboardKind, type FretboardMode } from "./core/fretboard";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -78,7 +80,7 @@ let band: Band = {};
 const midi = platform.midi;
 /** The companion server (the Spark, or a local one), if this page was served by one. */
 let server: { sessions: boolean; relay: { llm: boolean; jev: boolean; anthropic: boolean } } | null = null;
-const spark: SessionStore = new ServerSessionStore();
+const spark = new ServerSessionStore();
 let chart: Chart | null = null;
 let chartRaw: ChartJSON | null = null;
 let chartJson = "";
@@ -786,11 +788,18 @@ function listenMidi(): void {
   }, outName);
 }
 
+// ---------- audio input (v0.5) ----------
+
+const audioIn = new AudioInputPanel(platform.audioIn, getAudio, platform.settings);
+audioIn.onNote = (on, note, vel, time) => playerNote(on, note, vel, time, "audio");
+audioIn.outputLatency = () => (audio ? (audio.baseLatency ?? 0) + (audio.outputLatency ?? 0) : 0);
+
 // ---------- player input ----------
 
 const held = new Map<number, () => void>();
 
-function playerNote(on: boolean, note: number, vel: number, audioTime?: number): void {
+/** `from` audio: a note the audio input detected; the player hears their own instrument, so the page doesn't sound it. */
+function playerNote(on: boolean, note: number, vel: number, audioTime?: number, from: "midi" | "audio" = "midi"): void {
   if (!audio || !session || session.replay) return;
   const beat = session.transport.beatAt(audioTime ?? audio.currentTime);
   session.recorder?.note(beat, note, on ? vel : 0);
@@ -798,7 +807,7 @@ function playerNote(on: boolean, note: number, vel: number, audioTime?: number):
   if (on) {
     held.get(note)?.();
     // Built-in sound off (playing through Ableton or another synth): the page doesn't sound the player either.
-    if ($<HTMLInputElement>("builtin").checked) held.set(note, session.synth.liveNote(note, vel));
+    if ($<HTMLInputElement>("builtin").checked && from === "midi") held.set(note, session.synth.liveNote(note, vel));
     session.tracker.noteOn(beat, note, vel);
   } else {
     held.get(note)?.();
@@ -891,7 +900,8 @@ async function start(replay?: SessionFile): Promise<void> {
   const { leader, remote, every } = replay ? { leader: null, remote: null, every: replay.every_bars } : makeLeader(c);
   const recorder = replay
     ? null
-    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every, listening: listeningKey(listening), personality });
+    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every, listening: listeningKey(listening), personality, input: audioIn.sessionInput() ?? undefined });
+  if (!replay) audioIn.startTape();
   if (recorder) lastJam = { recorder, engine };
   const tracker = new NoteTracker();
   const sim = new SimPlayer(seed & 0xffff);
@@ -933,7 +943,8 @@ async function start(replay?: SessionFile): Promise<void> {
         }
         for (const n of replayNotes) {
           if (n.start < startBeat || n.start >= startBeat + c.beatsPerBar) continue;
-          transport.inject({ start: 0, dur: n.dur, note: n.note, vel: n.vel, part: "player" }, n.start);
+          // Notes heard from an instrument (audio input) were never sounded by the page; a replay doesn't either.
+          if (replay.input?.kind !== "audio") transport.inject({ start: 0, dur: n.dur, note: n.note, vel: n.vel, part: "player" }, n.start);
           tracker.noteOn(n.start, n.note, n.vel);
           tracker.noteOff(n.start + n.dur, n.note);
         }
@@ -993,6 +1004,15 @@ async function start(replay?: SessionFile): Promise<void> {
 function stop(): void {
   if (!session) return;
   const wasLive = !session.replay;
+  if (wasLive && audio) {
+    const t0 = audioIn.stopTape(audio.currentTime);
+    if (t0 !== null && lastJam) {
+      const bpb = lastJam.engine.chart.beatsPerBar;
+      const tr = session.transport;
+      const starts = Array.from({ length: lastJam.recorder.barCount }, (_, k) => tr.timeAt(k * bpb) - t0);
+      lastJam.recorder.keepAudio(fileName(lastJam.recorder.finish(lastJam.engine)).replace(/\.json$/, ".wav"), SR, starts);
+    }
+  }
   session.ticker.stop();
   session.transport.stop();
   fretboard.clear();
@@ -1055,12 +1075,21 @@ function fileName(f: SessionFile): string {
   return `${f.created.slice(0, 19).replace(/[:T]/g, "-")}-${slug}.json`;
 }
 
-function download(f: SessionFile): void {
+function save(blob: Blob, name: string): void {
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(f)], { type: "application/json" }));
-  a.download = fileName(f);
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function download(f: SessionFile): void {
+  save(new Blob([JSON.stringify(f)], { type: "application/json" }), fileName(f));
+}
+
+/** The last jam's raw audio, when it was kept (it lives in memory until the next jam). */
+function jamAudio(f: SessionFile): Uint8Array | null {
+  return f.input?.audio && audioIn.lastTape ? audioIn.lastTape.wav : null;
 }
 
 /** Keep the jam that just stopped in browser storage (ADR-0015). */
@@ -1072,7 +1101,7 @@ async function keepJam(): Promise<void> {
     const name = await platform.sessions.save(f);
     await listSessions(`b:${name}`);
     res.className = "small";
-    res.textContent = `Kept in ${platform.sessions.label}: ${f.title}, ${f.bars.length} bars. Pick it under Replay any time, or Download it.`;
+    res.textContent = `Kept in ${platform.sessions.label}: ${f.title}, ${f.bars.length} bars. Pick it under Replay any time, or Download it.${jamAudio(f) ? " Its audio is kept until the next jam: Download or Sync it to keep it." : ""}`;
   } catch (e) {
     res.className = "small errors";
     res.textContent = `Couldn't keep it in ${platform.sessions.label} (${(e as Error).message}). Use Download.`;
@@ -1081,7 +1110,10 @@ async function keepJam(): Promise<void> {
 
 $("session-download").onclick = () => {
   const f = currentFile();
-  if (f) download(f);
+  if (!f) return;
+  download(f);
+  const wav = jamAudio(f);
+  if (wav && f.input?.audio) setTimeout(() => save(new Blob([wav as BlobPart], { type: "audio/wav" }), f.input!.audio!.file), 300);
 };
 
 $("session-save").onclick = async () => {
@@ -1090,7 +1122,9 @@ $("session-save").onclick = async () => {
   const res = $("session-result");
   try {
     const name = await spark.save(f);
-    res.textContent = `Synced to ${spark.label} as ${name}`;
+    const wav = jamAudio(f);
+    if (wav) await spark.saveAudio(name, wav);
+    res.textContent = `Synced to ${spark.label} as ${name}${wav ? " with its audio" : ""}`;
     res.className = "small";
     void listSessions();
   } catch (e) {
