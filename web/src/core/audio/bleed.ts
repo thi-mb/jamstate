@@ -40,8 +40,8 @@ export interface BleedState {
 }
 
 export class BleedGate {
-  /** Samples the cleaned audio runs behind the input. */
-  readonly latency = N - HOP;
+  /** Samples the cleaned audio runs behind the input (a frame: 32 ms). */
+  readonly latency = N - 1;
   private win: Float32Array;
   private inBuf = new Float32Array(N);
   private refBuf = new Float32Array(1 << 14);

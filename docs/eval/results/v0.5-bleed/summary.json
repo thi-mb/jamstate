@@ -1,0 +1,77 @@
+{
+  "detector": "jamstate-bleed/0.5",
+  "date": "2026-11-14",
+  "room_delay": 0.035,
+  "takes": 4,
+  "levels": {
+    "none": {
+      "off": {
+        "false_per_min": 0,
+        "note_f1": 0.947
+      },
+      "gate": {
+        "false_per_min": 0,
+        "note_f1": 0.928
+      },
+      "delay": 0.05
+    },
+    "-24 dB": {
+      "off": {
+        "false_per_min": 8.327,
+        "note_f1": 0.921
+      },
+      "gate": {
+        "false_per_min": 0,
+        "note_f1": 0.921
+      },
+      "delay": 0.036
+    },
+    "-18 dB": {
+      "off": {
+        "false_per_min": 40.446,
+        "note_f1": 0.845
+      },
+      "gate": {
+        "false_per_min": 3.569,
+        "note_f1": 0.922
+      },
+      "delay": 0.036
+    },
+    "-12 dB": {
+      "off": {
+        "false_per_min": 99.925,
+        "note_f1": 0.653
+      },
+      "gate": {
+        "false_per_min": 16.654,
+        "note_f1": 0.875
+      },
+      "delay": 0.036
+    },
+    "-6 dB": {
+      "off": {
+        "false_per_min": 141.561,
+        "note_f1": 0.413
+      },
+      "gate": {
+        "false_per_min": 9.517,
+        "note_f1": 0.828
+      },
+      "delay": 0.032
+    },
+    "0 dB": {
+      "off": {
+        "false_per_min": 184.386,
+        "note_f1": 0.13
+      },
+      "gate": {
+        "false_per_min": 17.844,
+        "note_f1": 0.726
+      },
+      "delay": 0.032
+    }
+  },
+  "cpu": {
+    "seconds_per_second": 0.01
+  }
+}
