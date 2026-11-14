@@ -137,7 +137,10 @@ step down, drop D, DADGAD, open G, open D, bass) and **left-handed** for a
 mirrored neck; a note you play lights one place on the neck, near where your
 hand has been. A strum is heard as a chord (leaning a little to the chart's)
 and lights a real shape near your hand; a muted chuck right after it repeats
-the chord ([ADR-0024](docs/decisions/0024-chord-detection.md)).
+the chord ([ADR-0024](docs/decisions/0024-chord-detection.md)). Playing to
+speakers with a mic? Tick **speakers: gate the band**: the page takes the
+band's own sound out of what the input hears, learning your room as the jam
+goes ([ADR-0025](docs/decisions/0025-bleed-gating.md)).
 
 What you play becomes notes, like MIDI, so everything the band listens for
 works on guitar ([ADR-0023](docs/decisions/0023-audio-input.md)). A hit with
@@ -154,6 +157,7 @@ npm run audio-check   # headless Chrome with that take as the microphone (after 
 npm run guitar-eval -- pitch   # onsets and pitch on synthesised lines and GuitarSet (~/.local/share/jamstate/guitarset)
 npm run guitar-eval -- chords  # chords: the chroma against Basic Pitch on strums and GuitarSet comping
 npm run chords-browser         # both chord front ends' cost in headless Chrome
+npm run guitar-eval -- bleed   # the bleed gate: the band through a simulated room, gate off and on
 ```
 
 ## With the jamstate server (optional companion)

@@ -926,7 +926,10 @@ async function start(replay?: SessionFile): Promise<void> {
   const recorder = replay
     ? null
     : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every, listening: listeningKey(listening), personality, input: audioIn.sessionInput() ?? undefined });
-  if (!replay) audioIn.startTape();
+  if (!replay) {
+    audioIn.startTape();
+    audioIn.setBand(synth.output);
+  }
   if (recorder) lastJam = { recorder, engine };
   const tracker = new NoteTracker();
   const sim = new SimPlayer(seed & 0xffff);
@@ -1037,6 +1040,7 @@ function stop(): void {
   if (!session) return;
   const wasLive = !session.replay;
   if (wasLive && audio) {
+    audioIn.setBand(null);
     const t0 = audioIn.stopTape(audio.currentTime);
     if (t0 !== null && lastJam) {
       const bpb = lastJam.engine.chart.beatsPerBar;
