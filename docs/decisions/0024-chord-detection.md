@@ -1,6 +1,6 @@
 # 0024. Chord detection: chroma templates first, Basic Pitch measured beside it
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-14
 
 ## Context
@@ -20,27 +20,63 @@ small transcription model in the browser (Spotify's Basic Pitch).
 
 ## Decision
 - **Default: chroma template matching** (`web/src/core/audio/chords.ts`).
-  A 4096-point FFT (256 ms at 16 kHz) every 64 ms, folded into a 12-bin
-  chroma (55 Hz–2 kHz, log magnitude, harmonics of strong low partials
-  damped), averaged from 30 ms after a strum onset. Matched by cosine
-  against templates (major, minor, 7, m7, maj7, m7♭5, dim, sus4, 5) on all
-  12 roots, with a bonus for the chart's current and next chord. Below a
-  confidence floor it reports the chroma's strongest pitch classes as notes
-  rather than guess a chord.
-- **Basic Pitch** sits behind the same `ChordDetector` interface, loaded
-  lazily (TF.js with the WebGL or WASM backend) only when picked under You.
-- **Measured, then picked.** `npm run guitar-eval` runs both on synthesised
-  guitar and on GuitarSet (CC BY 4.0, the comping excerpts in funk, jazz
-  and rock; downloaded, never committed) and reports chord accuracy per
-  beat (root and quality, and "agrees with what was played"), note F1, time
-  from strum to answer, and CPU time per second of audio, in Node and in
-  headless Chrome. The results are in `docs/eval/results/v0.5-chords/`; the
-  default stays chroma unless Basic Pitch is clearly more accurate at a cost
-  the page can carry.
-- **Voicings.** A detected chord is emitted as the tones of a real guitar
-  voicing (open, E-shape or A-shape barre, and a few jazz shells), picked
-  nearest the player's hand position, so the fretboard shows a playable
-  shape and the session holds plausible notes.
+  One 2048-point FFT (128 ms at 16 kHz) from 30 ms after the strum's
+  onset, past the pick's noise. Only spectral peaks from 80 Hz to 2 kHz
+  count, on a log scale, each to the semitone it's nearest. The profile is
+  matched by cosine against templates of each chord's tones with their
+  first six partials (major, minor, 7, m7, maj7, m7♭5, dim, sus4, 5) on all
+  twelve roots. Four-note chords and diminished triads give away a little
+  (0.03) against plain triads. Bonuses go to the chart's chord (0.08), the
+  next chord (0.04) and the chord just heard (0.05: an up strum misses the
+  bass, and Am7 and C6 are the same notes). Below 0.72 it isn't called a
+  chord.
+- **When a strum is a chord.** In auto, an onset with a clean single pitch
+  70 ms in (YIN aperiodicity at most 0.2) is a note. Anything else waits
+  for the chord window (158 ms) and is matched; if no chord is clear, it's a
+  note or an unpitched hit as before. "Chords" always matches; "single
+  notes" never does. A muted scratch within 1.5 s of a chord repeats the
+  chord (a chuck in a strumming pattern keeps its harmony).
+- **Basic Pitch** (the model's frame posteriors over 30–158 ms, folded into
+  pitch classes, matched against the same templates without partials) is
+  behind the same profile-and-match path in the eval only
+  (`web/scripts/basic-pitch.ts`). It is not in the page.
+- **Measured, then picked.** `npm run guitar-eval -- chords` runs both on
+  synthesised strums (voicings all over the neck, down and up) and per beat
+  on GuitarSet's comping (CC BY 4.0; downloaded, never committed), against
+  the lead sheet's chord and the chord as played, with and without the
+  prior. Then it runs the listener itself on all the comping, as the page
+  does. It reports CPU and time from strum to answer; `npm run
+  chords-browser` measures both in headless Chrome. The results are in
+  `docs/eval/results/v0.5-chords/`.
+- **Voicings.** A detected chord comes out as the notes of a real guitar
+  voicing near the player's hand (`voiceGuitar`). The voicing is searched
+  in a four-fret box within three frets of the hand: open strings low on
+  the neck, the root in the bass, the third and seventh present, at most
+  one muted string between sounding ones, no muddy low intervals. Each note
+  carries its string and fret, so the fretboard lights the shape and the
+  session holds notes a guitarist could have played. The hand lives in the
+  listener now, for single notes too, and follows the shapes.
+
+## Results
+From `docs/eval/results/v0.5-chords/` (2026-11-14):
+
+- Synthesised strums (down and up): both front ends 90% root, 80% quality.
+- GuitarSet comping per beat, against the lead sheet with the prior: the
+  chroma 70% root, 61% major/minor, 56% quality; Basic Pitch 70%, 43%,
+  37%. Without the prior they are close on the root (65% and 68%); Basic
+  Pitch loses the third more often.
+- The listener in auto on all 180 comping excerpts: 70% of strums heard as
+  chords; of those, 72% right root, 66% right major/minor against the lead
+  sheet (60% against the chord as played).
+- Cost: the chroma 0.08 ms per strum, an answer 158 ms after the strum.
+  Basic Pitch 0.74 s per second of audio in Node (TF.js CPU), 455 ms per
+  2 s window on WebGL in headless Chrome (a software GPU) and about 2 s on
+  the CPU backend: too slow to answer a strum within a beat.
+
+So the chroma stays the default, and Basic Pitch stays in the eval. Errors
+left: inversions on up strums (Am7 against C6), sevenths heard on plain
+triads and back, and players' added tones (sus2, add9). The fine-tuning
+pass on Thiago's guitar starts from these numbers.
 
 ## Consequences
 - No model download for the default; chord detection works offline and on

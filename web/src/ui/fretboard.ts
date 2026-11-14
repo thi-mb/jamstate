@@ -15,7 +15,7 @@ import {
   pianoCells,
   songScale,
   GUITAR_FRETS,
-  Hand,
+  type Place,
   TUNINGS,
   type Cell,
   type ChordView,
@@ -47,7 +47,6 @@ export class FretboardView {
   private placed = new Map<number, { string: number; fret: number }>();
   tuning: TuningId = "standard";
   leftHanded = false;
-  private hand = new Hand();
   private view: ChordView = { chord: null, next: null };
   private genre?: GenreListening;
   /** Notes the player played lately (for the piano window). */
@@ -64,7 +63,6 @@ export class FretboardView {
 
   setTuning(tuning: TuningId): void {
     this.tuning = tuning;
-    this.hand = new Hand(TUNINGS[tuning].strings);
     this.placed.clear();
     this.key = "";
     this.draw();
@@ -107,10 +105,10 @@ export class FretboardView {
   }
 
   /**
-   * A note the player pressed or let go. `place`: it came from a guitar (an
-   * audio input), so it lights one place on the neck near the hand.
+   * A note the player pressed or let go. `place`: where a guitar (an audio
+   * input) played it, so it lights there rather than everywhere.
    */
-  note(on: boolean, note: number, place = false): void {
+  note(on: boolean, note: number, place?: Place): void {
     if (note < 0) return;
     if (on) {
       const fit = this.view.chord ? noteFit(note % 12, this.view.chord, this.genre) : "inside";
@@ -118,11 +116,7 @@ export class FretboardView {
       this.recent.push(note);
       if (this.recent.length > 24) this.recent.shift();
       this.placed.delete(note);
-      if (place) {
-        const busy = new Set([...this.placed.values()].map((p) => p.string));
-        const at = this.hand.place(note, busy);
-        if (at) this.placed.set(note, at);
-      }
+      if (place) this.placed.set(note, place);
     } else {
       this.sounding.delete(note);
       this.placed.delete(note);
