@@ -32,7 +32,7 @@ import { Overlay } from "./ui/overlay";
 import { FretboardView } from "./ui/fretboard";
 import { AudioInputPanel } from "./ui/audio-input";
 import { SR } from "./core/audio/dsp";
-import { FRETBOARD_KINDS, FRETBOARD_MODES, TUNING_IDS, type FretboardKind, type FretboardMode, type TuningId } from "./core/fretboard";
+import { chordView, FRETBOARD_KINDS, FRETBOARD_MODES, TUNING_IDS, type FretboardKind, type FretboardMode, type Place, type TuningId } from "./core/fretboard";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -791,7 +791,7 @@ function listenMidi(): void {
 // ---------- audio input (v0.5) ----------
 
 const audioIn = new AudioInputPanel(platform.audioIn, getAudio, platform.settings);
-audioIn.onNote = (on, note, vel, time) => playerNote(on, note, vel, time, "audio");
+audioIn.onNote = (on, note, vel, time, place) => playerNote(on, note, vel, time, "audio", place);
 audioIn.outputLatency = () => (audio ? (audio.baseLatency ?? 0) + (audio.outputLatency ?? 0) : 0);
 
 // The guitar's tuning (the neck and what audio input listens for) and a left-handed neck (v0.5).
@@ -824,11 +824,11 @@ const LEFT_KEY = "jamstate.fretboardLeft";
 const held = new Map<number, () => void>();
 
 /** `from` audio: a note the audio input detected; the player hears their own instrument, so the page doesn't sound it. */
-function playerNote(on: boolean, note: number, vel: number, audioTime?: number, from: "midi" | "audio" = "midi"): void {
+function playerNote(on: boolean, note: number, vel: number, audioTime?: number, from: "midi" | "audio" = "midi", place?: Place): void {
   if (!audio || !session || session.replay) return;
   const beat = session.transport.beatAt(audioTime ?? audio.currentTime);
   session.recorder?.note(beat, note, on ? vel : 0);
-  fretboard.note(on, note, from === "audio");
+  fretboard.note(on, note, place);
   if (on) {
     held.get(note)?.();
     // Built-in sound off (playing through Ableton or another synth): the page doesn't sound the player either.
@@ -1009,6 +1009,13 @@ async function start(replay?: SessionFile): Promise<void> {
     const k = Math.floor(beat / c.beatsPerBar);
     const plan = committedPlans[k];
     fretboard.frame(c, plan, beat - k * c.beatsPerBar, committedPlans[k + 1], getGenre(plan?.genre ?? engine.genre.id).listening);
+  };
+  // Chords heard from a guitar lean to the chart's chord at the strum.
+  audioIn.chordPrior = (t) => {
+    const beat = transport.beatAt(t);
+    const k = Math.floor(beat / c.beatsPerBar);
+    const plan = committedPlans[k];
+    return plan ? chordView(c, plan, beat - k * c.beatsPerBar, committedPlans[k + 1]) : null;
   };
   const ticker = new Ticker(() => {
     transport.tick();

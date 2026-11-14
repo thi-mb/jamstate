@@ -11,13 +11,19 @@
 //
 // A pitched note is followed between onsets: a new steady pitch without a
 // new attack (a hammer-on, a pull-off, a slide) ends it and starts the next.
+//
+// A strum (no clean single pitch) is heard as a chord (ADR-0024): its notes
+// come out as a guitar voicing near the hand, each with its string and fret.
 
 import { UNPITCHED } from "../features";
+import { GUITAR_STRINGS, Hand, type Place } from "../fretboard";
+import { ChromaChords, voiceGuitar, type ChordDetector, type ChordGuess, type ChordPrior } from "./chords";
 import { db, hzOf, magnitudes, midiOf, rms, SR } from "./dsp";
 import { cents, Yin } from "./pitch";
 
 export type ListenerEvent =
-  | { kind: "on"; time: number; note: number; vel: number }
+  /** `place`: where on the neck (strings given), `chord`: the chord it's part of. */
+  | { kind: "on"; time: number; note: number; vel: number; place?: Place; chord?: string }
   | { kind: "off"; time: number; note: number };
 
 /** Levels from the calibration screen (dBFS of the 16 ms RMS). */
@@ -65,6 +71,10 @@ export interface ListenerOptions {
   highest?: number;
   /** For the eval: the pitch window (samples), when to decide (seconds after an onset), YIN's aperiodicity limit. */
   pitch?: Partial<PitchSettings>;
+  /** The open strings, high first (notes are placed on them, chords voiced). */
+  strings?: readonly number[];
+  /** How strums become chords (default: the chroma). */
+  chords?: ChordDetector;
 }
 
 export interface PitchSettings {
@@ -83,13 +93,17 @@ export interface PitchSettings {
   followPeriodic: number;
   /** Seconds to wait on past `decide` for a pitch before an onset counts as unpitched. */
   patience: number;
+  /** In auto, a pitch this clean at `decide` is a single note; anything else waits to be heard as a chord. */
+  single: number;
 }
 
-export const PITCH_SETTINGS: PitchSettings = { window: 1024, decide: DECIDE, periodic: 0.25, votes: 2, threshold: 0.15, followWindow: 1024, settle: 0.06, every: 2, frames: 3, followPeriodic: 0.12, patience: 0.08 };
+export const PITCH_SETTINGS: PitchSettings = { window: 1024, decide: DECIDE, periodic: 0.25, votes: 2, threshold: 0.15, followWindow: 1024, settle: 0.06, every: 2, frames: 3, followPeriodic: 0.12, patience: 0.08, single: 0.2 };
 
 /** A pitch counts when YIN's aperiodicity is under this; a legato change needs a cleaner one. */
 /** A hit that fell this many dB under its peak by the time it's decided was a scratch, not a note. */
 const DIED = 25;
+/** A scratch this soon (seconds) after a chord repeats the chord. */
+const SCRATCH_REPEATS = 1.5;
 /** Two frames agree within this many cents. */
 const AGREE = 60;
 /** Frames between onsets that follow a held note (every other hop, 16 ms). */
@@ -103,6 +117,14 @@ interface Pending {
   at: number;
   /** The note sounding when it came. */
   before: Sounding | null;
+  /** Auto: no clean pitch at `decide`, so it's heard as a chord. */
+  strum?: boolean;
+}
+
+interface HeardChord {
+  guess: ChordGuess;
+  notes: number[];
+  places: Place[];
 }
 
 interface Sounding {
@@ -114,6 +136,8 @@ interface Sounding {
   hz?: number;
   /** A note picked before it, likely still ringing on another string (legato never goes back to it). */
   ringing?: number;
+  /** A chord's notes (`note` is its lowest). */
+  chord?: HeardChord;
 }
 
 export class AudioListener {
@@ -154,6 +178,13 @@ export class AudioListener {
   peakDb = -120;
   /** Onsets heard (for the calibration screen). */
   onsets: { time: number; peakDb: number }[] = [];
+  /** What the chart says is playing at an audio-clock time (a small bonus for those chords). */
+  chordPrior: (time: number) => ChordPrior | null = () => null;
+  private detector: ChordDetector;
+  private hand: Hand;
+  /** The chord last heard and when (an up strum leans to it; a scratch soon after repeats it). */
+  private lastChord: { chord: HeardChord; time: number } | null = null;
+  private strings: readonly number[];
 
   constructor(opts: ListenerOptions = {}) {
     this.cal = { ...DEFAULT_CALIBRATION, ...opts.calibration };
@@ -168,6 +199,9 @@ export class AudioListener {
     const fw = SR / hzOf(this.lowest - 2) < this.ps.followWindow / 2 ? this.ps.followWindow : this.ps.window;
     this.ps.followWindow = fw;
     this.followYin = fw === this.ps.window ? this.yin : new Yin(hzOf(this.lowest - 2), hzOf(this.highest + 2), this.ps.threshold, fw);
+    this.detector = opts.chords ?? new ChromaChords();
+    this.strings = opts.strings ?? GUITAR_STRINGS;
+    this.hand = new Hand(this.strings);
   }
 
   /** The pitch of the window ending at buffer index `end`: a MIDI note (fractional), or null. */
@@ -264,8 +298,7 @@ export class AudioListener {
   /** Let go of a sounding note (the input stopped). */
   flush(time: number): ListenerEvent[] {
     const events: ListenerEvent[] = [];
-    if (this.sounding) events.push({ kind: "off", time, note: this.sounding.note });
-    this.sounding = null;
+    this.release(time, events);
     this.pending = null;
     this.out.push(...events);
     return events;
@@ -309,8 +342,11 @@ export class AudioListener {
       const waited = (abs - p.at) / SR;
       // No clear pitch yet: listen a little longer before calling it unpitched.
       // (A muted scratch dies away: what rings after it isn't its pitch.)
-      const unsure = () => this.mode !== "chords" && waited < this.ps.decide + this.ps.patience && level > p.peakDb - DIED && this.steadyPitch(end) === null;
-      if (waited >= this.ps.decide && !unsure()) {
+      const unsure = () => this.mode === "single" && waited < this.ps.decide + this.ps.patience && level > p.peakDb - DIED && this.steadyPitch(end) === null;
+      // Auto: a clean single pitch now is a note; anything else waits to be heard as a chord.
+      const strum = () =>
+        (this.mode === "chords" || (this.mode === "auto" && (p.strum ??= this.steadyPitch(end, this.ps.single) === null))) && waited < this.detector.needs;
+      if (waited >= this.ps.decide && !strum() && !unsure()) {
         this.pending = null;
         this.decide(p, events, end);
       }
@@ -338,14 +374,13 @@ export class AudioListener {
     // A sounding note ends when it fades under the gate or well under its peak.
     const s = this.sounding;
     if (s && !this.pending && (level < this.cal.gateDb || level < s.peakDb - 30)) {
-      events.push({ kind: "off", time: now - this.cal.latency, note: s.note });
-      this.sounding = null;
+      this.release(now - this.cal.latency, events);
       this.legato = null;
     }
 
     // Follow a held pitched note for legato changes.
     this.hopCount++;
-    if (this.sounding && this.sounding.note >= 0 && !this.pending && this.hopCount % this.ps.every === 0) this.follow(end, now, level, events);
+    if (this.sounding && this.sounding.note >= 0 && !this.sounding.chord && !this.pending && this.hopCount % this.ps.every === 0) this.follow(end, now, level, events);
   }
 
   private follow(end: number, now: number, level: number, events: ListenerEvent[]): void {
@@ -375,21 +410,64 @@ export class AudioListener {
       const time = Math.max(this.legato!.time, s.time + 0.01);
       const vel = Math.max(1, s.vel - 8);
       events.push({ kind: "off", time, note: s.note });
-      events.push({ kind: "on", time, note, vel });
+      events.push(this.on(time, note, vel));
       this.sounding = { note, peakDb: s.peakDb, time, vel, hz: hzOf(m!) };
       this.legato = null;
     }
   }
 
+  /** Let go of what's sounding. */
+  private release(time: number, events: ListenerEvent[]): void {
+    const s = this.sounding;
+    if (s) for (const note of s.chord?.notes ?? [s.note]) events.push({ kind: "off", time, note });
+    this.sounding = null;
+  }
+
+  /** A note on, placed near the hand. */
+  private on(time: number, note: number, vel: number): ListenerEvent {
+    const place = note >= 0 ? this.hand?.place(note) : null;
+    return place ? { kind: "on", time, note, vel, place } : { kind: "on", time, note, vel };
+  }
+
+  /**
+   * A strum's chord as a voicing near the hand, or null. The strum is heard
+   * up to `end` (a quick next strum cuts it short).
+   */
+  private chordOf(p: Pending, end: number): HeardChord | null {
+    if (this.mode === "single" || this.levelDb < p.peakDb - DIED) return null;
+    // The attack was a hop (and the flux peak's lag) before the onset was picked.
+    const onset = Math.max(0, p.at - this.base - HOP - Math.round(ONSET_LAG * SR));
+    // The chord last heard counts while it could still be ringing.
+    const last = this.lastChord && p.time - this.lastChord.time < 2.5 ? this.lastChord.chord.guess : null;
+    const chart = this.chordPrior(p.time);
+    const guess = this.detector.detect(this.buf.subarray(0, end), onset, { chord: chart?.chord ?? null, next: chart?.next ?? null, heard: last });
+    const v = guess && voiceGuitar(guess.root, guess.quality, this.strings, this.hand.pos);
+    if (!guess || !v) return null;
+    const places = v.frets.flatMap((fret, string) => (fret === null ? [] : [{ string, fret }])).sort((a, b) => this.strings[a.string] + a.fret - (this.strings[b.string] + b.fret));
+    const fretted = places.filter((q) => q.fret > 0).map((q) => q.fret);
+    if (fretted.length) this.hand.pos = Math.min(...fretted);
+    return { guess, notes: places.map((q) => this.strings[q.string] + q.fret), places };
+  }
+
   /** What an onset was: a pitched note when two frames agree on one, else an unpitched hit. */
   private decide(p: Pending, events: ListenerEvent[], end: number): void {
     const time = p.time - this.cal.latency;
-    if (this.sounding) events.push({ kind: "off", time, note: this.sounding.note });
+    this.release(time, events);
     this.legato = null;
     const vel = this.velocityOf(p.peakDb);
     this.onsets.push({ time: p.time, peakDb: p.peakDb });
     if (this.onsets.length > 200) this.onsets.shift();
-    let m = this.mode === "chords" || this.levelDb < p.peakDb - DIED ? null : this.steadyPitch(end);
+    let chord = p.strum !== false && this.mode !== "single" ? this.chordOf(p, end) : null;
+    let m = chord || this.mode === "chords" || this.levelDb < p.peakDb - DIED ? null : this.steadyPitch(end);
+    // A scratch soon after a chord (a muted chuck in a strumming pattern) repeats it.
+    const last = this.lastChord;
+    if (!chord && m === null && this.mode !== "single" && last && p.time - last.time < SCRATCH_REPEATS) chord = last.chord;
+    if (chord) {
+      this.lastChord = { chord, time: p.time };
+      chord.notes.forEach((note, i) => events.push({ kind: "on", time, note, vel, place: chord.places[i], chord: chord.guess.symbol }));
+      this.sounding = { note: chord.notes[0], peakDb: p.peakDb, time, vel, chord };
+      return;
+    }
     // Heard the old note again (or an octave of it)? Look past it for a new one.
     // (What the comb leaves can't be the old note's pitch class: only an attack's leftovers sound like that.)
     const old = p.before;
@@ -399,7 +477,7 @@ export class AudioListener {
       if (n !== null && !sameClass(n, midiOf(old.hz))) m = n;
     }
     const note = m === null ? UNPITCHED : Math.round(m);
-    events.push({ kind: "on", time, note, vel });
+    events.push(this.on(time, note, vel));
     this.sounding = { note, peakDb: p.peakDb, time, vel, hz: m === null ? undefined : hzOf(m), ringing: old && old.note >= 0 && old.note !== note ? old.note : undefined };
   }
 }
