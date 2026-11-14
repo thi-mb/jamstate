@@ -54,6 +54,8 @@ export interface SessionInput {
   device?: string;
   channel?: string;
   mode?: string;
+  /** The instrument's tuning (a fretboard tuning id). */
+  tuning?: string;
   detector?: string;
   calibration?: Calibration;
   /**

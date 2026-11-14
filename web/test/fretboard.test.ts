@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { loadChart, type ChartJSON } from "../src/core/chart";
 import { Engine } from "../src/core/engine";
-import { chordView, followWindow, guitarCells, markOf, pianoCells, scaleMarkOf, songScale, GUITAR_FRETS, GUITAR_STRINGS, PIANO_KEYS } from "../src/core/fretboard";
+import { chordView, followWindow, guitarCells, markOf, pianoCells, scaleMarkOf, songScale, tuningRange, GUITAR_FRETS, GUITAR_STRINGS, Hand, PIANO_KEYS, TUNINGS, TUNING_IDS } from "../src/core/fretboard";
 import { getGenre } from "../src/core/genres";
 import { parseChord } from "../src/core/theory";
 import bluesInA from "../public/charts/blues-in-a.json";
@@ -135,5 +135,53 @@ describe("scale mode", () => {
     // The ring is on the key's tonic, not the chord's root.
     const roots = pianoCells(48, parseChord("E7"), undefined, song).filter((k) => k.root).map((k) => k.note);
     expect(roots).toEqual([57, 69]);
+  });
+});
+
+describe("tunings and the hand (v0.5)", () => {
+  it("every tuning draws its own open strings, high to low", () => {
+    for (const id of TUNING_IDS) {
+      const rows = guitarCells(null, undefined, null, TUNINGS[id].strings);
+      expect(rows.map((r) => r[0].note)).toEqual([...TUNINGS[id].strings]);
+      expect(rows.every((r) => r.length === GUITAR_FRETS + 1)).toBe(true);
+    }
+    expect(TUNINGS["drop-d"].strings.at(-1)).toBe(38);
+    expect(TUNINGS.bass.strings).toHaveLength(4);
+    expect(tuningRange("bass")).toEqual({ lowest: 28, highest: 65 });
+    expect(tuningRange("standard")).toEqual({ lowest: 40, highest: 86 });
+  });
+
+  it("an A minor pentatonic run with the hand at the fifth fret stays in the box", () => {
+    const hand = new Hand();
+    hand.pos = 5;
+    const run = [45, 48, 50, 52, 55, 57, 60, 62, 64, 67, 69, 72];
+    const places = run.map((n) => hand.place(n)!);
+    expect(places.every((p) => p.fret >= 5 && p.fret <= 8), JSON.stringify(places)).toBe(true);
+    expect(hand.pos).toBe(5);
+  });
+
+  it("open strings low on the neck, the same notes fretted higher up", () => {
+    expect(new Hand().place(55)).toEqual({ string: 2, fret: 0 });
+    const high = new Hand();
+    high.pos = 7;
+    expect(high.place(55)).toEqual({ string: 4, fret: 10 });
+  });
+
+  it("notes up the neck move the hand there, a step at a time", () => {
+    const hand = new Hand();
+    const frets = [76, 77, 79, 77, 76].map((n) => hand.place(n)!.fret);
+    expect(frets).toEqual([12, 13, 15, 13, 12]);
+    expect(hand.pos).toBeGreaterThan(8);
+    // Back down at the fifth fret: open strings stay out until the hand is low again.
+    expect(hand.place(64)!.fret).toBeGreaterThan(0);
+  });
+
+  it("skips strings already sounding, and notes off the neck", () => {
+    const hand = new Hand();
+    const a = hand.place(57)!;
+    const b = hand.place(57, new Set([a.string]))!;
+    expect(b.string).not.toBe(a.string);
+    expect(hand.place(30)).toBeNull();
+    expect(new Hand(TUNINGS.bass.strings).place(28)).toEqual({ string: 3, fret: 0 });
   });
 });
