@@ -39,8 +39,12 @@ phrase, then hands back when you come in." Three forces:
   genre's scale for each chord with chord tones on the beats, up through the
   first half and down through the second, ending early so the last beat is
   the player's. A drum solo plays alone (as a jazz band lays out for the
-  drummer), from cells of snare, kick and toms building through the turn,
-  with the hi-hat on 2 and 4, and the band comes back with a crash. A melodic
+  drummer) and answers the player's phrase too: the busiest bar of their
+  rhythm, on the eighth grid, stated on the snare with kick under their
+  accents, answered on the toms, filled in with ghost notes, then half of it
+  and a tom run into the player's downbeat, louder through the turn, the
+  hi-hat foot on 2 and 4; the band comes back with a crash. (First version:
+  a random cell per beat, which Thiago heard as random notes in T5.) A melodic
   soloist plays over the rest of the band, in place of its comping.
 - **The governor protects the trade:** while trading, leader moves that drop
   parts, change the feel or take the level down more than 0.15 are rejected.

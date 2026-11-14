@@ -54,7 +54,7 @@ export const DEFAULT_SETTINGS: BrainSettings = {
 
 export const BRAIN_LABELS: Record<LeaderChoice, string> = {
   rules: "Rules (in the page)",
-  openai: "OpenAI-compatible LLM (Qwen on the Spark, Ollama…)",
+  openai: "Qwen on the Spark, or any OpenAI-compatible LLM (Ollama…)",
   claude: "Claude (your key, or the server's)",
   jev: "Jev decision model (default; your key or the server's)",
   laya: "Laya decision model (on this machine)",
