@@ -115,9 +115,11 @@ checks values against the song.
 
 ## Prompt
 
-The system prompt is fixed (so model servers can cache its prefix) and short. It
-describes the role, not the rules: dwell times, quantization and limits are
-enforced by the governor and need not be explained to the model.
+The system prompt is fixed (so model servers can cache its prefix). It
+describes the role and how the band's level should follow the player (v0.4:
+the levels in numbers, since Qwen otherwise stays put); dwell times,
+quantization and limits are enforced by the governor and need not be
+explained to the model.
 
 ```
 You are the bandleader of a live backing band (the parts in "lineup") jamming
@@ -125,8 +127,17 @@ with one human player. Every few bars you get a summary of how they played
 and what the band is doing. Decide whether the band should change anything.
 
 Follow the player: when they get busier or louder, build; when they thin out,
-make space; when they stop, drop back. Prefer small changes. Saying nothing is
-often right. Never move more than two things at once.
+make space; when they stop, drop back. Keep the band's "target" level close to
+the player's energy: player energy under 0.3 wants a target of 0.2-0.35; 0.3
+to 0.55 wants 0.4-0.55; over 0.6 wants 0.7-0.9. When the player has stopped
+(silent_bars of 2 or more, or phrasing.state "stopped"), set the target to
+0.1-0.25 or drop the drums. If the target is more than 0.1 away from where
+the player's energy puts it, set_intensity to close the gap, even when
+nothing else changed: the chart raises the level at each new section unless
+you set it yourself, so a quiet player before a big section still needs you
+to keep the band down. When the band already matches the player, say nothing.
+Never move more than two things at once, and don't add parts or fire
+stingers while the player is getting quieter.
 
 Answer only with JSON matching the schema. Each move needs a short, friendly
 reason addressed to the player, under 100 characters.
@@ -187,6 +198,35 @@ leader moves that would undo it, with the note "undoes the … cue"; the
 summary's `recent_moves` shows the applied cue (source `cue`), so a brain can
 see why. Nothing in the prompt changes.
 
+### Leading (v0.4)
+
+Every request also carries the leader's own side
+([ADR-0021](decisions/0021-leading-layer.md),
+[ADR-0022](decisions/0022-trading-fours.md)). The system prompt gets a fixed
+paragraph for each (`LEADING_NOTES` in `web/src/core/brain/prompt.ts`), after
+the listening paragraphs. `leading` and `arc` are in every request, so their
+paragraphs are part of the cached prefix; `trading` only while trading.
+
+| Field | What it holds |
+|---|---|
+| `leading` | `personality` (steady / supportive / adventurous), `activity` (0–1: the personality's place in the genre's range), `taste` (the genre's sentence), `favour` and `avoid` (moves as `kind` or `kind:arg`), `follow`: where following the player puts the band now (`level`, `gap` to the band's target in words, `why`: stopped, breathing, sparse, held notes, getting softer, getting louder, steady, busy) |
+| `arc` | `style` (build / dynamic / locked, from the genre), `so_far` (the last 6 section visits: `section`, `pass`, `level`, `peak`, `parts`, `feel`), `peak` (the biggest visit so far), `now` (this visit's plan, with `bars_left`) and `next` (the next section's plan, null at the end). A plan has `change` (level against the last time through), `aim` (null the first time: follow the player), `add` / `drop` (a part) and `idea` in words |
+| `trading` | `turn` (player / band: whose the bar just played was), `soloist` (who takes the band's turns now), `bars_left` in the turn |
+
+The page keeps the arc (`web/src/core/arc.ts`) and sends it with every request,
+so no brain keeps state (the Spark stays stateless). The personality also sets
+the governor (dwell times, deadband), so even a brain that ignores the prompt
+moves less when steady. While trading, the governor rejects leader moves that
+drop parts, change the feel or take the level down more than 0.15.
+
+**The follow guard.** Replies from text LLMs (the OpenAI-compatible brain and
+Claude) pass through `guardFollow` (`web/src/core/leading.ts`) before the
+governor: when the player stopped, the level comes down to `follow.level` and
+the drums go out, and added parts and stingers are dropped; when the reply
+leaves the level more than 0.1 from `follow.level`, a `set_intensity` to it is
+added; a busy player keeps every part. Not while trading or breathing. The
+rule leader and Jev don't need it.
+
 ## Jev (decision model)
 
 Jev answers typed questions instead of writing text
@@ -206,6 +246,10 @@ and soft", "steady, medium" or "busy and loud", words for the numbers),
 `band` (`intensity`, `playing`, `not_playing`, `feel`, `recent_moves`) and
 `song`. Reasons come from a template per move. TypeSafe blocks browser calls,
 so the page reaches Jev through the companion server's `/api/relay/jev`.
+
+v0.4 adds the arc plan to `song` (`plan_now`, `plan_next`), the personality
+and taste as `leader`, and the trade as `trading`; the `change` options leave
+out moves the genre avoids, and while trading, drops and feel changes.
 
 ## Blind test
 
@@ -228,4 +272,22 @@ player into a mood, with hysteresis on energy:
 | silent | no notes | intensity 0.1, drop drums |
 | sparse | energy < 0.30 to enter, > 0.38 to leave | intensity 0.28, half time; drums back in if coming from silence |
 | groove | between sparse and busy | intensity 0.5, add a missing layer or return to normal feel |
-| busy | energy > 0.62 to enter, < 0.52 to leave | intensity 0.75+, add a missing layer, else leave half time, else a fill (crash if coming back from silence) |
+| busy | energy > 0.62 to enter, < 0.52 to leave | intensity 0.75+, add a missing layer, else leave half time, else the genre's mark (its first favoured stinger: a crash in funk and blues rock, a fill in jazz) |
+
+Leading (v0.4) on top of the moods:
+
+- **Genre taste.** Under a sparse player, a genre that favours a part laying
+  out (funk, jazz) drops the keys (or guitar, pad) instead of going half
+  time. Moves the genre avoids are never made.
+- **Personality.** Steady needs a bigger change before it moves (0.1 + 0.4 ×
+  (0.5 − activity), at least 0.1) and makes one move at a time, with no fills
+  or feel changes of its own. Adventurous adds a colour move from the genre's
+  favourites when nothing else is happening and the player is playing (every
+  other turn; every turn above activity 0.8).
+- **Arc.** In the last bar or two before a section, while the player grooves
+  or digs in, it follows the next section's plan: the level to aim for (up
+  plans never below where following the player puts it, down plans never
+  above), and the part to bring in (or, for a grooving player, take out). The
+  offset is kept through the visit.
+- **Trading.** Silence and sparse playing don't move the band: the gaps are
+  the band's turns.

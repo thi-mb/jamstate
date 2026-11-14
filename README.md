@@ -96,6 +96,30 @@ Only the LLM brains can write charts from a description (**Write**).
   changes. Either way your notes show green (chord tone), yellow (colour) or
   red (outside).
 
+## How the bandleader leads (v0.4)
+
+- **Personality** under Bandleader: steady (moves only when you clearly
+  change, one thing at a time), supportive (the default: follows you
+  closely) or adventurous (adds its own colour: a fill, a part laying out and
+  coming back, a feel change). It sits inside what suits the genre, so
+  adventurous funk still moves less than adventurous jazz, and it sets the
+  governor's waiting times, so every brain is held to it
+  ([ADR-0021](docs/decisions/0021-leading-layer.md)).
+- **Genre taste:** each genre pack says how its bandleader behaves. Funk
+  locks the groove and changes texture (a part in or out) rather than level
+  or feel; blues rock builds each time round and marks lifts with crashes;
+  jazz stays conversational, lets the piano lay out and come back, and takes
+  each chorus up or down.
+- **The song arc:** the page remembers what each section did and plans the
+  next time through it the genre's way, so the second chorus isn't a copy of
+  the first. The overlay's "plan" line shows it. Following you still comes
+  first.
+- **Trading fours**, key **8** (or **Trade fours** under Cues): play a
+  phrase, lay out, and a band instrument answers in the next four bars, on
+  your rhythm and the genre's scale (in jazz the drums go first, then the
+  piano); come back in and it hands back. Off, laying out means you stopped,
+  as before ([ADR-0022](docs/decisions/0022-trading-fours.md)).
+
 ## With the jamstate server (optional companion)
 
 ```bash
@@ -228,7 +252,9 @@ live.
 A genre pack (`genres/*.json`, [schema](schema/genre.schema.json),
 [ADR-0012](docs/decisions/0012-genre-pack-format.md)) holds how the band
 plays a style: drum, bass and comping patterns per intensity level, swing,
-humanize, fills and the ending. v0.1 ships funk, blues rock and jazz. Every
+humanize, fills and the ending; from v0.2 the lineups and mix, from v0.3
+what the band listens for, from v0.4 how its bandleader leads (`leading`).
+v0.1 ships funk, blues rock and jazz. Every
 file in the folder is picked up at build time, so a new genre is a new file.
 `npm run dump -- public/charts/late-set.json jazz 8 0.7` prints what the band
 plays, bar by bar.
@@ -295,7 +321,12 @@ v0.3 Listening and leading (done 2026-11-09, see [docs/testing/v0.3.md](docs/tes
 a leader eval that scores every brain on scripted scenarios
 ([docs/eval](docs/eval/scenarios.md)), five switchable listening groups,
 cues on keys 1–7, opt-in tempo following, and a fretboard / piano view with
-a scale mode and a changes mode. The
+a scale mode and a changes mode.
+
+v0.4 Leading (built 2026-11-09, test plan in [docs/testing/v0.4.md](docs/testing/v0.4.md)):
+genre taste and a personality for the bandleader, a song arc so a section
+played again differs the genre's way, trading fours on key 8, and the Qwen
+prompt tuned against the eval. The
 plan for the releases after this is in [docs/roadmap.md](docs/roadmap.md).
 
 Not yet: Ableton Link (needs a local bridge, browsers can't do UDP),

@@ -8,6 +8,8 @@ import { Ticker } from "./audio/ticker";
 import { ChartError, loadChart, type Chart, type ChartJSON } from "./core/chart";
 import { Conductor, ruleLeader, type Leader } from "./core/conductor";
 import { TempoFollower } from "./core/tempo";
+import { DEFAULT_PERSONALITY, PERSONALITIES, PERSONALITY_LABELS, type Personality } from "./core/leading";
+import { Trader } from "./core/trade";
 import { DEFAULT_LISTENING, LISTENING_LABELS, LISTENING_READY, listeningKey, NO_LISTENING, parseListening, type Listening } from "./core/listening";
 import { CUE_LABELS, CUES, cueForKey, Engine, type BarPlan, type Cue } from "./core/engine";
 import { NoteTracker } from "./core/features";
@@ -410,10 +412,47 @@ window.addEventListener("keydown", (e) => {
   const t = e.target as HTMLElement | null;
   if (!t || t.tagName === "TEXTAREA" || t.tagName === "INPUT" || t.tagName === "SELECT" || t.isContentEditable) return;
   if (e.metaKey || e.ctrlKey || e.altKey || e.repeat || !e.code.startsWith("Digit")) return;
+  if (e.code === "Digit8") {
+    e.preventDefault();
+    return toggleTrade();
+  }
   const c = cueForKey(e.code.slice(5));
   if (!c) return;
   e.preventDefault();
   giveCue(c);
+});
+
+// ---------- trading fours (v0.4) ----------
+
+const TRADE_KEY = "jamstate.trade";
+const tradeBtn = $<HTMLButtonElement>("trade");
+let trading = platform.settings.get<boolean>(TRADE_KEY) ?? false;
+const showTrade = () => tradeBtn.setAttribute("aria-pressed", String(trading));
+showTrade();
+
+function toggleTrade(): void {
+  trading = !trading;
+  platform.settings.set(TRADE_KEY, trading);
+  showTrade();
+  if (session && !session.replay) {
+    session.engine.setTrading(trading);
+    overlay.note(trading ? "Trading fours: play a phrase, then lay out" : "Trading fours off");
+  }
+}
+tradeBtn.onclick = toggleTrade;
+
+// ---------- personality (v0.4) ----------
+
+const PERSONALITY_KEY = "jamstate.personality";
+const personalitySel = $<HTMLSelectElement>("personality");
+let personality: Personality = PERSONALITIES.includes(platform.settings.get<Personality>(PERSONALITY_KEY) as Personality)
+  ? platform.settings.get<Personality>(PERSONALITY_KEY)!
+  : DEFAULT_PERSONALITY;
+personalitySel.replaceChildren(...PERSONALITIES.map((p) => new Option(PERSONALITY_LABELS[p], p, false, p === personality)));
+personalitySel.addEventListener("change", () => {
+  personality = personalitySel.value as Personality;
+  platform.settings.set(PERSONALITY_KEY, personality);
+  if (session && !session.replay) session.engine.setPersonality(personality);
 });
 
 // ---------- brain (bandleader) ----------
@@ -843,14 +882,15 @@ async function start(replay?: SessionFile): Promise<void> {
   const swing = pickedSwing();
   const engine = replay
     ? sessionEngine(replay, replay.controls)
-    : new Engine(c, { config, seed, genre, swing, countIn: c.countIn, band: startBand });
+    : new Engine(c, { config, seed, genre, swing, countIn: c.countIn, band: startBand, personality });
+  if (!replay && trading) engine.setTrading(true);
   if (!replay) jamKind = null;
   showRatingPanel(false);
   overlay.blind = replay ? isBlind(replay.leader) : settings.kind === "blind";
   const { leader, remote, every } = replay ? { leader: null, remote: null, every: replay.every_bars } : makeLeader(c);
   const recorder = replay
     ? null
-    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every, listening: listeningKey(listening) });
+    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every, listening: listeningKey(listening), personality });
   if (recorder) lastJam = { recorder, engine };
   const tracker = new NoteTracker();
   const sim = new SimPlayer(seed & 0xffff);
@@ -869,6 +909,7 @@ async function start(replay?: SessionFile): Promise<void> {
     },
   });
   if (!replay && followBox.checked) conductor.follower = new TempoFollower(c.bpm);
+  if (!replay) conductor.trader = new Trader(engine);
   conductor.listening = replay ? (replay.listening?.length ? parseListening(replay.listening[0].groups) : { ...NO_LISTENING }) : { ...listening };
   const ctx = audio;
   const replayNotes = replay ? pairNotes(replay) : [];
@@ -914,6 +955,7 @@ async function start(replay?: SessionFile): Promise<void> {
     },
     onBarEnd: (plan, startBeat) => {
       conductor.barFinished(plan, tracker.bar(startBeat, c.beatsPerBar));
+      if (plan.kind !== "count_in") overlay.arc(conductor.arcNow(plan));
       if (replay && plan.bar >= replay.bars.length - 1) {
         overlay.note(mismatches ? `Replay done: ${mismatches} bars differed.` : "Replay done: every bar matched the recording.");
         stop();

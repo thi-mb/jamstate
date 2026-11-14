@@ -205,6 +205,50 @@ Pressed two bars before the end of that same section.
 ### C7 End song (7)
 - Must: bar 11 is the ending and the song stops there.
 
+## Leading (v0.4)
+
+Added with v0.4 ([ADR-0021](../decisions/0021-leading-layer.md),
+[ADR-0022](../decisions/0022-trading-fours.md)) and reported in their own
+columns. Every run has a personality (supportive unless the scenario says).
+
+### A1 Second time through
+The first section the form plays twice that is a chorus or a solo (Night
+Shift: chorus at bars 12 and 28; Blues in A: solo at 12 and 24; Late Set:
+solo at 36 and 44). Player: `medium` all the way, so the playing is the
+same both times. Visits are judged from their third bar (the plan lands in
+the first bars).
+- Must, by the genre's arc: **build** (blues rock): the second visit's mean
+  target at least 0.05 above the first's. **dynamic** (jazz): differs by
+  0.08 or more, or in who plays. **locked** (funk): a different set of
+  parts, within 0.15 of the first's level.
+- Must: the second visit still follows the player: mean target 0.35–0.8;
+  drums and bass in throughout.
+
+### P1–P3 Personality
+Player: `medium:4, busy:8, sparse:8, medium:8, held:4, busy:8` (40 bars),
+as steady (P1), supportive (P2) and adventurous (P3).
+- Must (all): target ≥ 0.5 by bar 12, ≤ 0.45 by bar 20, ≥ 0.5 by bar 40.
+- Must: P1 at most 7 leader moves; P3 at least 10. The move count of every
+  run is reported (a stretch check that always passes) to compare the three.
+
+### G1 Same playing, three genres (Night Shift)
+The P2 player on Night Shift's chart played as funk, blues rock and jazz.
+- Must (all): the follow checks of P1–P3, and no move the genre avoids.
+- Must, funk: at least one part in or out, and no more feel changes than
+  part moves (texture over feel). Blues rock: a lift marked with a crash or
+  riser. Jazz: at least two fills or part moves (it talks back).
+
+### T1–T3 Trading
+With trading on (T1, T2) from the start.
+- T1 Trades fours: player `busy:4, silent:4` four times. Must: the band
+  takes at least 3 of its 4 turns (bars 4, 12, 20, 28); no band solo in the
+  player's turns; drums and bass in (or a drum solo); no leader layer drop;
+  target ≥ 0.4 from bar 4.
+- T2 Comes back in early: `busy:4, silent:1, busy:7`. Must: the band's turn
+  starts at bar 4 and has handed back by bar 7.
+- T3 Trading off: `busy:4, silent:4` twice with trading off. Must not: any
+  band solo.
+
 ## Real jams
 
 Thiago's own jams join the set once he can play guitar into the page

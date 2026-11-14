@@ -29,5 +29,7 @@ Status values: **Proposed** (recommended, waiting on Thiago), **Accepted**,
 | [0018](0018-lineups-and-sound.md) | Lineups and the built-in sound: rendered samples, mix bus, band as data | Accepted |
 | [0019](0019-listening-layer.md) | The listening layer: five switchable groups, one summary for every brain | Accepted |
 | [0020](0020-cues-and-lockout.md) | Player cues on keys 1–7, with a governor lockout | Accepted |
+| [0021](0021-leading-layer.md) | The leading layer: genre taste, personality and the song arc | Proposed |
+| [0022](0022-trading-fours.md) | Trading fours: a mode, the player's phrase, a band soloist | Proposed |
 
 New record: copy [template.md](template.md).
