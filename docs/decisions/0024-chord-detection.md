@@ -57,6 +57,27 @@ small transcription model in the browser (Spotify's Basic Pitch).
   session holds notes a guitarist could have played. The hand lives in the
   listener now, for single notes too, and follows the shapes.
 
+## Results
+From `docs/eval/results/v0.5-chords/` (2026-11-14):
+
+- Synthesised strums (down and up): both front ends 90% root, 80% quality.
+- GuitarSet comping per beat, against the lead sheet with the prior: the
+  chroma 70% root, 61% major/minor, 56% quality; Basic Pitch 70%, 43%,
+  37%. Without the prior they are close on the root (65% and 68%); Basic
+  Pitch loses the third more often.
+- The listener in auto on all 180 comping excerpts: 70% of strums heard as
+  chords; of those, 72% right root, 66% right major/minor against the lead
+  sheet (60% against the chord as played).
+- Cost: the chroma 0.08 ms per strum, an answer 158 ms after the strum.
+  Basic Pitch 0.74 s per second of audio in Node (TF.js CPU), 455 ms per
+  2 s window on WebGL in headless Chrome (a software GPU) and about 2 s on
+  the CPU backend: too slow to answer a strum within a beat.
+
+So the chroma stays the default, and Basic Pitch stays in the eval. Errors
+left: inversions on up strums (Am7 against C6), sevenths heard on plain
+triads and back, and players' added tones (sus2, add9). The fine-tuning
+pass on Thiago's guitar starts from these numbers.
+
 ## Consequences
 - No model download for the default; chord detection works offline and on
   any machine.
