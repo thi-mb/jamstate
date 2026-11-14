@@ -13,7 +13,9 @@
 // Notes are on the straight grid; the engine adds swing and humanize as for
 // any part. Seeded by the session seed and the turn, so replays match.
 
+import type { Chart } from "./chart";
 import type { BarContext } from "./engine";
+import { songScale } from "./fretboard";
 import { DRUM } from "./groove";
 import { rngFor } from "./rand";
 import { chordScale, type Chord } from "./theory";
@@ -60,13 +62,20 @@ export class Soloist {
   /** The pitch classes the player used. */
   private pcs: number[] = [];
 
-  constructor(private seed: number) {}
+  /** The song's scale for this turn (from the chart's key and the genre), null without a key. */
+  private key: number[] | null = null;
+
+  constructor(
+    private seed: number,
+    private chart?: Chart,
+  ) {}
 
   /** One bar of the band's turn: `i` is the bar within the turn. */
   bar(ctx: BarContext, solo: Solo, i: number): NoteEvent[] {
     if (this.turn !== solo) {
       this.turn = solo;
       this.learn(solo, ctx.bpb);
+      this.key = this.chart ? (songScale(this.chart, ctx.genre.listening)?.pcs ?? null) : null;
     }
     const rand = rngFor(this.seed, "solo", solo.part, solo.from, i);
     return solo.part === "drums" ? this.drumBar(ctx, solo, i, rand) : this.lineBar(ctx, solo, i);
@@ -100,13 +109,15 @@ export class Soloist {
   }
 
   /**
-   * Fit a note to the chord sounding: kept when it's a chord tone or in the
-   * chord's own scale; otherwise moved to the nearest note the player used
-   * that fits, else to the nearest chord tone. No outside notes of its own.
+   * Fit a note to the chord sounding: kept when it's a chord tone or, off
+   * the beat, in the song's scale (the chord's own scale when the chart has
+   * no key: a chord's textbook scale ignores the key, so D natural over Fm in
+   * F minor); otherwise moved to the nearest note the player used that fits,
+   * else to the nearest chord tone. No outside notes of its own.
    */
   private fit(note: number, chord: Chord, [lo, hi]: [number, number], strong: boolean): number {
     const tones = chord.intervals.map((iv) => (chord.root + iv) % 12);
-    const scale = chordScale(chord).map((iv) => (chord.root + iv) % 12);
+    const scale = this.key ?? chordScale(chord).map((iv) => (chord.root + iv) % 12);
     const ok = (pc: number) => tones.includes(pc) || (!strong && scale.includes(pc));
     if (ok(note % 12)) return note;
     const pick = (pcs: number[]) => {

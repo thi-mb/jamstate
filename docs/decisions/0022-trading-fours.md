@@ -39,8 +39,10 @@ phrase, then hands back when you come in." Three forces:
   back, answered with the same rhythm and the notes turned round, its first
   half repeated, then its opening landing on a held chord tone, ending early
   so the last beat is the player's. A note that clashes with the chord
-  sounding moves to the nearest note the player used that fits (chord tone,
-  or the chord's own scale off the beat), else to a chord tone. (First
+  sounding moves to the nearest note the player used that fits (a chord tone,
+  or off the beat a note of the song's scale, the one the fretboard's scale
+  mode shows), else to a chord tone. A chord's textbook scale ignores the
+  key (D natural over Fm in F minor), which was still too outside in funk. (First
   version: new notes from the genre's wide scale, which Thiago heard as too
   many outside notes on Night Shift.) A drum solo plays alone (as a jazz band lays out for the
   drummer) and answers the player's phrase too: the busiest bar of their
