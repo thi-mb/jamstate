@@ -42,7 +42,8 @@ change octave, hold `Shift` to play loud (energy is velocity plus density).
 web host or folder and it plays with the rule bandleader, keeps your sessions
 in the browser, and needs nothing else
 ([ADR-0015](docs/decisions/0015-no-server-required.md)). Web MIDI needs HTTPS
-or localhost.
+or localhost. Voice cues need the speech model in the build: run `npm run
+fetch-models` before `npm run build` (it isn't in the repo).
 
 ## The band and its sound
 
@@ -142,6 +143,15 @@ speakers with a mic? Tick **speakers: gate the band**: the page takes the
 band's own sound out of what the input hears, learning your room as the jam
 goes ([ADR-0025](docs/decisions/0025-bleed-gating.md)).
 
+**Voice cues** says the cues instead of pressing them: pick the device and
+channel your mic is on (a Scarlett Solo's input 1) and say "take it down",
+"build it up", "one more chorus", "end the song", "drums only", "next
+section", "trade fours" or "stop trading". Recognition runs in the page
+(Vosk with a grammar of just these phrases), so nothing leaves the machine;
+the 40 MB model loads the first time. A cue lands about a quarter of a
+second after you say it and is recorded as said
+([ADR-0026](docs/decisions/0026-voice-cues.md)).
+
 What you play becomes notes, like MIDI, so everything the band listens for
 works on guitar ([ADR-0023](docs/decisions/0023-audio-input.md)). A hit with
 no pitch to hear (a muted strum, a slap) is a note with pitch -1: it counts
@@ -158,6 +168,9 @@ npm run guitar-eval -- pitch   # onsets and pitch on synthesised lines and Guita
 npm run guitar-eval -- chords  # chords: the chroma against Basic Pitch on strums and GuitarSet comping
 npm run chords-browser         # both chord front ends' cost in headless Chrome
 npm run guitar-eval -- bleed   # the bleed gate: the band through a simulated room, gate off and on
+npm run fetch-models           # the speech model for voice cues, into public/models/ (before npm run build)
+npm run guitar-eval -- voice   # voice cues: Piper phrases over the band and guitar (PIPER, VOSK_PYTHON)
+npm run voice-check            # headless Chrome: a synthesised voice on input 1 says cues during a jam
 ```
 
 ## With the jamstate server (optional companion)
