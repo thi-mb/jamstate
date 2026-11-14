@@ -20,7 +20,8 @@
     "latency-check": "node scripts/latency-check.mjs",
     "eval": "vite-node scripts/eval.ts",
     "guitar": "vite-node scripts/guitar.ts",
-    "audio-check": "node scripts/audio-check.mjs"
+    "audio-check": "node scripts/audio-check.mjs",
+    "guitar-eval": "vite-node scripts/guitar-eval.ts"
   },
   "devDependencies": {
     "typescript": "5.9.3",

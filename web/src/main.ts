@@ -32,7 +32,7 @@ import { Overlay } from "./ui/overlay";
 import { FretboardView } from "./ui/fretboard";
 import { AudioInputPanel } from "./ui/audio-input";
 import { SR } from "./core/audio/dsp";
-import { FRETBOARD_KINDS, FRETBOARD_MODES, type FretboardKind, type FretboardMode } from "./core/fretboard";
+import { FRETBOARD_KINDS, FRETBOARD_MODES, TUNING_IDS, type FretboardKind, type FretboardMode, type TuningId } from "./core/fretboard";
 
 const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -794,6 +794,31 @@ const audioIn = new AudioInputPanel(platform.audioIn, getAudio, platform.setting
 audioIn.onNote = (on, note, vel, time) => playerNote(on, note, vel, time, "audio");
 audioIn.outputLatency = () => (audio ? (audio.baseLatency ?? 0) + (audio.outputLatency ?? 0) : 0);
 
+// The guitar's tuning (the neck and what audio input listens for) and a left-handed neck (v0.5).
+const TUNING_KEY = "jamstate.fretboardTuning";
+const LEFT_KEY = "jamstate.fretboardLeft";
+{
+  const tuning = $<HTMLSelectElement>("fretboard-tuning");
+  const left = $<HTMLInputElement>("fretboard-left");
+  const saved = platform.settings.get<TuningId>(TUNING_KEY);
+  tuning.value = saved && TUNING_IDS.includes(saved) ? saved : "standard";
+  left.checked = platform.settings.get<boolean>(LEFT_KEY) ?? false;
+  const apply = () => {
+    fretboard.setTuning(tuning.value as TuningId);
+    fretboard.setLeftHanded(left.checked);
+    audioIn.setTuning(tuning.value as TuningId);
+  };
+  apply();
+  tuning.addEventListener("change", () => {
+    platform.settings.set(TUNING_KEY, tuning.value);
+    apply();
+  });
+  left.addEventListener("change", () => {
+    platform.settings.set(LEFT_KEY, left.checked);
+    apply();
+  });
+}
+
 // ---------- player input ----------
 
 const held = new Map<number, () => void>();
@@ -803,7 +828,7 @@ function playerNote(on: boolean, note: number, vel: number, audioTime?: number, 
   if (!audio || !session || session.replay) return;
   const beat = session.transport.beatAt(audioTime ?? audio.currentTime);
   session.recorder?.note(beat, note, on ? vel : 0);
-  fretboard.note(on, note);
+  fretboard.note(on, note, from === "audio");
   if (on) {
     held.get(note)?.();
     // Built-in sound off (playing through Ableton or another synth): the page doesn't sound the player either.

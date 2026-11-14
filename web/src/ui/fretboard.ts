@@ -3,6 +3,8 @@
 // song's scale held still, the chord tones moving on top. Changes mode: chord
 // tones strong, the genre's scale for the chord faint, the next chord fading
 // in on the beat before a change. The player's notes are coloured by fit.
+// v0.5: any tuning, a left-handed (mirrored) neck, and notes heard from an
+// audio input lit in one place near the hand rather than everywhere.
 
 import {
   chordView,
@@ -13,11 +15,14 @@ import {
   pianoCells,
   songScale,
   GUITAR_FRETS,
+  Hand,
+  TUNINGS,
   type Cell,
   type ChordView,
   type FretboardKind,
   type FretboardMode,
   type SongScale,
+  type TuningId,
 } from "../core/fretboard";
 import type { Chart } from "../core/chart";
 import type { BarPlan } from "../core/engine";
@@ -35,7 +40,14 @@ export class FretboardView {
   private low = 48;
   private key = "";
   private cells = new Map<number, HTMLElement[]>();
+  /** Guitar cells by string and fret. */
+  private grid: HTMLElement[][] = [];
   private sounding = new Map<number, string>();
+  /** Where notes from an audio input were placed: note → string and fret. */
+  private placed = new Map<number, { string: number; fret: number }>();
+  tuning: TuningId = "standard";
+  leftHanded = false;
+  private hand = new Hand();
   private view: ChordView = { chord: null, next: null };
   private genre?: GenreListening;
   /** Notes the player played lately (for the piano window). */
@@ -46,6 +58,20 @@ export class FretboardView {
   setKind(kind: FretboardKind): void {
     this.kind = kind;
     this.root.hidden = kind === "off";
+    this.key = "";
+    this.draw();
+  }
+
+  setTuning(tuning: TuningId): void {
+    this.tuning = tuning;
+    this.hand = new Hand(TUNINGS[tuning].strings);
+    this.placed.clear();
+    this.key = "";
+    this.draw();
+  }
+
+  setLeftHanded(left: boolean): void {
+    this.leftHanded = left;
     this.key = "";
     this.draw();
   }
@@ -74,20 +100,33 @@ export class FretboardView {
   clear(): void {
     this.view = { chord: null, next: null };
     this.sounding.clear();
+    this.placed.clear();
     this.recent = [];
     this.key = "";
     this.draw();
   }
 
-  /** A note the player pressed or let go. */
-  note(on: boolean, note: number): void {
+  /**
+   * A note the player pressed or let go. `place`: it came from a guitar (an
+   * audio input), so it lights one place on the neck near the hand.
+   */
+  note(on: boolean, note: number, place = false): void {
     if (note < 0) return;
     if (on) {
       const fit = this.view.chord ? noteFit(note % 12, this.view.chord, this.genre) : "inside";
       this.sounding.set(note, fit);
       this.recent.push(note);
       if (this.recent.length > 24) this.recent.shift();
-    } else this.sounding.delete(note);
+      this.placed.delete(note);
+      if (place) {
+        const busy = new Set([...this.placed.values()].map((p) => p.string));
+        const at = this.hand.place(note, busy);
+        if (at) this.placed.set(note, at);
+      }
+    } else {
+      this.sounding.delete(note);
+      this.placed.delete(note);
+    }
     this.paintPlayer();
   }
 
@@ -97,7 +136,7 @@ export class FretboardView {
     const chord = this.view.chord;
     // Scale mode has no next-chord fade: only the chord tones move.
     const next = scale ? null : this.view.next;
-    const key = `${this.kind}|${this.mode}|${scale?.name ?? ""}|${this.low}|${chord?.symbol ?? ""}|${next?.symbol ?? ""}`;
+    const key = `${this.kind}|${this.tuning}|${this.leftHanded}|${this.mode}|${scale?.name ?? ""}|${this.low}|${chord?.symbol ?? ""}|${next?.symbol ?? ""}`;
     if (key === this.key) return;
     this.key = key;
     this.root.dataset.chord = chord?.symbol ?? "";
@@ -132,15 +171,20 @@ export class FretboardView {
   }
 
   private guitar(): HTMLElement {
-    const grid = Object.assign(document.createElement("div"), { className: "fb-guitar" });
+    const grid = Object.assign(document.createElement("div"), { className: `fb-guitar${this.leftHanded ? " fb-left" : ""}` });
     grid.style.setProperty("--frets", String(GUITAR_FRETS + 1));
-    for (const row of guitarCells(this.view.chord, this.genre, this.scale)) {
+    grid.dataset.tuning = this.tuning;
+    this.grid = [];
+    for (const row of guitarCells(this.view.chord, this.genre, this.scale, TUNINGS[this.tuning].strings)) {
+      const els: HTMLElement[] = [];
+      this.grid.push(els);
       for (const [f, c] of row.entries()) {
         const el = Object.assign(document.createElement("span"), { className: `fb-fret${f === 0 ? " fb-open" : ""}` });
         const dot = document.createElement("i");
         if (c.mark || c.root) dot.textContent = NOTE_NAMES[c.note % 12];
         el.append(dot);
         this.decorate(el, c);
+        els.push(el);
         grid.append(el);
       }
     }
@@ -163,6 +207,10 @@ export class FretboardView {
 
   private paintPlayer(): void {
     for (const els of this.cells.values()) for (const el of els) el.classList.remove("fb-play-inside", "fb-play-colour", "fb-play-outside");
-    for (const [note, fit] of this.sounding) for (const el of this.cells.get(note) ?? []) el.classList.add(`fb-play-${fit}`);
+    for (const [note, fit] of this.sounding) {
+      const at = this.kind === "guitar" ? this.placed.get(note) : undefined;
+      const els = at ? [this.grid[at.string]?.[at.fret]].filter((e) => !!e) : (this.cells.get(note) ?? []);
+      for (const el of els) el.classList.add(`fb-play-${fit}`);
+    }
   }
 }
