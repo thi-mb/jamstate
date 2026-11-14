@@ -20,54 +20,54 @@
   "guitarset": {
     "mic/comp": {
       "onsets": {
-        "precision": 0.83,
-        "recall": 0.544,
-        "f1": 0.658,
+        "precision": 0.849,
+        "recall": 0.54,
+        "f1": 0.66,
         "notes": 21296,
         "octave_errors": 0
       }
     },
     "mic/comp/BN": {
       "onsets": {
-        "precision": 0.812,
-        "recall": 0.651,
-        "f1": 0.722,
+        "precision": 0.829,
+        "recall": 0.643,
+        "f1": 0.724,
         "notes": 3103,
         "octave_errors": 0
       }
     },
     "mic/comp/Funk": {
       "onsets": {
-        "precision": 0.753,
-        "recall": 0.638,
-        "f1": 0.691,
+        "precision": 0.768,
+        "recall": 0.636,
+        "f1": 0.696,
         "notes": 4254,
         "octave_errors": 0
       }
     },
     "mic/comp/Jazz": {
       "onsets": {
-        "precision": 0.828,
-        "recall": 0.609,
-        "f1": 0.702,
+        "precision": 0.853,
+        "recall": 0.604,
+        "f1": 0.707,
         "notes": 2731,
         "octave_errors": 0
       }
     },
     "mic/comp/Rock": {
       "onsets": {
-        "precision": 0.907,
-        "recall": 0.436,
-        "f1": 0.589,
+        "precision": 0.931,
+        "recall": 0.433,
+        "f1": 0.591,
         "notes": 5119,
         "octave_errors": 0
       }
     },
     "mic/comp/SS": {
       "onsets": {
-        "precision": 0.871,
-        "recall": 0.487,
-        "f1": 0.625,
+        "precision": 0.89,
+        "recall": 0.483,
+        "f1": 0.626,
         "notes": 6089,
         "octave_errors": 0
       }
@@ -212,8 +212,8 @@
     },
     "pickup/comp": {
       "onsets": {
-        "precision": 0.856,
-        "recall": 0.576,
+        "precision": 0.867,
+        "recall": 0.572,
         "f1": 0.689,
         "notes": 21296,
         "octave_errors": 0
@@ -221,45 +221,45 @@
     },
     "pickup/comp/BN": {
       "onsets": {
-        "precision": 0.856,
-        "recall": 0.676,
-        "f1": 0.755,
+        "precision": 0.871,
+        "recall": 0.672,
+        "f1": 0.759,
         "notes": 3103,
         "octave_errors": 0
       }
     },
     "pickup/comp/Funk": {
       "onsets": {
-        "precision": 0.765,
-        "recall": 0.669,
-        "f1": 0.714,
+        "precision": 0.774,
+        "recall": 0.664,
+        "f1": 0.715,
         "notes": 4254,
         "octave_errors": 0
       }
     },
     "pickup/comp/Jazz": {
       "onsets": {
-        "precision": 0.863,
-        "recall": 0.637,
-        "f1": 0.733,
+        "precision": 0.88,
+        "recall": 0.633,
+        "f1": 0.736,
         "notes": 2731,
         "octave_errors": 0
       }
     },
     "pickup/comp/Rock": {
       "onsets": {
-        "precision": 0.929,
-        "recall": 0.482,
-        "f1": 0.635,
+        "precision": 0.937,
+        "recall": 0.481,
+        "f1": 0.636,
         "notes": 5119,
         "octave_errors": 0
       }
     },
     "pickup/comp/SS": {
       "onsets": {
-        "precision": 0.893,
-        "recall": 0.511,
-        "f1": 0.65,
+        "precision": 0.901,
+        "recall": 0.507,
+        "f1": 0.649,
         "notes": 6089,
         "octave_errors": 0
       }
@@ -406,6 +406,6 @@
   "excerpts": 360,
   "cpu": {
     "audio_seconds": 22138,
-    "seconds_per_second": 0.007
+    "seconds_per_second": 0.006
   }
 }

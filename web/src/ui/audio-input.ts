@@ -6,7 +6,8 @@
 import { calibrateLevels, latencyFromTaps, type LevelTake } from "../core/audio/calibrate";
 import { db, SR } from "../core/audio/dsp";
 import { AudioListener, DEFAULT_CALIBRATION, type Calibration, type DetectionMode, type ListenerEvent } from "../core/audio/listener";
-import { tuningRange, type TuningId } from "../core/fretboard";
+import { tuningRange, TUNINGS, type Place, type TuningId } from "../core/fretboard";
+import type { ChordPrior } from "../core/audio/chords";
 import { encodeWav } from "../core/audio/wav";
 import type { AudioInputHandle, AudioInputPlatform, InputChannel, KeyValueStore } from "../core/platform";
 import type { SessionInput } from "../core/session";
@@ -36,7 +37,9 @@ export class AudioInputPanel {
   private tap: ((samples: Float32Array, time: number) => void) | null = null;
 
   /** A detected note (time on the audio clock). */
-  onNote: (on: boolean, note: number, vel: number, time: number) => void = () => {};
+  onNote: (on: boolean, note: number, vel: number, time: number, place?: Place) => void = () => {};
+  /** The chart's chord now and next at an audio-clock time (heard chords lean to them). */
+  chordPrior: (time: number) => ChordPrior | null = () => null;
   /** The output latency the player hears, for the timing step. */
   outputLatency: () => number = () => 0;
   /** The instrument's tuning sets the range of notes it listens for. */
@@ -93,7 +96,9 @@ export class AudioInputPanel {
   }
 
   private newListener(calibration?: Calibration): AudioListener {
-    return new AudioListener({ calibration, mode: this.mode, ...tuningRange(this.tuning) });
+    const L = new AudioListener({ calibration, mode: this.mode, ...tuningRange(this.tuning), strings: TUNINGS[this.tuning].strings });
+    L.chordPrior = (t) => this.chordPrior(t);
+    return L;
   }
 
   private get calKey(): string {
@@ -191,7 +196,7 @@ export class AudioInputPanel {
   }
 
   private emit(e: ListenerEvent): void {
-    if (e.kind === "on") this.onNote(true, e.note, e.vel, e.time);
+    if (e.kind === "on") this.onNote(true, e.note, e.vel, e.time, e.place);
     else this.onNote(false, e.note, 0, e.time);
   }
 

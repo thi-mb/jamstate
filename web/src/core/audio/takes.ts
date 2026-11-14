@@ -6,7 +6,9 @@
 import type { SessionFile } from "../session";
 import { UNPITCHED } from "../features";
 import { rng } from "../rand";
-import { renderGuitar, type GuitarOptions, type PluckNote } from "./pluck";
+import { GUITAR_STRINGS } from "../fretboard";
+import { voiceGuitar, type Quality } from "./chords";
+import { renderGuitar, strum, type GuitarOptions, type PluckNote } from "./pluck";
 
 /** Seconds per beat of a session's chart (the strict tempo). */
 export const secondsPerBeat = (f: SessionFile) => 60 / f.chart.bpm;
@@ -66,4 +68,30 @@ export function soloLine(seed: number): { x: Float32Array; truth: { time: number
     t += dur + r() * 0.08;
   }
   return { x: renderGuitar(notes, t + 1, { noiseDb: -72, humDb: -62, seed }), truth };
+}
+
+/** Chords the strummed takes play. */
+const STRUM_CHORDS: Quality[] = ["", "m", "7", "m7", "maj7", "m7b5", "sus4", "5"];
+
+/**
+ * A strummed take (v0.5 chords): `count` chords on random roots, each a real
+ * voicing somewhere on the neck, strummed down and then up, 1.2 s apart.
+ */
+export function strumTake(seed: number, count = 16): { x: Float32Array; truth: { time: number; root: number; quality: Quality }[] } {
+  const r = rng(seed);
+  const plucks: PluckNote[] = [];
+  const truth: { time: number; root: number; quality: Quality }[] = [];
+  let t = 0.3;
+  for (let i = 0; i < count; i++) {
+    const root = Math.floor(r() * 12);
+    // Mostly triads and sevenths, as in songs.
+    const quality = STRUM_CHORDS[r() < 0.6 ? Math.floor(r() * 4) : Math.floor(r() * STRUM_CHORDS.length)];
+    const v = voiceGuitar(root, quality, GUITAR_STRINGS, 1 + Math.floor(r() * 9));
+    if (!v) continue;
+    plucks.push(...strum(t, v.notes, { vel: 70 + Math.floor(r() * 40), dur: 0.55, spread: 0.008 + r() * 0.01 }));
+    plucks.push(...strum(t + 0.6, v.notes.slice(-4), { dir: "up", vel: 60 + Math.floor(r() * 30), dur: 0.5, spread: 0.008 }));
+    truth.push({ time: t, root, quality }, { time: t + 0.6, root, quality });
+    t += 1.2;
+  }
+  return { x: renderGuitar(plucks, t + 0.5, { seed, noiseDb: -72 }), truth };
 }
