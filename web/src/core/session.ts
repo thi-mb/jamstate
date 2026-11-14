@@ -58,6 +58,8 @@ export interface SessionInput {
   tuning?: string;
   detector?: string;
   calibration?: Calibration;
+  /** The bleed gate was on (speakers): the band's mix was taken out of what the detector heard (ADR-0025). */
+  gate?: boolean;
   /**
    * The raw audio, when kept (16 kHz mono WAV beside the session): its file
    * name and, per bar, where the bar starts in it (seconds), so the detector

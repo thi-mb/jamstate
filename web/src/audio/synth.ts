@@ -41,6 +41,11 @@ export class Synth implements Sink {
     this.mixer.apply(this.mix, this.band, true);
   }
 
+  /** What goes to the speakers (the bleed gate's reference). */
+  get output(): AudioNode {
+    return this.mixer.output;
+  }
+
   /** The genre's production: EQ, compression, room, saturation. */
   setMix(mix: MixPreset): void {
     this.mix = mix;

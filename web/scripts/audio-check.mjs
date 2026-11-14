@@ -7,7 +7,8 @@
 // recording (audio input, detected notes, the WAV and where each bar starts
 // in it) and that it replays exactly; then that input 1 (silent) hears
 // nothing. v0.5 layer 2: detected notes light one place each on the neck
-// (layer 3: chords light a shape, one place per string),
+// (layer 3: chords light a shape, one place per string; layer 4: with the
+// bleed gate on the guitar is still heard),
 // and the tuning and left-handed settings redraw it. Exit code 1 when a
 // check fails.
 
@@ -140,6 +141,16 @@ try {
   const chords = await jam(10);
   check(chords.lit.samples > 5 && chords.lit.most >= 3 && chords.lit.most <= 6 && chords.lit.stacked === 0, `chords light shapes: lit in ${chords.lit.samples} samples, up to ${chords.lit.most} at once, never two on a string`);
   await page.selectOption("#audio-mode", "auto");
+
+  // The bleed gate on (speakers): the band's mix goes in as the reference; the guitar is still heard.
+  await page.check("#audio-gate");
+  await jam(16);
+  await page.click("#session-download");
+  await page.waitForTimeout(1000);
+  const gated = JSON.parse(readFileSync(await downloads.filter((d) => d.suggestedFilename().endsWith(".json")).at(-1).path(), "utf8"));
+  const gatedOns = gated.player.filter((e) => e[2] > 0).length;
+  check(gated.input?.gate === true && gatedOns > 10, `bleed gate on: recorded as gated, ${gatedOns} notes heard`);
+  await page.uncheck("#audio-gate");
 
   // Input 1 is silent: no notes.
   await page.selectOption("#audio-channel", "1");

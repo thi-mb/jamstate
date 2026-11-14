@@ -1,5 +1,6 @@
 // npm run guitar-eval -- pitch [--set DIR] [--out DIR] [--limit N]
 // npm run guitar-eval -- chords [...] [--rewrite] (scripts/guitar-chords.ts)
+// npm run guitar-eval -- bleed (scripts/guitar-bleed.ts)
 //
 // How well the audio listener hears a guitar (v0.5). Synthesised solo lines
 // (with hammer-ons and vibrato) and GuitarSet (CC BY 4.0; six players, five
@@ -33,6 +34,11 @@ const set = opt("set") ?? join(homedir(), ".local/share/jamstate/guitarset");
 const limit = Number(opt("limit") ?? Infinity);
 const [cmd] = args;
 const out = opt("out") ?? `../docs/eval/results/v0.5-${cmd}`;
+if (cmd === "bleed") {
+  const { runBleed } = await import("./guitar-bleed");
+  runBleed(out);
+  process.exit(0);
+}
 if (cmd === "chords") {
   const { runChords, write } = await import("./guitar-chords");
   // --rewrite: only the write-up again, from summary.json (after npm run chords-browser).
@@ -45,7 +51,7 @@ if (cmd === "chords") {
   process.exit(0);
 }
 if (cmd !== "pitch") {
-  console.error("usage: npm run guitar-eval -- pitch|chords [--set DIR] [--out DIR] [--limit N] [--every N] [--no-model]");
+  console.error("usage: npm run guitar-eval -- pitch|chords|bleed [--set DIR] [--out DIR] [--limit N] [--every N] [--no-model]");
   process.exit(2);
 }
 
