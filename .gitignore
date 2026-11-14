@@ -5,3 +5,6 @@ __pycache__/
 .pytest_cache/
 .venv/
 .DS_Store
+
+# Models fetched by npm run fetch-models (not committed)
+web/public/models/
