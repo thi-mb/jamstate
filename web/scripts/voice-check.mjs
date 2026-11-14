@@ -5,8 +5,10 @@
 // synthesised voice on input 1 saying cues and table talk. The guitar is
 // the audio input, the voice the voice-cue input. Checks that the speech
 // model loads, that each cue said is recorded once and marked as said, that
-// "trade fours" turns trading on, and that the talk gives no cue. Exit code
-// 1 when a check fails.
+// "trade fours" turns trading on, and that the talk gives no cue. Then
+// everything on at once (chords, the bleed gate on both inputs, voice cues):
+// the main thread's time on the inputs per second of audio, and no note of
+// the band's played late (v0.5 row 11). Exit code 1 when a check fails.
 
 import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync } from "node:fs";
@@ -106,6 +108,19 @@ try {
   await page.waitForFunction(() => /replay|differently|failed/.test(document.querySelector("#session-result")?.textContent ?? ""));
   const res = await page.textContent("#session-result");
   check(/replay exactly/.test(res ?? ""), `replay check: ${res}`);
+
+  // Everything on: chords in auto, the gate on both inputs, voice cues.
+  await page.check("#audio-gate");
+  await page.check("#voice-gate");
+  const before = await page.evaluate(() => structuredClone(window.jamstateStats()));
+  await page.click("#start");
+  await page.waitForTimeout(30000);
+  const after = await page.evaluate(() => structuredClone(window.jamstateStats()));
+  await page.click("#stop");
+  const per = (k) => (after[k].dsp - before[k].dsp) / Math.max(1e-9, after[k].audio - before[k].audio);
+  check(per("input") < 0.1, `guitar input (gate, listener) on the main thread: ${per("input").toFixed(4)} s per second of audio`);
+  check(per("voice") < 0.05, `voice input (gate, hand-off to the recogniser's worker): ${per("voice").toFixed(4)} s per second of audio`);
+  check(after.late && after.late.notes === 0, `band notes played late with everything on: ${after.late?.notes} (worst ${Math.round((after.late?.worst ?? 0) * 1000)} ms)`);
 } catch (e) {
   check(false, `page run: ${e.message}`);
 }

@@ -249,13 +249,40 @@ With trading on (T1, T2) from the start.
 - T3 Trading off: `busy:4, silent:4` twice with trading off. Must not: any
   band solo.
 
-## Real jams
+## Guitar jams (v0.5)
 
-Thiago's own jams join the set once he can play guitar into the page
-(v0.5): he isn't a keyboard player, so keyboard jams wouldn't be his real
-playing (decided 2026-11-09, v0.3 test T9). Three downloaded sessions, one
-per genre; Claude labels them with checks in the same style, Thiago reviews
-the labels, and they count from then on.
+One jam per song, played on guitar: the band follows a recorded session
+bar by bar instead of the pretend player. Recorded notes don't answer the
+band, so the checks only ask the band to follow. With `--input audio` the
+notes are rendered as a guitar and heard through the audio listener; every
+other scenario runs that way too, to compare guitar with MIDI
+([results/v0.5-guitar](results/v0.5-guitar/README.md)).
+
+Thiago's own jams replace these (decided 2026-11-09, v0.3 test T9: he isn't
+a keyboard player, so keyboard jams wouldn't be his real playing). Until
+then each is synthesised: the pretend player on a script, recorded as a
+session (`web/src/core/eval/jams.ts`). A downloaded session saved as
+`docs/eval/jams/<id>.json` takes its jam's place; Claude labels it with
+checks in the same style, and Thiago reviews the labels.
+
+### J1 Funk on guitar (Night Shift)
+`medium:8, busy:8, sparse:4, silent:4, busy:8`, every other short note a
+muted scratch. Must: by bar 15 the target rises 0.1 over bar 7's; by bar
+23 target ≤ 0.4 or drums out; by bar 31 it rises 0.15 over bar 23's. Must
+not: a stinger in bars 20–23.
+
+### J2 Blues on guitar (Blues in A)
+`sparse:6, medium:6, crescendo:4, busy:8, decrescendo:4, silent:6`. Must:
+by bar 5 target ≤ 0.45; by bar 23 it rises 0.2 over bar 5's; by bar 33 it
+falls 0.15 under bar 23's or drums out. Must not: lower in bars 16–23.
+Stretch: no raise in the decrescendo (bars 24–27; E7's gap).
+
+### J3 Jazz on guitar (Late Set)
+`sparse:8, medium:8, outside:4, medium:4, held:4, sparse:4`. Must: by bar
+7 target ≤ 0.4 or a part of the lineup out (comping sparsely, the band can
+leave room either way); by bar 15 it rises 0.05 over bar 7's; drums and
+bass stay in through bars 16–23 (outside, then back); by bar 31 target no
+higher than at bar 15.
 
 ## Decided in review
 

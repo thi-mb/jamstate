@@ -171,6 +171,7 @@ npm run guitar-eval -- bleed   # the bleed gate: the band through a simulated ro
 npm run fetch-models           # the speech model for voice cues, into public/models/ (before npm run build)
 npm run guitar-eval -- voice   # voice cues: Piper phrases over the band and guitar (PIPER, VOSK_PYTHON)
 npm run voice-check            # headless Chrome: a synthesised voice on input 1 says cues during a jam
+npm run eval -- --brains rules --input audio   # the leader eval with the player heard as guitar audio, J1–J3 included
 ```
 
 ## With the jamstate server (optional companion)
@@ -379,7 +380,14 @@ a scale mode and a changes mode.
 v0.4 Leading (done 2026-11-14, see [docs/testing/v0.4.md](docs/testing/v0.4.md)):
 genre taste and a personality for the bandleader, a song arc so a section
 played again differs the genre's way, trading fours on key 8, and the Qwen
-prompt tuned against the eval. The
+prompt tuned against the eval.
+
+v0.5 Guitar (built 2026-11-14, waiting on the hands-on tests in
+[docs/testing/v0.5.md](docs/testing/v0.5.md)): play a guitar through an
+audio interface and the band follows, with no MIDI. Notes and strummed
+chords show on the fretboard (left-handed and other tunings), a gate keeps
+the band's own sound out of the mic, and spoken cues work like the keys.
+The
 plan for the releases after this is in [docs/roadmap.md](docs/roadmap.md).
 
 Not yet: Ableton Link (needs a local bridge, browsers can't do UDP),
