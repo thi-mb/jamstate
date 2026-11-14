@@ -296,7 +296,7 @@ export class Engine {
     this.bpm = chart.bpm;
     this.script = [...(opts.script ?? [])].sort((a, b) => a.at - b.at);
     this.personality = opts.personality ?? null;
-    this.soloist = new Soloist(this.seed);
+    this.soloist = new Soloist(this.seed, chart);
     this.applyLeading();
   }
 
