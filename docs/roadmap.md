@@ -323,6 +323,15 @@ Done when:
 
 ### v0.4: Leading
 
+Status: built (2026-11-09), waiting on the hands-on test in
+[testing/v0.4.md](testing/v0.4.md). Decided with Thiago before starting:
+trading is a mode the player turns on (key 8), not any silence; the Qwen bar
+is E1, E2, E7 and E8 (the sparse scenarios) at 0.85 or better, about level
+with the rules on the v0.3 set, and ahead of them on the new v0.4 scenarios.
+Genre taste, personality and the arc: [ADR-0021](decisions/0021-leading-layer.md);
+trading: [ADR-0022](decisions/0022-trading-fours.md); new eval scenarios A1,
+P1–P3, G1, T1–T3 in [eval/scenarios.md](eval/scenarios.md#leading-v04).
+
 **Goal:** the leader makes good, varied decisions across a whole song, not
 just phrase by phrase. This is where the Qwen tuning lands.
 

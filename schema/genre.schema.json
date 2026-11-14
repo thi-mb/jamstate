@@ -7,6 +7,13 @@
   "required": ["format", "id", "name", "drums", "bass", "chords"],
   "additionalProperties": false,
   "$defs": {
+    "moveTags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(set_intensity|add_layer|drop_layer|jump_to_section|extend_section|change_feel|fire_stinger)(:[a-z_]+)?$"
+      }
+    },
     "keyScaleList": {
       "type": "array",
       "minItems": 1,
@@ -348,6 +355,29 @@
             "minor": { "$ref": "#/$defs/keyScaleList" }
           }
         }
+      }
+    },
+    "leading": {
+      "description": "How the bandleader leads in this genre (v0.4, docs/decisions/0021-leading-layer.md). Without it: activity [0.3, 0.7], arc build, nothing favoured or avoided, trades of 4 bars on keys then guitar.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "activity": {
+          "description": "How much the leader moves, 0 (hardly) to 1 (every phrase), as [low, high]: the steady personality takes the low end, adventurous the high end, supportive the middle.",
+          "type": "array", "items": { "type": "number", "minimum": 0, "maximum": 1 }, "minItems": 2, "maxItems": 2
+        },
+        "arc": { "enum": ["build", "dynamic", "locked"], "description": "build: bigger each time round, peak late. dynamic: each time round up or down, never the same. locked: same level, change only texture." },
+        "favour": { "$ref": "#/$defs/moveTags", "description": "Moves the leader reaches for." },
+        "avoid": { "$ref": "#/$defs/moveTags", "description": "Moves the leader stays away from." },
+        "trade": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "bars": { "enum": [2, 4, 8] },
+            "soloists": { "type": "array", "minItems": 1, "items": { "enum": ["drums", "bass", "chords", "guitar"] }, "description": "Who takes the band's turns, in order; they rotate." }
+          }
+        },
+        "taste": { "type": "string", "maxLength": 300, "description": "One sentence for LLM leaders." }
       }
     }
   }

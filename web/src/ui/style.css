@@ -129,3 +129,4 @@ code { font-size: 12px; }
 .fb-black.fb-play-outside::before { background: var(--fb-out); }
 @keyframes fb-fade { from { opacity: 0.2; } to { opacity: 1; } }
 @media (max-width: 600px) { .fb-fret { height: 16px; } .fb-fret i { min-width: 12px; height: 12px; font-size: 0; } }
+button[aria-pressed="true"] { border-color: var(--ok); color: var(--ok); font-weight: 600; }

@@ -9,6 +9,7 @@
 // TypeSafe blocks browser calls (CORS), so the page reaches it through the
 // companion server's relay (/api/relay/jev); Node calls it directly.
 
+import { avoids } from "../leading";
 import type { Move } from "../moves";
 import type { LeaderContext } from "../rules";
 import { FEELS, STINGERS, V01_PARTS } from "../types";
@@ -70,6 +71,12 @@ export function changeOptions(ctx: LeaderContext): Map<string, { text: string; m
     if (s === ctx.section) continue;
     opts.set(`jump_${s}`, { text: `jump to the ${s} section now`, move: { move: "jump_to_section", section: s, reason: `Taking it to the ${s}` } });
   }
+  // Leading (v0.4): nothing the genre avoids; while trading, nothing that drops the band out from under the trade.
+  for (const [id, o] of opts) {
+    const m = o.move as (Move & { part?: string; feel?: string; stinger?: string }) | null;
+    if (!m) continue;
+    if ((ctx.leading && avoids(ctx.leading, m)) || (ctx.trading && (m.move === "drop_layer" || m.move === "change_feel"))) opts.delete(id);
+  }
   return opts;
 }
 
@@ -93,7 +100,13 @@ export function jevState(ctx: LeaderContext): Record<string, unknown> {
     ...(ctx.harmony ? { harmony: ctx.harmony } : {}),
     ...(ctx.phrasing ? { phrasing: ctx.phrasing } : {}),
     ...(ctx.dynamics ? { dynamics: ctx.dynamics } : {}),
-    song: { section: ctx.section, bar_in_section: ctx.bar_in_section + 1, section_bars: ctx.section_bars, form: ctx.form, form_position: ctx.form_pos, ...(ctx.position ?? {}) },
+    song: {
+      section: ctx.section, bar_in_section: ctx.bar_in_section + 1, section_bars: ctx.section_bars, form: ctx.form, form_position: ctx.form_pos, ...(ctx.position ?? {}),
+      // Leading (v0.4): what this time through should be, against the last time.
+      ...(ctx.arc ? { plan_now: ctx.arc.now.idea, ...(ctx.arc.next ? { plan_next: `${ctx.arc.next.section}: ${ctx.arc.next.idea}` } : {}) } : {}),
+    },
+    ...(ctx.leading ? { leader: { personality: ctx.leading.personality, taste: ctx.leading.taste } } : {}),
+    ...(ctx.trading ? { trading: { ...ctx.trading, note: "the player's gaps are the band's turns, not the player stopping" } } : {}),
   };
 }
 

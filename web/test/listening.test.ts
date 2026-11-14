@@ -70,7 +70,10 @@ describe("song position", () => {
     expect(seen[0].position).toBeUndefined();
     expect(seen[1].position?.next_section).toBe("verse");
     // The prompt notes follow the fields; the fixed prompt stays the prefix.
-    expect(leaderSystem(seen[0])).toBe(LEADER_SYSTEM);
+    // Without listening groups, only the leading notes (v0.4) follow the fixed prompt.
+    expect(leaderSystem(seen[0]).startsWith(LEADER_SYSTEM)).toBe(true);
+    expect(leaderSystem(seen[0])).not.toContain('"position"');
+    expect(leaderSystem(seen[0])).toContain('"arc"');
     expect(leaderSystem(seen[1]).startsWith(LEADER_SYSTEM)).toBe(true);
     expect(leaderSystem(seen[1])).toContain('"position"');
     expect((jevState(seen[1]).song as Record<string, unknown>).next_section).toBe("verse");
