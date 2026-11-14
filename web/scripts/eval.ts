@@ -17,7 +17,7 @@ import type { BrainProvider } from "../src/core/brain";
 import type { ChartJSON } from "../src/core/chart";
 import { ruleLeader, type Leader } from "../src/core/conductor";
 import { runScenario, type RunResult } from "../src/core/eval/run";
-import { judge, RunView, scenariosFor, scoreOf, SCENARIOS, type CheckResult, type ScenarioGroup, type Song } from "../src/core/eval/scenarios";
+import { judge, LEADING_GROUPS, RunView, scenariosFor, scoreOf, SCENARIOS, type CheckResult, type ScenarioGroup, type Song } from "../src/core/eval/scenarios";
 import { listeningKey, parseListening } from "../src/core/listening";
 import { describeMove } from "../src/core/moves";
 import { RuleLeader } from "../src/core/rules";
@@ -131,7 +131,7 @@ for (const c of contenders)
     for (const { scenario, run } of scenariosFor(song, only))
       for (let seed = 1; seed <= seeds; seed++)
         jobs.push(async () => {
-          const res: RunResult = await runScenario({ chart: song.chart, modes: run.modes, bars: run.bars, cues: run.cues, followTempo: run.followTempo, leader: c.leader(), everyBars: c.everyBars(song), seed, listening });
+          const res: RunResult = await runScenario({ chart: song.chart, modes: run.modes, bars: run.bars, cues: run.cues, followTempo: run.followTempo, personality: run.personality, trade: run.trade, genre: run.genre, leader: c.leader(), everyBars: c.everyBars(song), seed, listening });
           const checks = judge(run, new RunView(res.plans, song.chart.bpm));
           return {
             brain: c.name,
@@ -175,7 +175,7 @@ const pct = (xs: number[], p: number) => {
   const s = [...xs].sort((a, b) => a - b);
   return s[Math.min(s.length - 1, Math.ceil((p / 100) * s.length) - 1)];
 };
-const GROUPS: [ScenarioGroup, string][] = [["follow", "follow"], ["phrasing", "phrasing"], ["harmony_rhythm", "harmony & rhythm"], ["tempo", "tempo"], ["cues", "cues"]];
+const GROUPS: [ScenarioGroup, string][] = [["follow", "follow"], ["phrasing", "phrasing"], ["harmony_rhythm", "harmony & rhythm"], ["tempo", "tempo"], ["cues", "cues"], ["arc", "arc"], ["personality", "personality"], ["genre", "genre"], ["trading", "trading"]];
 const groupsPresent = GROUPS.filter(([g]) => records.some((r) => r.group === g));
 const genres = [...new Set(SONGS.map((s) => s.genre))];
 const stretchOf = (rs: RunRecord[]) => {
@@ -186,6 +186,19 @@ const stretchOf = (rs: RunRecord[]) => {
 const L: string[] = [];
 L.push(`# Leader eval`, ``, `${new Date().toISOString().slice(0, 16)}Z · ${records.length} runs · ${seeds} seeds · listening: ${listeningKey(listening)} · measured from: ${host}`, ``);
 L.push(`Score: checks passed / checks over every run (stretch checks left out), mean over runs. Scenarios: [scenarios.md](../../scenarios.md).`, ``);
+// The v0.3 set, the leading scenarios v0.4 added, and the sparse ones (the bar agreed for Qwen in v0.4).
+const SPARSE = ["E1", "E2", "E7", "E8"];
+const sets: [string, (r: RunRecord) => boolean][] = [
+  ["v0.3 set", (r) => !LEADING_GROUPS.includes(r.group)],
+  ["v0.4 set", (r) => LEADING_GROUPS.includes(r.group)],
+  ["sparse", (r) => SPARSE.includes(r.scenario)],
+];
+L.push(`| Brain | ${sets.map(([n]) => n).join(" | ")} |`, `|---|${sets.map(() => "---").join("|")}|`);
+for (const c of contenders) {
+  const rs = records.filter((r) => r.brain === c.name);
+  L.push(`| ${c.name} | ${sets.map(([, f]) => f2(mean(rs.filter(f).map((r) => r.score)))).join(" | ")} |`);
+}
+L.push(``);
 L.push(`| Brain | Score | ${groupsPresent.map(([, n]) => n).join(" | ")} | ${genres.join(" | ")} | Stretch | Turns | Errors | p50 ms | p95 ms |`);
 L.push(`|---|---|${groupsPresent.map(() => "---").join("|")}|${genres.map(() => "---").join("|")}|---|---|---|---|---|`);
 for (const c of contenders) {
@@ -243,4 +256,4 @@ if (errs.length) L.push(``, `## Errors`, ``, ...errs.slice(0, 20).map((e) => `- 
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, "summary.md"), L.join("\n") + "\n");
 writeFileSync(join(out, "results.json"), JSON.stringify({ host, listening: listeningKey(listening), created: new Date().toISOString(), seeds, brains: contenders.map((c) => c.name), runs: records }));
-console.log(`\n${L.slice(0, 12 + contenders.length).join("\n")}\n\nwrote ${out}/summary.md and results.json`);
+console.log(`\n${L.slice(0, 16 + 2 * contenders.length).join("\n")}\n\nwrote ${out}/summary.md and results.json`);

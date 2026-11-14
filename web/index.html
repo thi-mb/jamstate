@@ -8,7 +8,7 @@
   </head>
   <body>
     <header>
-      <h1>jamstate <small>v0.3</small></h1>
+      <h1>jamstate <small>v0.4</small></h1>
       <p class="tag">An AI backing band that follows the song and reacts to how you play.</p>
     </header>
 
@@ -40,6 +40,7 @@
         </div>
         <div id="layers" class="chips"></div>
         <div id="heard" class="reason dim small"></div>
+        <div id="arc" class="reason dim small" title="The song so far and the bandleader's plan for this section and the next (v0.4)"></div>
         <div id="fretboard" class="fretboard" aria-label="Chord and scale tones"></div>
 
         <div class="move">
@@ -132,6 +133,9 @@
           <div class="row wrap"><button id="brain-test" title="Ask the brain once with a sample phrase">Test</button></div>
           <div id="brain-result" class="small"></div>
           <div id="server-status" class="dim small"></div>
+          <label title="How much the bandleader moves, within what suits the genre. Steady: only when you clearly change. Supportive: follows you closely. Adventurous: adds its own colour too.">Personality
+            <select id="personality"></select>
+          </label>
           <div class="small" title="What the bandleader hears beyond your energy. Every brain gets the same summary; the overlay always shows everything.">
             <div class="dim">Listening</div>
             <div id="listening" class="row wrap"></div>
@@ -167,7 +171,7 @@
 
         <fieldset>
           <legend>Output</legend>
-          <label class="inline"><input type="checkbox" id="builtin" checked /> built-in sound</label>
+          <label class="inline" title="Off: the page makes no sound, neither the band nor what you play (for playing through Ableton or another synth)"><input type="checkbox" id="builtin" checked /> built-in sound</label>
           <label>MIDI out <select id="midi-out"><option value="">none</option></select></label>
         </fieldset>
 
@@ -202,6 +206,8 @@
           <legend>Cues</legend>
           <p class="dim small">Keys 1–7 while you play. Breaks, build and take it down land on the next bar; the rest on the next phrase. The bandleader can't undo a cue for a phrase.</p>
           <div class="row wrap" id="cues"></div>
+          <p class="dim small">Key 8 trades fours: play a phrase, lay out, and a band instrument answers in the next four bars; come back in and it hands back.</p>
+          <div class="row wrap"><button id="trade" aria-pressed="false"><kbd>8</kbd>Trade fours</button></div>
         </fieldset>
 
         <fieldset>

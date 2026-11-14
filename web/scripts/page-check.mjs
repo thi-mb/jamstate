@@ -93,6 +93,43 @@ try {
   await page.selectOption("#genre-select", "jazz");
   const jazz = await page.$$eval("#band-parts .band-part:not(.out) select", (s) => s.map((x) => x.value));
   check(JSON.stringify(jazz) === JSON.stringify(["brushes", "upright", "piano"]), `picking jazz brings the jazz band: ${jazz.join(", ")}`);
+
+  // v0.4: personality, the arc line, trading fours on key 8 (Night Shift, still in jazz: the drums answer).
+  await page.selectOption("#chart-select", "night-shift.json");
+  await page.selectOption("#personality", "adventurous");
+  await page.selectOption("#sim", "busy");
+  await page.click("#start");
+  await page.waitForFunction(() => !/ready|count-in/.test(document.querySelector("#section")?.textContent ?? ""), null, { timeout: 15000 });
+  await page.keyboard.press("8");
+  check((await page.getAttribute("#trade", "aria-pressed")) === "true", "key 8 turns trading on");
+  // Play a turn, then lay out for one: the band should answer. The page reads the pretend player per bar.
+  const seen = new Set();
+  const watch = async (ms) => {
+    for (let t = 0; t < ms; t += 250) {
+      seen.add(await page.textContent("#feel"));
+      await page.waitForTimeout(250);
+    }
+  };
+  await watch(9000);
+  await page.selectOption("#sim", "silent");
+  await watch(9000);
+  await page.selectOption("#sim", "busy");
+  await watch(9000);
+  const solos = [...seen].filter((f) => / solo \d\/\d/.test(f ?? ""));
+  check(solos.length > 0, `a band instrument took a turn: ${solos.slice(0, 2).join(" | ") || [...seen].slice(-3).join(" | ")}`);
+  const arc = await page.textContent("#arc");
+  check(/^plan \((build|dynamic|locked)\): .+ · next /.test(arc ?? ""), `the arc line shows the plan: ${arc}`);
+  await page.click("#stop");
+  const [download2] = await Promise.all([page.waitForEvent("download"), page.click("#session-download")]);
+  const file2 = JSON.parse(readFileSync(await download2.path(), "utf8"));
+  const kinds = file2.controls.map((c) => c.kind);
+  check(file2.personality === "adventurous" && kinds.includes("trade") && kinds.includes("solo"), `the recording has the personality, the trade and the turns: ${file2.personality}, ${[...new Set(kinds)].join(", ")}`);
+  await page.click("#session-check");
+  await page.waitForFunction(() => /replay|differently|failed/.test(document.querySelector("#session-result")?.textContent ?? ""));
+  const res2 = await page.textContent("#session-result");
+  check(/replay exactly/.test(res2 ?? ""), `trading jam replay check: ${res2}`);
+  await page.keyboard.press("8");
+  await page.selectOption("#personality", "supportive");
 } catch (e) {
   check(false, `page run: ${e.message}`);
 }

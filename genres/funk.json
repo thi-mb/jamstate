@@ -158,5 +158,16 @@
     }
   },
   "forms": ["vamp: A 8 bars, B 8 bars, back to A", "verse 8 / chorus 8 / breakdown 4 on one chord / chorus"],
-  "progressions": ["i7 (one-chord vamp)", "i7 IV7", "I7 IV7", "i7 bVII7 bVI7 V7", "I9 bVII9 IV9"]
+  "progressions": ["i7 (one-chord vamp)", "i7 IV7", "I7 IV7", "i7 bVII7 bVI7 V7", "I9 bVII9 IV9"],
+  "leading": {
+    "activity": [0.2, 0.6],
+    "arc": "locked",
+    "favour": ["drop_layer", "add_layer", "fire_stinger:crash"],
+    "avoid": ["change_feel:double_time", "fire_stinger:riser"],
+    "trade": {
+      "bars": 4,
+      "soloists": ["chords", "guitar"]
+    },
+    "taste": "Funk: lock the groove and keep it. Change texture (a part in or out, a breakdown to drums and bass, a hit) rather than level or feel, and change little."
+  }
 }

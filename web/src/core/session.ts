@@ -17,6 +17,7 @@ import { Conductor, type Leader, type LeaderReply } from "./conductor";
 import { Engine, type BarPlan, type Control, type GovernorConfig } from "./engine";
 import { NoteTracker } from "./features";
 import { getGenre } from "./genres";
+import type { Personality } from "./leading";
 import { NO_LISTENING, parseListening } from "./listening";
 import { hash } from "./rand";
 import { V01_PARTS, type NoteEvent } from "./types";
@@ -70,6 +71,8 @@ export interface SessionFile {
    * older files: none (the v0.2 summary).
    */
   listening?: { at: number; groups: string }[];
+  /** The bandleader's personality at the start (v0.4); changes are in the controls. Missing: the governor as configured. */
+  personality?: Personality;
   /** The player's rating of a blind-test jam (see brain/blind.ts). */
   rating?: { stars: number; note?: string; fallback?: boolean };
 }
@@ -86,6 +89,8 @@ export interface SessionSetup {
   everyBars: number;
   /** Listening groups at the start ("position,harmony", "none"). */
   listening?: string;
+  /** The bandleader's personality at the start (v0.4). */
+  personality?: Personality;
 }
 
 const r4 = (x: number) => Math.round(x * 1e4) / 1e4;
@@ -162,6 +167,7 @@ export class SessionRecorder {
       controls: [...engine.controls],
       bars: [...this.bars],
       ...(this.listeningLog.length ? { listening: [...this.listeningLog] } : {}),
+      ...(s.personality ? { personality: s.personality } : {}),
     };
   }
 }
@@ -194,6 +200,7 @@ export function sessionEngine(f: SessionFile, controls: Control[]): Engine {
     // Files from before v0.3 don't say: they were played with the chart always nudging.
     config: { holdFreshTarget: false, ...f.config },
     script: controls,
+    personality: f.personality,
   });
 }
 

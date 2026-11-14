@@ -10,7 +10,9 @@ import { Engine, type BarPlan, type Cue } from "../engine";
 import { TempoFollower } from "../tempo";
 import { NoteTracker } from "../features";
 import { getGenre } from "../genres";
+import { DEFAULT_PERSONALITY, type Personality } from "../leading";
 import { DEFAULT_LISTENING, type Listening } from "../listening";
+import { Trader } from "../trade";
 import type { LeaderContext } from "../rules";
 import { SimPlayer, type SimMode } from "../simplayer";
 
@@ -29,6 +31,12 @@ export interface RunSpec {
   cues?: { bar: number; cue: Cue }[];
   /** Follow my tempo on (the band follows the player's tempo drift). */
   followTempo?: boolean;
+  /** The bandleader's personality (v0.4); supportive when left out. */
+  personality?: Personality;
+  /** Trading fours on from the start (v0.4). */
+  trade?: boolean;
+  /** Play the chart in another genre (same chart, another band and leader). */
+  genre?: string;
 }
 
 export interface Turn {
@@ -66,7 +74,8 @@ function recording(leader: Leader, turns: Turn[]): Leader {
 
 export async function runScenario(spec: RunSpec): Promise<RunResult> {
   const chart = loadChart(spec.chart);
-  const engine = new Engine(chart, { seed: spec.seed, genre: getGenre(chart.genre), config: { loop: true }, countIn: 0 });
+  const engine = new Engine(chart, { seed: spec.seed, genre: getGenre(spec.genre ?? chart.genre), config: { loop: true }, countIn: 0, personality: spec.personality ?? DEFAULT_PERSONALITY });
+  if (spec.trade) engine.setTrading(true);
   const turns: Turn[] = [];
   let pending: Promise<unknown> | null = null;
   const leader: Leader | null = spec.leader
@@ -81,6 +90,7 @@ export async function runScenario(spec: RunSpec): Promise<RunResult> {
   const conductor = new Conductor(engine, leader, spec.everyBars);
   conductor.listening = { ...(spec.listening ?? DEFAULT_LISTENING) };
   if (spec.followTempo) conductor.follower = new TempoFollower(chart.bpm);
+  conductor.trader = new Trader(engine);
   const sim = new SimPlayer(spec.seed & 0xffff);
   const tracker = new NoteTracker();
   const bpb = chart.beatsPerBar;
