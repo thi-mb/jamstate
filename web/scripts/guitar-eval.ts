@@ -1,5 +1,5 @@
 // npm run guitar-eval -- pitch [--set DIR] [--out DIR] [--limit N]
-// npm run guitar-eval -- chords [...] (scripts/guitar-chords.ts)
+// npm run guitar-eval -- chords [...] [--rewrite] (scripts/guitar-chords.ts)
 //
 // How well the audio listener hears a guitar (v0.5). Synthesised solo lines
 // (with hammer-ons and vibrato) and GuitarSet (CC BY 4.0; six players, five
@@ -34,7 +34,12 @@ const limit = Number(opt("limit") ?? Infinity);
 const [cmd] = args;
 const out = opt("out") ?? `../docs/eval/results/v0.5-${cmd}`;
 if (cmd === "chords") {
-  const { runChords } = await import("./guitar-chords");
+  const { runChords, write } = await import("./guitar-chords");
+  // --rewrite: only the write-up again, from summary.json (after npm run chords-browser).
+  if (args.includes("--rewrite")) {
+    write(out, JSON.parse(readFileSync(join(out, "summary.json"), "utf8")));
+    process.exit(0);
+  }
   const noModel = args.includes("--no-model");
   await runChords({ set, out, limit, every: Number(opt("every") ?? 3), model: !noModel });
   process.exit(0);
