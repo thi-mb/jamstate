@@ -17,7 +17,7 @@ import { parseScript, type SimMode } from "../simplayer";
 import type { Part } from "../types";
 
 export type CheckKind = "must" | "must_not" | "stretch";
-export type ScenarioGroup = "follow" | "phrasing" | "harmony_rhythm" | "tempo" | "cues" | "arc" | "personality" | "genre" | "trading";
+export type ScenarioGroup = "follow" | "phrasing" | "harmony_rhythm" | "tempo" | "cues" | "arc" | "personality" | "genre" | "trading" | "guitar";
 /** The groups v0.4 added (leading): reported apart from the v0.3 set. */
 export const LEADING_GROUPS: ScenarioGroup[] = ["arc", "personality", "genre", "trading"];
 
@@ -43,6 +43,8 @@ export interface ScenarioRun {
   trade?: boolean;
   /** Play the song in another genre (v0.4's genre-taste scenarios). */
   genre?: string;
+  /** A guitar jam (v0.5, eval/jams.ts) plays instead of the pretend player (its notes; with --input audio, heard through the audio listener). */
+  jam?: string;
 }
 
 export interface Song {
@@ -793,6 +795,64 @@ export const SCENARIOS: Scenario[] = [
   },
   ...CUE_SCENARIOS,
   ...LEADING_SCENARIOS,
+  // ---------- guitar jams (v0.5): a recorded jam heard through the audio listener ----------
+  {
+    id: "J1",
+    title: "Funk on guitar: digs in, scratches, stops, comes back",
+    group: "guitar",
+    songs: ["night-shift"],
+    // medium 0–7, busy with scratches 8–15, sparse 16–19, silent 20–23, busy 24–31.
+    build: () => ({
+      modes: [],
+      bars: 32,
+      jam: "night-shift-guitar",
+      checks: [
+        targetRisesBy(15, 7, 0.1),
+        { kind: "must", text: "by bar 23, target ≤ 0.4 or drums out", test: (v) => v.target(23) <= 0.4 + 1e-9 || !v.playing(23, "drums"), observe: (v) => v.target(23) },
+        noStinger(20, 23),
+        targetRisesBy(31, 23, 0.15),
+      ],
+    }),
+  },
+  {
+    id: "J2",
+    title: "Blues on guitar: a slow start, a build, a fade",
+    group: "guitar",
+    songs: ["blues-in-a"],
+    // sparse 0–5, medium 6–11, crescendo 12–15, busy 16–23, decrescendo 24–27, silent 28–33.
+    build: () => ({
+      modes: [],
+      bars: 34,
+      jam: "blues-in-a-guitar",
+      checks: [
+        targetAtMost(5, 0.45),
+        targetRisesBy(23, 5, 0.2),
+        noLower(16, 23),
+        // The decrescendo inside a phrase is E7's gap: a stretch check here too.
+        { ...noRaise(24, 27), kind: "stretch" },
+        { kind: "must", text: "by bar 33, target ≤ target at bar 23 − 0.15 or drums out", test: (v) => v.target(33) <= v.target(23) - 0.15 + 1e-9 || !v.playing(33, "drums"), observe: (v) => v.target(33) - v.target(23) },
+      ],
+    }),
+  },
+  {
+    id: "J3",
+    title: "Jazz on guitar: comping, a turn outside, a held chord",
+    group: "guitar",
+    songs: ["late-set"],
+    // sparse 0–7, medium 8–15, outside 16–19, medium 20–23, held 24–27, sparse 28–31.
+    build: () => ({
+      modes: [],
+      bars: 32,
+      jam: "late-set-guitar",
+      checks: [
+        // Comping sparsely in jazz: the band lays back by the target or by leaving a part out.
+        { kind: "must", text: "by bar 7, target ≤ 0.4 or a part of the lineup out", test: (v) => v.target(7) <= 0.4 + 1e-9 || v.at(7).lineup.some((p) => !v.at(7).layers.includes(p)), observe: (v) => v.target(7) },
+        targetRisesBy(15, 7, 0.05),
+        { kind: "must", text: "bars 16–23, drums and bass stay in", test: (v) => v.bars(16, 23).every((b) => v.playing(b, "drums") && v.playing(b, "bass")) },
+        { kind: "must", text: "by bar 31, target ≤ target at bar 15", test: (v) => v.target(31) <= v.target(15) + 1e-9, observe: (v) => v.target(31) - v.target(15) },
+      ],
+    }),
+  },
 ];
 
 /** Scenario runs for a song, with the scenario each belongs to. */
