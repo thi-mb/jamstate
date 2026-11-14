@@ -6,19 +6,28 @@
 import { loadChart, type ChartJSON } from "./chart";
 import { Conductor, ruleLeader } from "./conductor";
 import { Engine, type BarPlan } from "./engine";
-import { NoteTracker } from "./features";
+import { NoteTracker, type PlayedNote } from "./features";
 import { getGenre } from "./genres";
 import { RuleLeader } from "./rules";
-import { SessionRecorder, type SessionFile } from "./session";
+import { SessionRecorder, type SessionFile, type SessionInput } from "./session";
 import { parseScript, SimPlayer } from "./simplayer";
 
-export function recordSimSession(chartJson: ChartJSON, script: string, opts: { seed?: number; genre?: string; title?: string } = {}): SessionFile {
+export interface SimSessionOptions {
+  seed?: number;
+  genre?: string;
+  title?: string;
+  /** Change what the pretend player plays (e.g. audio input's unpitched hits). */
+  notes?: (n: PlayedNote) => PlayedNote;
+  input?: SessionInput;
+}
+
+export function recordSimSession(chartJson: ChartJSON, script: string, opts: SimSessionOptions = {}): SessionFile {
   const c = loadChart(chartJson);
   const genre = getGenre(opts.genre ?? c.genre);
   const seed = opts.seed ?? 11;
   const config = { loop: true };
   const engine = new Engine(c, { config, seed, genre, swing: null, countIn: c.countIn });
-  const rec = new SessionRecorder({ chart: chartJson, genre: genre.id, swing: null, band: engine.band, seed, countIn: c.countIn, config, leader: "rules", everyBars: 2 });
+  const rec = new SessionRecorder({ chart: chartJson, genre: genre.id, swing: null, band: engine.band, seed, countIn: c.countIn, config, leader: "rules", everyBars: 2, input: opts.input });
   const conductor = new Conductor(engine, ruleLeader(new RuleLeader()), 2);
   const sim = new SimPlayer(seed & 0xffff);
   const modes = parseScript(script);
@@ -33,7 +42,8 @@ export function recordSimSession(chartJson: ChartJSON, script: string, opts: { s
     rec.bar(p);
     if (p.kind === "count_in") return;
     const start = p.bar * c.beatsPerBar;
-    for (const n of sim.play(p, modes[Math.min(p.bar - c.countIn, modes.length - 1)], c.beatsPerBar)) {
+    for (const played of sim.play(p, modes[Math.min(p.bar - c.countIn, modes.length - 1)], c.beatsPerBar)) {
+      const n = opts.notes ? opts.notes(played) : played;
       rec.note(start + n.start, n.note, n.vel);
       rec.note(start + n.start + n.dur, n.note, 0);
       tracker.noteOn(start + n.start, n.note, n.vel);

@@ -2,9 +2,12 @@
 // IndexedDB and fetch. Optional pieces fail soft: the page plays without
 // MIDI, without a mic and without storage.
 
+import workletUrl from "../audio/input-worklet.ts?worker&url";
 import type {
   AudioFrameHandler,
   AudioInputDevice,
+  AudioInputHandle,
+  AudioInputOptions,
   AudioInputPlatform,
   KeyValueStore,
   MidiNoteHandler,
@@ -85,12 +88,17 @@ export class WebMidi implements MidiPlatform {
 
 // ---------- audio input ----------
 
-/** Microphone or interface input as mono frames. Wired up in v0.5 (guitar). */
+/**
+ * Microphone or interface input as 16 kHz mono frames, through an
+ * AudioWorklet that picks the channel and resamples (v0.5, ADR-0023).
+ */
 export class WebAudioInput implements AudioInputPlatform {
+  private loaded: Promise<void> | null = null;
+
   constructor(private ctx: () => AudioContext) {}
 
   available(): boolean {
-    return typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia;
+    return typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia && typeof AudioWorkletNode !== "undefined";
   }
 
   async devices(): Promise<AudioInputDevice[]> {
@@ -98,25 +106,61 @@ export class WebAudioInput implements AudioInputPlatform {
     return (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === "audioinput").map((d) => ({ id: d.deviceId, label: d.label || "input" }));
   }
 
-  async open(onFrame: AudioFrameHandler, deviceId?: string): Promise<() => void> {
+  async open(onFrame: AudioFrameHandler, opts: AudioInputOptions = {}): Promise<AudioInputHandle> {
     const stream = await navigator.mediaDevices.getUserMedia({
-      audio: { deviceId: deviceId ? { exact: deviceId } : undefined, echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+      audio: {
+        deviceId: opts.deviceId ? { exact: opts.deviceId } : undefined,
+        // Two channels, or Chrome mixes the Scarlett's mic and instrument inputs into one.
+        channelCount: { ideal: 2 },
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+      },
     });
     const ctx = this.ctx();
+    this.loaded ??= ctx.audioWorklet.addModule(workletUrl);
+    await this.loaded;
+    const track = stream.getAudioTracks()[0];
+    const settings = track?.getSettings() as MediaTrackSettings & { latency?: number; channelCount?: number };
     const src = ctx.createMediaStreamSource(stream);
-    const an = ctx.createAnalyser();
-    an.fftSize = 2048;
-    src.connect(an);
-    const buf = new Float32Array(an.fftSize);
-    // Polling an analyser is coarse but needs no worklet file; v0.5 can swap in an AudioWorklet behind this same interface.
-    const timer = setInterval(() => {
-      an.getFloatTimeDomainData(buf);
-      onFrame(buf.slice(), ctx.currentTime - buf.length / ctx.sampleRate);
-    }, (an.fftSize / ctx.sampleRate) * 1000);
-    return () => {
-      clearInterval(timer);
-      src.disconnect();
-      stream.getTracks().forEach((t) => t.stop());
+    const channels = Math.min(2, settings?.channelCount ?? src.channelCount ?? 1);
+    const node = new AudioWorkletNode(ctx, "jamstate-input", {
+      numberOfInputs: 2,
+      numberOfOutputs: 1,
+      outputChannelCount: [1],
+      channelCount: 2,
+      channelCountMode: "explicit",
+      channelInterpretation: "discrete",
+    });
+    node.port.onmessage = (e: MessageEvent<{ samples: Float32Array; time: number; ref?: Float32Array }>) => onFrame(e.data.samples, e.data.time, e.data.ref);
+    node.port.postMessage({ channel: opts.channel ?? "mix" });
+    src.connect(node, 0, 0);
+    // The worklet only runs while something pulls on it: a silent sink keeps it going.
+    const sink = ctx.createGain();
+    sink.gain.value = 0;
+    node.connect(sink).connect(ctx.destination);
+    const monitor = ctx.createGain();
+    monitor.gain.value = 0;
+    node.connect(monitor).connect(ctx.destination);
+    let ref: AudioNode | null = null;
+    return {
+      channels,
+      latency: typeof settings?.latency === "number" ? settings.latency : 0,
+      label: track?.label ?? "input",
+      setChannel: (c) => node.port.postMessage({ channel: c }),
+      setMonitor: (on) => monitor.gain.setTargetAtTime(on ? 1 : 0, ctx.currentTime, 0.02),
+      setReference: (n) => {
+        ref?.disconnect(node);
+        ref = (n as AudioNode | null) ?? null;
+        ref?.connect(node, 0, 1);
+      },
+      stop: () => {
+        ref?.disconnect(node);
+        src.disconnect();
+        node.disconnect();
+        node.port.onmessage = null;
+        stream.getTracks().forEach((t) => t.stop());
+      },
     };
   }
 }
@@ -223,6 +267,13 @@ export class ServerSessionStore implements SessionStore {
     const body = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(body.error ?? `HTTP ${r.status}`);
     return body.name;
+  }
+
+  /** The raw audio kept with a session (v0.5), saved beside it. */
+  async saveAudio(name: string, wav: Uint8Array): Promise<void> {
+    const r = await fetch(`${this.base}/${encodeURIComponent(name)}/audio`, { method: "POST", headers: { "content-type": "audio/wav" }, body: new Blob([wav as BlobPart], { type: "audio/wav" }), signal: AbortSignal.timeout(60_000) });
+    const body = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(body.error ?? `HTTP ${r.status}`);
   }
 }
 

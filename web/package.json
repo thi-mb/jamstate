@@ -18,7 +18,9 @@
     "sound-check": "node scripts/sound-check.mjs",
     "page-check": "node scripts/page-check.mjs",
     "latency-check": "node scripts/latency-check.mjs",
-    "eval": "vite-node scripts/eval.ts"
+    "eval": "vite-node scripts/eval.ts",
+    "guitar": "vite-node scripts/guitar.ts",
+    "audio-check": "node scripts/audio-check.mjs"
   },
   "devDependencies": {
     "typescript": "5.9.3",
