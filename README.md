@@ -135,7 +135,9 @@ velocity), then a note on each of eight clicks (the input delay).
 (comping) or auto. Under the fretboard, pick your **Tuning** (standard, half
 step down, drop D, DADGAD, open G, open D, bass) and **left-handed** for a
 mirrored neck; a note you play lights one place on the neck, near where your
-hand has been.
+hand has been. A strum is heard as a chord (leaning a little to the chart's)
+and lights a real shape near your hand; a muted chuck right after it repeats
+the chord ([ADR-0024](docs/decisions/0024-chord-detection.md)).
 
 What you play becomes notes, like MIDI, so everything the band listens for
 works on guitar ([ADR-0023](docs/decisions/0023-audio-input.md)). A hit with
@@ -150,6 +152,8 @@ cd web
 npm run guitar -- sim public/charts/night-shift.json "busy:8,silent:4" take.wav --channels 2 --on 2   # a rendered guitar take
 npm run audio-check   # headless Chrome with that take as the microphone (after npm run build)
 npm run guitar-eval -- pitch   # onsets and pitch on synthesised lines and GuitarSet (~/.local/share/jamstate/guitarset)
+npm run guitar-eval -- chords  # chords: the chroma against Basic Pitch on strums and GuitarSet comping
+npm run chords-browser         # both chord front ends' cost in headless Chrome
 ```
 
 ## With the jamstate server (optional companion)

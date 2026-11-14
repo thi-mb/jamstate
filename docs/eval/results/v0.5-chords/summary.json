@@ -1,0 +1,108 @@
+{
+  "detector": "jamstate-chords/0.5",
+  "date": "2026-11-14",
+  "window": [
+    0.03,
+    0.158
+  ],
+  "synth": {
+    "chroma": {
+      "n": 192,
+      "root": 0.896,
+      "majmin": 0.865,
+      "quality": 0.797
+    },
+    "model": {
+      "n": 192,
+      "root": 0.896,
+      "majmin": 0.849,
+      "quality": 0.802
+    }
+  },
+  "guitarset": {
+    "excerpts": 180,
+    "per_beat_excerpts": 60,
+    "per_beat": {
+      "chroma": {
+        "sheet": {
+          "n": 3360,
+          "root": 0.645,
+          "majmin": 0.499,
+          "quality": 0.294
+        },
+        "sheet+prior": {
+          "n": 3360,
+          "root": 0.702,
+          "majmin": 0.612,
+          "quality": 0.562
+        },
+        "played": {
+          "n": 3324,
+          "root": 0.647,
+          "majmin": 0.472,
+          "quality": 0.344
+        },
+        "played+prior": {
+          "n": 3324,
+          "root": 0.703,
+          "majmin": 0.549,
+          "quality": 0.455
+        }
+      },
+      "model": {
+        "sheet": {
+          "n": 3360,
+          "root": 0.684,
+          "majmin": 0.367,
+          "quality": 0.281
+        },
+        "sheet+prior": {
+          "n": 3360,
+          "root": 0.701,
+          "majmin": 0.426,
+          "quality": 0.366
+        },
+        "played": {
+          "n": 3324,
+          "root": 0.685,
+          "majmin": 0.449,
+          "quality": 0.4
+        },
+        "played+prior": {
+          "n": 3324,
+          "root": 0.701,
+          "majmin": 0.502,
+          "quality": 0.439
+        }
+      }
+    },
+    "listener": {
+      "strums": 14617,
+      "chords": 0.703,
+      "unpitched": 0.003,
+      "played": {
+        "n": 10233,
+        "root": 0.716,
+        "majmin": 0.604,
+        "quality": 0.51
+      },
+      "sheet": {
+        "n": 10277,
+        "root": 0.715,
+        "majmin": 0.664,
+        "quality": 0.612
+      }
+    }
+  },
+  "cost": {
+    "chroma": {
+      "ms_per_strum": 0.082,
+      "strum_to_answer_s": 0.158
+    },
+    "model": {
+      "seconds_per_second": 0.741,
+      "window_s": 2.34,
+      "strum_to_answer_s": 2.498
+    }
+  }
+}
