@@ -201,7 +201,7 @@ function browserLines(out: string): string[] {
     "",
   ];
 }
-function write(out: string, summary: Record<string, unknown>): void {
+export function write(out: string, summary: Record<string, unknown>): void {
   mkdirSync(out, { recursive: true });
   writeFileSync(join(out, "summary.json"), JSON.stringify(summary, null, 2) + "\n");
   const pct = (x: number) => `${Math.round(x * 100)}%`;
