@@ -15,6 +15,9 @@ import { DEFAULT_LISTENING, type Listening } from "../listening";
 import { Trader } from "../trade";
 import type { LeaderContext } from "../rules";
 import { SimPlayer, type SimMode } from "../simplayer";
+import { GuitarEar } from "../audio/ear";
+import type { SessionFile } from "../session";
+import { jamBars } from "./jams";
 
 export interface RunSpec {
   chart: ChartJSON;
@@ -37,6 +40,10 @@ export interface RunSpec {
   trade?: boolean;
   /** Play the chart in another genre (same chart, another band and leader). */
   genre?: string;
+  /** The player's notes rendered as a guitar and heard through the audio listener (v0.5), not as MIDI. */
+  audio?: boolean;
+  /** A recorded jam plays instead of the pretend player (v0.5): its notes bar by bar, whatever the band does. */
+  jam?: SessionFile;
 }
 
 export interface Turn {
@@ -93,6 +100,8 @@ export async function runScenario(spec: RunSpec): Promise<RunResult> {
   conductor.trader = new Trader(engine);
   const sim = new SimPlayer(spec.seed & 0xffff);
   const tracker = new NoteTracker();
+  const ear = spec.audio ? new GuitarEar(chart, spec.seed) : null;
+  const jam = spec.jam ? jamBars(spec.jam) : null;
   const bpb = chart.beatsPerBar;
   const plans: BarPlan[] = [];
   const modeAt = (bar: number) => spec.modes[Math.min(bar, spec.modes.length - 1)];
@@ -103,7 +112,9 @@ export async function runScenario(spec: RunSpec): Promise<RunResult> {
     if (!p) return;
     plans.push(p);
     const start = p.bar * bpb;
-    for (const n of sim.play(p, modeAt(p.bar), bpb, { bpm: p.bpm, chartBpm: chart.bpm, phraseBars: chart.phraseBars })) {
+    const notes = jam ? (jam[p.bar] ?? []) : sim.play(p, modeAt(p.bar), bpb, { bpm: p.bpm, chartBpm: chart.bpm, phraseBars: chart.phraseBars });
+    if (ear) return ear.play(p, notes);
+    for (const n of notes) {
       tracker.noteOn(start + n.start, n.note, n.vel);
       tracker.noteOff(start + n.start + n.dur, n.note);
     }
@@ -114,6 +125,10 @@ export async function runScenario(spec: RunSpec): Promise<RunResult> {
   commit();
   commit();
   for (let k = 0; k < plans.length; k++) {
+    for (const e of ear?.hearUntilEndOf(k) ?? []) {
+      if (e.kind === "on") tracker.noteOn(e.beat, e.note, e.vel);
+      else tracker.noteOff(e.beat, e.note);
+    }
     conductor.barFinished(plans[k], tracker.bar(k * bpb, bpb));
     if (pending) {
       await pending;

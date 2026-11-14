@@ -1,6 +1,6 @@
 // npm run eval -- [--brains rules,jev,claude,qwen,laya] [--seeds 3] [--only E1,E5] [--songs night-shift,...]
 //                 [--out dir] [--label host] [--parallel 4] [--url U] [--model M] [--claude-model M] [--laya-url U]
-//                 [--listening default|none|all|position,harmony,...] [--slots qwen=1,laya=1]
+//                 [--listening default|none|all|position,harmony,...] [--slots qwen=1,laya=1] [--input midi|audio]
 //
 // The leader eval (docs/eval/scenarios.md). Every scenario runs on its songs,
 // with each seed, for each brain: a pretend player plays and the brain leads
@@ -22,6 +22,16 @@ import { listeningKey, parseListening } from "../src/core/listening";
 import { describeMove } from "../src/core/moves";
 import { RuleLeader } from "../src/core/rules";
 import { nodeBrain } from "./brains";
+import { JAMS, synthJam } from "../src/core/eval/jams";
+import type { SessionFile } from "../src/core/session";
+import { existsSync } from "node:fs";
+
+/** A guitar jam: Thiago's recorded one when it's in docs/eval/jams/, else the synthesised one. */
+function jamSession(id: string, song: Song): SessionFile {
+  const real = new URL(`../../docs/eval/jams/${id}.json`, import.meta.url);
+  if (existsSync(real)) return JSON.parse(readFileSync(real, "utf8")) as SessionFile;
+  return synthJam(JAMS.find((j) => j.id === id)!, song.chart);
+}
 
 const args = process.argv.slice(2);
 const opt = (name: string) => {
@@ -37,6 +47,8 @@ const host = opt("label") ?? "unlabelled host";
 const parallel = Number(opt("parallel") ?? 4);
 const TIMEOUT_MS = Number(opt("timeout") ?? 20_000);
 const listening = parseListening(opt("listening") ?? "default");
+// audio: the pretend player rendered as a guitar and heard through the audio listener (v0.5).
+const input = opt("input") ?? "midi";
 const slots: Record<string, number> = { qwen: 1, laya: 1 };
 for (const kv of (opt("slots") ?? "").split(",").filter(Boolean)) {
   const [k, v] = kv.split("=");
@@ -131,7 +143,7 @@ for (const c of contenders)
     for (const { scenario, run } of scenariosFor(song, only))
       for (let seed = 1; seed <= seeds; seed++)
         jobs.push(async () => {
-          const res: RunResult = await runScenario({ chart: song.chart, modes: run.modes, bars: run.bars, cues: run.cues, followTempo: run.followTempo, personality: run.personality, trade: run.trade, genre: run.genre, leader: c.leader(), everyBars: c.everyBars(song), seed, listening });
+          const res: RunResult = await runScenario({ chart: song.chart, modes: run.modes, bars: run.bars, cues: run.cues, followTempo: run.followTempo, personality: run.personality, trade: run.trade, genre: run.genre, leader: c.leader(), everyBars: c.everyBars(song), seed, listening, audio: input === "audio", jam: run.jam ? jamSession(run.jam, song) : undefined });
           const checks = judge(run, new RunView(res.plans, song.chart.bpm));
           return {
             brain: c.name,
@@ -175,7 +187,7 @@ const pct = (xs: number[], p: number) => {
   const s = [...xs].sort((a, b) => a - b);
   return s[Math.min(s.length - 1, Math.ceil((p / 100) * s.length) - 1)];
 };
-const GROUPS: [ScenarioGroup, string][] = [["follow", "follow"], ["phrasing", "phrasing"], ["harmony_rhythm", "harmony & rhythm"], ["tempo", "tempo"], ["cues", "cues"], ["arc", "arc"], ["personality", "personality"], ["genre", "genre"], ["trading", "trading"]];
+const GROUPS: [ScenarioGroup, string][] = [["follow", "follow"], ["phrasing", "phrasing"], ["harmony_rhythm", "harmony & rhythm"], ["tempo", "tempo"], ["cues", "cues"], ["arc", "arc"], ["personality", "personality"], ["genre", "genre"], ["trading", "trading"], ["guitar", "guitar jams"]];
 const groupsPresent = GROUPS.filter(([g]) => records.some((r) => r.group === g));
 const genres = [...new Set(SONGS.map((s) => s.genre))];
 const stretchOf = (rs: RunRecord[]) => {
@@ -184,7 +196,7 @@ const stretchOf = (rs: RunRecord[]) => {
 };
 
 const L: string[] = [];
-L.push(`# Leader eval`, ``, `${new Date().toISOString().slice(0, 16)}Z · ${records.length} runs · ${seeds} seeds · listening: ${listeningKey(listening)} · measured from: ${host}`, ``);
+L.push(`# Leader eval`, ``, `${new Date().toISOString().slice(0, 16)}Z · ${records.length} runs · ${seeds} seeds · listening: ${listeningKey(listening)} · input: ${input} · measured from: ${host}`, ``);
 L.push(`Score: checks passed / checks over every run (stretch checks left out), mean over runs. Scenarios: [scenarios.md](../../scenarios.md).`, ``);
 // The v0.3 set, the leading scenarios v0.4 added, and the sparse ones (the bar agreed for Qwen in v0.4).
 const SPARSE = ["E1", "E2", "E7", "E8"];
@@ -255,5 +267,5 @@ if (errs.length) L.push(``, `## Errors`, ``, ...errs.slice(0, 20).map((e) => `- 
 
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, "summary.md"), L.join("\n") + "\n");
-writeFileSync(join(out, "results.json"), JSON.stringify({ host, listening: listeningKey(listening), created: new Date().toISOString(), seeds, brains: contenders.map((c) => c.name), runs: records }));
+writeFileSync(join(out, "results.json"), JSON.stringify({ host, listening: listeningKey(listening), input, created: new Date().toISOString(), seeds, brains: contenders.map((c) => c.name), runs: records }));
 console.log(`\n${L.slice(0, 16 + 2 * contenders.length).join("\n")}\n\nwrote ${out}/summary.md and results.json`);

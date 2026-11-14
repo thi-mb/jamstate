@@ -3,6 +3,8 @@ import type { ChartJSON } from "../src/core/chart";
 import { ruleLeader } from "../src/core/conductor";
 import { Engine } from "../src/core/engine";
 import { runScenario } from "../src/core/eval/run";
+import { jamBars, JAMS, synthJam } from "../src/core/eval/jams";
+import { GuitarEar } from "../src/core/audio/ear";
 import { judge, RunView, SCENARIOS, scenariosFor, scoreOf, songShape, type Song } from "../src/core/eval/scenarios";
 import { loadChart } from "../src/core/chart";
 import { RuleLeader } from "../src/core/rules";
@@ -87,10 +89,12 @@ describe("eval scenarios", () => {
   it("every scenario builds on its songs, plays its script and its checks read bars that exist", async () => {
     for (const s of SONGS)
       for (const { scenario, run } of scenariosFor(s)) {
-        expect(run.modes.length, scenario.id).toBeGreaterThan(0);
+        if (!run.jam) expect(run.modes.length, scenario.id).toBeGreaterThan(0);
         expect(run.modes.length, scenario.id).toBeLessThanOrEqual(run.bars);
         expect(run.checks.length, scenario.id).toBeGreaterThan(0);
-        const r = await runScenario({ chart: s.chart, modes: run.modes, bars: run.bars, leader: ruleLeader(new RuleLeader()), everyBars: 2, seed: 1 });
+        const jam = run.jam ? synthJam(JAMS.find((j) => j.id === run.jam)!, s.chart) : undefined;
+        if (jam) expect(jamBars(jam).length, scenario.id).toBeGreaterThanOrEqual(run.bars);
+        const r = await runScenario({ chart: s.chart, modes: run.modes, bars: run.bars, leader: ruleLeader(new RuleLeader()), everyBars: 2, seed: 1, jam });
         expect(r.plans, scenario.id).toHaveLength(run.bars);
         expect(() => judge(run, new RunView(r.plans, s.chart.bpm)), `${scenario.id} ${s.id}`).not.toThrow();
       }
@@ -130,5 +134,39 @@ describe("eval scenarios", () => {
   it("stretch checks don't count in the score", () => {
     expect(scoreOf([{ kind: "must", text: "", pass: true }, { kind: "stretch", text: "", pass: false }])).toBe(1);
     expect(scoreOf([{ kind: "stretch", text: "", pass: true }])).toBeNull();
+  });
+});
+
+describe("guitar in the eval (v0.5)", () => {
+  it("the ear hears the pretend player's notes where they were played, a bar late at most", () => {
+    const c = loadChart(song("blues-in-a").chart);
+    const engine = new Engine(c, { seed: 3 });
+    const sim = new SimPlayer(4);
+    const ear = new GuitarEar(c, 1);
+    const played: { beat: number; note: number }[] = [];
+    const heard: { beat: number; note: number }[] = [];
+    for (let k = 0; k < 6; k++) {
+      const p = engine.nextBar()!;
+      const notes = sim.play(p, "medium", c.beatsPerBar, { bpm: p.bpm, chartBpm: c.bpm, phraseBars: 4 });
+      ear.play(p, notes);
+      played.push(...notes.map((n) => ({ beat: p.bar * c.beatsPerBar + n.start, note: n.note })));
+      if (k > 0) heard.push(...ear.hearUntilEndOf(k - 1).filter((e) => e.kind === "on").map((e) => ({ beat: e.beat, note: e.note })));
+    }
+    const early = played.filter((n) => n.beat < 5 * c.beatsPerBar);
+    const found = early.filter((n) => heard.some((h) => Math.abs(h.beat - n.beat) < 0.1 && (h.note - n.note) % 12 === 0));
+    expect(early.length).toBeGreaterThan(10);
+    expect(found.length / early.length).toBeGreaterThanOrEqual(0.85);
+  });
+
+  it("a jam plays back bar by bar from its session, and a run through the ear is repeatable", async () => {
+    const s = song("night-shift");
+    const jam = synthJam(JAMS[0], s.chart);
+    const bars = jamBars(jam);
+    expect(bars).toHaveLength(32);
+    expect(bars[20].length + bars[21].length).toBe(0); // the silent stretch
+    expect(bars[8].some((n) => n.note === -1)).toBe(true); // scratches
+    const run = () => runScenario({ chart: s.chart, modes: [], bars: 12, leader: ruleLeader(new RuleLeader()), everyBars: 2, seed: 1, jam, audio: true });
+    const [a, b] = [await run(), await run()];
+    expect(a.plans.map((p) => p.target)).toEqual(b.plans.map((p) => p.target));
   });
 });
