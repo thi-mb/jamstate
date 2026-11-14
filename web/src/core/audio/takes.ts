@@ -6,6 +6,7 @@
 import type { SessionFile } from "../session";
 import { UNPITCHED } from "../features";
 import { rng } from "../rand";
+import { SR } from "./dsp";
 import { GUITAR_STRINGS } from "../fretboard";
 import { voiceGuitar, type Quality } from "./chords";
 import { renderGuitar, strum, type GuitarOptions, type PluckNote } from "./pluck";
@@ -94,4 +95,70 @@ export function strumTake(seed: number, count = 16): { x: Float32Array; truth: {
     t += 1.2;
   }
   return { x: renderGuitar(plucks, t + 0.5, { seed, noiseDb: -72 }), truth };
+}
+
+/**
+ * A band for the bleed gate (v0.5 layer 4): chords strummed twice a bar on
+ * a keys-like pluck, a bass line on roots and fifths, and a kick and hat,
+ * 120 bpm, for `seconds`.
+ */
+export function bandTake(seed: number, seconds: number): Float32Array {
+  const r = rng(seed + 100);
+  const plucks: PluckNote[] = [];
+  const beat = 0.5;
+  for (let bar = 0; bar * 4 * beat < seconds; bar++) {
+    const root = Math.floor(r() * 12);
+    const v = voiceGuitar(root, r() < 0.5 ? "" : "m7", GUITAR_STRINGS, 3 + Math.floor(r() * 5));
+    const t = bar * 4 * beat;
+    if (v) for (const at of [0, 2]) plucks.push(...strum(t + at * beat, v.notes.slice(-4), { vel: 70, dur: 0.9, spread: 0.004 }));
+    const bass = 28 + root;
+    for (let b = 0; b < 4; b++) plucks.push({ time: t + b * beat, note: b === 2 ? bass + 7 : bass, vel: 90, dur: 0.4 });
+  }
+  const x = renderGuitar(plucks, seconds, { seed: seed + 100, peakDb: -12 });
+  // Drums: a kick on 1 and 3, a hat on every eighth.
+  for (let k = 0; k * beat / 2 < seconds; k++) {
+    const at = Math.round(((k * beat) / 2) * SR);
+    for (let i = 0; i < 2400 && at + i < x.length; i++) {
+      const t = i / SR;
+      if (k % 4 === 0) x[at + i] += 0.35 * Math.sin(2 * Math.PI * (50 + 80 * Math.exp(-t * 30)) * t) * Math.exp(-t * 18);
+      if (i < 800) x[at + i] += 0.06 * (r() * 2 - 1) * Math.exp(-t * 120);
+    }
+  }
+  return x;
+}
+
+/**
+ * The band through speakers and a room into the input: `delay` seconds
+ * late, a little darker, with a short reverb tail, at `gainDb`.
+ */
+export function throughRoom(x: Float32Array, opts: { delay?: number; gainDb?: number; seed?: number } = {}): Float32Array {
+  const d = Math.round((opts.delay ?? 0.035) * SR);
+  const g = Math.pow(10, (opts.gainDb ?? -6) / 20);
+  const y = new Float32Array(x.length);
+  let lp = 0;
+  for (let i = 0; i < x.length; i++) {
+    lp += 0.45 * ((x[i - d] ?? 0) - lp);
+    y[i] = lp;
+  }
+  // Schroeder reverb: four combs, two all-passes.
+  const wet = new Float32Array(x.length);
+  for (const [len, fb] of [[557, 0.77], [593, 0.75], [641, 0.73], [683, 0.71]]) {
+    const buf = new Float32Array(len);
+    for (let i = 0, j = 0; i < x.length; i++, j = (j + 1) % len) {
+      const o = buf[j];
+      buf[j] = y[i] + o * fb;
+      wet[i] += o / 4;
+    }
+  }
+  for (const len of [179, 61]) {
+    const buf = new Float32Array(len);
+    for (let i = 0, j = 0; i < x.length; i++, j = (j + 1) % len) {
+      const o = buf[j];
+      const v = wet[i] + 0.6 * o;
+      buf[j] = v;
+      wet[i] = o - 0.6 * v;
+    }
+  }
+  for (let i = 0; i < x.length; i++) y[i] = g * (y[i] + 0.35 * wet[i]);
+  return y;
 }
