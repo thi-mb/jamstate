@@ -35,10 +35,14 @@ phrase, then hands back when you come in." Three forces:
   phrase), so a replay plays the turns without a trader.
 - **The soloist** (`web/src/core/solo.ts`) is the genre's next soloist in the
   lineup, in rotation (jazz: drums, then keys). Keys, guitar or bass answer
-  the player's phrase: the same rhythm, loosened, on new notes from the
-  genre's scale for each chord with chord tones on the beats, up through the
-  first half and down through the second, ending early so the last beat is
-  the player's. A drum solo plays alone (as a jazz band lays out for the
+  with the player's own phrase, moved into the instrument's range: played
+  back, answered with the same rhythm and the notes turned round, its first
+  half repeated, then its opening landing on a held chord tone, ending early
+  so the last beat is the player's. A note that clashes with the chord
+  sounding moves to the nearest note the player used that fits (chord tone,
+  or the chord's own scale off the beat), else to a chord tone. (First
+  version: new notes from the genre's wide scale, which Thiago heard as too
+  many outside notes on Night Shift.) A drum solo plays alone (as a jazz band lays out for the
   drummer) and answers the player's phrase too: the busiest bar of their
   rhythm, on the eighth grid, stated on the snare with kick under their
   accents, answered on the toms, filled in with ghost notes, then half of it
