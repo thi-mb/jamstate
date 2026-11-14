@@ -1,6 +1,6 @@
 # 0021. The leading layer: genre taste, personality and the song arc
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-09
 
 ## Context

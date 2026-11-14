@@ -1,6 +1,6 @@
 # 0022. Trading fours: a mode, the player's phrase, a band soloist
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-09
 
 ## Context
