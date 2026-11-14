@@ -149,6 +149,7 @@
           <div class="row wrap">
             <label class="inline" title="Which input of the device: on a Scarlett Solo, 1 is the mic and 2 the instrument">Channel <select id="audio-channel" disabled><option value="1">1</option><option value="2">2</option><option value="mix">both</option></select></label>
             <label class="inline" title="Play the input through the page (only for interfaces without direct monitoring: it adds the browser's delay)"><input type="checkbox" id="audio-monitor" disabled /> hear input</label>
+            <label class="inline" title="Auto hears single notes, chords and muted strums. Pick single notes for lead lines, chords for comping.">Hears <select id="audio-mode" disabled><option value="auto">auto</option><option value="single">single notes</option><option value="chords">chords</option></select></label>
             <button id="calibrate" disabled title="Silence, soft, hard, then a note on each click: sets the noise gate, how hard you play and the input delay">Calibrate</button>
           </div>
           <div id="audio-meter" class="meter input-meter" hidden><div id="audio-level" class="fill player"></div><span id="audio-clip" class="clip" hidden>clip</span></div>
@@ -172,6 +173,12 @@
           <label title="Guitar neck or two octaves of piano. Your notes: green inside, yellow colour, red outside.">Fretboard
             <select id="fretboard-kind"><option value="guitar">guitar</option><option value="piano">piano</option><option value="off">off</option></select>
           </label>
+          <div class="row wrap">
+            <label class="inline" title="The guitar's tuning, for the neck and for what an audio input can hear">Tuning
+              <select id="fretboard-tuning"><option value="standard">standard</option><option value="half-down">half step down</option><option value="drop-d">drop D</option><option value="dadgad">DADGAD</option><option value="open-g">open G</option><option value="open-d">open D</option><option value="bass">bass</option></select>
+            </label>
+            <label class="inline" title="Mirror the neck: the nut on the right"><input type="checkbox" id="fretboard-left" /> left-handed</label>
+          </div>
           <label title="Scale: one scale for the whole song (from its key and genre) held still, the chord tones lit on top; a ring marks a chord tone outside the scale. Changes: each chord's tones and its scale, the next chord fading in on the beat before it changes.">
             <select id="fretboard-mode"><option value="scale">scale</option><option value="changes">changes</option></select>
           </label>

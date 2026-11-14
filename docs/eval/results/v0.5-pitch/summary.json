@@ -1,0 +1,411 @@
+{
+  "detector": "jamstate-listener/0.5",
+  "date": "2026-11-14",
+  "synth": {
+    "onsets": {
+      "precision": 0.998,
+      "recall": 0.978,
+      "f1": 0.988,
+      "notes": 632,
+      "octave_errors": 0
+    },
+    "notes": {
+      "precision": 0.998,
+      "recall": 0.978,
+      "f1": 0.988,
+      "notes": 632,
+      "octave_errors": 0
+    }
+  },
+  "guitarset": {
+    "mic/comp": {
+      "onsets": {
+        "precision": 0.83,
+        "recall": 0.544,
+        "f1": 0.658,
+        "notes": 21296,
+        "octave_errors": 0
+      }
+    },
+    "mic/comp/BN": {
+      "onsets": {
+        "precision": 0.812,
+        "recall": 0.651,
+        "f1": 0.722,
+        "notes": 3103,
+        "octave_errors": 0
+      }
+    },
+    "mic/comp/Funk": {
+      "onsets": {
+        "precision": 0.753,
+        "recall": 0.638,
+        "f1": 0.691,
+        "notes": 4254,
+        "octave_errors": 0
+      }
+    },
+    "mic/comp/Jazz": {
+      "onsets": {
+        "precision": 0.828,
+        "recall": 0.609,
+        "f1": 0.702,
+        "notes": 2731,
+        "octave_errors": 0
+      }
+    },
+    "mic/comp/Rock": {
+      "onsets": {
+        "precision": 0.907,
+        "recall": 0.436,
+        "f1": 0.589,
+        "notes": 5119,
+        "octave_errors": 0
+      }
+    },
+    "mic/comp/SS": {
+      "onsets": {
+        "precision": 0.871,
+        "recall": 0.487,
+        "f1": 0.625,
+        "notes": 6089,
+        "octave_errors": 0
+      }
+    },
+    "mic/solo": {
+      "onsets": {
+        "precision": 0.813,
+        "recall": 0.892,
+        "f1": 0.851,
+        "notes": 15996,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.634,
+        "recall": 0.661,
+        "f1": 0.647,
+        "notes": 16861,
+        "octave_errors": 443
+      },
+      "alone": {
+        "precision": 0.645,
+        "recall": 0.723,
+        "f1": 0.682,
+        "notes": 14882,
+        "octave_errors": 330
+      }
+    },
+    "mic/solo/BN": {
+      "onsets": {
+        "precision": 0.791,
+        "recall": 0.885,
+        "f1": 0.835,
+        "notes": 2531,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.629,
+        "recall": 0.69,
+        "f1": 0.658,
+        "notes": 2583,
+        "octave_errors": 63
+      },
+      "alone": {
+        "precision": 0.629,
+        "recall": 0.712,
+        "f1": 0.668,
+        "notes": 2452,
+        "octave_errors": 59
+      }
+    },
+    "mic/solo/Funk": {
+      "onsets": {
+        "precision": 0.814,
+        "recall": 0.878,
+        "f1": 0.845,
+        "notes": 3688,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.631,
+        "recall": 0.651,
+        "f1": 0.641,
+        "notes": 3857,
+        "octave_errors": 149
+      },
+      "alone": {
+        "precision": 0.63,
+        "recall": 0.694,
+        "f1": 0.66,
+        "notes": 3438,
+        "octave_errors": 99
+      }
+    },
+    "mic/solo/Jazz": {
+      "onsets": {
+        "precision": 0.838,
+        "recall": 0.895,
+        "f1": 0.866,
+        "notes": 2730,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.685,
+        "recall": 0.711,
+        "f1": 0.698,
+        "notes": 2810,
+        "octave_errors": 66
+      },
+      "alone": {
+        "precision": 0.69,
+        "recall": 0.75,
+        "f1": 0.719,
+        "notes": 2597,
+        "octave_errors": 55
+      }
+    },
+    "mic/solo/Rock": {
+      "onsets": {
+        "precision": 0.806,
+        "recall": 0.903,
+        "f1": 0.852,
+        "notes": 3285,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.599,
+        "recall": 0.614,
+        "f1": 0.606,
+        "notes": 3593,
+        "octave_errors": 74
+      },
+      "alone": {
+        "precision": 0.624,
+        "recall": 0.719,
+        "f1": 0.668,
+        "notes": 2946,
+        "octave_errors": 55
+      }
+    },
+    "mic/solo/SS": {
+      "onsets": {
+        "precision": 0.815,
+        "recall": 0.899,
+        "f1": 0.855,
+        "notes": 3762,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.637,
+        "recall": 0.658,
+        "f1": 0.647,
+        "notes": 4018,
+        "octave_errors": 91
+      },
+      "alone": {
+        "precision": 0.659,
+        "recall": 0.742,
+        "f1": 0.698,
+        "notes": 3449,
+        "octave_errors": 62
+      }
+    },
+    "pickup/comp": {
+      "onsets": {
+        "precision": 0.856,
+        "recall": 0.576,
+        "f1": 0.689,
+        "notes": 21296,
+        "octave_errors": 0
+      }
+    },
+    "pickup/comp/BN": {
+      "onsets": {
+        "precision": 0.856,
+        "recall": 0.676,
+        "f1": 0.755,
+        "notes": 3103,
+        "octave_errors": 0
+      }
+    },
+    "pickup/comp/Funk": {
+      "onsets": {
+        "precision": 0.765,
+        "recall": 0.669,
+        "f1": 0.714,
+        "notes": 4254,
+        "octave_errors": 0
+      }
+    },
+    "pickup/comp/Jazz": {
+      "onsets": {
+        "precision": 0.863,
+        "recall": 0.637,
+        "f1": 0.733,
+        "notes": 2731,
+        "octave_errors": 0
+      }
+    },
+    "pickup/comp/Rock": {
+      "onsets": {
+        "precision": 0.929,
+        "recall": 0.482,
+        "f1": 0.635,
+        "notes": 5119,
+        "octave_errors": 0
+      }
+    },
+    "pickup/comp/SS": {
+      "onsets": {
+        "precision": 0.893,
+        "recall": 0.511,
+        "f1": 0.65,
+        "notes": 6089,
+        "octave_errors": 0
+      }
+    },
+    "pickup/solo": {
+      "onsets": {
+        "precision": 0.882,
+        "recall": 0.913,
+        "f1": 0.897,
+        "notes": 15996,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.795,
+        "recall": 0.781,
+        "f1": 0.788,
+        "notes": 16861,
+        "octave_errors": 239
+      },
+      "alone": {
+        "precision": 0.81,
+        "recall": 0.854,
+        "f1": 0.831,
+        "notes": 14882,
+        "octave_errors": 112
+      }
+    },
+    "pickup/solo/BN": {
+      "onsets": {
+        "precision": 0.887,
+        "recall": 0.917,
+        "f1": 0.901,
+        "notes": 2531,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.823,
+        "recall": 0.834,
+        "f1": 0.829,
+        "notes": 2583,
+        "octave_errors": 18
+      },
+      "alone": {
+        "precision": 0.826,
+        "recall": 0.863,
+        "f1": 0.844,
+        "notes": 2452,
+        "octave_errors": 16
+      }
+    },
+    "pickup/solo/Funk": {
+      "onsets": {
+        "precision": 0.878,
+        "recall": 0.903,
+        "f1": 0.891,
+        "notes": 3688,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.805,
+        "recall": 0.792,
+        "f1": 0.798,
+        "notes": 3857,
+        "octave_errors": 91
+      },
+      "alone": {
+        "precision": 0.805,
+        "recall": 0.843,
+        "f1": 0.824,
+        "notes": 3438,
+        "octave_errors": 37
+      }
+    },
+    "pickup/solo/Jazz": {
+      "onsets": {
+        "precision": 0.91,
+        "recall": 0.918,
+        "f1": 0.914,
+        "notes": 2730,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.834,
+        "recall": 0.818,
+        "f1": 0.826,
+        "notes": 2810,
+        "octave_errors": 38
+      },
+      "alone": {
+        "precision": 0.841,
+        "recall": 0.861,
+        "f1": 0.851,
+        "notes": 2597,
+        "octave_errors": 23
+      }
+    },
+    "pickup/solo/Rock": {
+      "onsets": {
+        "precision": 0.864,
+        "recall": 0.915,
+        "f1": 0.889,
+        "notes": 3285,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.748,
+        "recall": 0.725,
+        "f1": 0.736,
+        "notes": 3593,
+        "octave_errors": 35
+      },
+      "alone": {
+        "precision": 0.783,
+        "recall": 0.848,
+        "f1": 0.814,
+        "notes": 2946,
+        "octave_errors": 13
+      }
+    },
+    "pickup/solo/SS": {
+      "onsets": {
+        "precision": 0.877,
+        "recall": 0.915,
+        "f1": 0.896,
+        "notes": 3762,
+        "octave_errors": 0
+      },
+      "notes": {
+        "precision": 0.781,
+        "recall": 0.763,
+        "f1": 0.772,
+        "notes": 4018,
+        "octave_errors": 57
+      },
+      "alone": {
+        "precision": 0.806,
+        "recall": 0.856,
+        "f1": 0.831,
+        "notes": 3449,
+        "octave_errors": 23
+      }
+    }
+  },
+  "excerpts": 360,
+  "cpu": {
+    "audio_seconds": 22138,
+    "seconds_per_second": 0.007
+  }
+}
