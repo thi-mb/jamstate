@@ -31,6 +31,7 @@ import { attachKeyboard } from "./ui/keyboard";
 import { Overlay } from "./ui/overlay";
 import { FretboardView } from "./ui/fretboard";
 import { AudioInputPanel } from "./ui/audio-input";
+import { VoicePanel } from "./ui/voice-input";
 import { SR } from "./core/audio/dsp";
 import { chordView, FRETBOARD_KINDS, FRETBOARD_MODES, TUNING_IDS, type FretboardKind, type FretboardMode, type Place, type TuningId } from "./core/fretboard";
 
@@ -389,11 +390,11 @@ function buildManualMoves(): void {
 
 // ---------- cues (v0.3) ----------
 
-function giveCue(c: Cue): void {
+function giveCue(c: Cue, by?: "voice"): void {
   if (!session) return overlay.note("Start the band first");
   if (session.replay) return overlay.note("This is a replay: it plays what was recorded");
-  session.engine.cue(c);
-  overlay.note(`Cue: ${CUE_LABELS[c].toLowerCase()}`);
+  session.engine.cue(c, by);
+  overlay.note(`Cue${by ? " (said)" : ""}: ${CUE_LABELS[c].toLowerCase()}`);
 }
 
 function buildCues(): void {
@@ -794,6 +795,14 @@ const audioIn = new AudioInputPanel(platform.audioIn, getAudio, platform.setting
 audioIn.onNote = (on, note, vel, time, place) => playerNote(on, note, vel, time, "audio", place);
 audioIn.outputLatency = () => (audio ? (audio.baseLatency ?? 0) + (audio.outputLatency ?? 0) : 0);
 
+// Voice cues (v0.5, ADR-0026): the same path as the keys.
+const voice = new VoicePanel(platform.audioIn, getAudio, platform.settings);
+voice.outputLatency = audioIn.outputLatency;
+voice.onCue = (h) => {
+  if (h.cue !== "trade_on" && h.cue !== "trade_off") return giveCue(h.cue, "voice");
+  if (trading !== (h.cue === "trade_on")) toggleTrade();
+};
+
 // The guitar's tuning (the neck and what audio input listens for) and a left-handed neck (v0.5).
 const TUNING_KEY = "jamstate.fretboardTuning";
 const LEFT_KEY = "jamstate.fretboardLeft";
@@ -929,6 +938,7 @@ async function start(replay?: SessionFile): Promise<void> {
   if (!replay) {
     audioIn.startTape();
     audioIn.setBand(synth.output);
+    voice.setBand(synth.output);
   }
   if (recorder) lastJam = { recorder, engine };
   const tracker = new NoteTracker();
@@ -1041,6 +1051,7 @@ function stop(): void {
   const wasLive = !session.replay;
   if (wasLive && audio) {
     audioIn.setBand(null);
+    voice.setBand(null);
     const t0 = audioIn.stopTape(audio.currentTime);
     if (t0 !== null && lastJam) {
       const bpb = lastJam.engine.chart.beatsPerBar;
