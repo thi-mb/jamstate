@@ -12,7 +12,7 @@
 
 import type { Chart } from "./chart";
 import type { BarPlan } from "./engine";
-import type { PlayedNote } from "./features";
+import { isPitched, type PlayedNote } from "./features";
 import type { GenreListening } from "./genre";
 import { chordClass, chordScale, type Chord } from "./theory";
 
@@ -256,7 +256,8 @@ export function harmonyOf(bars: HeardBar[], beatsPerBar: number, chordAt: ChordA
   for (const { plan, notes } of bars)
     for (const n of notes) {
       const start = Math.max(0, n.start);
-      if (start >= beatsPerBar) continue;
+      // Unpitched hits (audio input) carry rhythm, not harmony.
+      if (start >= beatsPerBar || !isPitched(n)) continue;
       const chord = chordAt(plan, start);
       if (!chord) continue;
       w[noteFit(n.note % 12, chord, genre)] += Math.max(0.25, Math.min(n.start + n.dur, beatsPerBar) - start);

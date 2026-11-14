@@ -15,6 +15,8 @@ from typing import Any
 
 SESSION_FORMAT = "jamstate-session/0.1"
 MAX_SESSION_BYTES = 8 * 1024 * 1024
+# The raw audio kept with a session (v0.5): 16 kHz mono WAV, about 2 MB a minute.
+MAX_AUDIO_BYTES = 96 * 1024 * 1024
 NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,120}\.json$")
 
 
@@ -52,6 +54,17 @@ class SessionStore:
             n += 1
         (self.root / name).write_text(json.dumps(session, separators=(",", ":")))
         return name
+
+    def save_audio(self, name: str, wav: bytes) -> str:
+        """Save a session's raw audio beside it, as <name without .json>.wav."""
+        p = self._path(name)
+        if not p.is_file():
+            raise FileNotFoundError(name)
+        if len(wav) < 44 or wav[:4] != b"RIFF" or wav[8:12] != b"WAVE":
+            raise SessionError("not a WAV file")
+        out = p.with_suffix(".wav")
+        out.write_bytes(wav)
+        return out.name
 
     def list(self) -> list[dict[str, Any]]:
         if not self.root.is_dir():

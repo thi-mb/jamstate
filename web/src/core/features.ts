@@ -2,7 +2,11 @@
 
 import { clamp } from "./types";
 
-/** A note the player played, in beats relative to its bar. */
+/** Pitch of a hit with no pitch to hear (audio input: a muted strum, a slap; ADR-0023). */
+export const UNPITCHED = -1;
+export const isPitched = (n: { note: number }) => n.note >= 0;
+
+/** A note the player played, in beats relative to its bar. `note` is UNPITCHED for a hit with no pitch. */
 export interface PlayedNote {
   start: number;
   dur: number;
@@ -16,7 +20,7 @@ export interface BarFeatures {
   density: number;
   /** 0–1 */
   meanVelocity: number;
-  /** Mean MIDI pitch, null when silent. */
+  /** Mean MIDI pitch of the pitched notes, null when there are none. */
   register: number | null;
   /** Share of 16th steps with nothing sounding. */
   restRatio: number;
@@ -57,9 +61,10 @@ export function barFeatures(notes: PlayedNote[], beatsPerBar: number, previous: 
   const noteCount = onsets.length;
   const density = noteCount / beatsPerBar;
   const meanVelocity = noteCount ? onsets.reduce((s, n) => s + n.vel, 0) / noteCount / 127 : 0;
-  const register = noteCount ? onsets.reduce((s, n) => s + n.note, 0) / noteCount : null;
+  const pitched = onsets.filter(isPitched);
+  const register = pitched.length ? pitched.reduce((s, n) => s + n.note, 0) / pitched.length : null;
   const restRatio = sounding.filter((x) => !x).length / steps;
-  const signature = onsets.map((n) => `${Math.round(n.start * 4)}:${n.note % 12}`);
+  const signature = onsets.map((n) => `${Math.round(n.start * 4)}:${isPitched(n) ? n.note % 12 : "x"}`);
   const repetition = previous.slice(-4).reduce((m, p) => Math.max(m, jaccard(signature, p.signature)), 0);
   return {
     noteCount,

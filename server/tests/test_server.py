@@ -232,8 +232,23 @@ def test_sessions_are_saved_listed_and_loaded(static_dir, tmp_path):
         assert post(f"{base}/api/sessions", {"format": "nope"})[0] == 400
         assert get(f"{base}/api/sessions/..%2F..%2Fetc%2Fpasswd")[0] == 404
         assert post(f"{base}/api/sessions", session, {"origin": "https://evil.example"})[0] == 403
+        # The raw audio of an audio-input jam (v0.5) lands beside it.
+        wav = b"RIFF" + (36).to_bytes(4, "little") + b"WAVEfmt " + bytes(28)
+        assert post_raw(f"{base}/api/sessions/{body['name']}/audio", wav)[0] == 200
+        assert (tmp_path / "sessions" / body["name"].replace(".json", ".wav")).read_bytes() == wav
+        assert post_raw(f"{base}/api/sessions/{body['name']}/audio", b"not a wav" * 10)[0] == 400
+        assert post_raw(f"{base}/api/sessions/nope.json/audio", wav)[0] == 404
     finally:
         httpd.shutdown()
+
+
+def post_raw(url, data):
+    req = urllib.request.Request(url, data=data, headers={"content-type": "audio/wav"}, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=5) as r:
+            return r.status, r.read()
+    except urllib.error.HTTPError as e:
+        return e.code, e.read()
 
 
 def lower(h):

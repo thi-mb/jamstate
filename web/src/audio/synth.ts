@@ -97,7 +97,8 @@ export class Synth implements Sink {
   }
 
   play(ev: NoteEvent, time: number, duration: number): void {
-    if (this.muted.has(ev.part)) return;
+    // An unpitched hit from audio input (pitch -1) has nothing to sound.
+    if (this.muted.has(ev.part) || ev.note < 0) return;
     const out = this.mixer.input(ev.part);
     const id = this.active[ev.part];
     const inst = id ? this.library?.get(id) : undefined;
