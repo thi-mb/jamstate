@@ -29,7 +29,11 @@ Status values: **Proposed** (recommended, waiting on Thiago), **Accepted**,
 | [0018](0018-lineups-and-sound.md) | Lineups and the built-in sound: rendered samples, mix bus, band as data | Accepted |
 | [0019](0019-listening-layer.md) | The listening layer: five switchable groups, one summary for every brain | Accepted |
 | [0020](0020-cues-and-lockout.md) | Player cues on keys 1–7, with a governor lockout | Accepted |
-| [0021](0021-leading-layer.md) | The leading layer: genre taste, personality and the song arc | Proposed |
-| [0022](0022-trading-fours.md) | Trading fours: a mode, the player's phrase, a band soloist | Proposed |
+| [0021](0021-leading-layer.md) | The leading layer: genre taste, personality and the song arc | Accepted |
+| [0022](0022-trading-fours.md) | Trading fours: a mode, the player's phrase, a band soloist | Accepted |
+| [0023](0023-audio-input.md) | Audio input: the guitar becomes notes | Proposed |
+| [0024](0024-chord-detection.md) | Chord detection: chroma templates first, Basic Pitch measured beside it | Proposed |
+| [0025](0025-bleed-gating.md) | Bleed gating: the band's own output as the reference | Proposed |
+| [0026](0026-voice-cues.md) | Voice cues: a small grammar recogniser in the page | Proposed |
 
 New record: copy [template.md](template.md).
