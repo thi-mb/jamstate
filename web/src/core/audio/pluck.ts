@@ -17,6 +17,8 @@ export interface PluckNote {
   dur: number;
   /** A muted (palm-muted or fretting-hand-muted) hit: a thud with almost no pitch. */
   muted?: boolean;
+  /** Hammer-ons, pull-offs and slides: pitch steps (semitones from the picked note) `at` seconds after the pick, without a new pick. */
+  slurs?: { at: number; semis: number }[];
   /** Semitones bent up, reached `bendTime` seconds after the pick. */
   bend?: number;
   bendTime?: number;
@@ -59,15 +61,20 @@ function pluck(out: Float32Array, rate: number, n: PluckNote, rand: () => number
   const start = Math.round(n.time * rate);
   if (start >= out.length) return;
   const f0 = hzOf(n.note);
-  const maxDelay = Math.ceil(rate / hzOf(n.note - 1)) + 4;
+  const lowest = Math.min(0, ...(n.slurs ?? []).map((s) => s.semis));
+  const maxDelay = Math.ceil(rate / hzOf(n.note - 1 + lowest)) + 4;
   const buf = new Float32Array(maxDelay + 2);
-  // The pick: noise, brighter when played harder, then a pickup-position comb.
+  // The pick: the string pulled into a triangle at the pick point, with some
+  // noise, brighter when played harder; then a pickup-position comb.
   const len = Math.max(2, Math.round(rate / f0));
   const bright = 0.25 + 0.6 * (n.vel / 127);
+  const at = Math.max(1, Math.round(len * (0.12 + 0.1 * rand())));
   let lp = 0;
   for (let i = 0; i < len; i++) {
     lp += bright * ((rand() * 2 - 1) - lp);
-    buf[i] = lp;
+    const tri = i < at ? i / at : (len - i) / (len - at);
+    // A muted string is mostly the pick's noise.
+    buf[i] = n.muted ? 0.3 * (tri - 0.5) + lp : 0.8 * (tri - 0.5) + 0.6 * lp;
   }
   const amp = peak * Math.pow(n.vel / 127, 1.6) * 0.9;
   const damped = Math.round((n.time + n.dur) * rate);
@@ -89,6 +96,7 @@ function pluck(out: Float32Array, rate: number, n: PluckNote, rand: () => number
     const t = Math.max(0, (i - start) / rate);
     let semis = 0;
     if (n.bend) semis += n.bend * Math.min(1, t / (n.bendTime ?? 0.15));
+    if (n.slurs) for (const sl of n.slurs) if (t >= sl.at) semis = sl.semis;
     if (n.vibrato) semis += n.vibrato * Math.sin(2 * Math.PI * 5.5 * t) * Math.min(1, t / 0.2);
     // Total loop delay; the two-point average adds half a sample.
     const d = Math.min(L - 2, rate / (f0 * Math.pow(2, semis / 12)) - 0.5);

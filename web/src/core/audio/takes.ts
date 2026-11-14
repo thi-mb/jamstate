@@ -5,6 +5,7 @@
 
 import type { SessionFile } from "../session";
 import { UNPITCHED } from "../features";
+import { rng } from "../rand";
 import { renderGuitar, type GuitarOptions, type PluckNote } from "./pluck";
 
 /** Seconds per beat of a session's chart (the strict tempo). */
@@ -38,4 +39,31 @@ export function renderSessionTake(f: SessionFile, opts: GuitarOptions = {}): Flo
   const plucks = sessionPlucks(f);
   const end = plucks.reduce((m, p) => Math.max(m, p.time + p.dur), 0) + 1;
   return renderGuitar(plucks, Math.max(end, f.bars.length * Number(f.chart.time_sig.split("/")[0]) * secondsPerBeat(f)), { noiseDb: -72, ...opts });
+}
+
+/** A pentatonic line over two and a half octaves, some notes slurred up a step, some with vibrato. */
+export function soloLine(seed: number): { x: Float32Array; truth: { time: number; note: number }[] } {
+  const r = rng(seed);
+  const scale = [0, 3, 5, 7, 10];
+  const at = (d: number) => 45 + 12 * Math.floor(d / 5) + scale[d % 5];
+  const notes: PluckNote[] = [];
+  const truth: { time: number; note: number }[] = [];
+  let t = 0.3;
+  let deg = 8;
+  for (let i = 0; i < 70; i++) {
+    deg = Math.max(0, Math.min(15, deg + Math.floor(r() * 5) - 2));
+    const note = at(deg);
+    const dur = 0.12 + r() * 0.35;
+    const k = r();
+    const n: PluckNote = { time: t, note, vel: 50 + Math.floor(r() * 70), dur };
+    truth.push({ time: t, note });
+    if (k < 0.15 && dur > 0.25) {
+      const up = at(deg + 1) - note;
+      n.slurs = [{ at: dur * 0.5, semis: up }];
+      truth.push({ time: t + dur * 0.5, note: note + up });
+    } else if (k < 0.22) n.vibrato = 0.25;
+    notes.push(n);
+    t += dur + r() * 0.08;
+  }
+  return { x: renderGuitar(notes, t + 1, { noiseDb: -72, humDb: -62, seed }), truth };
 }

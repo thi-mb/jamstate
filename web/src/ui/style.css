@@ -92,6 +92,10 @@ code { font-size: 12px; }
 .fretboard { margin: 0 0 14px; --fb-chord: var(--accent); --fb-scale: #f2a54138; --fb-in: var(--ok); --fb-col: #f5d76e; --fb-out: var(--bad); }
 .fb-label { font-size: 13px; color: var(--dim); margin-bottom: 4px; white-space: pre; }
 .fb-guitar { display: grid; grid-template-columns: repeat(var(--frets), minmax(0, 1fr)); gap: 2px; max-width: 100%; }
+/* Left-handed: the nut on the right. */
+.fb-guitar.fb-left { direction: rtl; }
+.fb-guitar.fb-left .fb-fret { border-right: 0; border-left: 2px solid var(--line); }
+.fb-guitar.fb-left .fb-fret.fb-open { border-left: 4px solid var(--dim); }
 .fb-fret { position: relative; height: 20px; border-right: 2px solid var(--line); display: flex; align-items: center; justify-content: center; background: linear-gradient(transparent 9px, #3a404d 9px, #3a404d 11px, transparent 11px); }
 .fb-fret.fb-open { border-right: 4px solid var(--dim); }
 .fb-fretnum { font-size: 10px; color: var(--dim); text-align: center; }
