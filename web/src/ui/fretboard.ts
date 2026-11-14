@@ -81,6 +81,7 @@ export class FretboardView {
 
   /** A note the player pressed or let go. */
   note(on: boolean, note: number): void {
+    if (note < 0) return;
     if (on) {
       const fit = this.view.chord ? noteFit(note % 12, this.view.chord, this.genre) : "inside";
       this.sounding.set(note, fit);

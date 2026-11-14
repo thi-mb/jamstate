@@ -19,6 +19,7 @@ import { NoteTracker } from "./features";
 import { getGenre } from "./genres";
 import type { Personality } from "./leading";
 import { NO_LISTENING, parseListening } from "./listening";
+import type { Calibration } from "./audio/listener";
 import { hash } from "./rand";
 import { V01_PARTS, type NoteEvent } from "./types";
 
@@ -45,6 +46,23 @@ export interface SessionBar {
 
 /** [beat, note, velocity]; velocity 0 is a note off. Beats count from the start of bar 0 (the count-in, if any). */
 export type PlayerEvent = [number, number, number];
+
+/** How the player played (v0.5). Missing in older files: MIDI or the computer keys. */
+export interface SessionInput {
+  kind: "midi" | "audio";
+  /** Audio: the device's label, the channel (1, 2 or both), what the detector listened for, and its calibration. */
+  device?: string;
+  channel?: string;
+  mode?: string;
+  detector?: string;
+  calibration?: Calibration;
+  /**
+   * The raw audio, when kept (16 kHz mono WAV beside the session): its file
+   * name and, per bar, where the bar starts in it (seconds), so the detector
+   * can be run again over a recorded jam (ADR-0023).
+   */
+  audio?: { file: string; rate: number; bar_starts: number[] };
+}
 
 export interface SessionFile {
   format: typeof SESSION_FORMAT;
@@ -73,6 +91,8 @@ export interface SessionFile {
   listening?: { at: number; groups: string }[];
   /** The bandleader's personality at the start (v0.4); changes are in the controls. Missing: the governor as configured. */
   personality?: Personality;
+  /** How the player played (v0.5); missing: MIDI or keys. */
+  input?: SessionInput;
   /** The player's rating of a blind-test jam (see brain/blind.ts). */
   rating?: { stars: number; note?: string; fallback?: boolean };
 }
@@ -91,6 +111,8 @@ export interface SessionSetup {
   listening?: string;
   /** The bandleader's personality at the start (v0.4). */
   personality?: Personality;
+  /** Audio input (v0.5). */
+  input?: SessionInput;
 }
 
 const r4 = (x: number) => Math.round(x * 1e4) / 1e4;
@@ -144,6 +166,13 @@ export class SessionRecorder {
     this.bars.push(summarizeBar(plan));
   }
 
+  private audio: SessionInput["audio"] | undefined;
+
+  /** The raw audio was kept: its file name, rate and where each bar starts in it (seconds). */
+  keepAudio(file: string, rate: number, barStarts: number[]): void {
+    this.audio = { file, rate, bar_starts: barStarts.map(r4) };
+  }
+
   get barCount(): number {
     return this.bars.length;
   }
@@ -168,6 +197,7 @@ export class SessionRecorder {
       bars: [...this.bars],
       ...(this.listeningLog.length ? { listening: [...this.listeningLog] } : {}),
       ...(s.personality ? { personality: s.personality } : {}),
+      ...(s.input ? { input: this.audio ? { ...s.input, audio: this.audio } : s.input } : {}),
     };
   }
 }

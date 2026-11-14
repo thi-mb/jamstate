@@ -145,6 +145,16 @@
         <fieldset>
           <legend>You</legend>
           <label>MIDI in <select id="midi-in"><option value="all">all inputs</option></select></label>
+          <label title="A guitar, bass, voice or anything else through an audio interface or mic. Wear headphones (or turn on the bleed gate) so it hears you, not the band.">Audio in <select id="audio-in"><option value="">off</option></select></label>
+          <div class="row wrap">
+            <label class="inline" title="Which input of the device: on a Scarlett Solo, 1 is the mic and 2 the instrument">Channel <select id="audio-channel" disabled><option value="1">1</option><option value="2">2</option><option value="mix">both</option></select></label>
+            <label class="inline" title="Play the input through the page (only for interfaces without direct monitoring: it adds the browser's delay)"><input type="checkbox" id="audio-monitor" disabled /> hear input</label>
+            <button id="calibrate" disabled title="Silence, soft, hard, then a note on each click: sets the noise gate, how hard you play and the input delay">Calibrate</button>
+          </div>
+          <div id="audio-meter" class="meter input-meter" hidden><div id="audio-level" class="fill player"></div><span id="audio-clip" class="clip" hidden>clip</span></div>
+          <div id="calibration-step" class="small"></div>
+          <div id="calibration-info" class="dim small"></div>
+          <div id="audio-status" class="dim small"></div>
           <label>Pretend player
             <select id="sim">
               <option value="off">off (I'll play)</option>
@@ -185,6 +195,7 @@
             <div id="blind-rate-result" class="small dim"></div>
           </div>
           <div id="session-status" class="dim small">Every jam is recorded and kept in this browser when you stop.</div>
+          <label class="inline" title="With audio input: also keep what the input heard (16 kHz WAV, about 2 MB a minute), downloaded and synced beside the session, so the detector can be re-run over it"><input type="checkbox" id="keep-audio" /> keep the audio</label>
           <div class="row wrap">
             <button id="session-download" disabled>Download</button>
             <button id="session-save" disabled hidden title="Also save on the Spark (for the eval set)">Sync to Spark</button>
