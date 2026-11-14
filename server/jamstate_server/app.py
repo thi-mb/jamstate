@@ -27,7 +27,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from urllib.parse import unquote, urlsplit
 
-from .sessions import MAX_SESSION_BYTES, SessionError, SessionStore
+from .sessions import MAX_AUDIO_BYTES, MAX_SESSION_BYTES, SessionError, SessionStore
 
 log = logging.getLogger("jamstate")
 
@@ -161,9 +161,28 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
                     return self._json(400, {"error": str(e)})
                 log.info("saved session %s", name)
                 return self._json(200, {"name": name})
+            if path.startswith("/api/sessions/") and path.endswith("/audio"):
+                return self._post_audio(unquote(path[len("/api/sessions/"):-len("/audio")]))
             if path.startswith("/api/relay/"):
                 return self._relay(path[len("/api/relay/"):])
             return self._json(404, {"error": "not found"})
+
+        def _post_audio(self, name: str) -> None:
+            if not self._same_origin() and not self._origin_allowed():
+                return self._json(403, {"error": "origin not allowed"})
+            if app.sessions is None:
+                return self._json(503, {"error": "session storage is off"})
+            n = int(self.headers.get("content-length") or 0)
+            if n > MAX_AUDIO_BYTES:
+                return self._json(413, {"error": "audio too large"})
+            try:
+                saved = app.sessions.save_audio(name, self.rfile.read(n))
+            except SessionError as e:
+                return self._json(400, {"error": str(e)})
+            except FileNotFoundError:
+                return self._json(404, {"error": "no such session"})
+            log.info("saved audio %s", saved)
+            return self._json(200, {"name": saved})
 
         def _relay(self, rest: str) -> None:
             name, _, sub = rest.partition("/")
