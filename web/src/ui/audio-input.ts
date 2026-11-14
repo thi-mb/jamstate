@@ -5,7 +5,8 @@
 
 import { calibrateLevels, latencyFromTaps, type LevelTake } from "../core/audio/calibrate";
 import { db, SR } from "../core/audio/dsp";
-import { AudioListener, DEFAULT_CALIBRATION, type Calibration, type ListenerEvent } from "../core/audio/listener";
+import { AudioListener, DEFAULT_CALIBRATION, type Calibration, type DetectionMode, type ListenerEvent } from "../core/audio/listener";
+import { tuningRange, type TuningId } from "../core/fretboard";
 import { encodeWav } from "../core/audio/wav";
 import type { AudioInputHandle, AudioInputPlatform, InputChannel, KeyValueStore } from "../core/platform";
 import type { SessionInput } from "../core/session";
@@ -15,6 +16,8 @@ const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getEleme
 const DEVICE_KEY = "jamstate.audio.device";
 const CHANNEL_KEY = "jamstate.audio.channel";
 const CAL_KEY = "jamstate.audio.calibration";
+const MODE_KEY = "jamstate.audio.mode";
+const MODES: DetectionMode[] = ["auto", "single", "chords"];
 /** Calibration kept per device and channel. */
 type Stored = Record<string, Calibration & { tapped?: boolean }>;
 
@@ -36,6 +39,8 @@ export class AudioInputPanel {
   onNote: (on: boolean, note: number, vel: number, time: number) => void = () => {};
   /** The output latency the player hears, for the timing step. */
   outputLatency: () => number = () => 0;
+  /** The instrument's tuning sets the range of notes it listens for. */
+  private tuning: TuningId = "standard";
 
   constructor(
     private input: AudioInputPlatform,
@@ -50,6 +55,13 @@ export class AudioInputPanel {
       return;
     }
     ch.value = settings.get<string>(CHANNEL_KEY) ?? "1";
+    const mode = $<HTMLSelectElement>("audio-mode");
+    const saved = settings.get<DetectionMode>(MODE_KEY);
+    mode.value = saved && MODES.includes(saved) ? saved : "auto";
+    mode.onchange = () => {
+      settings.set(MODE_KEY, mode.value);
+      if (this.listener) this.listener.mode = this.mode;
+    };
     dev.onchange = () => void this.open();
     ch.onchange = () => {
       settings.set(CHANNEL_KEY, ch.value);
@@ -68,6 +80,20 @@ export class AudioInputPanel {
   private get channel(): InputChannel {
     const v = $<HTMLSelectElement>("audio-channel").value;
     return v === "mix" ? "mix" : v === "2" ? 1 : 0;
+  }
+
+  private get mode(): DetectionMode {
+    return $<HTMLSelectElement>("audio-mode").value as DetectionMode;
+  }
+
+  /** A new tuning: listen for its range (takes effect at once when input is open). */
+  setTuning(t: TuningId): void {
+    this.tuning = t;
+    if (this.listener) this.listener = this.newListener(this.listener.cal);
+  }
+
+  private newListener(calibration?: Calibration): AudioListener {
+    return new AudioListener({ calibration, mode: this.mode, ...tuningRange(this.tuning) });
   }
 
   private get calKey(): string {
@@ -103,7 +129,7 @@ export class AudioInputPanel {
     if (!id) return this.showActive();
     try {
       void this.audio().resume();
-      this.listener = new AudioListener();
+      this.listener = this.newListener();
       this.handle = await this.input.open((s, t) => this.frame(s, t), { deviceId: id === "default" ? undefined : id, channel: this.channel });
       // Labels show only once the browser has allowed an input.
       await this.fillDevices(id);
@@ -129,7 +155,7 @@ export class AudioInputPanel {
 
   private showActive(): void {
     const on = this.active;
-    for (const id of ["audio-channel", "audio-monitor", "calibrate"]) $<HTMLInputElement>(id).disabled = !on;
+    for (const id of ["audio-channel", "audio-mode", "audio-monitor", "calibrate"]) $<HTMLInputElement>(id).disabled = !on;
     $("audio-meter").hidden = !on;
     if (!on) {
       $("audio-status").textContent ||= "Audio input is off: MIDI and the computer keys still play.";
@@ -199,6 +225,8 @@ export class AudioInputPanel {
       kind: "audio",
       device: this.handle.label,
       channel: $<HTMLSelectElement>("audio-channel").value,
+      mode: this.listener.mode,
+      tuning: this.tuning,
       detector: DETECTOR,
       calibration: { ...this.listener.cal },
     };

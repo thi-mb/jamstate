@@ -39,11 +39,21 @@ Forces:
   time of the onset, not of the detection. Inside it, in layers, each
   usable alone:
   1. **Level and onsets:** RMS and spectral flux on a 512-point FFT every
-     8 ms, an adaptive threshold above a calibrated noise gate, 50 ms
-     minimum between onsets.
-  2. **Pitch:** YIN on a 1024-sample window (FFT difference function),
-     confirmed over two hops before a note starts; a note ends when the
-     level falls under the gate or the pitch moves a semitone for 40 ms.
+     8 ms, an adaptive threshold above a calibrated noise gate, 70 ms
+     minimum between onsets, and no onset while the level is falling (a
+     damped string clicks too).
+  2. **Pitch:** YIN on a 1024-sample window (FFT difference function), 70 ms
+     after the onset so the window starts after the pick; two frames a hop
+     apart must agree, and with no clear pitch the listener waits up to
+     80 ms more before calling the onset unpitched (a hit that has died
+     25 dB by then was a scratch). When the pitch heard is the note still
+     ringing on another string, or an octave of it, a comb at that note's
+     period takes it out and YIN looks again. Between onsets a held note is
+     followed: a new steady pitch for three frames (48 ms), once the note
+     has settled and with the level holding, is a slur (hammer-on, pull-off,
+     slide), never back to the note ringing beside it. A note ends when the
+     level falls under the gate or 30 dB under its peak. The pitch range
+     follows the tuning picked for the fretboard (a bass goes down to E1).
   3. **Chords** (ADR-0024): a strum becomes the chord's tones in a guitar
      voicing.
   The mode is **auto** (single notes when the sound is periodic, chords
@@ -55,6 +65,13 @@ Forces:
   pitches. In the session file it is `[beat, -1, vel]`. A muted strum right
   after a detected chord repeats that chord instead (a funk scratch is the
   chord, damped).
+- **On the neck.** A note from an audio input lights one place on the
+  fretboard, not every place the pitch exists: in the four-fret box where
+  the hand has been, on a string not already sounding, open strings only
+  low on the neck. A note outside the box moves the hand halfway toward it.
+  The neck takes the tuning (standard, half step down, drop D, DADGAD,
+  open G, open D, bass) and can be mirrored for a left-handed player. MIDI
+  notes still light every place.
 - **Velocity** is the onset's peak level mapped from the calibrated soft and
   hard levels (in dB) to 40–115.
 - **Timing.** Onset times are moved earlier by the input latency: what the
@@ -82,11 +99,12 @@ Forces:
 ## Consequences
 - Every v0.3 and v0.4 listening signal works on guitar with no change to
   the leader, the governor or the brains.
-- The main thread does the DSP: about 1–2% of a core for onsets and pitch
-  (measured in the v0.5 test plan). If chords or bleed gating push it
+- The main thread does the DSP: about 0.5% of a core for onsets and pitch
+  (measured by `npm run guitar-eval -- pitch`). If chords or bleed gating push it
   higher, the core moves into a Worker behind the same interface.
-- Guitar notes reach the leader roughly 30–60 ms after MIDI ones would
-  (window plus confirmation); the leader works per bar, the fretboard per
+- Guitar notes reach the leader roughly 80–160 ms after MIDI ones would
+  (the window after the pick, plus waiting on an unclear pitch), though
+  stamped with the onset's time; the leader works per bar, the fretboard per
   beat, so neither notices.
 - Pitch `-1` is a new value every note consumer must skip; the listening
   tests pin it.
