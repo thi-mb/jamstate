@@ -323,7 +323,7 @@ Done when:
 
 ### v0.4: Leading
 
-Status: built (2026-11-09), waiting on the hands-on test in
+Status: done (2026-11-14). Thiago signed off after playing it; test plan in
 [testing/v0.4.md](testing/v0.4.md). Decided with Thiago before starting:
 trading is a mode the player turns on (key 8), not any silence; the Qwen bar
 is E1, E2, E7 and E8 (the sparse scenarios) at 0.85 or better, about level
@@ -368,6 +368,19 @@ Done when:
 ## Phase 3: your music
 
 ### v0.5: Guitar
+
+Status: in progress (started 2026-11-14). Test plan in
+[testing/v0.5.md](testing/v0.5.md). Decided with Thiago before starting:
+all five layers including bleed gating; chords by chroma templates first,
+with Basic Pitch measured beside them for accuracy and cost
+([ADR-0024](decisions/0024-chord-detection.md)); voice cues with Vosk and a
+fixed grammar ([ADR-0026](decisions/0026-voice-cues.md)); sessions record
+the detected notes, the raw audio opt-in
+([ADR-0023](decisions/0023-audio-input.md)); bleed gate against the band's
+own output ([ADR-0025](decisions/0025-bleed-gating.md)); left-handed and
+other tunings on the fretboard. This first pass is tuned on synthesised
+guitar, GuitarSet and synthesised speech; a fine-tuning pass follows
+Thiago's jams on his Scarlett Solo.
 
 **Goal:** play a guitar (or voice, sax, anything with a mic or audio
 interface) and the band follows, with no MIDI pickup.
