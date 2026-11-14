@@ -1,6 +1,6 @@
 # 0026. Voice cues: a small grammar recogniser in the page
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-11-14
 
 ## Context
@@ -35,8 +35,16 @@ guitar is on input 2) or the computer's own mic.
   | "end the song", "let's end it" | end song |
   | "trade fours", "stop trading" | trading on / off |
 
-  A result counts only when it's final, the whole utterance is one phrase,
-  and the confidence is above a floor; otherwise nothing happens.
+  A final result counts only when the whole utterance is one phrase and
+  every word in it is heard with a confidence of at least 0.7. An unknown
+  word at either end (a breath, a strum) is let go only when the recogniser
+  was unsure of it; a confident one means the phrase was part of a
+  sentence. Anything else does nothing (`web/src/core/voice.ts`).
+- **Early from the partial result.** The final result waits for a pause
+  after the phrase (about 0.9 s). A phrase no other phrase starts with
+  ("take it down", but not "build") is taken from the partial result once
+  it has stayed the same for 0.25 s, and the final result of that utterance
+  is then ignored.
 - **The same path as the keys.** A spoken cue calls the same `giveCue`, so
   it lands, locks the leader out and is recorded exactly like a key press;
   the log shows it came by voice.
@@ -46,14 +54,44 @@ guitar is on input 2) or the computer's own mic.
 - **Measured** with synthesised speech (several voices) mixed with the band
   and guitar at several levels: detection rate per phrase, false cues per
   minute on band and guitar alone, and time from the end of the phrase to the
-  cue.
+  cue. `npm run guitar-eval -- voice` runs it, with Vosk in Python (the
+  same engine, model and grammar) and Piper voices; `npm run voice-check`
+  says cues to the built page in headless Chrome.
+
+## Results
+From `docs/eval/results/v0.5-voice/` (2026-11-14): 15 phrases, 4 Piper
+voices at 2 speeds, over nothing, the band through a simulated room (gate
+off and on), a strummed guitar and a single-note line, with the speech
++18 to 0 dB over the rest.
+
+- 98% of phrases heard as their cue; at least 92.5% in every bed and level
+  (the lowest: a single-note line as loud as the voice). No phrase was
+  heard as another cue.
+- No false cues in 15 minutes of band, guitar and table talk ("one more
+  thing", "take it easy", "i need a break after this one").
+- Time to cue from the end of the phrase: 0.23 s median, 0.57 s at the
+  90th percentile, against 0.88 s / 0.99 s waiting for the final result,
+  with the same hits and no false cues. "Build" waits for the final
+  result (0.83 s), as "build it up" starts with it.
+- The weakest phrases: "break" alone (86%, heard as "one" in one voice;
+  "drums break" 100%) and "let's end it" (92%; "end the song" 100%).
+- CPU: 0.009 s per second of audio. The page check: "take it down", "trade
+  fours" and "one more chorus" land as said, the two sentences of talk
+  between them give nothing, the guitar on input 2 still plays the band,
+  and the jam replays exactly. The model loads in about a second from the
+  Spark.
+
+Real voices and a real room come in Thiago's jams (T8).
 
 ## Consequences
 - Works offline, nothing leaves the machine, no account.
-- A 40 MB download the first time voice cues are switched on.
-- Recognition takes a short pause after the phrase (about 0.3–0.6 s); cues
-  land on the next bar or phrase anyway (ADR-0020), so this rarely changes
-  where one lands.
+- A 40 MB download the first time voice cues are switched on, and a 5.8 MB
+  script (Kaldi in WASM) loaded only then.
+- A cue arrives about a quarter of a second after the phrase (most
+  phrases); cues land on the next bar or phrase anyway (ADR-0020), so this
+  rarely changes where one lands.
+- A cue said by voice is recorded with `by: "voice"` and replays like a key
+  press.
 
 ## Alternatives considered
 - **Web Speech API:** sends audio to Google, online only, open vocabulary.

@@ -250,7 +250,7 @@ def make_handler(app: App) -> type[BaseHTTPRequestHandler]:
             if target.is_dir():
                 target = target / "index.html"
             if not target.is_file():
-                if rel.startswith(("assets/", "samples/")):
+                if rel.startswith(("assets/", "samples/", "models/")):
                     # A missing build or sample file (an old page after a rebuild) must fail as such, not load the page.
                     return self._json(404, {"error": "not found"})
                 target = app.static_dir / "index.html"  # single-page app fallback

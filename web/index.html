@@ -157,6 +157,12 @@
           <div id="calibration-step" class="small"></div>
           <div id="calibration-info" class="dim small"></div>
           <div id="audio-status" class="dim small"></div>
+          <label title="Say the cues instead of pressing 1–8: &quot;take it down&quot;, &quot;one more chorus&quot;, &quot;trade fours&quot;… Recognised in the page; nothing leaves the machine. Loads a 40 MB speech model the first time.">Voice cues <select id="voice-in"><option value="">off</option></select></label>
+          <div class="row wrap">
+            <label class="inline" title="Which input of the device hears your voice: on a Scarlett Solo, 1 is the mic">Channel <select id="voice-channel" disabled><option value="1">1</option><option value="2">2</option><option value="mix">both</option></select></label>
+            <label class="inline" title="The mic hears speakers? Take the band's own sound out first."><input type="checkbox" id="voice-gate" disabled /> speakers: gate the band</label>
+          </div>
+          <div id="voice-status" class="dim small"></div>
           <label>Pretend player
             <select id="sim">
               <option value="off">off (I'll play)</option>

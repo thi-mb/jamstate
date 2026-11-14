@@ -22,7 +22,9 @@
     "guitar": "vite-node scripts/guitar.ts",
     "audio-check": "node scripts/audio-check.mjs",
     "guitar-eval": "vite-node scripts/guitar-eval.ts",
-    "chords-browser": "node scripts/chords-browser.mjs"
+    "chords-browser": "node scripts/chords-browser.mjs",
+    "fetch-models": "node scripts/fetch-models.mjs",
+    "voice-check": "node scripts/voice-check.mjs"
   },
   "devDependencies": {
     "@spotify/basic-pitch": "1.0.1",
@@ -31,6 +33,7 @@
     "vitest": "3.2.7"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "0.135.0"
+    "@anthropic-ai/sdk": "0.135.0",
+    "vosk-browser": "0.0.8"
   }
 }

@@ -1,0 +1,373 @@
+{
+  "model": "vosk-model-small-en-us-0.15",
+  "voices": [
+    "en_US-lessac-low",
+    "en_US-ryan-low",
+    "en_GB-alan-low",
+    "en_US-amy-low"
+  ],
+  "speeds": [
+    1,
+    0.8
+  ],
+  "levels_db": [
+    18,
+    12,
+    6,
+    0
+  ],
+  "hold_s": 0.25,
+  "holds": {
+    "final only": {
+      "said": 2040,
+      "hit": 0.976,
+      "wrong": 0,
+      "lag_median": 0.88,
+      "lag_p90": 0.99,
+      "false_cues": 0,
+      "talk": []
+    },
+    "hold 0.15 s": {
+      "said": 2040,
+      "hit": 0.978,
+      "wrong": 0.003,
+      "lag_median": 0.13,
+      "lag_p90": 0.47,
+      "false_cues": 0,
+      "talk": []
+    },
+    "hold 0.25 s": {
+      "said": 2040,
+      "hit": 0.98,
+      "wrong": 0,
+      "lag_median": 0.23,
+      "lag_p90": 0.57,
+      "false_cues": 0,
+      "talk": []
+    },
+    "hold 0.4 s": {
+      "said": 2040,
+      "hit": 0.979,
+      "wrong": 0,
+      "lag_median": 0.39,
+      "lag_p90": 0.74,
+      "false_cues": 0,
+      "talk": []
+    }
+  },
+  "cues": {
+    "none": {
+      "Infinity": {
+        "said": 120,
+        "hit": 0.992,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.57
+      }
+    },
+    "band": {
+      "0": {
+        "said": 120,
+        "hit": 0.992,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.6
+      },
+      "6": {
+        "said": 120,
+        "hit": 0.983,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.57
+      },
+      "12": {
+        "said": 120,
+        "hit": 1,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.57
+      },
+      "18": {
+        "said": 120,
+        "hit": 0.992,
+        "wrong": 0,
+        "lag_median": 0.22,
+        "lag_p90": 0.57
+      }
+    },
+    "band+gate": {
+      "0": {
+        "said": 120,
+        "hit": 0.967,
+        "wrong": 0,
+        "lag_median": 0.27,
+        "lag_p90": 0.6
+      },
+      "6": {
+        "said": 120,
+        "hit": 0.992,
+        "wrong": 0,
+        "lag_median": 0.25,
+        "lag_p90": 0.59
+      },
+      "12": {
+        "said": 120,
+        "hit": 0.983,
+        "wrong": 0,
+        "lag_median": 0.25,
+        "lag_p90": 0.57
+      },
+      "18": {
+        "said": 120,
+        "hit": 0.983,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.57
+      }
+    },
+    "strums": {
+      "0": {
+        "said": 120,
+        "hit": 0.942,
+        "wrong": 0,
+        "lag_median": 0.26,
+        "lag_p90": 0.64
+      },
+      "6": {
+        "said": 120,
+        "hit": 0.992,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.57
+      },
+      "12": {
+        "said": 120,
+        "hit": 0.992,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.57
+      },
+      "18": {
+        "said": 120,
+        "hit": 0.992,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.57
+      }
+    },
+    "line": {
+      "0": {
+        "said": 120,
+        "hit": 0.925,
+        "wrong": 0,
+        "lag_median": 0.25,
+        "lag_p90": 0.54
+      },
+      "6": {
+        "said": 120,
+        "hit": 0.967,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.57
+      },
+      "12": {
+        "said": 120,
+        "hit": 0.983,
+        "wrong": 0,
+        "lag_median": 0.23,
+        "lag_p90": 0.57
+      },
+      "18": {
+        "said": 120,
+        "hit": 0.992,
+        "wrong": 0,
+        "lag_median": 0.25,
+        "lag_p90": 0.57
+      }
+    }
+  },
+  "phrases": {
+    "next section": {
+      "said": 136,
+      "hit": 1,
+      "wrong": 0,
+      "lag_median": 0.09,
+      "lag_p90": 0.43
+    },
+    "next part": {
+      "said": 136,
+      "hit": 1,
+      "wrong": 0,
+      "lag_median": 0.18,
+      "lag_p90": 0.31
+    },
+    "break": {
+      "said": 136,
+      "hit": 0.86,
+      "wrong": 0,
+      "lag_median": 0.44,
+      "lag_p90": 0.55
+    },
+    "drums break": {
+      "said": 136,
+      "hit": 1,
+      "wrong": 0,
+      "lag_median": 0.28,
+      "lag_p90": 0.39
+    },
+    "drums only": {
+      "said": 136,
+      "hit": 0.993,
+      "wrong": 0,
+      "lag_median": 0.18,
+      "lag_p90": 0.36
+    },
+    "build": {
+      "said": 136,
+      "hit": 0.993,
+      "wrong": 0,
+      "lag_median": 0.83,
+      "lag_p90": 0.88
+    },
+    "build it up": {
+      "said": 136,
+      "hit": 0.963,
+      "wrong": 0,
+      "lag_median": 0.51,
+      "lag_p90": 0.64
+    },
+    "take it down": {
+      "said": 136,
+      "hit": 1,
+      "wrong": 0,
+      "lag_median": 0.22,
+      "lag_p90": 0.41
+    },
+    "bring it down": {
+      "said": 136,
+      "hit": 0.993,
+      "wrong": 0,
+      "lag_median": 0.33,
+      "lag_p90": 0.39
+    },
+    "one more chorus": {
+      "said": 136,
+      "hit": 0.993,
+      "wrong": 0,
+      "lag_median": 0.13,
+      "lag_p90": 0.3
+    },
+    "one more time": {
+      "said": 136,
+      "hit": 1,
+      "wrong": 0,
+      "lag_median": 0.12,
+      "lag_p90": 0.25
+    },
+    "end the song": {
+      "said": 136,
+      "hit": 1,
+      "wrong": 0,
+      "lag_median": 0.22,
+      "lag_p90": 0.29
+    },
+    "let's end it": {
+      "said": 136,
+      "hit": 0.919,
+      "wrong": 0,
+      "lag_median": 0.49,
+      "lag_p90": 0.57
+    },
+    "trade fours": {
+      "said": 136,
+      "hit": 0.993,
+      "wrong": 0,
+      "lag_median": 0.02,
+      "lag_p90": 0.28
+    },
+    "stop trading": {
+      "said": 136,
+      "hit": 1,
+      "wrong": 0,
+      "lag_median": 0.11,
+      "lag_p90": 0.32
+    }
+  },
+  "voices_hit": {
+    "en_US-lessac-low": {
+      "said": 510,
+      "hit": 0.98,
+      "wrong": 0,
+      "lag_median": 0.22,
+      "lag_p90": 0.6
+    },
+    "en_US-ryan-low": {
+      "said": 510,
+      "hit": 0.951,
+      "wrong": 0,
+      "lag_median": 0.32,
+      "lag_p90": 0.64
+    },
+    "en_GB-alan-low": {
+      "said": 510,
+      "hit": 0.99,
+      "wrong": 0,
+      "lag_median": 0.19,
+      "lag_p90": 0.49
+    },
+    "en_US-amy-low": {
+      "said": 510,
+      "hit": 1,
+      "wrong": 0,
+      "lag_median": 0.18,
+      "lag_p90": 0.52
+    }
+  },
+  "false_cues": {
+    "band": {
+      "minutes": 3,
+      "cues": 0,
+      "per_min": 0,
+      "heard": []
+    },
+    "band+gate": {
+      "minutes": 3,
+      "cues": 0,
+      "per_min": 0,
+      "heard": []
+    },
+    "strums": {
+      "minutes": 3,
+      "cues": 0,
+      "per_min": 0,
+      "heard": []
+    },
+    "line": {
+      "minutes": 3,
+      "cues": 0,
+      "per_min": 0,
+      "heard": []
+    },
+    "talk": {
+      "minutes": 3.28,
+      "cues": 0,
+      "per_min": 0,
+      "heard": []
+    }
+  },
+  "misses_at_12db_and_up_and_wrong": [
+    "band +18 dB en_US-ryan-low: \"break\" heard as \"break\"",
+    "band+gate +18 dB en_US-ryan-low: \"break\" heard as \"one\"",
+    "band+gate +18 dB en_US-ryan-low: \"let's end it\" heard as \"let's end it\"",
+    "band+gate +12 dB en_US-ryan-low: \"break\" heard as \"one\"",
+    "band+gate +12 dB en_US-ryan-low: \"let's end it\" heard as \"let's end\"",
+    "strums +18 dB en_US-ryan-low: \"break\" heard as \"one\"",
+    "strums +12 dB en_US-ryan-low: \"break\" heard as \"one\"",
+    "line +18 dB en_US-ryan-low: \"break\" heard as \"one\"",
+    "line +12 dB en_US-lessac-low: \"break\" heard as \"bring\"",
+    "line +12 dB en_US-ryan-low: \"break\" heard as \"one\""
+  ],
+  "cpu": {
+    "recogniser_s_per_s": 0.0094
+  }
+}
