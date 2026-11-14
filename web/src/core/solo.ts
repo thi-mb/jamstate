@@ -84,8 +84,15 @@ export class Soloist {
   /** Cut the player's phrase into bars on the eighth grid, an octave shift away from the soloist's range. */
   private learn(solo: Solo, bpb: number): void {
     const [lo, hi] = RANGE[solo.part] ?? [60, 84];
-    const ns = solo.motif;
-    const mean = ns.length ? ns.reduce((s, n) => s + n.note, 0) / ns.length : (lo + hi) / 2;
+    // Unpitched hits (audio input) keep their place in the rhythm and take the last pitch played (fit() moves them onto the chord).
+    let last = solo.motif.find((n) => n.note >= 0)?.note ?? Math.round((lo + hi) / 2);
+    const ns = solo.motif.map((n) => {
+      if (n.note < 0) return { ...n, note: last };
+      last = n.note;
+      return n;
+    });
+    const pitched = solo.motif.filter((n) => n.note >= 0);
+    const mean = pitched.length ? pitched.reduce((s, n) => s + n.note, 0) / pitched.length : (lo + hi) / 2;
     const shift = 12 * Math.round(((lo + hi) / 2 - mean) / 12);
     this.bars = Array.from({ length: Math.max(1, Math.ceil((ns.at(-1)?.start ?? 0) / bpb) + 1) }, () => []);
     for (const n of ns) {
@@ -98,7 +105,7 @@ export class Soloist {
       this.bars[b].push({ t, note, vel: n.vel });
     }
     for (const b of this.bars) b.sort((x, y) => x.t - y.t);
-    this.pcs = [...new Set(ns.map((n) => n.note % 12))];
+    this.pcs = [...new Set(pitched.map((n) => n.note % 12))];
   }
 
   /** The player's bar to answer with in bar `i`: the same bar of their turn, or their busiest one when it was nearly empty. */
