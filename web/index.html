@@ -149,6 +149,7 @@
           <div class="row wrap">
             <label class="inline" title="Which input of the device: on a Scarlett Solo, 1 is the mic and 2 the instrument">Channel <select id="audio-channel" disabled><option value="1">1</option><option value="2">2</option><option value="mix">both</option></select></label>
             <label class="inline" title="Play the input through the page (only for interfaces without direct monitoring: it adds the browser's delay)"><input type="checkbox" id="audio-monitor" disabled /> hear input</label>
+            <label class="inline" title="Playing to speakers with a mic? The page takes the band's own sound out of what the input hears, so the band doesn't follow itself. With headphones leave it off."><input type="checkbox" id="audio-gate" disabled /> speakers: gate the band</label>
             <label class="inline" title="Auto hears single notes, chords and muted strums. Pick single notes for lead lines, chords for comping.">Hears <select id="audio-mode" disabled><option value="auto">auto</option><option value="single">single notes</option><option value="chords">chords</option></select></label>
             <button id="calibrate" disabled title="Silence, soft, hard, then a note on each click: sets the noise gate, how hard you play and the input delay">Calibrate</button>
           </div>
