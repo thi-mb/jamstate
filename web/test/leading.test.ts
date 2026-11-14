@@ -13,6 +13,8 @@ import { RuleLeader, type LeaderContext } from "../src/core/rules";
 import { replaySession, SessionRecorder } from "../src/core/session";
 import { parseScript, SimPlayer } from "../src/core/simplayer";
 import { Trader } from "../src/core/trade";
+import { songScale } from "../src/core/fretboard";
+import { parseChord } from "../src/core/theory";
 import funkJson from "../../genres/funk.json";
 import nightShift from "../public/charts/night-shift.json";
 import lateSet from "../public/charts/late-set.json";
@@ -170,6 +172,33 @@ describe("trading fours", () => {
     const solo = plans[5].events.filter((n) => n.part === "chords");
     expect(solo.length).toBeGreaterThan(0);
     expect(solo.every((n) => n.note >= 55 && n.note <= 84)).toBe(true);
+  });
+
+  it("melodic answers stay in the song's key or on the chord, even after an outside phrase", () => {
+    // Night Shift is in F minor: off the beat the answer may use the key's notes, on the beat only chord tones.
+    const key = songScale(chart, getGenre("funk").listening)!.pcs;
+    for (const mode of ["busy", "outside", "syncopated"]) {
+      const { plans } = jam(`${mode}:4,silent:4,${mode}:4,silent:4`, 16, true);
+      for (const p of plans.filter((x) => x.solo)) {
+        const tones = (c: string) => { const ch = parseChord(c); return ch.intervals.map((i) => (ch.root + i) % 12); };
+        for (const n of p.events.filter((e) => e.part === p.solo!.part)) {
+          const pc = n.note % 12;
+          expect(tones(p.chords[0]).includes(pc) || key.includes(pc), `${mode} bar ${p.bar} ${p.chords[0]}: ${n.note}`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("keeps the player's off-beat notes only when they're in the key: no D natural over Fm in F minor", () => {
+    const e = new Engine(chart, { seed: 1, genre: getGenre("funk"), countIn: 0 });
+    for (let b = 0; b < 4; b++) e.nextBar();
+    e.setTrading(true);
+    // F, D natural, A flat, G flat: D and G flat are each a chord's textbook scale note but outside F minor.
+    const motif = [0, 1, 2, 3].flatMap((bar) => [{ start: bar * 4, dur: 0.5, note: 77, vel: 100 }, { start: bar * 4 + 0.5, dur: 0.5, note: 74, vel: 90 }, { start: bar * 4 + 2, dur: 0.5, note: 80, vel: 100 }, { start: bar * 4 + 2.5, dur: 0.5, note: 78, vel: 90 }]);
+    e.setSolo({ part: "chords", from: 4, bars: 4, motif });
+    const notes = [4, 5, 6, 7].flatMap(() => e.nextBar()!.events.filter((n) => n.part === "chords").map((n) => n.note % 12));
+    expect(notes.length).toBeGreaterThan(0);
+    expect(notes.filter((pc) => pc === 2 || pc === 6)).toEqual([]);
   });
 
   it("hands back when the player comes in early", () => {
