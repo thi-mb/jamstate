@@ -157,7 +157,7 @@ export interface BarPlan {
  */
 export type Control =
   | { at: number; kind: "moves"; source: string; requestedBar: number; moves: unknown[] }
-  | { at: number; kind: "cue"; cue: Cue }
+  | { at: number; kind: "cue"; cue: Cue; by?: "voice" }
   | { at: number; kind: "tempo"; bpm: number }
   | { at: number; kind: "genre"; genre: string }
   | { at: number; kind: "swing"; swing: number | null }
@@ -363,9 +363,9 @@ export class Engine {
     return rejected;
   }
 
-  /** A cue from the player, resolved when the next bar is prepared. */
-  cue(c: Cue): void {
-    this.controls.push({ at: this.bar, kind: "cue", cue: c });
+  /** A cue from the player, resolved when the next bar is prepared. `by`: said, not keyed (v0.5). */
+  cue(c: Cue, by?: "voice"): void {
+    this.controls.push({ at: this.bar, kind: "cue", cue: c, ...(by && { by }) });
     this.cues.push(c);
   }
 
@@ -647,7 +647,7 @@ export class Engine {
     while (this.scriptPos < this.script.length && this.script[this.scriptPos].at <= this.bar) {
       const c = this.script[this.scriptPos++];
       if (c.kind === "moves") this.submit(c.moves, c.source, c.requestedBar);
-      else if (c.kind === "cue") this.cue(c.cue);
+      else if (c.kind === "cue") this.cue(c.cue, c.by);
       else if (c.kind === "tempo") this.setTempo(c.bpm);
       else if (c.kind === "genre") this.setGenre(getGenre(c.genre));
       else if (c.kind === "band") this.setBand(c.band);
