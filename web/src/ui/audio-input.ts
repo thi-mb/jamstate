@@ -4,6 +4,7 @@
 // input like MIDI notes do.
 
 import { calibrateLevels, latencyFromTaps, type LevelTake } from "../core/audio/calibrate";
+import { BleedGate } from "../core/audio/bleed";
 import { db, SR } from "../core/audio/dsp";
 import { AudioListener, DEFAULT_CALIBRATION, type Calibration, type DetectionMode, type ListenerEvent } from "../core/audio/listener";
 import { tuningRange, TUNINGS, type Place, type TuningId } from "../core/fretboard";
@@ -18,6 +19,7 @@ const DEVICE_KEY = "jamstate.audio.device";
 const CHANNEL_KEY = "jamstate.audio.channel";
 const CAL_KEY = "jamstate.audio.calibration";
 const MODE_KEY = "jamstate.audio.mode";
+const GATE_KEY = "jamstate.audio.gate";
 const MODES: DetectionMode[] = ["auto", "single", "chords"];
 /** Calibration kept per device and channel. */
 type Stored = Record<string, Calibration & { tapped?: boolean }>;
@@ -42,6 +44,9 @@ export class AudioInputPanel {
   chordPrior: (time: number) => ChordPrior | null = () => null;
   /** The output latency the player hears, for the timing step. */
   outputLatency: () => number = () => 0;
+  /** The band's output while a jam plays, and the bleed gate against it (speakers on). */
+  private bandOut: AudioNode | null = null;
+  private gate: BleedGate | null = null;
   /** The instrument's tuning sets the range of notes it listens for. */
   private tuning: TuningId = "standard";
 
@@ -72,6 +77,12 @@ export class AudioInputPanel {
       this.applyCalibration();
     };
     $<HTMLInputElement>("audio-monitor").onchange = (e) => this.handle?.setMonitor((e.target as HTMLInputElement).checked);
+    const gate = $<HTMLInputElement>("audio-gate");
+    gate.checked = settings.get<boolean>(GATE_KEY) ?? false;
+    gate.onchange = () => {
+      settings.set(GATE_KEY, gate.checked);
+      this.setBand(this.bandOut);
+    };
     $("calibrate").onclick = () => void this.calibrate();
     void this.fillDevices(settings.get<string>(DEVICE_KEY) ? "off-but-remembered" : null);
   }
@@ -135,11 +146,12 @@ export class AudioInputPanel {
     try {
       void this.audio().resume();
       this.listener = this.newListener();
-      this.handle = await this.input.open((s, t) => this.frame(s, t), { deviceId: id === "default" ? undefined : id, channel: this.channel });
+      this.handle = await this.input.open((s, t, ref) => this.frame(s, t, ref), { deviceId: id === "default" ? undefined : id, channel: this.channel });
       // Labels show only once the browser has allowed an input.
       await this.fillDevices(id);
       if (dev.value !== id) dev.value = id;
       this.handle.setMonitor($<HTMLInputElement>("audio-monitor").checked);
+      this.setBand(this.bandOut);
       this.applyCalibration();
       $("audio-status").textContent = `${this.handle.label}, ${this.handle.channels === 2 ? "two channels" : "one channel"}.`;
     } catch (e) {
@@ -160,7 +172,7 @@ export class AudioInputPanel {
 
   private showActive(): void {
     const on = this.active;
-    for (const id of ["audio-channel", "audio-mode", "audio-monitor", "calibrate"]) $<HTMLInputElement>(id).disabled = !on;
+    for (const id of ["audio-channel", "audio-mode", "audio-monitor", "audio-gate", "calibrate"]) $<HTMLInputElement>(id).disabled = !on;
     $("audio-meter").hidden = !on;
     if (!on) {
       $("audio-status").textContent ||= "Audio input is off: MIDI and the computer keys still play.";
@@ -182,7 +194,19 @@ export class AudioInputPanel {
     this.raf = requestAnimationFrame(draw);
   }
 
-  private frame(samples: Float32Array, time: number): void {
+  /**
+   * A jam starts (the band's output) or stops (null). With the bleed gate
+   * on, the band's mix goes to the input as the reference and a fresh gate
+   * learns this room as the jam goes.
+   */
+  setBand(node: AudioNode | null): void {
+    this.bandOut = node;
+    const on = !!node && $<HTMLInputElement>("audio-gate").checked;
+    this.gate = on ? new BleedGate({ delay: this.outputLatency() + (this.handle?.latency ?? 0) + 0.01 }) : null;
+    this.handle?.setReference(on ? node : null);
+  }
+
+  private frame(samples: Float32Array, time: number, ref?: Float32Array): void {
     let peak = 0;
     for (let i = 0; i < samples.length; i++) peak = Math.max(peak, Math.abs(samples[i]));
     if (db(peak) > -1) this.clipUntil = performance.now() + 1500;
@@ -192,6 +216,11 @@ export class AudioInputPanel {
     }
     this.tap?.(samples, time);
     if (!this.listener) return;
+    // The band taken out (the tape above keeps what the input really heard).
+    if (this.gate && ref) {
+      samples = this.gate.push(samples, ref);
+      time -= this.gate.latency / SR;
+    }
     for (const e of this.listener.push(samples, time)) this.emit(e);
   }
 
@@ -234,6 +263,7 @@ export class AudioInputPanel {
       tuning: this.tuning,
       detector: DETECTOR,
       calibration: { ...this.listener.cal },
+      ...($<HTMLInputElement>("audio-gate").checked ? { gate: true } : {}),
     };
   }
 
