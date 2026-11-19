@@ -173,7 +173,7 @@ What we learned about Jev on the way:
       doesn't exist). Play a few, keep them (now automatic in the browser,
       **Sync to Spark** to put them there), then re-run
       (`--brains rules,qwen,jev --label spark`, see
-      [spark/README.md](../../spark/README.md)).
+      [deploy/README.md](../../deploy/README.md)).
 - [x] Claude on the simulated sessions (2026-10-31, cloud). The script reads
       `ANTHROPIC_API_KEY` or `JAMSTATE_ANTHROPIC_API_KEY`.
 - [ ] Claude: try explicit levels for silence in the prompt and rerun; it

@@ -26,7 +26,7 @@ import { JAMS, synthJam } from "../src/core/eval/jams";
 import type { SessionFile } from "../src/core/session";
 import { existsSync } from "node:fs";
 
-/** A guitar jam: Thiago's recorded one when it's in docs/eval/jams/, else the synthesised one. */
+/** A guitar jam: a recorded one when it's in docs/eval/jams/, else the synthesised one. */
 function jamSession(id: string, song: Song): SessionFile {
   const real = new URL(`../../docs/eval/jams/${id}.json`, import.meta.url);
   if (existsSync(real)) return JSON.parse(readFileSync(real, "utf8")) as SessionFile;

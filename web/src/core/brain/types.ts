@@ -35,7 +35,7 @@ export interface ChartAnswer {
 
 export interface BrainProvider {
   readonly kind: BrainKind;
-  /** Short label for the overlay, e.g. "Jev" or "Qwen on the Spark". */
+  /** Short label for the overlay, e.g. "Jev" or "Rules (in the page)". */
   readonly label: string;
   decide(ctx: LeaderContext, signal?: AbortSignal): Promise<BrainAnswer>;
   /** Text to chart. Only text-writing brains (LLMs) have it. */

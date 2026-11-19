@@ -17,9 +17,21 @@ drums drop out; press **End song** and it finishes the phrase and ends.
 Every decision shows on screen with its reason, and every jam is recorded
 so it can be replayed.
 
-The DGX Spark is the host: it serves the app and runs the LLM bandleader.
-All timing stays in the browser, so a slow or missing model never makes the
-music stutter.
+It needs no server and no GPU: the page plays on its own, with a rule-based
+bandleader or a language model (Claude with your key, or a local model on
+your own machine). All timing stays in the browser, so a slow or missing
+model never makes the music stutter.
+
+## Quick start (Docker)
+
+```bash
+docker compose up --build                       # the page and the companion server
+docker compose --profile local-llm up --build   # plus a local model (Ollama) as bandleader
+```
+
+Then open http://localhost:8765 in Chrome or Edge. Relay keys go in `.env`
+(see `.env.example`); GPU and model options are in
+[deploy/README.md](deploy/README.md).
 
 ## Quick start (laptop only, no LLM)
 
@@ -67,7 +79,7 @@ browser only and sent only to that provider. **Test** asks it once.
 | Brain | Needs | Notes |
 |-------|-------|-------|
 | Rules | nothing | the fallback, and what plays when Jev can't be reached |
-| OpenAI-compatible | an endpoint | Qwen on the Spark through the server's relay (`api/relay/llm`, the default), Ollama (`http://localhost:11434/v1`, with `OLLAMA_ORIGINS` set to the page's origin), or OpenAI |
+| OpenAI-compatible | an endpoint | a local model through the server's relay (`api/relay/llm`, the default), Ollama (`http://localhost:11434/v1`, with `OLLAMA_ORIGINS` set to the page's origin), or OpenAI |
 | Claude | an Anthropic API key | called from the page; model `claude-haiku-5-5` by default, editable |
 | Jev | a TypeSafe API key, or the server's | **the default** (won the [bake-off](docs/bakeoff/README.md)). TypeSafe blocks calls from web pages, so it goes through the jamstate server's relay (`api/relay/jev`); with no server the page plays with rules |
 
@@ -158,7 +170,7 @@ no pitch to hear (a muted strum, a slap) is a note with pitch -1: it counts
 for energy, density, rhythm and phrasing, not harmony. Audio jams record and
 replay like MIDI ones; tick **keep the audio** under Session to keep what the
 input heard (16 kHz WAV, about 2 MB a minute), downloaded and synced to the
-Spark beside the session, so the detector can be re-run over it.
+server beside the session, so the detector can be re-run over it.
 
 ```bash
 cd web
@@ -177,25 +189,25 @@ npm run eval -- --brains rules --input audio   # the leader eval with the player
 ## With the jamstate server (optional companion)
 
 ```bash
-# on the Spark: model server (see spark/README.md for the build, download and flags)
-llama-server -m ~/models/Qwen3-30B-A3B-Instruct-2507-Q4_K_M.gguf --alias qwen3-30b-a3b \
-  --host 127.0.0.1 --port 8080 -ngl 99 -c 8192 --parallel 1 --jinja
+# a model server: any OpenAI-compatible one (Ollama, llama.cpp, vLLM; see deploy/README.md)
+ollama pull qwen3:30b-a3b-instruct-2507-q4_K_M && ollama cp qwen3:30b-a3b-instruct-2507-q4_K_M leader
 
 # companion server: serves web/dist, relays the page's brain calls to the model and to Jev
 cd web && npm ci && npm run build && cd ..
 pip install -e server
-python -m jamstate_server --static web/dist --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b --port 8765
+python -m jamstate_server --static web/dist --llm-url http://127.0.0.1:11434/v1 --model leader --port 8765
 ```
 
 Then pick **OpenAI-compatible** under Bandleader (the default endpoint,
 `api/relay/llm`, goes through this server to the model). For Jev, set
 `TYPESAFE_API_KEY` in the server's environment, or paste your key in the page. Web MIDI needs a secure
-context, so from the laptop open the app on localhost through an SSH tunnel
-(`ssh -L 8765:127.0.0.1:8765 <spark>`, then http://localhost:8765) or over
-HTTPS (`tailscale serve`). The bandleader model is Qwen3-30B-A3B-Instruct-2507
+context: http://localhost counts, and from another machine use an SSH tunnel
+(`ssh -L 8765:127.0.0.1:8765 <host>`) or an HTTPS reverse proxy. The
+bandleader model is Qwen3-30B-A3B-Instruct-2507
 ([ADR-0011](docs/decisions/0011-bandleader-model.md): p95 about 0.85 s, 0.4
-bars at 112 bpm). For development, run `npm run dev` on the laptop and point Vite at
-the Spark's server with `JAMSTATE_API=http://<spark>:8765 npm run dev`.
+bars at 112 bpm, on a GPU); smaller models and CPU-only setups are covered in
+[deploy/README.md](deploy/README.md). For development, run `npm run dev` and
+point Vite at a server with `JAMSTATE_API=http://<host>:8765 npm run dev`.
 
 If a brain is slow or down, the page falls back to the in-page rule leader
 after three failures and switches back as soon as the brain answers again.
@@ -216,7 +228,8 @@ Your own playing isn't sent to MIDI out.
 
 On macOS, the IAC bus is the easiest port. Open **Audio MIDI Setup**, then
 **Window → Show MIDI Studio**, double-click **IAC Driver** and tick **Device
-is online**. Quit and reopen Chrome so it sees the new port. In Ableton, turn
+is online**. On Windows, a virtual port from loopMIDI does the same; on
+Linux, ALSA's `snd-virmidi`. Quit and reopen Chrome so it sees the new port. In Ableton, turn
 on **Track** for the IAC input under Settings → Link, Tempo & MIDI. Then make
 three MIDI tracks with MIDI From set to the IAC bus, on channels 2, 3 and 10,
 with Monitor set to In. A loopback port echoes the band back in, so with MIDI
@@ -225,8 +238,8 @@ in on "all inputs" the page skips any input named like the selected MIDI out.
 ## How it works
 
 ```
- browser                                                         DGX Spark
- ──────────────────────────────────────────────────────────      ─────────────────────
+ browser                                                         brain (page, cloud or local)
+ ──────────────────────────────────────────────────────────      ────────────────────────────
  MIDI in / keys ─► player features (per bar) ─► summary/N bars ─► brain provider
                                                     │   (rules · OpenAI-compatible · Claude · Jev;
                                                     │    prompt + move checks in the page)
@@ -318,7 +331,8 @@ plays, bar by bar.
 Every jam is recorded: the chart, genre, seed, your notes, every move and
 genre or swing switch, and a hash of what the band played in each bar
 ([ADR-0014](docs/decisions/0014-session-recording.md)). After you stop,
-**Download** it or **Save to Spark** (`~/.local/share/jamstate/sessions`).
+**Download** it or **Sync to server** (`~/.local/share/jamstate/sessions` on
+the server's host).
 Open one under **Replay**: **Check** replays it offline and confirms every
 bar plays the same; **Play** plays it back with your recorded notes. From
 the command line:
@@ -328,7 +342,7 @@ cd web
 npm run replay -- ~/.local/share/jamstate/sessions/<file>.json                 # exact replay, exit 1 on a mismatch
 npm run replay -- <file>.json --leader rules                                    # same playing, rule leader decides again
 npm run replay -- <file>.json --leader openai --url http://127.0.0.1:8080/v1   # or any brain: openai, claude, jev (keys from env)
-npm run bakeoff -- <sessions dir> --brains rules,jev,openai --label spark       # the brain bake-off (docs/bakeoff/)
+npm run bakeoff -- <sessions dir> --brains rules,jev,openai --label local       # the brain bake-off (docs/bakeoff/)
 ```
 
 ## Repository layout
@@ -339,7 +353,8 @@ npm run bakeoff -- <sessions dir> --brains rules,jev,openai --label spark       
 | `server/` | `jamstate_server`: optional Python stdlib companion (static app, brain relays `/api/relay/llm` and `/api/relay/jev`, session sync `/api/sessions`, with a jam's audio at `/api/sessions/<name>/audio`) |
 | `genres/` | genre packs (funk, blues rock, jazz), read by the page and the server |
 | `schema/` | JSON schemas for charts, genre packs and bandleader moves, shared by both sides |
-| `spark/` | Spark setup: model serving, latency benchmark, HTTPS via Tailscale |
+| `deploy/` | self-hosting: Docker, model servers, latency benchmark, HTTPS, systemd |
+| `localbrain/` | small decision models (Laya) that run on the player's machine |
 | `docs/` | architecture and decision records |
 
 ## Development
@@ -391,7 +406,7 @@ The
 plan for the releases after this is in [docs/roadmap.md](docs/roadmap.md).
 
 Not yet: Ableton Link (needs a local bridge, browsers can't do UDP),
-motif-aware reactions. Later: audio → chart on the Spark
+motif-aware reactions. Later: audio → chart on a local GPU
 (Demucs, allin1, chord recognition), a generative mid layer under the same
 commit deadline, Magenta RealTime audio mode, remote jams.
 

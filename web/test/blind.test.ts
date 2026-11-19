@@ -42,7 +42,7 @@ describe("Claude through the server", () => {
   it("uses the relay when the page has no key, and joins the blind pool", async () => {
     expect(blindCandidates(mergeSettings({}), { llmRelay: false, jevRelay: false, claudeRelay: true })).toEqual(["rules", "claude"]);
     const g = globalThis as { location?: unknown };
-    g.location = { href: "http://spark:8765/app/" };
+    g.location = { href: "http://jamstate.example:8765/app/" };
     const seen: { url: string; key: string | null }[] = [];
     const fetchFn = (async (url: string, init: RequestInit) => {
       seen.push({ url: String(url), key: new Headers(init.headers).get("x-api-key") });
@@ -53,7 +53,7 @@ describe("Claude through the server", () => {
       const brain = makeBrain(mergeSettings({ kind: "claude" }), fetchFn)!;
       const a = await brain.decide({ bar: 1, section: "a", bar_in_section: 0, section_bars: 4, phrase_bars: 4, intensity: 0.5, target: 0.5, layers: [], feel: "normal", form: ["a"], form_pos: 0, sections: ["a"], player: { bars: 4, energy: 0.5, density: 1, mean_velocity: 0.5, rest_ratio: 0.2, repetition: 0, register: "mid", trend: "steady", silent_bars: 0 }, recent_moves: [] } as never);
       expect(a.moves).toEqual([]);
-      expect(seen[0]).toEqual({ url: "http://spark:8765/app/api/relay/anthropic/v1/messages", key: "relay" });
+      expect(seen[0]).toEqual({ url: "http://jamstate.example:8765/app/api/relay/anthropic/v1/messages", key: "relay" });
     } finally {
       delete g.location;
     }

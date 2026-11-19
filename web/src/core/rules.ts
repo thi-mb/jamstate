@@ -1,5 +1,5 @@
 // The rule-based bandleader. Same interface as the LLM one; used offline, in
-// tests, and whenever the Spark is slow or down. v0 reacts to energy only,
+// tests, and whenever the LLM brain is slow or down. v0 reacts to energy only,
 // with separate enter/exit thresholds so it doesn't flap.
 
 import type { PlayerSummary } from "./features";

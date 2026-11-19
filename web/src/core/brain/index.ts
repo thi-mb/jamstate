@@ -41,10 +41,10 @@ export interface BrainSettings {
 
 /**
  * Defaults. The OpenAI-compatible URL points at the companion's relay, which
- * on the Spark forwards to Qwen, so a page served by the Spark works as is.
+ * forwards to the server's local model, so a page served by the server works as is.
  */
 export const DEFAULT_SETTINGS: BrainSettings = {
-  // Jev won the bake-off and Thiago picked it (2026-10-31); rules stay the fallback.
+  // Jev won the bake-off (2026-10-31); rules stay the fallback.
   kind: "jev",
   openai: { url: "api/relay/llm", model: "leader", apiKey: "" },
   claude: { model: DEFAULT_CLAUDE_MODEL, apiKey: "" },
@@ -54,7 +54,7 @@ export const DEFAULT_SETTINGS: BrainSettings = {
 
 export const BRAIN_LABELS: Record<LeaderChoice, string> = {
   rules: "Rules (in the page)",
-  openai: "Qwen on the Spark, or any OpenAI-compatible LLM (Ollama…)",
+  openai: "Local LLM, or any OpenAI-compatible server (Ollama, llama.cpp, vLLM…)",
   claude: "Claude (your key, or the server's)",
   jev: "Jev decision model (default; your key or the server's)",
   laya: "Laya decision model (on this machine)",
