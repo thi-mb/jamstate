@@ -4,7 +4,7 @@
 - Date: 2026-11-14
 
 ## Context
-v0.5 lets Thiago play a guitar (or anything with a mic) instead of a MIDI
+v0.5 lets the player play a guitar (or anything with a mic) instead of a MIDI
 keyboard. Everything after the input already works on note events: the
 per-bar features, the five listening groups, trading, the fretboard, session
 recording and exact replay (ADR-0014). The leader reads per-bar features,
@@ -18,7 +18,7 @@ Forces:
 - **Replay stays exact.** A session must replay bar for bar without the
   audio, and a recorded jam must also be re-runnable through a better
   detector later (the real-jams eval set).
-- **The Scarlett Solo** (Thiago's interface) has the mic on input 1 and the
+- **The Scarlett Solo** (the interface it was tested with) has the mic on input 1 and the
   instrument on input 2 of one stereo device. Chrome downmixes to mono
   unless asked for two channels.
 - Some guitar playing has no pitch to hear: a funk player's muted

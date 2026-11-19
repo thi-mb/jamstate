@@ -3,11 +3,11 @@
 What comes after v0: seven small releases in three phases, ending in a
 public v1.0. Each release has a goal you can hear or see, a scope, and a
 "done when" list written like the v0 test plan
-([testing/v0.md](testing/v0.md)). A release is finished when Thiago's
+([testing/v0.md](testing/v0.md)). A release is finished when its
 hands-on test passes, not when the code merges.
 
-Status: **agreed** with Thiago (2026-10-31). A few smaller open points are
-at the end.
+Status: **agreed** (2026-10-31). A few smaller open points are at the
+end.
 
 ## The shape of it
 
@@ -59,14 +59,14 @@ changes everything about how the band plays and sounds.
 
 The pack format is a decision record in v0.1, so genres can be added without
 code once the engine supports the layers. The first three genres are
-**funk, blues rock and jazz** (Thiago, 2026-10-31): they differ in swing,
+**funk, blues rock and jazz** (2026-10-31): they differ in swing,
 harmony, lineup and how a bandleader behaves, so between them they test
 every layer. The count stays at those three through v0.5: each release adds its layer to those same genres, and they act as
 test cases that keep the engine from assuming one style. The remaining
 genres are added in v0.6–v0.7, when the format is stable and a new genre is
 mostly data and samples. Target for v1.0: about five genres
 that are clearly different (the first three plus, for example, bossa or
-Latin and a ballad/soul style), picked with Thiago. Community genre packs after
+Latin and a ballad/soul style), picked by ear. Community genre packs after
 v1.0.
 
 ## Where v0 left us
@@ -187,7 +187,7 @@ before new features land on the old shape
   Spark becomes optional sync.
 - MIDI, audio input, storage and model runtime behind platform interfaces.
 - **Brain bake-off** on the Spark: replay recorded sessions through each
-  provider, measure latency, Thiago blind-rates the moves; picks the
+  provider, measure latency, a blind test rates the moves; picks the
   default. Laya-in-the-browser spike alongside.
 
 **Done when:**
@@ -198,7 +198,7 @@ before new features land on the old shape
 
 ### v0.2: Sound and lineup
 
-Status: done (2026-11-08). Thiago signed off after playing it; live on the Spark. Test plan in
+Status: done (2026-11-08). Signed off after playing it; live on the Spark. Test plan in
 [testing/v0.2.md](testing/v0.2.md). Samples from MuseScore General (MIT),
 rendered small ([samples.md](samples.md)); lineups as data
 ([ADR-0018](decisions/0018-lineups-and-sound.md)).
@@ -227,9 +227,9 @@ Scope:
   added.
 
 Done when:
-- Thiago's 30-second recording through the built-in sound is something he'd
+- A 30-second recording through the built-in sound is something you'd
   post (re-run test 10).
-- He can pick upright bass + brushes + piano for one song and electric bass +
+- You can pick upright bass + brushes + piano for one song and electric bass +
   kit + organ + guitar for another, and switch a part's instrument mid-song
   without a click or a dropped bar.
 - Switching genre changes the lineup and the mix, and each genre's
@@ -240,7 +240,7 @@ Done when:
 
 ### v0.3: Listening
 
-Status: done (2026-11-09). Thiago signed off after playing it on the Spark; the fretboard got a scale mode from his test, and real jams for the eval moved to v0.5. Scenarios for the eval are in
+Status: done (2026-11-09). Signed off after playing it; the fretboard got a scale mode from the hands-on test, and real jams for the eval moved to v0.5. Scenarios for the eval are in
 [eval/scenarios.md](eval/scenarios.md); test plan in
 [testing/v0.3.md](testing/v0.3.md).
 
@@ -260,8 +260,8 @@ Scope:
   (`web/scripts/bakeoff.ts`), so it runs on any machine, the Spark
   included. Scores every reachable brain: rules, Jev, Claude, Qwen (and Laya
   when its server answers), per genre. This release gets the baseline;
-  v0.4 improves it. Real jams join once Thiago can play guitar into it
-  (v0.5); keyboard jams wouldn't be his real playing.
+  v0.4 improves it. Real jams join once a guitar can be played into it
+  (v0.5).
 - **More signals to the conductor** (added to the summary in
   [bandleader.md](bandleader.md)), one group at a time, each re-scored:
   - Song position: bars to the next section and what it is.
@@ -297,7 +297,7 @@ Scope:
   bar, not a new clock. Pushing or laying back (feel) never moves the tempo.
 - **Fretboard view:** a guitar neck (standard tuning, frets 0–15) or a
   piano (two octaves following the player's register), toggled guitar /
-  piano / off, in two modes (from Thiago's T7, 2026-11-09). Scale: one
+  piano / off, in two modes (from hands-on test T7, 2026-11-09). Scale: one
   scale for the whole song, from the chart's key and the genre's
   `listening.key_scales` (the one that fits the chords best), held still
   with only the chord tones moving on top. Changes: the scale for the
@@ -323,8 +323,8 @@ Done when:
 
 ### v0.4: Leading
 
-Status: done (2026-11-14). Thiago signed off after playing it; test plan in
-[testing/v0.4.md](testing/v0.4.md). Decided with Thiago before starting:
+Status: done (2026-11-14). Signed off after playing it; test plan in
+[testing/v0.4.md](testing/v0.4.md). Decided before starting:
 trading is a mode the player turns on (key 8), not any silence; the Qwen bar
 is E1, E2, E7 and E8 (the sparse scenarios) at 0.85 or better, about level
 with the rules on the v0.3 set, and ahead of them on the new v0.4 scenarios.
@@ -356,12 +356,12 @@ Scope:
 
 Done when:
 - Qwen beats the rule leader on the eval set, and its sparse-playing score
-  clears a bar Thiago agrees on.
+  clears an agreed bar.
 - Over a full song, the second chorus differs from the first in a way that
   makes sense.
 - Two runs with different personalities differ clearly in how much the band
   moves.
-- Thiago trades fours with the band for a full chorus.
+- A player trades fours with the band for a full chorus.
 - Over the same playing, the leader makes recognisably different calls in
   two genres.
 
@@ -369,9 +369,9 @@ Done when:
 
 ### v0.5: Guitar
 
-Status: built 2026-11-14, waiting on Thiago's hands-on tests (T1–T11) and
-the fine-tuning pass on his guitar. Test plan in
-[testing/v0.5.md](testing/v0.5.md). Decided with Thiago before starting:
+Status: built 2026-11-14, waiting on the hands-on tests (T1–T11) and
+the fine-tuning pass on a real guitar. Test plan in
+[testing/v0.5.md](testing/v0.5.md). Decided before starting:
 all five layers including bleed gating; chords by chroma templates first,
 with Basic Pitch measured beside them for accuracy and cost
 ([ADR-0024](decisions/0024-chord-detection.md)); voice cues with Vosk and a
@@ -381,7 +381,7 @@ the detected notes, the raw audio opt-in
 own output ([ADR-0025](decisions/0025-bleed-gating.md)); left-handed and
 other tunings on the fretboard. This first pass is tuned on synthesised
 guitar, GuitarSet and synthesised speech; a fine-tuning pass follows
-Thiago's jams on his Scarlett Solo.
+real guitar jams through an audio interface.
 
 **Goal:** play a guitar (or voice, sax, anything with a mic or audio
 interface) and the band follows, with no MIDI pickup.
@@ -415,8 +415,8 @@ Done when:
   does in v0 tests 2, 4 and 5, and the v0.3 hands-on tests pass on guitar.
 - Audio sessions record and replay like MIDI ones.
 - Three guitar jams (one per genre) recorded and labelled as eval
-  scenarios: the real-jams set moved here from v0.3, since Thiago plays
-  guitar, not keys.
+  scenarios: the real-jams set moved here from v0.3, so they are
+  played on guitar, not keys.
 - Single notes and strummed chords show on the fretboard within about a beat
   and in a plausible position.
 - A spoken "take it down" and "one more chorus" land like the v0.3 cue keys.
@@ -443,9 +443,9 @@ Scope, in order of value:
   only; the recording is never played back. Can slip past v1.0.
 
 Done when:
-- Thiago makes a song from a sentence, edits it and jams on it in under two
+- A player makes a song from a sentence, edits it and jams on it in under two
   minutes.
-- A free jam turns into a saved song he can reopen.
+- A free jam turns into a saved song they can reopen.
 - Bad generated charts are caught by the schema with a clear message.
 
 ### v0.7: Stage
@@ -469,7 +469,7 @@ Scope:
   browser that has the audio).
 
 Done when:
-- Thiago records the demo video from the stage view without touching JSON or
+- The demo video is recorded from the stage view without touching JSON or
   DevTools, and the recap from that session reads right.
 
 ### v1.0: Public

@@ -15,7 +15,7 @@ small transcription model in the browser (Spotify's Basic Pitch).
 - What the band needs is coarser than transcription: which chord, and
   whether it's the chart's. The chart says what chord should be sounding,
   which is a strong prior.
-- Thiago asked for both options to be measured for accuracy and cost before
+- Both options were to be measured for accuracy and cost before
   one is picked (2026-11-14).
 
 ## Decision
@@ -76,7 +76,7 @@ From `docs/eval/results/v0.5-chords/` (2026-11-14):
 So the chroma stays the default, and Basic Pitch stays in the eval. Errors
 left: inversions on up strums (Am7 against C6), sevenths heard on plain
 triads and back, and players' added tones (sus2, add9). The fine-tuning
-pass on Thiago's guitar starts from these numbers.
+pass on a real guitar starts from these numbers.
 
 ## Consequences
 - No model download for the default; chord detection works offline and on
@@ -84,8 +84,8 @@ pass on Thiago's guitar starts from these numbers.
 - Chroma can't tell inversions or voicings apart, and leans on the chart
   for borderline chords; a player playing a different chord from the chart
   must play it clearly to be heard as such.
-- The comparison is repeatable, so the fine-tuning pass after Thiago's jams
-  can re-run it on his recordings.
+- The comparison is repeatable, so the fine-tuning pass after real guitar jams
+  can re-run it on those recordings.
 
 ## Alternatives considered
 - **Basic Pitch as the default** (the roadmap's first idea): the measurement
