@@ -1,4 +1,4 @@
-// OpenAI-compatible brain: llama.cpp (Qwen on the Spark), Ollama, vLLM,
+// OpenAI-compatible brain: llama.cpp, Ollama, vLLM,
 // OpenAI itself. Asks for JSON constrained by the moves schema and degrades
 // to json_object, then plain text, when the server rejects the format.
 

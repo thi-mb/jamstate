@@ -1,0 +1,64 @@
+# jamstate, self-hosted. See deploy/README.md.
+#
+#   docker compose up --build                       # page + companion server
+#   docker compose --profile local-llm up --build   # plus Ollama as the bandleader model
+#
+# Then open http://localhost:8765 (localhost is a secure context, so Web MIDI works).
+# Relay keys and model choice come from .env (see .env.example).
+
+services:
+  jamstate:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    ports:
+      - "127.0.0.1:8765:8765"
+    environment:
+      # The page's OpenAI-compatible brain reaches the model through api/relay/llm.
+      JAMSTATE_LLM_URL: ${JAMSTATE_LLM_URL:-http://ollama:11434/v1}
+      JAMSTATE_LLM_MODEL: leader
+      TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # a model server on the host, on Linux too
+    volumes:
+      - sessions:/data
+    restart: unless-stopped
+
+  ollama:
+    profiles: [local-llm]
+    image: ollama/ollama:0.40.16
+    environment:
+      OLLAMA_CONTEXT_LENGTH: "8192"
+      OLLAMA_KEEP_ALIVE: "-1"
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+    # NVIDIA GPU (needs the NVIDIA Container Toolkit). Uncomment:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  # Downloads the model once and names it "leader", the model the page asks for.
+  ollama-pull:
+    profiles: [local-llm]
+    image: ollama/ollama:0.40.16
+    depends_on: [ollama]
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        until ollama list >/dev/null 2>&1; do sleep 1; done
+        ollama pull "$${MODEL}" && ollama cp "$${MODEL}" leader
+    # Smaller machines: qwen3:4b-instruct-2507-q4_K_M (about 2.5 GB).
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      MODEL: ${JAMSTATE_OLLAMA_MODEL:-qwen3:30b-a3b-instruct-2507-q4_K_M}
+    restart: "no"
+
+volumes:
+  sessions:
+  ollama:

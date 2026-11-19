@@ -1,7 +1,6 @@
 // npm run page-check   (after npm run build)
 //
-// Drives the built page in headless Chrome, served by the companion server
-// like on the Spark: picks lineups, starts a jam with the pretend player,
+// Drives the built page in headless Chrome, served by the companion server: picks lineups, starts a jam with the pretend player,
 // switches an instrument and drops a part while it plays, stops, and checks
 // the recording (the lineup changes are in it and it replays exactly).
 // Exit code 1 when a check fails.

@@ -17,21 +17,23 @@ questions (plain sentences, short choices) because Laya can't follow Jev's.
 `127.0.0.1` (the page calls it straight from the browser, so it allows any
 origin). Two backends:
 
-- `torch`: laya's own runtime (MPS on a Mac, CUDA on the Spark).
-- `mlx`: [`laya_mlx.py`](laya_mlx.py), the same network in MLX for Apple
-  silicon. Tokenizing and decoding stay laya's; only the forward pass moves.
+- `torch` (the default): laya's own runtime, on any OS (CUDA, Apple MPS or
+  CPU; the models are small enough that CPU is fine).
+- `mlx` (optional, Apple silicon only): [`laya_mlx.py`](laya_mlx.py), the
+  same network in MLX. Tokenizing and decoding stay laya's; only the forward pass moves.
   `python laya_mlx.py --check` compares it with laya's PyTorch forward
   (largest probability difference 0.0011, fp16 vs fp32).
-
-On a Mac:
 
 ```bash
 cd localbrain
 uv venv -p 3.13 .venv
-uv pip install -p .venv/bin/python "laya==0.3.27" mlx truststore
-.venv/bin/python laya_server.py --backend mlx --port 8010 \
+uv pip install -p .venv/bin/python "laya==0.3.27" truststore
+.venv/bin/python laya_server.py --port 8010 \
   --checkpoint convaiinnovations/laya-multilingual --revision e4e9ddf21a7b1903b7acffd8814ad4307bf63a67
 ```
+
+On Apple silicon, add `mlx` to the install and `--backend mlx` to the server
+for the MLX forward pass. On Windows, the Python is `.venv\Scripts\python`.
 
 The first run downloads the checkpoint (about 0.65 GB for multilingual, 0.8 GB
 for English). Behind a TLS-inspecting proxy, add `--native-tls` to `uv` and
@@ -49,12 +51,13 @@ bake-off with `--brains laya` (`--laya-url` or `JAMSTATE_LAYA_URL` for another
 port). `--brains laya-jevq` sends Jev's questions to Laya instead, for
 comparison.
 
-## Small LLMs on MLX
+## Small LLMs
 
-Any OpenAI-compatible server works with the `openai` brain. On a Mac,
-`mlx_lm.server` is one, but it ignores `response_format`, so a small model
-isn't held to the move schema: Qwen3-4B had every answer rejected in the
-bake-off. Prefer a server with constrained decoding (llama.cpp, Ollama).
+Any OpenAI-compatible server works with the `openai` brain. Prefer one with
+constrained decoding (Ollama, llama.cpp; see [deploy/README.md](../deploy/README.md)).
+On Apple silicon, `mlx_lm.server` also works, but it ignores
+`response_format`, so a small model isn't held to the move schema: Qwen3-4B
+had every answer rejected in the bake-off.
 
 ```bash
 uv pip install -p .venv/bin/python mlx-lm

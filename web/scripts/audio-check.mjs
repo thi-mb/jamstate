@@ -119,7 +119,7 @@ try {
   const res = await page.textContent("#session-result");
   check(/replay exactly/.test(res ?? ""), `replay check: ${res}`);
 
-  // Synced to the Spark with its audio.
+  // Synced to the server with its audio.
   await page.click("#session-save");
   await page.waitForFunction(() => /Synced|Couldn't sync/.test(document.querySelector("#session-result")?.textContent ?? ""));
   const synced = await page.textContent("#session-result");

@@ -22,7 +22,7 @@ The Spark runs everything that isn't real-time:
   job API; generative mid-layer models under the
   [commit-deadline contract](0005-bar-commit-deadline.md).
 
-Setup steps are in [spark/README.md](../../spark/README.md).
+Setup steps are in [deploy/README.md](../../deploy/README.md).
 
 The Spark holds no session timing state. Each leader request carries the full
 summary it needs, so a restarted server loses nothing.

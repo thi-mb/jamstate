@@ -7,9 +7,9 @@ can tell whether moves land on the next phrase (ADR-0006, ADR-0011).
 
 Stdlib only. Examples:
 
-    python3 spark/bench_leader.py --url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b
-    python3 spark/bench_leader.py --url http://127.0.0.1:8080/v1 --model gpt-oss-20b -n 50 --bpm 112
-    python3 spark/bench_leader.py --url http://127.0.0.1:8765/api/relay/llm   # through the jamstate server's relay
+    python3 deploy/bench_leader.py --url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b
+    python3 deploy/bench_leader.py --url http://127.0.0.1:8080/v1 --model gpt-oss-20b -n 50 --bpm 112
+    python3 deploy/bench_leader.py --url http://127.0.0.1:8765/api/relay/llm   # through the jamstate server's relay
 
 The prompt and move checking now live in the page (web/src/core/brain); to
 compare every brain on recorded sessions use `npm run bakeoff` in web/.

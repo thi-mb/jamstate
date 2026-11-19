@@ -1,13 +1,13 @@
 # jamstate_server
 
 The optional companion server ([ADR-0015](../docs/decisions/0015-no-server-required.md)).
-The page plays without it; on the Spark (or your own machine) it adds what a
+The page plays without it; on your own machine or a host you run it adds what a
 static host can't. Python standard library only.
 
 - `GET /` and everything else: the built web app (`--static web/dist`).
 - `GET /api/health`: `{ok, relay: {llm, jev, anthropic}, llm_url, model, sessions}`.
-- `POST /api/relay/llm/chat/completions`: forwarded to `--llm-url` (Qwen on
-  the Spark listens on 127.0.0.1 only, so the page reaches it through here).
+- `POST /api/relay/llm/chat/completions`: forwarded to `--llm-url` (a local
+  model server usually listens on 127.0.0.1 only, so the page reaches it through here).
 - `POST /api/relay/jev`: forwarded to TypeSafe's API, which blocks calls from
   web pages. On by default; `--no-jev` turns it off.
 - `POST /api/relay/anthropic/v1/messages`: forwarded to the Anthropic API,
@@ -42,7 +42,8 @@ python -m jamstate_server --static web/dist \
 Options can also come from the environment: `JAMSTATE_LLM_URL`,
 `JAMSTATE_LLM_MODEL`, `JAMSTATE_LLM_KEY`, `TYPESAFE_API_KEY`, `JAMSTATE_CORS`,
 `JAMSTATE_HOST`, `JAMSTATE_PORT`.
-It binds to `127.0.0.1` by default; expose it with `tailscale serve` (HTTPS,
-which Web MIDI needs).
+It binds to `127.0.0.1` by default; to reach it from another machine use an SSH
+tunnel or an HTTPS reverse proxy (Web MIDI needs a secure context). See
+[deploy/README.md](../deploy/README.md), which also covers Docker.
 
 Tests: `pip install -e 'server[test]' && pytest server`.

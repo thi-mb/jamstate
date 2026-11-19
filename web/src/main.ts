@@ -79,9 +79,9 @@ const getLibrary = () => (library ??= new SampleLibrary(getAudio()));
 /** The lineup in the picker: who plays the next jam (and the current one, live). */
 let band: Band = {};
 const midi = platform.midi;
-/** The companion server (the Spark, or a local one), if this page was served by one. */
+/** The companion server, if this page was served by one. */
 let server: { sessions: boolean; relay: { llm: boolean; jev: boolean; anthropic: boolean } } | null = null;
-const spark = new ServerSessionStore();
+const serverSessions = new ServerSessionStore();
 let chart: Chart | null = null;
 let chartRaw: ChartJSON | null = null;
 let chartJson = "";
@@ -622,7 +622,7 @@ function showBlindPool(): void {
   const pool = blindPool();
   const why: Record<BrainKind, string> = {
     rules: "",
-    openai: blindReady ? "didn't answer" : "needs the Spark's relay or a direct endpoint",
+    openai: blindReady ? "didn't answer" : "needs the server's relay or a direct endpoint",
     claude: blindReady && (settings.claude.apiKey || server?.relay.anthropic) ? "didn't answer" : "no key: pick Claude above and paste one, or give the server ANTHROPIC_API_KEY",
     jev: blindReady ? "didn't answer" : "needs the jamstate server's relay",
     laya: blindReady ? "not answering: start localbrain/laya_server.py on this machine, then Test" : "press Test to look for it on this machine (localbrain/)",
@@ -691,10 +691,10 @@ $("blind-save").onclick = async () => {
     let where = platform.sessions.label;
     if (server?.sessions) {
       try {
-        await spark.save(f);
-        where += ` and ${spark.label}`;
+        await serverSessions.save(f);
+        where += ` and ${serverSessions.label}`;
       } catch {
-        /* kept in the browser; Sync to Spark can retry */
+        /* kept in the browser; Sync to server can retry */
       }
     }
     res.textContent = `Saved in ${where}. Start another jam for the next hidden brain.`;
@@ -1170,14 +1170,14 @@ $("session-save").onclick = async () => {
   if (!f) return;
   const res = $("session-result");
   try {
-    const name = await spark.save(f);
+    const name = await serverSessions.save(f);
     const wav = jamAudio(f);
-    if (wav) await spark.saveAudio(name, wav);
-    res.textContent = `Synced to ${spark.label} as ${name}${wav ? " with its audio" : ""}`;
+    if (wav) await serverSessions.saveAudio(name, wav);
+    res.textContent = `Synced to ${serverSessions.label} as ${name}${wav ? " with its audio" : ""}`;
     res.className = "small";
     void listSessions();
   } catch (e) {
-    res.textContent = `Couldn't sync to ${spark.label} (${(e as Error).message}). Use Download instead.`;
+    res.textContent = `Couldn't sync to ${serverSessions.label} (${(e as Error).message}). Use Download instead.`;
     res.className = "small errors";
   }
 };
@@ -1201,12 +1201,12 @@ function openReplay(raw: unknown, label: string): void {
 
 const metaLabel = (s: SessionMeta) => `${s.created.slice(0, 16).replace("T", " ")} ${s.title} (${s.bars} bars${s.leader ? `, ${isBlind(s.leader) ? "blind" : s.leader}` : ""})`;
 
-/** Sessions in this browser, plus the Spark's when a server is here. Values are "b:<name>" or "s:<name>". */
+/** Sessions in this browser, plus the server's when there is one. Values are "b:<name>" or "s:<name>". */
 async function listSessions(select?: string): Promise<void> {
   const sel = $<HTMLSelectElement>("session-list");
   const groups: HTMLElement[] = [];
   let count = 0;
-  for (const [prefix, store] of [["b", platform.sessions], ...(server?.sessions ? [["s", spark]] : [])] as [string, SessionStore][]) {
+  for (const [prefix, store] of [["b", platform.sessions], ...(server?.sessions ? [["s", serverSessions]] : [])] as [string, SessionStore][]) {
     try {
       const list = await store.list();
       count += list.length;
@@ -1233,7 +1233,7 @@ async function listSessions(select?: string): Promise<void> {
 async function pickSession(): Promise<void> {
   const v = $<HTMLSelectElement>("session-list").value;
   if (!v) return;
-  const store = v.startsWith("s:") ? spark : platform.sessions;
+  const store = v.startsWith("s:") ? serverSessions : platform.sessions;
   const name = v.slice(2);
   try {
     openReplay(await store.load(name), name);

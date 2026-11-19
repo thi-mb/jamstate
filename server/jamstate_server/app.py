@@ -1,10 +1,10 @@
 """The optional jamstate companion server (ADR-0015).
 
-The page plays without it. When it runs (on the Spark, or on a player's own
-machine) it adds what a static host can't:
+The page plays without it. When it runs (on a player's own machine or a host
+they run) it adds what a static host can't:
 - serves the built page;
 - relays brain calls to providers a web page can't reach directly: the local
-  OpenAI-compatible model (Qwen on the Spark, only reachable from the box)
+  OpenAI-compatible model (usually listening on the host's 127.0.0.1 only)
   and Jev (TypeSafe blocks browser calls);
 - saves recorded sessions as files (optional sync for the eval set).
 

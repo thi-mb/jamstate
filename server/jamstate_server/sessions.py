@@ -1,4 +1,4 @@
-"""Recorded jam sessions, saved as JSON files on the Spark.
+"""Recorded jam sessions, saved as JSON files on the server's host.
 
 The page records every jam (jamstate-session/0.1, ADR-0014) and can save it
 here; replay runs in the browser or with `npm run replay` in web/. The

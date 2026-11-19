@@ -9,7 +9,7 @@ from the local cache and nothing else.
     LAYA_CHECKPOINT=convaiinnovations/laya-multilingual LAYA_BACKEND=torch \\
         python laya_server.py --port 8010
 
-Backends: ``torch`` (laya's own runtime; MPS on a Mac, CUDA on the Spark) and
+Backends: ``torch`` (laya's own runtime; CUDA, Apple MPS or CPU) and
 ``mlx`` (``laya_mlx.py``, Apple silicon only).
 """
 import argparse
@@ -65,7 +65,7 @@ def main() -> None:
             self.send_header("access-control-allow-origin", "*")
             self.send_header("access-control-allow-headers", "content-type, authorization")
             self.send_header("access-control-allow-methods", "GET, POST, OPTIONS")
-            # Chrome's private network access check, for a page served from another host (the Spark).
+            # Chrome's private network access check, for a page served from another host (a companion server).
             self.send_header("access-control-allow-private-network", "true")
 
         def do_OPTIONS(self) -> None:

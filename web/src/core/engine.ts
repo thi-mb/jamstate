@@ -110,7 +110,7 @@ export interface BarContext {
 
 /**
  * Mid layer. Returns the next bar for each requested part, or null for a part
- * that isn't ready (v1 models on the Spark may miss the deadline). A null
+ * that isn't ready (a model-based generator may miss the deadline). A null
  * part repeats its previous bar. Notes are on the straight grid; the engine
  * adds swing and humanize afterwards.
  */

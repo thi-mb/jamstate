@@ -33,7 +33,7 @@ Three things run through every release:
 - **Each release ships its own UI.** v0.7 is the polish pass, not the first
   time a feature gets a screen.
 - **No server required.** The page runs alone; the bandleader is a brain
-  the player picks; the Spark is an optional lab
+  the player picks; a GPU host is an optional lab
   ([ADR-0015](decisions/0015-no-server-required.md),
   [ADR-0016](decisions/0016-brain-providers.md),
   [ADR-0017](decisions/0017-one-core-thin-shells.md)).
@@ -210,7 +210,7 @@ Scope:
 - **Better built-in instruments (test 10):** sampled instruments (SoundFont/
   SFZ or a small CC0/CC-BY set) with velocity layers, round robins for drums,
   release tails, and a light mix bus (per-part EQ, compression, a shared
-  reverb). Loaded lazily from the Spark and cached; the current synth plays
+  reverb). Loaded lazily from the page's host and cached; the current synth plays
   until samples arrive or if they fail.
 - **More instruments:** several sounds per part (bass: electric, upright,
   synth; keys: piano, electric piano, organ; drums: kit, brushes,
@@ -340,7 +340,7 @@ Scope:
   with sparse playing (the v0 weak spot).
 - **Song-level arc:** the leader gets a short memory of the song so far (what
   each section did, where the peak was) and plans the next sections, so
-  chorus 2 isn't a copy of chorus 1. The Spark stays stateless: the page
+  chorus 2 isn't a copy of chorus 1. The server stays stateless: the page
   sends the arc with each request.
 - **Bandleader personality:** presets (steady, supportive, adventurous) that
   set how often and how boldly it moves, through the prompt and the
@@ -397,13 +397,13 @@ each usable on its own, all feeding the v0.3 signals:
    fit and phrasing. Single-note guitar, bass, voice, horns.
 3. **Chords:** polyphonic transcription for strummed guitar. A small model in
    the browser first (e.g. Basic Pitch on WebGPU/WASM); per-bar features to
-   the Spark if it's too heavy.
+   a GPU host if it's too heavy.
 4. **Bleed:** headphones are the default; gating the band's own output from
    the mic is a stretch goal.
 5. **Voice cues** (moved from v0.3): say "take it down" or "one more
    chorus" and it becomes the same cue as the v0.3 keys. Speech to text in
    the page if a small model is good enough (no server required,
-   [ADR-0015](decisions/0015-no-server-required.md)), Whisper on the Spark as
+   [ADR-0015](decisions/0015-no-server-required.md)), Whisper on a GPU host as
    the lab option. Advisory like any leader output.
 
 **Fretboard, live:** the notes and chords detected from the guitar show on
@@ -428,7 +428,7 @@ Done when:
 Scope, in order of value:
 - **Song editor in the page:** sections, bars, chords per bar, form, tempo,
   key, feel and swing (v0.1), lineup (v0.2), validated live against
-  `schema/chart.schema.json`. Songs saved on the Spark.
+  `schema/chart.schema.json`. Songs saved in the browser or on the server.
 - **Text to song:** "slow 12/8 blues in G, two verses and a solo, organ
   trio" → a valid chart via Qwen with schema-constrained output, opened in
   the editor to tweak. Uses the genre packs' forms, progressions and
@@ -438,7 +438,7 @@ Scope, in order of value:
 - **Free jam, no chart:** start playing and the band works out key, tempo
   and a progression from you (v0.5 pitch and chords), locks in, and saves it
   as a song you can edit.
-- **Audio to chart on the Spark** (stretch): upload a recording, get tempo,
+- **Audio to chart on a GPU host** (stretch): upload a recording, get tempo,
   key, sections and chords (Demucs, allin1, a chord recogniser). Structure
   only; the recording is never played back. Can slip past v1.0.
 
@@ -475,7 +475,7 @@ Done when:
 ### v1.0: Public
 
 - Repo goes public (Apache 2.0); README, getting started with no install
-  (web), with a key or local model, and with a Spark; a short architecture
+  (web), with a key or local model, and self-hosted with Docker; a short architecture
   tour.
 - About five genre packs that each sound and lead differently.
 - Demo video.
@@ -503,13 +503,13 @@ starting over.
   repetition, and picks or adjusts chords to fit what you sing (an
   extension of free jam from v0.6). Needs a voice-tuned pitch tracker
   (vibrato, slides, breathy onsets) and a "fit chords to melody" step,
-  probably on the Spark first.
+  probably on a GPU host first.
 - **Desktop app:** the same page in a Tauri or Electron shell, with a
   bundled local brain, its own MIDI port into Ableton, Link and native
   audio in ([ADR-0017](decisions/0017-one-core-thin-shells.md)). May come
   earlier if the public demo and the shell spike say so.
 - **Hosted tier:** a small subscription for generative audio, only if it is
-  good enough to pay for. The Spark prototypes it first.
+  good enough to pay for. A local GPU host prototypes it first.
 - **Community genre packs:** the pack format from v0.1, documented for
   others to add genres.
 
@@ -519,15 +519,14 @@ Not scheduled; each can slot in once its question is answered:
 
 - **Ableton Link** through a small local bridge
   ([ADR-0004](decisions/0004-ableton-link-deferred.md)). Untested, and it
-  needs a helper app on the Mac, which may not be allowed on Thiago's work
-  laptop. Check that first. The desktop app (ADR-0017) would host Link
-  natively.
-- **Generative mid layer on the Spark:** a symbolic model writing the next
+  needs a helper app on the player's machine. Check that first. The desktop
+  app (ADR-0017) would host Link natively.
+- **Generative mid layer on a GPU host:** a symbolic model writing the next
   1–2 bars under the same commit-deadline contract. Follows v0.1's
   rule-based groove once replay and the eval set can tell if it's better.
 - **Audio mode with Magenta RealTime**, after the spike in
   [ADR-0009](decisions/0009-magenta-realtime-spike.md). The spike can run on
-  the Spark any time. Magenta RealTime 2 (2026) streams in real time on
+  any GPU host. Magenta RealTime 2 (2026) streams in real time on
   Apple Silicon with MIDI steering, which also makes it a desktop-app
   candidate.
 - Max for Live device; remote mode where only the human parts cross the
@@ -550,4 +549,4 @@ Tauri vs. Electron, whether to build a DAW plugin, hosting and pricing.
    [samples.md](samples.md). Better single instruments can replace any of it.
 3. **Genres:** the first three are decided (funk, blues rock, jazz); the
    other two for v1.0 are open.
-4. **Link:** can a local helper app run on the work Mac at all?
+4. **Link:** can a local helper app run on locked-down machines at all?

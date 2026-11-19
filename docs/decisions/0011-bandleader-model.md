@@ -27,7 +27,7 @@ already suggests a local MoE model.
 - Sampling: temperature ~0.4, `max_tokens` 200 as a safety cap.
 - vLLM is the fallback server if llama.cpp's JSON-schema support or ARM/CUDA
   build gives trouble; the app only depends on the OpenAI API.
-- Pick between the two models with `spark/bench_leader.py` and record the
+- Pick between the two models with `deploy/bench_leader.py` (then `spark/`) and record the
   numbers here before marking this Accepted.
 
 Rough expectation, to be confirmed by the benchmark: a few-billion-active MoE
@@ -36,7 +36,7 @@ prompt in well under a second, so a 60-token answer should land around
 1–1.5 s.
 
 ## Benchmark results (2026-10-30)
-Measured on the Spark with `spark/bench_leader.py` at 112 bpm, llama.cpp
+Measured on the Spark with `deploy/bench_leader.py` (then `spark/`) at 112 bpm, llama.cpp
 792fcf4 (CUDA 13.0), `-ngl 99 -c 8192 --parallel 1 --jinja`, repo at 4f25483.
 
 | | Qwen3-30B-A3B-Instruct-2507 Q4_K_M | gpt-oss-20b MXFP4, reasoning low |

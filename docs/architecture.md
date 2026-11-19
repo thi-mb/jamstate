@@ -111,7 +111,7 @@ the governor disposes. See [ADR-0007](decisions/0007-move-governor.md).
 ### Bandleader
 A pluggable brain the player picks
 ([ADR-0016](decisions/0016-brain-providers.md)): the in-page rules, an
-OpenAI-compatible model (Qwen on the Spark, Ollama), Claude, or a decision
+OpenAI-compatible model (Qwen or another local model through Ollama or llama.cpp), Claude, or a decision
 model such as Jev or Laya. Every N bars it gets a compact summary (player features, arranger state, position in form,
 recent moves) and returns zero or more moves as schema-constrained JSON. It is
 called asynchronously and never awaited by the music. A deterministic
@@ -159,9 +159,9 @@ checking and session storage live in the page. API keys stay on the
 player's machine. The page treats every brain as unreliable: short timeouts,
 automatic switch to the rule-based leader, automatic recovery.
 
-The DGX Spark is optional. It is Thiago's lab: an eval bench that replays
-recorded sessions through each brain, offline jobs (stems, audio to chart),
-generative audio R&D, and one more brain host (Qwen) for whoever has it.
+A GPU machine is optional. Whoever has one can use it as a lab: an eval
+bench that replays recorded sessions through each brain, offline jobs (stems,
+audio to chart), generative audio R&D, and one more brain host (a local LLM).
 The Python server in `server/` stays as an optional companion (static
 hosting, session sync, a proxy for providers that block browser calls).
 
@@ -175,13 +175,13 @@ web versions in `web/src/platform/web.ts`; the companion's relays in
 ## Roadmap view
 
 The release plan after v0 is in [roadmap.md](roadmap.md); the list below is
-the original long-range view, kept for history. Where it puts work on the
-Spark, ADR-0015 now makes the Spark optional.
+the original long-range view, kept for history. Where it puts work on a
+GPU host (the DGX Spark at the time), ADR-0015 now makes that host optional.
 
 - **v0**: browser app; typed chart; loop bank; drums, bass, chords; LLM leader
   on energy/density; built-in sound + Web MIDI out; overlay in the page.
-- **v1**: Ableton Link via a local bridge; audio → chart on the Spark
-  (Demucs, allin1, chord recognition); generative mid layer on the Spark under
+- **v1**: Ableton Link via a local bridge; audio → chart on a GPU host
+  (Demucs, allin1, chord recognition); generative mid layer on a GPU host under
   the same commit-deadline contract.
 - **v2**: audio mode with Magenta RealTime, gated on a spike
   ([ADR-0009](decisions/0009-magenta-realtime-spike.md)).
@@ -191,4 +191,4 @@ Spark, ADR-0015 now makes the Spark optional.
 ## Further reading
 
 - [bandleader.md](bandleader.md): request/response contract for the bandleader.
-- [../spark/README.md](../spark/README.md): running the server and model on the Spark, HTTPS, and the latency benchmark.
+- [../deploy/README.md](../deploy/README.md): self-hosting the server and a local model (Docker, Ollama, llama.cpp), HTTPS, and the latency benchmark.
