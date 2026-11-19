@@ -1,6 +1,6 @@
 # 0018. Lineups and the built-in sound
 
-- Status: Accepted (2026-11-08, Thiago signed off on v0.2 after playing it)
+- Status: Accepted (2026-11-08, v0.2 signed off after playing it)
 - Date: 2026-10-31
 
 ## Context
@@ -93,8 +93,8 @@ through it. The chart schema that LLMs write against leaves `band` out.
   and mixed licenses.
 - **Salamander piano, VCSL, etc. per instrument**: better single instruments,
   but several licenses (CC-BY, CC0) and sizes to track, and no shared sound.
-  A good next step for the piano and the kits once Thiago says which part
-  sounds weakest.
+  A good next step for the piano and the kits once hands-on listening shows
+  which part sounds weakest.
 - **SoundFont player in the page (sf2 parsed in the browser)**: no render
   step, but the full SoundFont is 168 MB; rendering only what we play is 7%
   of that.

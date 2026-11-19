@@ -64,7 +64,7 @@ Notes:
   a layer. gpt-oss separated busy from sparse more clearly. Prompt work, not
   a model change, is the first lever for this.
 
-Decision: Qwen3-30B-A3B-Instruct-2507 is the default bandleader model. Thiago accepted it on 2026-10-30.
+Decision: Qwen3-30B-A3B-Instruct-2507 is the default bandleader model. Accepted on 2026-10-30.
 
 ## Consequences
 - Plenty of memory left on the Spark for v1 models (generative mid layer,

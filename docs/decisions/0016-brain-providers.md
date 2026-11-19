@@ -1,6 +1,6 @@
 # 0016. The bandleader is a pluggable brain the player picks
 
-- Status: Accepted (Thiago, 2026-10-31)
+- Status: Accepted (2026-10-31)
 - Date: 2026-10-31
 - Amends: [0006](0006-bandleader-latency-contract.md),
   [0011](0011-bandleader-model.md)
@@ -18,8 +18,7 @@ instead of writing text. A bandleader move is exactly that: one move from a
 fixed set, plus its arguments. Two examples:
 - [Jev](https://flaviocopes.com/jev/) (TypeSafe): hosted only, usually about
   100 ms (70 to 500 ms quoted from the US West Coast), $0.042 per million
-  input tokens, output free. It cannot write text. Thiago has a key with
-  credits.
+  input tokens, output free. It cannot write text.
 - [Laya](https://shop.zimaspace.com/blogs/tech-ai-hub/laya-open-source-decision-model-local-ai)
   (Convai): open weights, Apache 2.0, about 421M parameters, reported at
   about 13 ms on an M3 Max, with community ONNX (Node/TypeScript) and MLX
@@ -49,8 +48,8 @@ fixed set, plus its arguments. Two examples:
   models write no text.
 - **The default is picked by measurement**, not taste: a bake-off on the
   Spark replays recorded sessions through each provider, measures latency,
-  and Thiago blind-tests the brains by playing.
-- **Result (Thiago, 2026-10-31): Jev is the default.** It followed the
+  and a blind test compares the brains by playing.
+- **Result (2026-10-31): Jev is the default.** It followed the
   player as well as rules on the bake-off (follow 0.96, silent→drop 1.00,
   busy→lift 1.00) at about 0.1 s per answer. Rules, OpenAI-compatible (Qwen),
   Claude (Haiku 5.5 by default) and Laya stay selectable and supported, and

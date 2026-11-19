@@ -49,7 +49,7 @@ response is followed bar by bar. v0.3 adds more listening. Three forces:
   root) and `outside` (`hold` or `lift`: what the band does when the player
   goes outside). A pack without it uses the chord's own scale and holds. The
   key is optional, so the format stays `jamstate-genre/0.2`.
-- Added 2026-11-09 (Thiago's fretboard test): optional `key_scales`, per key
+- Added 2026-11-09 (the fretboard hands-on test): optional `key_scales`, per key
   mode (major, minor) a list of named scales over the key's tonic, in order
   of preference. The fretboard's scale mode holds the one that covers the
   most chord tones over the whole chart (first listed wins a tie): blues for

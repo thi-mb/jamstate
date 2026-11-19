@@ -1,6 +1,6 @@
 # 0017. One core, thin shells: web now, desktop app when tests say so
 
-- Status: Accepted (Thiago, 2026-10-31)
+- Status: Accepted (2026-10-31)
 - Date: 2026-10-31
 - Extends: [0002](0002-browser-first.md)
 
@@ -23,7 +23,7 @@ v1.0, three ways to ship are on the table, each good at something different:
 
 We don't yet know how players will use jamstate (keys or guitar, DAW or
 couch, practice or creative partner, install or not, pay or not). Our only
-data point is Thiago.
+data point is the maintainer's own playing.
 
 ## Decision
 - **One core, the same everywhere.** The engine, arranger, governor, part
@@ -45,8 +45,6 @@ data point is Thiago.
      20 players;
   4. a desktop shell spike (virtual MIDI port into Ableton);
   5. a generative band spike with Magenta RealTime 2.
-  The last two may need a company-policy check, since Thiago's Mac is a work
-  laptop.
 
 ## Consequences
 - No platform choice is locked in, at the cost of a thin interface layer now.
@@ -58,6 +56,6 @@ data point is Thiago.
 - **Commit to web only.** Loses Safari users, easy Ableton setup, Link and
   bundled models.
 - **Commit to a desktop app now.** Adds install friction before we know who
-  the users are, and slows Thiago's own testing.
+  the users are, and slows hands-on testing.
 - **DAW plugin first.** Best Ableton fit, but a rewrite in another language
   before the core is proven.

@@ -1,6 +1,6 @@
 # 0015. jamstate runs without a server; the Spark is optional
 
-- Status: Accepted (Thiago, 2026-10-31)
+- Status: Accepted (2026-10-31)
 - Date: 2026-10-31
 - Supersedes: [0008](0008-spark-as-stateless-advisor.md)
 
@@ -30,13 +30,13 @@ run in the page. All four jobs can move into the page.
 - **The Spark becomes optional**, used for what only a big local GPU does
   well:
   - an **eval lab**: replay recorded sessions through each brain and score
-    them, and later fine-tune on Thiago's taste;
+    them, and later fine-tune on the player's taste;
   - **offline jobs**: stem splitting, audio to chart, sample rendering;
   - **generative R&D**: a band that produces audio, steered by our chart and
     moves (see [ADR-0009](0009-magenta-realtime-spike.md));
   - a **prototype of a hosted tier**, to learn what serving gen AI costs
     before paying for cloud GPUs;
-  - Thiago's own rig: it keeps serving Qwen as one brain among several.
+  - a self-hosted rig keeps serving Qwen as one brain among several.
 - The Python server stays in the repo as an optional companion (static
   hosting, a session sync endpoint, a CORS-friendly proxy for providers that
   need one), not as a requirement.
@@ -54,8 +54,8 @@ run in the page. All four jobs can move into the page.
   them (export, or opt-in sync).
 
 ## Alternatives considered
-- **Keep the Spark as required host (ADR-0008).** Simplest for Thiago, but
-  no one else can run it.
+- **Keep the Spark as required host (ADR-0008).** Simplest for the maintainer,
+  but no one else can run it.
 - **A jamstate cloud server for everyone.** Easy onboarding, but we would pay
   for every user's inference and host their data. Kept as a possible paid
   tier for generative audio later, not the base.

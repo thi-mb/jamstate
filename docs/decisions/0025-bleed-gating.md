@@ -8,7 +8,7 @@ With headphones, the input hears only the player. With speakers and a mic
 (an acoustic guitar, a voice, a horn) it also hears the band, and the
 detector would follow the band's notes and energy: the band hears itself,
 gets louder, hears itself louder. A guitar on a DI input has almost no
-bleed, but a mic for voice cues does. Thiago put gating in scope for v0.5
+bleed, but a mic for voice cues does. Gating went in scope for v0.5
 (2026-11-14).
 
 The page knows exactly what the band is playing: it renders it. Browser
@@ -53,7 +53,7 @@ guitar lines that play 4 s and rest 4 s:
 
 It found the delay within 4 ms. Without a band it costs 0.02 in note F1
 (0.95 → 0.93), so it stays off with headphones. A real room will differ;
-the fine-tuning pass measures it with Thiago's speakers.
+the fine-tuning pass measures it with real speakers.
 
 ## Consequences
 - Playing along to speakers works for the energy and density signals, and
