@@ -1,6 +1,6 @@
 // Guitar jams for the eval (v0.5 row 12): one per song, played on guitar
 // and heard through the audio listener, labelled with checks like the other
-// scenarios (J1–J3 in scenarios.ts). Until Thiago's own jams are in
+// scenarios (J1–J3 in scenarios.ts). Until real recorded jams are in
 // (docs/eval/jams/<id>.json, a downloaded session), each is a synthesised
 // jam: the pretend player on a script, recorded as a session. Recorded
 // notes don't answer the band, so the checks ask only for the band to

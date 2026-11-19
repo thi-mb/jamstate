@@ -2,7 +2,7 @@
 // notes are chosen. Swing moves off-beats later, humanize nudges each part
 // ahead of or behind the beat, and a ritardando slows the last bar of a song.
 // Generators always write on the straight grid; this is the only place that
-// bends time, so a future generator on the Spark gets the same feel for free.
+// bends time, so a future model-based generator gets the same feel for free.
 
 import type { DrumLine, HumanizePart } from "./genre";
 import { clamp, type NoteEvent, type Part } from "./types";

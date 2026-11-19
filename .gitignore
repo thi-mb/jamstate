@@ -8,3 +8,6 @@ __pycache__/
 
 # Models fetched by npm run fetch-models (not committed)
 web/public/models/
+
+# Local secrets for docker compose
+.env

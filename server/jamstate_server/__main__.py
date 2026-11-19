@@ -1,4 +1,4 @@
-"""python -m jamstate_server --static ../web/dist --llm-url http://127.0.0.1:8080/v1 --model qwen3-30b-a3b"""
+"""python -m jamstate_server --static ../web/dist --llm-url http://127.0.0.1:8080/v1 --model leader"""
 
 from __future__ import annotations
 

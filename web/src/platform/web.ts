@@ -244,9 +244,9 @@ export class BrowserSessionStore implements SessionStore {
   }
 }
 
-/** Optional sync target: the companion server's /api/sessions (the Spark). */
+/** Optional sync target: the companion server's /api/sessions. */
 export class ServerSessionStore implements SessionStore {
-  readonly label = "the Spark";
+  readonly label = "the server";
   constructor(private base = "api/sessions") {}
 
   async list(): Promise<SessionMeta[]> {

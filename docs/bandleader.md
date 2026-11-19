@@ -2,7 +2,7 @@
 
 How the page and the bandleader talk. The bandleader is a brain the player
 picks ([ADR-0016](decisions/0016-brain-providers.md)): the in-page rules, an
-OpenAI-compatible LLM (Qwen on the Spark, Ollama), Claude, or the Jev decision
+OpenAI-compatible LLM (a local model through Ollama or llama.cpp), Claude, or the Jev decision
 model. All take the same request and return the same response; the prompt and
 the move checks live in the page (`web/src/core/brain/`). Timing rules are in
 [ADR-0006](decisions/0006-bandleader-latency-contract.md); what happens to a
@@ -214,7 +214,7 @@ paragraphs are part of the cached prefix; `trading` only while trading.
 | `trading` | `turn` (player / band: whose the bar just played was), `soloist` (who takes the band's turns now), `bars_left` in the turn |
 
 The page keeps the arc (`web/src/core/arc.ts`) and sends it with every request,
-so no brain keeps state (the Spark stays stateless). The personality also sets
+so no brain keeps state (the server stays stateless). The personality also sets
 the governor (dwell times, deadband), so even a brain that ignores the prompt
 moves less when steady. While trading, the governor rejects leader moves that
 drop parts, change the feel or take the level down more than 0.15.

@@ -1,6 +1,6 @@
 // The song so far, and a plan for the next sections (v0.4, ADR-0021). The
 // page keeps it and sends it with every request, so no brain needs memory
-// (the Spark stays stateless, ADR-0008): what each section visit did, where
+// (the server stays stateless, ADR-0008): what each section visit did, where
 // the peak was, and how this visit and the next should differ from the last
 // time through, by the genre's arc style:
 //
