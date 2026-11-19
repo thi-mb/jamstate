@@ -4,7 +4,7 @@ Short records of architectural decisions: what we chose, why, and what we gave
 up. One file per decision, numbered in order. A decision is never edited to
 say something else; it is superseded by a new record that links back.
 
-Status values: **Proposed** (recommended, waiting on Thiago), **Accepted**,
+Status values: **Proposed** (recommended, not yet decided), **Accepted**,
 **Superseded by NNNN**, **Rejected**.
 
 | # | Decision | Status |

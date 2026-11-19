@@ -1,6 +1,6 @@
 # Brain bake-off
 
-2026-10-31T14:28Z · 9 sessions · measured from: Thiago's MacBook Pro (M4 Max), localhost
+2026-10-31T14:28Z · 9 sessions · measured from: an Apple M4 Max laptop, localhost
 
 ## Latency and validity (same questions)
 

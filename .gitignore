@@ -11,3 +11,6 @@ web/public/models/
 
 # Local secrets for docker compose
 .env
+
+# npm run eval output
+web/eval-out/

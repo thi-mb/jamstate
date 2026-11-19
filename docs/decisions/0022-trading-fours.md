@@ -18,7 +18,7 @@ phrase, then hands back when you come in." Three forces:
 - Jams replay exactly (ADR-0014), and a replay has no player listening.
 
 ## Decision
-- **Trading is a mode the player turns on** (Thiago, 2026-11-09): key 8 or
+- **Trading is a mode the player turns on** (2026-11-09): key 8 or
   the **Trade fours** button under Cues. Off, silence means what it did in
   v0.3. The setting is kept in the browser; turning it on or off is an engine
   control (`trade`), recorded and replayed.
@@ -43,14 +43,14 @@ phrase, then hands back when you come in." Three forces:
   or off the beat a note of the song's scale, the one the fretboard's scale
   mode shows), else to a chord tone. A chord's textbook scale ignores the
   key (D natural over Fm in F minor), which was still too outside in funk. (First
-  version: new notes from the genre's wide scale, which Thiago heard as too
+  version: new notes from the genre's wide scale, which sounded like too
   many outside notes on Night Shift.) A drum solo plays alone (as a jazz band lays out for the
   drummer) and answers the player's phrase too: the busiest bar of their
   rhythm, on the eighth grid, stated on the snare with kick under their
   accents, answered on the toms, filled in with ghost notes, then half of it
   and a tom run into the player's downbeat, louder through the turn, the
   hi-hat foot on 2 and 4; the band comes back with a crash. (First version:
-  a random cell per beat, which Thiago heard as random notes in T5.) A melodic
+  a random cell per beat, which sounded like random notes in hands-on test T5.) A melodic
   soloist plays over the rest of the band, in place of its comping.
 - **The governor protects the trade:** while trading, leader moves that drop
   parts, change the feel or take the level down more than 0.15 are rejected.

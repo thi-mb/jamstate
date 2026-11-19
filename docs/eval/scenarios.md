@@ -1,9 +1,19 @@
 # Leader eval: scenarios
 
-Draft for Thiago's review (v0.3, 2026-11-08). These are the situations the
-leader eval plays and what a good bandleader must or must not do in each.
-PR 2 turns this page into data (`web/eval/`) and runs it; this page stays the
-spec, so change the rules here.
+The situations the leader eval plays, and what a good bandleader must or
+must not do in each. This page is the spec; the same checks are encoded as
+data in [`web/src/core/eval/scenarios.ts`](../../web/src/core/eval/scenarios.ts)
+and run by [`web/scripts/eval.ts`](../../web/scripts/eval.ts):
+
+```bash
+cd web && npm ci
+npm run eval -- --brains rules                                 # no server, no key, about a second
+ANTHROPIC_API_KEY=... npm run eval -- --brains rules,claude    # add Claude
+npm run eval -- --brains openai --url http://127.0.0.1:11434/v1 --model leader   # any OpenAI-compatible model
+```
+
+Each run writes `summary.md` and `results.json` (default `web/eval-out/`).
+Past runs are in [results/](results/).
 
 ## How a scenario runs
 
@@ -31,15 +41,14 @@ spec, so change the rules here.
   are scored too but also reported in their own columns, since they mostly
   test the page, not the brain.
 
-Player modes the pretend player needs (today it has `silent`, `sparse`,
-`medium`, `busy`): `held` (one or two long soft notes a bar), `crescendo` /
+Beyond `silent`, `sparse`, `medium` and `busy`, the pretend player has
+these modes: `held` (one or two long soft notes a bar), `crescendo` /
 `decrescendo` (velocity ramps across each phrase at a steady density),
 `outside` (medium density, notes outside the chord and the genre's scale),
 `riff` (one bar repeated exactly), `syncopated` (offbeat sixteenths),
 `push` / `layback` (medium, every onset 40 ms early / late against the
 band), `rush` / `drag` (medium, the player's own tempo 3% faster / slower
-than the band and drifting further while the band doesn't follow). They are
-built in PR 2, so the baseline covers every scenario.
+than the band and drifting further while the band doesn't follow).
 
 ## Follow the player
 
@@ -258,12 +267,12 @@ notes are rendered as a guitar and heard through the audio listener; every
 other scenario runs that way too, to compare guitar with MIDI
 ([results/v0.5-guitar](results/v0.5-guitar/README.md)).
 
-Thiago's own jams replace these (decided 2026-11-09, v0.3 test T9: he isn't
-a keyboard player, so keyboard jams wouldn't be his real playing). Until
-then each is synthesised: the pretend player on a script, recorded as a
-session (`web/src/core/eval/jams.ts`). A downloaded session saved as
-`docs/eval/jams/<id>.json` takes its jam's place; Claude labels it with
-checks in the same style, and Thiago reviews the labels.
+Real recorded guitar jams are meant to replace these (guitar rather than
+keyboard, so they are the player's real playing). Until then each is
+synthesised: the pretend player on a script, recorded as a session
+(`web/src/core/eval/jams.ts`). A downloaded session saved as
+`docs/eval/jams/<id>.json` takes its jam's place, labelled with checks in
+the same style.
 
 ### J1 Funk on guitar (Night Shift)
 `medium:8, busy:8, sparse:4, silent:4, busy:8`, every other short note a
@@ -284,13 +293,14 @@ leave room either way); by bar 15 it rises 0.05 over bar 7's; drums and
 bass stay in through bars 16–23 (outside, then back); by bar 31 target no
 higher than at bar 15.
 
-## Decided in review
+## Design notes
 
 - Thresholds are provisional, tuned from the baseline
-  ([results/baseline-v0.2](results/baseline-v0.2/summary.md)). So far one
-  change: E4 asks ≥ 0.55 on jazz. E1, E7 and E8 fail for every brain on
-  purpose: the v0.2 summary only carries energy, so held notes and a
-  decrescendo inside a phrase are the gaps the listening groups should close.
+  ([results/baseline-v0.2](results/baseline-v0.2/summary.md)). One change
+  so far: E4 asks ≥ 0.55 on jazz. In that baseline E1, E7 and E8 failed for
+  every brain by design: the v0.2 summary only carried energy, so held notes
+  and a decrescendo inside a phrase were the gaps the v0.3 listening groups
+  had to close.
 - Stretch checks (the "v0.3 target" ones in E9, E11, E12 jazz) are reported
   separately and left out of the score.
 - Jazz under outside playing: stay in, mostly; a lift is a stretch check.

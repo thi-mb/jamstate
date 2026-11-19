@@ -57,6 +57,56 @@ in the browser, and needs nothing else
 or localhost. Voice cues need the speech model in the build: run `npm run
 fetch-models` before `npm run build` (it isn't in the repo).
 
+## The leader eval
+
+How do you know a bandleader is any good? jamstate scores each brain on
+scripted jams. A pretend player goes sparse, stops, comes back, builds, holds
+notes, plays outside or rushes. The brain under test leads the real band
+engine, and checks on what the band actually does (intensity, layers, feel,
+section, tempo) pass or fail.
+
+- **Spec:** [docs/eval/scenarios.md](docs/eval/scenarios.md). 35 scenarios in
+  follow, phrasing, harmony and rhythm, tempo, cues, leading (arc,
+  personality, genre, trading) and guitar jams, each with its must and
+  must-not checks.
+- **Runner:** [`web/scripts/eval.ts`](web/scripts/eval.ts), which runs every
+  scenario × song (funk, blues rock, jazz) × 3 seeds × brain and writes
+  `summary.md` and `results.json`. The checks are encoded in
+  [`web/src/core/eval/scenarios.ts`](web/src/core/eval/scenarios.ts).
+- **Results:** [docs/eval/results/](docs/eval/results/), one folder per
+  release.
+
+Latest results (score = checks passed / checks, mean over runs; *sparse* =
+the scenarios where the player lays back):
+
+| Brain | Score | Sparse | p95 latency | Run |
+|---|---|---|---|---|
+| Rules (in the page) | **0.99** | 0.99 | 0 ms | [v0.4](docs/eval/results/v0.4/summary.md), 606 runs |
+| Qwen3-30B-A3B (local GPU, llama.cpp) | **0.95** | 0.85 | 1,021 ms | [v0.4](docs/eval/results/v0.4/summary.md), 606 runs |
+| Rules, player heard as guitar audio | **0.98** | | | [v0.5-guitar](docs/eval/results/v0.5-guitar/README.md), 312 runs |
+
+The rule leader was developed alongside these scenarios, so it is the bar
+an LLM brain has to clear rather than a neutral baseline. Cloud brains (Claude,
+Jev) were compared on recorded sessions in the
+[bake-off](docs/bakeoff/README.md).
+
+Run it yourself. You need Node 22, and no GPU or server:
+
+```bash
+cd web && npm ci
+npm run eval -- --brains rules                                    # about a second, no key
+ANTHROPIC_API_KEY=sk-ant-... npm run eval -- --brains rules,claude   # add Claude (cloud)
+JAMSTATE_LLM_KEY=... npm run eval -- --brains openai \
+  --url https://api.openai.com/v1 --model <model>                    # any OpenAI-compatible endpoint
+npm run eval -- --brains openai --url http://127.0.0.1:11434/v1 --model leader   # a local model (Ollama)
+npm run eval -- --brains rules --only E1,E5 --songs late-set      # a subset
+```
+
+Results land in `web/eval-out/` (`--out` to change). Add `--input audio` to
+render the player as a guitar and hear it through the audio listener.
+`--seeds`, `--parallel` and `--listening` are described at the top of the
+runner.
+
 ## The band and its sound
 
 Under **Band**, pick a lineup (the song's, the genre's, or one of the genre's

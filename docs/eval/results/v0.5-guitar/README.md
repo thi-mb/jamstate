@@ -43,7 +43,7 @@ A1 on Blues in A, below). 97 of the 104 pairs score the same.
 The misses are near the thresholds. Held notes (E8) are the clearest: a
 plucked string decays, so the listener ends the note before the MIDI note
 off would, and the band hears a little more space and activity than the
-script meant. The fine-tuning pass on Thiago's guitar looks at this
+script meant. The fine-tuning pass on a real guitar looks at this
 again.
 
 One bug the comparison found, fixed before this run: notes pushed ahead of
@@ -52,7 +52,7 @@ the tempo follower missed every downbeat and the band drifted 5%.
 
 ## Guitar jams
 
-J1–J3 (docs/eval/scenarios.md) are one jam per song. Until Thiago's own
+J1–J3 (docs/eval/scenarios.md) are one jam per song. Until real guitar jams
 are in `docs/eval/jams/`, each is synthesised: the pretend player on a
 script, recorded as a session (`web/src/core/eval/jams.ts`). The band
 follows the recorded notes, which don't answer it. The rule leader passes

@@ -1,11 +1,11 @@
 # 0002. v0 runs in the browser
 
-- Status: Accepted (Thiago, 2026-10-30: browser-first, with the engine
+- Status: Accepted (2026-10-30: browser-first, with the engine
   all in the browser in TypeScript)
 - Date: 2026-10-30
 
 ## Context
-Thiago wants a browser version first because it is easier to test. The brief
+A browser version comes first because it is easier to test. The brief
 assumed a Python app on the laptop with python-rtmidi, a Python Link binding
 and FluidSynth, which needs local installs, virtual MIDI ports and a DAW or
 SoundFont before anything makes a sound. The DGX Spark is available as a host
@@ -48,5 +48,5 @@ to own the clock that schedules it.
   engine logic in Python, but splits one real-time system across two
   languages and a network hop that sits under the mid-layer deadline.
 - **Python app with a web overlay only.** Keeps the original plan, but sound
-  still needs FluidSynth or a DAW, which is the testing friction Thiago wants
-  to avoid.
+  still needs FluidSynth or a DAW, which is the testing friction this
+  avoids.

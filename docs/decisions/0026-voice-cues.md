@@ -81,7 +81,7 @@ off and on), a strummed guitar and a single-note line, with the speech
   and the jam replays exactly. The model loads in about a second from the
   Spark.
 
-Real voices and a real room come in Thiago's jams (T8).
+Real voices and a real room come in real guitar jams (T8).
 
 ## Consequences
 - Works offline, nothing leaves the machine, no account.
