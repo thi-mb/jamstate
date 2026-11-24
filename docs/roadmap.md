@@ -1,39 +1,47 @@
 # Roadmap
 
-What comes after v0: seven small releases in three phases, ending in a
+What comes after v0: small releases in four phases, ending in a
 public v1.0. Each release has a goal you can hear or see, a scope, and a
 "done when" list written like the v0 test plan
 ([testing/v0.md](testing/v0.md)). A release is finished when its
 hands-on test passes, not when the code merges.
 
-Status: **agreed** (2026-10-31). A few smaller open points are at the
-end.
+Status: v0.1–v0.5 **agreed** (2026-10-31; v0.1–v0.4 done, v0.5 awaiting
+hands-on guitar tests). Post-v0.5 sequence (v0.6–v0.9) **proposed**
+(2026-11-24). A few smaller open points are at the end.
 
 ## The shape of it
 
 jamstate is three things: a **band** that plays, a **bandleader** that
 listens and decides, and **your music** (what you play and what you play
 over). v0 proved the loop works end to end. The roadmap makes each of the
-three good, in that order:
+three good, then pushes beyond fixed patterns and charts:
 
 1. **The band sounds like a band** (v0.1–v0.2). Nothing else lands in a demo
    if the band sounds like a sequencer, and everything later is heard
    through it.
 2. **The bandleader listens and leads** (v0.3–v0.4). First give it more to
    hear, then make it decide well with that, measured by an eval set.
-3. **Your music** (v0.5–v0.7). Play any instrument, bring any song, and play
-   it from a real stage view, then go public.
+3. **Your music** (v0.5–v0.7). Play any instrument, play from a real stage
+   view, and jam freely without a written chart.
+4. **Musical intelligence** (v0.8–v0.9, *proposed*). Retrieval over musical
+   vocabulary and past jams, stateful agent workflows around the jam, and a
+   custom symbolic transformer that actually picks notes under the commit
+   deadline.
 
-Three things run through every release:
+Four things run through every release:
 - **The v0 rules hold.** The music never stutters, the browser owns time,
   the bandleader is an advisor that can vanish, every move lands on a boundary
   and carries a reason ([architecture.md](architecture.md#design-principles)).
   New inputs (voice, guitar, tempo) are features or moves through the
   governor, never a second clock.
-- **Each release ships its own UI.** v0.7 is the polish pass, not the first
-  time a feature gets a screen.
-- **No server required.** The page runs alone; the bandleader is a brain
-  the player picks; a GPU host is an optional lab
+- **Each release ships its own UI.** v0.6 upgrades the whole stage view
+  ahead of Follow Me and later releases, so guitar testing and demos run
+  from a playable screen.
+- **No server required.** The page runs alone with the rule leader and
+  pattern groove; optional server features (LangGraph companion, RAG store,
+  GPU neural mid-layer) plug behind the same `BrainProvider` and
+  `PartGenerator` contracts and fall back cleanly if absent or late
   ([ADR-0015](decisions/0015-no-server-required.md),
   [ADR-0016](decisions/0016-brain-providers.md),
   [ADR-0017](decisions/0017-one-core-thin-shells.md)).
@@ -55,7 +63,7 @@ changes everything about how the band plays and sounds.
 | Production | Sounds per part, mix and effects (dry and tight vs roomy, tape saturation, reverb size, drum tuning, sidechain), loudness | v0.2 |
 | Listening | What counts as "busy" or "outside" for this genre (a bebop solo vs a blues solo), how strictly to keep tempo | v0.3 |
 | Leading | The leader's moves and taste: jazz trades fours and stays dynamic, rock builds to big choruses, a ballad stays out of the way, funk locks the groove and changes little | v0.4 |
-| Songs | Text-to-song and free jam know the genre's forms and harmony ("bossa nova in D" gives a bossa form, chords and lineup) | v0.6 |
+| Songs | Follow Me, song creator and RAG retrieval know the genre's forms and harmonic transitions ("bossa nova in D" gives a bossa form, chords and lineup) | v0.7–v0.8 |
 
 The pack format is a decision record in v0.1, so genres can be added without
 code once the engine supports the layers. The first three genres are
@@ -63,7 +71,7 @@ code once the engine supports the layers. The first three genres are
 harmony, lineup and how a bandleader behaves, so between them they test
 every layer. The count stays at those three through v0.5: each release adds its layer to those same genres, and they act as
 test cases that keep the engine from assuming one style. The remaining
-genres are added in v0.6–v0.7, when the format is stable and a new genre is
+genres are added before v1.0, when the format is stable and a new genre is
 mostly data and samples. Target for v1.0: about five genres
 that are clearly different (the first three plus, for example, bossa or
 Latin and a ballad/soul style), picked by ear. Community genre packs after
@@ -85,17 +93,19 @@ v0 is done and tested (11 of 12 pass). What it handed over:
 
 ## Releases at a glance
 
-| Phase | Release | Theme | You'll notice |
-|-------|---------|-------|---------------|
-| Band | **v0.1** | Groove | The band swings, breathes, counts you in and ends songs properly |
-| Band | **v0.1.1** | Standalone | Nothing changes in the music; the page runs without the Spark and you pick the bandleader's brain |
-| Band | **v0.2** | Sound and lineup | Good built-in instruments, more of them, and you pick who plays on each song |
-| Bandleader | **v0.3** | Listening | The band hears your phrasing, harmony and tempo, takes cues from the keyboard, and the leader gets a score |
-| Bandleader | **v0.4** | Leading | The leader plans the whole song, has a personality, and trades fours with you |
-| Your music | **v0.5** | Guitar | Plug in a guitar (or anything with a mic) instead of MIDI, and talk to the band |
-| Your music | **v0.6** | Song creator | Make a song from a sentence, an editor, a progression you play, or a free jam |
-| Your music | **v0.7** | Stage | A UI you'd play from and film, with a recap after each session |
-| | **v1.0** | Public | Repo goes public with a demo video |
+| Phase | Release | Theme | Status | You'll notice |
+|-------|---------|-------|--------|---------------|
+| Band | **v0.1** | Groove | Done | The band swings, breathes, counts you in and ends songs properly |
+| Band | **v0.1.1** | Standalone | Done | Nothing changes in the music; the page runs without the Spark and you pick the bandleader's brain |
+| Band | **v0.2** | Sound and lineup | Done | Good built-in instruments, more of them, and you pick who plays on each song |
+| Bandleader | **v0.3** | Listening | Done | The band hears your phrasing, harmony and tempo, takes cues from the keyboard, and the leader gets a score |
+| Bandleader | **v0.4** | Leading | Done | The leader plans the whole song, has a personality, and trades fours with you |
+| Your music | **v0.5** | Guitar | Built (testing) | Plug in a guitar (or anything with a mic) instead of MIDI, and talk to the band |
+| Your music | **v0.6** | Stage | Proposed | A stage UI you can read from a music stand and film, with musician cards, collapsible studio controls and a session recap |
+| Your music | **v0.7** | Follow Me & song creator | Proposed | Start playing with no chart and the band locks onto your tempo, key and chords — or build/edit a chart without touching JSON |
+| Intelligence | **v0.8** | Musical RAG & LangGraph | Proposed | A transposable vector store of progressions, licks and your past jams, plus an optional LangGraph companion (song architect, live RAG brain, post-jam coach) |
+| Intelligence | **v0.9** | Custom neural band | Proposed | A custom symbolic transformer (conditioned on your playing + RAG context) writes musical trading-fours solos and responsive comping under the commit deadline |
+| | **v1.0** | Public | Proposed | Repo goes public with ~5 genres, eval benchmarks across every brain, and a demo video |
 
 How they depend on each other:
 
@@ -107,18 +117,28 @@ flowchart LR
   v03 --> v04[v0.4 Leading]
   v02 --> v04
   v03 --> v05[v0.5 Guitar]
-  v05 --> v06[v0.6 Song creator]
-  v02 --> v06
-  v04 --> v07[v0.7 Stage + recap]
+  v04 --> v06[v0.6 Stage<br/>+ recap]
+  v05 --> v06
+  v05 --> v07[v0.7 Follow Me<br/>+ song creator]
   v06 --> v07
-  v07 --> v10[v1.0 Public]
+  v02 --> v07
+  v07 --> v08[v0.8 Musical RAG<br/>+ LangGraph]
+  v04 --> v08
+  v08 --> v09[v0.9 Custom<br/>neural band]
+  v02 --> v09
+  v09 --> v10[v1.0 Public]
 ```
 
 The key links: session record/replay comes first (v0.1) because every later
 release is tested with it; trading fours (v0.4) needs the phrasing signals
-(v0.3) and a band instrument to solo on (v0.2); free jam (v0.6) needs pitch
-and chords from your input (v0.5); the recap (v0.7) is built on the move log
-and the recordings.
+(v0.3) and a band instrument to solo on (v0.2); Stage (v0.6) comes right
+after v0.5's hands-on guitar pass so Follow Me and demos run on a playable
+stage screen; Follow Me (v0.7) needs pitch and chords from your input
+(v0.5) and establishes the rolling live chart before adding neural
+complexity; Musical RAG & LangGraph (v0.8) builds the transposable
+vocabulary store and agent workflows on top of the eval harness; the custom
+symbolic transformer (v0.9) conditions on that retrieved vocabulary and
+slots behind the existing `PartGenerator` commit-deadline contract.
 
 ## Phase 1: the band sounds like a band
 
@@ -421,64 +441,201 @@ Done when:
   and in a plausible position.
 - A spoken "take it down" and "one more chorus" land like the v0.3 cue keys.
 
-### v0.6: Song creator
+### v0.6: Stage
 
-**Goal:** a new song to jam over in a minute or two, without writing JSON.
+Status: **proposed** (2026-11-24). Moved ahead of Follow Me and song creator
+so hands-on guitar testing, voice cues and demos run from a real stage UI.
+
+**Goal:** a UI you can play from with a guitar in your hands, read from a
+music stand, and film for the demo.
+
+Scope:
+- **Stage view (default while playing):** big section, current chord and
+  **next-chord preview** with a beat-synced playhead sweep across the bar,
+  count-in, and the form as a timeline with the current position.
+- **Musician cards:** each active part (drums, bass, keys, guitar, pad,
+  percussion) shown as a live card that pulses on hits, dims when laying out,
+  highlights when soloing/trading fours, and exposes quick mute/solo/volume.
+- **Bandleader thought bubble & voice cue toast:** clear, glanceable display
+  of the latest move and reason (instead of a dense scrolling log), plus
+  immediate feedback when a spoken cue is heard and when it will land.
+- **Fretboard on stage:** full-width guitar neck or piano view anchored cleanly
+  on stage, sized to read from a music stand.
+- **Collapsible Studio drawer:** inputs (MIDI / audio / keys / mic for voice
+  cues + calibration), outputs, song picker, bandleader provider/personality/
+  listening toggles, manual test moves and session replay tucked into clean
+  tabs so they don't crowd the stage while playing, with settings remembered
+  between sessions.
+- **Session recap timeline:** after a jam, dual energy/intensity curves over
+  the form timeline with clickable bandleader move markers to jump replay,
+  short text summary when an LLM brain is configured, and export of the
+  band's MIDI and a mixdown.
+- Works on a tablet on a music stand (layout only; the engine stays in the
+  browser that has the audio).
+
+Done when:
+- A guitar + voice-cue jam runs end to end from the Stage view without
+  opening the Studio drawer, touching JSON, or using DevTools.
+- The demo video is recorded from the Stage view and the recap timeline
+  matches the jam.
+
+### v0.7: Follow Me & song creator
+
+Status: **proposed** (2026-11-24). Proves chartless, player-led improvisation
+using deterministic/Markov harmonic inference first, before adding RAG and
+neural generation.
+
+**Goal:** start playing cold with no chart and have the band lock onto your
+tempo, key and chords — or create and edit a chart in under two minutes
+without touching JSON.
 
 Scope, in order of value:
+- **Follow Me mode (rolling live chart):** replaces the static `chart.form`
+  walk with a mutable rolling buffer of upcoming bars, driven by a three-stage
+  loop on top of v0.5 pitch/chord detection and v0.3 tempo tracking:
+  1. *Latch-in (2–4 bars):* band waits (or taps a light pulse once tempo
+     locks from onset IOIs), accumulates pitch classes to infer key/mode, and
+     tracks detected chords.
+  2. *Loop & lock:* once a 2-, 4- or 8-bar progression or vamp is established,
+     the band joins softly predicting the cycle forward, with a live
+     key/chord confidence indicator and 1-click "lock loop" control on Stage.
+  3. *Harmonic pivots:* replaces the static chart chord prior with a
+     genre-aware next-chord transition model (Markov/n-gram first) so moving
+     to a new chord triggers a smooth harmonic pivot rather than fighting a
+     frozen chart. Handles both **comping** (matching detected strums) and
+     **single-note lead** (inferring implied chords from strong-beat pitch
+     classes).
+- **Save jam as chart:** any Follow Me jam exports directly as a valid
+  `chart.json` you can edit, replay or share.
 - **Song editor in the page:** sections, bars, chords per bar, form, tempo,
   key, feel and swing (v0.1), lineup (v0.2), validated live against
   `schema/chart.schema.json`. Songs saved in the browser or on the server.
-- **Text to song:** "slow 12/8 blues in G, two verses and a solo, organ
-  trio" → a valid chart via Qwen with schema-constrained output, opened in
-  the editor to tweak. Uses the genre packs' forms, progressions and
-  lineups.
 - **Play-in progression:** play a progression once on keys or guitar and it
-  becomes a section.
-- **Free jam, no chart:** start playing and the band works out key, tempo
-  and a progression from you (v0.5 pitch and chords), locks in, and saves it
-  as a song you can edit.
+  becomes a section in the editor.
+- **Text to song:** "slow 12/8 blues in G, two verses and a solo, organ
+  trio" → a valid chart via an LLM brain with schema-constrained output,
+  opened in the editor to tweak. Uses the genre packs' forms, progressions
+  and lineups.
 - **Audio to chart on a GPU host** (stretch): upload a recording, get tempo,
   key, sections and chords (Demucs, allin1, a chord recogniser). Structure
   only; the recording is never played back. Can slip past v1.0.
 
 Done when:
+- You plug in a guitar or MIDI keyboard, pick Follow Me with no chart, play a
+  4-bar progression, and the band locks onto tempo, key and chords within a
+  phrase, then follows a pivot to a bridge chord.
+- A Follow Me jam saves as a valid chart you can reopen and play again.
 - A player makes a song from a sentence, edits it and jams on it in under two
-  minutes.
-- A free jam turns into a saved song they can reopen.
-- Bad generated charts are caught by the schema with a clear message.
+  minutes, with invalid charts caught by the schema.
 
-### v0.7: Stage
+## Phase 4: musical intelligence (proposed)
 
-**Goal:** a UI good enough to play from and to film for the demo.
+### v0.8: Musical RAG & LangGraph companion
+
+Status: **proposed** (2026-11-24). Optional backend in `server/` — the static
+page keeps playing standalone with rules and local genres
+([ADR-0015](decisions/0015-no-server-required.md)).
+
+**Goal:** give the bandleader and song creator a transposable memory of
+musical vocabulary and your past jams, orchestrated by stateful LangGraph
+workflows that are measured on the same 35-scenario leader eval.
 
 Scope:
-- **Stage view:** big section / chord / next-chord display, bar and beat
-  counter, count-in, the form as a timeline with the current position.
-- **Fretboard on stage:** the fretboard/keyboard view as a panel in the
-  stage view, sized to read from a music stand.
-- **Band panel:** the lineup with per-part mute/solo, volume and intensity,
-  and the move log with reasons as the "bandleader's thoughts".
-- **Setup flow:** inputs (MIDI / audio / keys / mic for voice cues), outputs,
-  leader and personality, remembered between sessions.
-- **Session recap:** after a jam, the move log as a timeline over the form, a
-  short summary from Qwen ("you built through the second chorus, the band
-  went to half time when you dropped out"), and export of the band's MIDI
-  and a mixdown.
-- Works on a tablet on a music stand (layout only; the engine stays in the
-  browser that has the audio).
+- **Musical vector store (RAG):** key-normalized (transposable to any key)
+  index of:
+  - *Harmonic progressions & turnarounds* tagged by genre, artist vibe, mood
+    and energy;
+  - *Rhythmic/melodic cells, voicings and arrangement recipes* (comping
+    rhythms, bass approaches, breakdown/climax patterns);
+  - *Personal Jam Memory* — progressions, riffs and band reactions from your
+    own past sessions (weighted by blind-test ratings and bookmarks).
+  Supports both **semantic queries** (pre-jam vibe/style prompts) and **fast
+  musical-feature vector queries** (<5 ms local lookup on chroma + rhythmic
+  grid + contour + dynamics) for live retrieval.
+- **LangGraph Song Architect (pre-jam):** stateful graph (`parse_intent` →
+  `rag_retrieve` → `draft_chart_and_lineup` → `validate_schema_and_harmony`
+  with self-correction retry edge) that turns high-level vibe prompts into
+  validated charts and setlists.
+- **LangGraph Live Bandleader (`langgraph` brain provider):** plugs into the
+  existing `BrainProvider` contract alongside `rules`, `openai`, `claude`,
+  `jev` and `laya`. Keeps latency inside
+  [ADR-0006](decisions/0006-bandleader-latency-contract.md) by running at most
+  one fast model call wrapped in deterministic fast nodes (`extract_state` →
+  `vector_lookup` → `conditional_router` for urgent silence/cues vs. creative
+  arc → `governor_precheck`), with per-session checkpointing for long-horizon
+  musical callbacks.
+- **LangGraph Post-Jam Coach:** offline graph that reads a recorded session,
+  generates musical feedback for the Stage recap timeline, and indexes
+  standout improvised progressions and motifs back into personal Jam Memory.
+- **Eval & observability:** runs the `langgraph` + RAG brain through the
+  35-scenario leader eval (`npm run eval`) head-to-head against `rules` and
+  `qwen`, with traces and latency/score tables published in `docs/eval/`.
 
 Done when:
-- The demo video is recorded from the stage view without touching JSON or
-  DevTools, and the recap from that session reads right.
+- A vibe prompt ("smoky late-night jazz moving into a double-time funk
+  bridge") produces a schema-valid chart informed by retrieved progressions.
+- The `langgraph` brain runs through `npm run eval`, stays within the latency
+  contract, and has a documented score/latency comparison against `rules` and
+  `qwen`.
+- After a jam, the Coach generates a recap and saves a detected motif or
+  progression into Jam Memory that can be retrieved in the next session.
+
+### v0.9: Custom neural band (symbolic transformer)
+
+Status: **proposed** (2026-11-24). Realises the generative mid-layer behind
+the existing `PartGenerator` commit-deadline contract
+([ADR-0005](decisions/0005-bar-commit-deadline.md)); `GrooveGenerator`
+remains the zero-latency default and automatic fallback on any missed bar.
+
+**Goal:** replace fixed pattern lookup where musical conversation matters
+most with a custom symbolic transformer that picks notes conditioned on your
+playing and retrieved RAG vocabulary.
+
+Scope:
+- **Tokenization & conditioning format:** compact symbolic representation
+  (REMI / compound-word MIDI tokens: bar, position, part, pitch, velocity,
+  duration) conditioned on `[genre, intensity, chord, player_last_2_bars,
+  band_last_2_bars]` plus retrieved kNN-RAG progression/motif tokens from v0.8
+  so new styles can be added to the vector store without retraining.
+- **Incremental rollout (narrow first, under `PartGenerator`):**
+  1. *Conversational Trading Fours:* replaces mechanical motif reversal in
+     `solo.ts` with a 10M–40M parameter causal transformer generating 4-bar
+     responses conditioned on the player's phrase and chord changes (forgiving
+     1–4 bar latency runway).
+  2. *Responsive comping, bass & fills:* generates 1 bar ahead before the
+     1-beat commit deadline (~50–150 ms target inference) reacting directly to
+     the player's rhythmic gaps and harmonic tension.
+  3. *Next-chord neural prior (Follow Me):* upgrades v0.7's Markov transition
+     model with transformer next-chord probabilities conditioned on playing
+     context + RAG.
+- **Training pipeline:** open symbolic datasets (Groove MIDI, Weimar Jazz /
+  PiJAMA, Lakh MIDI / Pop909) + synthetic pretraining generated from
+  jamstate's own `GrooveGenerator` + fine-tuning on recorded real jamstate
+  sessions.
+- **Optional fast neural bandleader (research track):** tiny sequence policy
+  model (1M–15M params, exportable to ONNX/WebGPU in browser, <10 ms) if
+  bandleader control expands beyond the 6 discrete moves into continuous
+  groove/tension/density steering.
+
+Done when:
+- Trading fours with the custom transformer beats the rule soloist in blind
+  listening tests while staying in key/chord and inside the commit deadline.
+- Mid-layer neural comping/fills generate bar N+1 before bar N's commit
+  deadline (p95 well under 1 beat) and fall back seamlessly to
+  `GrooveGenerator` with zero audio glitches if delayed or offline.
+- Recorded sessions replay deterministically (seeded sampling or recorded
+  generated bars) and pass the existing replay/eval checks.
 
 ### v1.0: Public
 
+Status: **proposed** (updated 2026-11-24).
+
 - Repo goes public (Apache 2.0); README, getting started with no install
-  (web), with a key or local model, and self-hosted with Docker; a short architecture
-  tour.
+  (web), with a key or local model, and self-hosted with Docker; a short
+  architecture tour.
 - About five genre packs that each sound and lead differently.
-- Demo video.
+- Published eval benchmarks across brains (`rules`, `qwen`, `langgraph+rag`,
+  custom model) and demo video recorded from Stage view.
 - Decision records brought up to date (the Proposed ones accepted or
   superseded).
 
@@ -501,7 +658,7 @@ starting over.
   tracking (voice is single-note) and v0.3's phrasing: the band follows the
   sung melody's energy and phrasing, finds verse vs chorus from melody
   repetition, and picks or adjusts chords to fit what you sing (an
-  extension of free jam from v0.6). Needs a voice-tuned pitch tracker
+  extension of Follow Me from v0.7). Needs a voice-tuned pitch tracker
   (vibrato, slides, breathy onsets) and a "fit chords to melody" step,
   probably on a GPU host first.
 - **Desktop app:** the same page in a Tauri or Electron shell, with a
@@ -521,9 +678,6 @@ Not scheduled; each can slot in once its question is answered:
   ([ADR-0004](decisions/0004-ableton-link-deferred.md)). Untested, and it
   needs a helper app on the player's machine. Check that first. The desktop
   app (ADR-0017) would host Link natively.
-- **Generative mid layer on a GPU host:** a symbolic model writing the next
-  1–2 bars under the same commit-deadline contract. Follows v0.1's
-  rule-based groove once replay and the eval set can tell if it's better.
 - **Audio mode with Magenta RealTime**, after the spike in
   [ADR-0009](decisions/0009-magenta-realtime-spike.md). The spike can run on
   any GPU host. Magenta RealTime 2 (2026) streams in real time on
@@ -550,3 +704,9 @@ Tauri vs. Electron, whether to build a DAW plugin, hosting and pricing.
 3. **Genres:** the first three are decided (funk, blues rock, jazz); the
    other two for v1.0 are open.
 4. **Link:** can a local helper app run on locked-down machines at all?
+5. **Vector store for v0.8 (proposed):** lightweight embedded store (Chroma /
+   Qdrant local / SQLite-vec + in-memory HNSW) to keep self-hosting simple in
+   `compose.yaml` with <5 ms live lookups.
+6. **Training & inference runtime for v0.9 (proposed):** PyTorch/MLX on local
+   GPU vs. ONNX Runtime Web / WebGPU in-browser inference for the symbolic
+   transformer.
