@@ -34,6 +34,8 @@ export interface TransportOptions {
   lookahead?: number;
   /** Delay before bar 0 after start() (seconds). */
   startDelay?: number;
+  /** Start replay from this bar index (absolute beats stay aligned to bar 0). */
+  startBar?: number;
 }
 
 interface Pending {
@@ -45,6 +47,7 @@ interface Pending {
 export class Transport {
   readonly lookahead: number;
   readonly startDelay: number;
+  readonly startBar: number;
   private t0 = 0;
   private running = false;
   private queue: Pending[] = [];
@@ -64,6 +67,7 @@ export class Transport {
   ) {
     this.lookahead = opts.lookahead ?? 0.1;
     this.startDelay = opts.startDelay ?? 0.15;
+    this.startBar = Math.max(0, Math.floor(opts.startBar ?? 0));
   }
 
   /** Seconds per beat of the last bar committed (the chart's before the first). */
@@ -83,15 +87,17 @@ export class Transport {
   /** Clock time of a beat, through each bar's own tempo (past the last bar: at its tempo). */
   timeAt(beat: number): number {
     const c = this.committed;
-    if (!c.length || beat < 0) return this.t0 + beat * (c[0]?.spb ?? 60 / this.engine.chart.bpm);
-    const b = c[Math.min(c.length - 1, Math.floor(beat / this.bpb))];
+    const baseBeat = this.startBar * this.bpb;
+    if (!c.length || beat < baseBeat) return this.t0 + (beat - baseBeat) * (c[0]?.spb ?? 60 / this.engine.chart.bpm);
+    const b = c[Math.min(c.length - 1, Math.floor((beat - baseBeat) / this.bpb))];
     return b.time + (beat - b.startBeat) * b.spb;
   }
 
-  /** Beat position of a clock time (can be negative before bar 0). */
+  /** Beat position of a clock time (can be before the first bar). */
   beatAt(time: number): number {
     const c = this.committed;
-    if (!c.length || time < this.t0) return (time - this.t0) / (c[0]?.spb ?? 60 / this.engine.chart.bpm);
+    const baseBeat = this.startBar * this.bpb;
+    if (!c.length || time < this.t0) return baseBeat + (time - this.t0) / (c[0]?.spb ?? 60 / this.engine.chart.bpm);
     let k = c.length - 1;
     while (k > 0 && c[k].time > time) k--;
     return c[k].startBeat + (time - c[k].time) / c[k].spb;
@@ -116,7 +122,7 @@ export class Transport {
       this.formDone = true;
       return false;
     }
-    const startBeat = this.committed.length * this.bpb;
+    const startBeat = (this.startBar + this.committed.length) * this.bpb;
     const prev = this.committed[this.committed.length - 1];
     const spb = 60 / plan.bpm;
     this.committed.push({ plan, startBeat, time: prev ? prev.time + this.bpb * prev.spb : this.t0, spb });
@@ -138,7 +144,7 @@ export class Transport {
 
   /** Commit deadline for the bar after `k`: start of k's last beat, minus the lookahead. */
   private deadlineAfter(k: number): number {
-    return this.timeAt(k * this.bpb + this.bpb - 1) - this.lookahead;
+    return this.timeAt((this.startBar + k) * this.bpb + this.bpb - 1) - this.lookahead;
   }
 
   /** Notes that reached the sink after their time (a busy main thread), and the worst by how much (seconds). */

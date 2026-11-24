@@ -49,6 +49,7 @@ const check = (ok, msg) => {
 };
 
 const browser = await chromium.launch({
+  ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}),
   args: ["--autoplay-policy=no-user-gesture-required", "--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", `--use-file-for-fake-audio-capture=${wav}`],
 });
 const context = await browser.newContext({ acceptDownloads: true });
@@ -60,17 +61,29 @@ page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
 const notes = [];
 await page.exposeFunction("voiceNote", (t) => notes.push(t));
 
+const openTab = async (tab) => {
+  if ((await page.getAttribute("#studio-toggle", "aria-expanded")) !== "true") await page.click("#studio-toggle");
+  await page.click(`#studio-drawer [data-tab="${tab}"]`);
+};
+const closeDrawer = async () => {
+  if ((await page.getAttribute("#studio-toggle", "aria-expanded")) === "true") await page.click("#studio-close");
+};
+
 try {
   await page.goto(`http://127.0.0.1:${PORT}/`);
   await page.waitForFunction(() => /Sounds ready/.test(document.querySelector("#sample-status")?.textContent ?? ""), null, { timeout: 20000 });
+  await openTab("setup");
   await page.selectOption("#sim", "off");
+  await openTab("leader");
   await page.selectOption("#leader-select", "rules");
+  await closeDrawer();
   if ((await page.getAttribute("#trade", "aria-pressed")) === "true") await page.click("#trade");
   // Everything the page notes (cues, voice status) is collected.
   await page.evaluate(() => {
     for (const id of ["voice-status"]) new MutationObserver(() => window.voiceNote(document.getElementById(id).textContent)).observe(document.getElementById(id), { childList: true, characterData: true, subtree: true });
   });
 
+  await openTab("setup");
   const devices = await page.$$eval("#voice-in option", (o) => o.map((x) => x.value).filter(Boolean));
   check(devices.length > 0, `voice inputs offered: ${devices.length}`);
   await page.selectOption("#audio-in", devices[0]);
@@ -82,12 +95,14 @@ try {
   const status = await page.textContent("#voice-status");
   check(/Listening/.test(status ?? ""), `speech model loaded in ${((Date.now() - t0) / 1000).toFixed(1)} s: ${status}`);
   await page.selectOption("#voice-channel", "1");
+  await closeDrawer();
 
   // The fake input loops its file from when it was opened; a jam long enough to hear every phrase once.
   await page.click("#start");
   await page.waitForTimeout(46000);
   await page.click("#stop");
 
+  await openTab("sessions");
   const downloads = [];
   page.on("download", (d) => downloads.push(d));
   await page.click("#session-download");
@@ -110,8 +125,10 @@ try {
   check(/replay exactly/.test(res ?? ""), `replay check: ${res}`);
 
   // Everything on: chords in auto, the gate on both inputs, voice cues.
+  await openTab("setup");
   await page.check("#audio-gate");
   await page.check("#voice-gate");
+  await closeDrawer();
   const before = await page.evaluate(() => structuredClone(window.jamstateStats()));
   await page.click("#start");
   await page.waitForTimeout(30000);

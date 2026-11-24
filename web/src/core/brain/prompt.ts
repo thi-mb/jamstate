@@ -120,6 +120,14 @@ entry with a space splits the bar ("Fm Eb"). Describe structure only, never
 lyrics or melody. Answer only with JSON.`;
 }
 
+export function recapSystem(): string {
+  return `You are the bandleader reflecting on a jam session you just played with a human musician.
+Given a JSON summary of the session (sections, intensity/energy arc, key moves, cues, solos),
+write 2 to 3 crisp, musical sentences addressed directly to the player ("you") describing how
+the jam unfolded, where it peaked or pulled back, and how the band responded.
+Plain prose only — no bullet points, no markdown, no JSON, under 70 words.`;
+}
+
 type Schema = Record<string, unknown>;
 
 const stripMeta = (s: Schema): Schema => Object.fromEntries(Object.entries(s).filter(([k]) => !k.startsWith("$")));

@@ -1,6 +1,6 @@
 // Page wiring: chart loading, controls, and one jam session at a time.
 
-import { MidiSink, MultiSink } from "./audio/midi";
+import { HitMonitor, MidiSink, MultiSink } from "./audio/midi";
 import { SampleLibrary } from "./audio/sampler";
 import { Synth } from "./audio/synth";
 import { bandParts, cloneBand, defaultInstrument, getInstrument, instrumentsFor, playerInstruments, type Band } from "./core/band";
@@ -14,12 +14,13 @@ import { DEFAULT_LISTENING, LISTENING_LABELS, LISTENING_READY, listeningKey, NO_
 import { CUE_LABELS, CUES, cueForKey, Engine, type BarPlan, type Cue } from "./core/engine";
 import { NoteTracker } from "./core/features";
 import { allGenres, getGenre } from "./core/genres";
+import { exportSessionMidi } from "./core/midi-export";
 import type { Move } from "./core/moves";
 import { RuleLeader } from "./core/rules";
 import { checkSession, replaySession, sessionBand, sessionEngine, SessionRecorder, summarizeBar, type SessionFile } from "./core/session";
 import { DEMO_SCRIPT, parseScript, SimPlayer, type SimMode } from "./core/simplayer";
 import { Transport, type Sink } from "./core/transport";
-import { FEELS, PART_LABELS, STINGERS, type Part } from "./core/types";
+import { FEELS, PART_LABELS, PARTS, STINGERS, type Part } from "./core/types";
 import {
   BLIND_NAMES, BRAIN_LABELS, BrainLeader, blindCandidates, blindLeader, isBlind, makeBrain, mergeSettings, pickBlind, summarizeBlind,
   type BrainKind, type BrainSettings, type LeaderChoice,
@@ -27,11 +28,14 @@ import {
 import { genreIds } from "./core/genres";
 import type { SessionMeta, SessionStore } from "./core/platform";
 import { ServerSessionStore, webPlatform } from "./platform/web";
+import { renderSession } from "./render";
 import { attachKeyboard } from "./ui/keyboard";
 import { Overlay } from "./ui/overlay";
 import { FretboardView } from "./ui/fretboard";
 import { AudioInputPanel } from "./ui/audio-input";
 import { VoicePanel } from "./ui/voice-input";
+import { StudioDrawer } from "./ui/drawer";
+import { RecapView } from "./ui/recap";
 import { SR } from "./core/audio/dsp";
 import { chordView, FRETBOARD_KINDS, FRETBOARD_MODES, TUNING_IDS, type FretboardKind, type FretboardMode, type Place, type TuningId } from "./core/fretboard";
 
@@ -39,10 +43,79 @@ const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getEleme
 
 const overlay = new Overlay();
 
-
 let audio: AudioContext | null = null;
 const getAudio = () => (audio ??= new AudioContext({ latencyHint: "interactive" }));
 const platform = webPlatform(getAudio);
+const drawer = new StudioDrawer(platform.settings);
+
+// ---------- stage mute / solo / volume (v0.6) ----------
+
+const mutedParts = new Set<Part>();
+const soloParts = new Set<Part>();
+
+function syncMuteSolo(): void {
+  const hasSolo = soloParts.size > 0;
+  for (const p of PARTS) {
+    const silenced = mutedParts.has(p) || (hasSolo && !soloParts.has(p));
+    if (session) {
+      if (silenced) session.synth.muted.add(p);
+      else session.synth.muted.delete(p);
+      if (session.midiSink) {
+        if (silenced) session.midiSink.muted.add(p);
+        else session.midiSink.muted.delete(p);
+      }
+    }
+  }
+  overlay.setMuteSolo(mutedParts, soloParts);
+}
+
+overlay.musicianCb = {
+  onMute: (p) => {
+    if (mutedParts.has(p)) mutedParts.delete(p);
+    else mutedParts.add(p);
+    syncMuteSolo();
+  },
+  onSolo: (p) => {
+    if (soloParts.has(p)) soloParts.delete(p);
+    else soloParts.add(p);
+    syncMuteSolo();
+  },
+  onVolume: (p, vol) => {
+    session?.synth.setVolume(p, vol);
+    // Keep the matching Studio fader in sync.
+    const row = $("band-parts").querySelector<HTMLElement>(`.band-part[data-part="${p}"]`);
+    const slider = row?.querySelector<HTMLInputElement>("input[type=range]");
+    if (slider) slider.value = String(vol);
+  },
+};
+
+function updateSongPill(): void {
+  const el = document.getElementById("pill-song");
+  if (!el || !chart) return;
+  el.textContent = `${chart.title} · ${pickedGenre().name} · ${chart.bpm} bpm`;
+}
+
+function updateInputPill(): void {
+  const el = document.getElementById("pill-input");
+  if (!el) return;
+  const parts: string[] = [];
+  if ($<HTMLSelectElement>("audio-in").value) parts.push("Audio");
+  if ($<HTMLSelectElement>("voice-in").value) parts.push("Voice");
+  if (!parts.length) parts.push("Keys / MIDI");
+  el.textContent = parts.join(" + ");
+  el.classList.toggle("live", !!($<HTMLSelectElement>("audio-in").value || $<HTMLSelectElement>("voice-in").value));
+}
+
+function sectionBarsOf(c: Chart): number[] {
+  return c.form.map((s) => c.sections.get(s)?.bars ?? 4);
+}
+
+function mixVolumesOf(gId: string): Partial<Record<Part, number>> {
+  const mix = getGenre(gId).mix.parts;
+  const out: Partial<Record<Part, number>> = {};
+  for (const p of PARTS) out[p] = band[p]?.volume ?? mix[p]?.volume ?? 0.8;
+  return out;
+}
 
 // ---------- fretboard (v0.3) ----------
 
@@ -104,6 +177,9 @@ interface Session {
   ticker: Ticker;
   tracker: NoteTracker;
   synth: Synth;
+  midiSink: MidiSink | null;
+  hits: HitMonitor;
+  rafId: number;
   remote: BrainLeader | null;
   recorder: SessionRecorder | null;
   /** Playing back a recorded session: live input and the genre/swing pickers are ignored. */
@@ -127,9 +203,10 @@ function useChart(raw: unknown, source: string): boolean {
   ($("chart-json") as HTMLTextAreaElement).value = chartJson;
   const bars = chart.form.reduce((n, s) => n + chart!.sections.get(s)!.bars, 0);
   $("chart-info").textContent = `${source}: ${chart.bpm} bpm, ${chart.beatsPerBar}/4${chart.key ? `, ${chart.key}` : ""}, ${getGenre(chart.genre).name.toLowerCase()}, ${bars} bars`;
-  overlay.setForm(chart.form);
+  overlay.setForm(chart.form, sectionBarsOf(chart));
   overlay.chartBpm = chart.bpm;
   overlay.reset(chart.title);
+  updateSongPill();
   buildManualMoves();
   return true;
 }
@@ -213,6 +290,7 @@ $("genre-select").onchange = () => {
     session.engine.setGenre(pickedGenre());
     session.synth.setMix(pickedGenre().mix);
   }
+  updateSongPill();
   // A new genre brings its own band and mix.
   resetBand();
 };
@@ -251,7 +329,7 @@ function applyBand(next: Band, rebuild = true): void {
     session.engine.setBand(band);
     session.synth.setBand(band);
   }
-  if (!session) overlay.showLineup(bandParts(band).filter((p) => pickedGenre().parts.includes(p)));
+  if (!session) overlay.showLineup(bandParts(band).filter((p) => pickedGenre().parts.includes(p)), band, mixVolumesOf(pickedGenre().id));
   if (rebuild) renderBandParts();
   buildManualMoves();
   preload();
@@ -271,6 +349,7 @@ function renderBandParts(): void {
       const slot = band[p];
       const row = document.createElement("div");
       row.className = `band-part${slot ? "" : " out"}`;
+      row.dataset.part = p;
       const on = Object.assign(document.createElement("input"), { type: "checkbox", checked: !!slot });
       const name = document.createElement("label");
       name.className = "inline";
@@ -302,7 +381,11 @@ function renderBandParts(): void {
         editBand({ ...cloneBand(band), [p]: { ...band[p], instrument: inst.value } });
       };
       // Faders move the sound live while dragging; the lineup (and the recording) updates on release.
-      vol.oninput = () => session?.synth.setVolume(p, Number(vol.value));
+      vol.oninput = () => {
+        const v = Number(vol.value);
+        session?.synth.setVolume(p, v);
+        overlay.setPartVolume(p, v);
+      };
       pan.oninput = () => session?.synth.setPan(p, Number(pan.value));
       const commit = () => band[p] && editBand({ ...cloneBand(band), [p]: slotNow() });
       vol.onchange = commit;
@@ -390,11 +473,14 @@ function buildManualMoves(): void {
 
 // ---------- cues (v0.3) ----------
 
+const BAR_CUES = new Set<Cue>(["drums_break", "drums_only", "build", "take_down"]);
+
 function giveCue(c: Cue, by?: "voice"): void {
   if (!session) return overlay.note("Start the band first");
   if (session.replay) return overlay.note("This is a replay: it plays what was recorded");
   session.engine.cue(c, by);
   overlay.note(`Cue${by ? " (said)" : ""}: ${CUE_LABELS[c].toLowerCase()}`);
+  overlay.toast(CUE_LABELS[c], BAR_CUES.has(c) ? "landing next bar" : "landing next phrase", by === "voice" ? "voice" : "cue");
 }
 
 function buildCues(): void {
@@ -537,6 +623,10 @@ function showBrainSettings(): void {
   }
   $("brain-keys-note").hidden = !["openai", "claude", "jev"].includes(settings.kind);
   $<HTMLButtonElement>("brain-test").disabled = settings.kind === "none";
+  if (!session) {
+    const label = settings.kind === "jev" && !jevReachable() ? "rules" : BRAIN_LABELS[settings.kind].split(" (")[0].toLowerCase();
+    overlay.leaderStatus(label);
+  }
 }
 
 function saveBrainSettings(): void {
@@ -802,8 +892,13 @@ voice.outputLatency = audioIn.outputLatency;
 (window as unknown as { jamstateStats: () => unknown }).jamstateStats = () => ({ input: audioIn.cost, voice: voice.cost, late: session?.transport.lateness ?? null });
 voice.onCue = (h) => {
   if (h.cue !== "trade_on" && h.cue !== "trade_off") return giveCue(h.cue, "voice");
-  if (trading !== (h.cue === "trade_on")) toggleTrade();
+  if (trading !== (h.cue === "trade_on")) {
+    toggleTrade();
+    overlay.toast(trading ? "Trade fours on" : "Trade fours off", trading ? "play a phrase, then lay out" : undefined, "voice");
+  }
 };
+$("audio-in").addEventListener("change", () => setTimeout(updateInputPill, 50));
+$("voice-in").addEventListener("change", () => setTimeout(updateInputPill, 50));
 
 // The guitar's tuning (the neck and what audio input listens for) and a left-handed neck (v0.5).
 const TUNING_KEY = "jamstate.fretboardTuning";
@@ -878,13 +973,42 @@ function simModeFor(bar: number): SimMode | null {
   return v as SimMode;
 }
 
-function makeSink(ctx: AudioContext, synth: Synth): Sink {
-  const sinks: Sink[] = [];
+function makeSink(ctx: AudioContext, synth: Synth): { sink: Sink; midiSink: MidiSink | null; hits: HitMonitor } {
+  const hits = new HitMonitor();
+  const sinks: Sink[] = [hits];
   if ($<HTMLInputElement>("builtin").checked) sinks.push(synth);
   const outId = $<HTMLSelectElement>("midi-out").value;
   const out = outId ? midi.outputs().find((o) => o.id === outId) : undefined;
-  if (out) sinks.push(new MidiSink(out, ctx));
-  return new MultiSink(sinks);
+  const midiSink = out ? new MidiSink(out, ctx) : null;
+  if (midiSink) sinks.push(midiSink);
+  return { sink: new MultiSink(sinks), midiSink, hits };
+}
+
+/** Next chord preview for Stage: next slot in this bar, else first chord of the next committed bar. */
+function upcomingChord(c: Chart, plan: BarPlan | undefined, beatInBar: number, nextPlan: BarPlan | undefined): { next: string | null; anticipate: boolean } {
+  if (!plan) return { next: null, anticipate: false };
+  if (plan.kind === "count_in") {
+    const first = nextPlan?.chords[0] ?? c.sections.get(c.form[0])?.barChords(0)[0]?.chord.symbol ?? null;
+    return { next: first, anticipate: c.beatsPerBar - beatInBar <= 1 };
+  }
+  const slots = c.sections.get(plan.section)?.barChords(plan.barInSection) ?? [];
+  const idx = slots.findIndex((s) => beatInBar >= s.start - 1e-6 && beatInBar < s.start + s.dur - 1e-6);
+  if (idx >= 0 && idx + 1 < slots.length) {
+    const nxt = slots[idx + 1];
+    return { next: nxt.chord.symbol, anticipate: nxt.start - beatInBar <= 1 };
+  }
+  if (nextPlan && nextPlan.chords.length) {
+    return { next: nextPlan.chords[0], anticipate: c.beatsPerBar - beatInBar <= 1 };
+  }
+  // Look ahead to the next bar in the chart before bar N+1 commits.
+  const sec = c.sections.get(plan.section);
+  if (sec && plan.barInSection + 1 < sec.bars) {
+    const nxt = sec.barChords(plan.barInSection + 1)[0]?.chord.symbol ?? null;
+    return { next: nxt, anticipate: c.beatsPerBar - beatInBar <= 1 };
+  }
+  const nextPos = plan.formPos + 1 < c.form.length ? plan.formPos + 1 : 0;
+  const nextSec = c.sections.get(c.form[nextPos]);
+  return { next: nextSec?.barChords(0)[0]?.chord.symbol ?? null, anticipate: c.beatsPerBar - beatInBar <= 1 };
 }
 
 function setRunning(running: boolean): void {
@@ -905,10 +1029,15 @@ async function soundsReady(ids: string[]): Promise<void> {
 
 let starting = 0;
 
-/** Start a jam, or play back a recorded session when `replay` is given. */
-async function start(replay?: SessionFile): Promise<void> {
+/** Start a jam, or play back a recorded session when `replay` is given (optionally seeking to `startBar`). */
+async function start(replay?: SessionFile, startBar = 0): Promise<void> {
   if (!chart && !replay) return;
   stop();
+  if (!replay) {
+    recap.close();
+    $("recap-banner").hidden = true;
+    if (drawer.isOpen) drawer.close();
+  }
   audio = getAudio();
   void audio.resume().then(() => setTimeout(showLatency, 500));
   const myStart = ++starting;
@@ -920,7 +1049,7 @@ async function start(replay?: SessionFile): Promise<void> {
   synth.playerInstrument = playerSound();
   synth.setMix(replay ? getGenre(replay.genre).mix : pickedGenre().mix);
   synth.setBand(startBand);
-  const sink = makeSink(audio, synth);
+  const { sink, midiSink, hits } = makeSink(audio, synth);
 
   const seed = (Math.random() * 0x7fffffff) | 0;
   const config = { loop: $<HTMLInputElement>("loop").checked };
@@ -967,57 +1096,76 @@ async function start(replay?: SessionFile): Promise<void> {
   let mismatches = 0;
   let heardBand = startBand;
   let heardGenre = replay?.genre;
-  const transport = new Transport(engine, { now: () => ctx.currentTime }, sink, {
-    onCommit: (plan, startBeat) => {
-      committedPlans[Math.round(startBeat / c.beatsPerBar)] = plan;
-      recorder?.bar(plan);
-      updateSessionStatus();
-      if (replay) {
-        // A replay sounds like the jam: lineup and genre changes come from the recording.
-        if (plan.band !== heardBand) synth.setBand((heardBand = plan.band));
-        if (plan.genre !== heardGenre) synth.setMix(getGenre((heardGenre = plan.genre)).mix);
-        const want = replay.bars[plan.bar];
-        if (want && want.hash !== summarizeBar(plan).hash) {
-          mismatches++;
-          overlay.note(`bar ${plan.bar}: plays differently from the recording`);
+  const seekBar = replay ? Math.max(0, Math.min(Math.max(0, replay.bars.length - 1), Math.floor(startBar))) : 0;
+  if (replay && seekBar > 0) {
+    // Deterministically fast-forward the engine to seekBar so band/genre/seed match 100%.
+    for (let k = 0; k < seekBar; k++) {
+      const skipped = engine.nextBar();
+      if (!skipped) break;
+      if (skipped.band !== heardBand) heardBand = skipped.band;
+      if (skipped.genre !== heardGenre) heardGenre = skipped.genre;
+    }
+    synth.setBand(heardBand);
+    if (heardGenre) synth.setMix(getGenre(heardGenre).mix);
+  }
+  const transport = new Transport(
+    engine,
+    { now: () => ctx.currentTime },
+    sink,
+    {
+      onCommit: (plan, startBeat) => {
+        committedPlans[Math.round(startBeat / c.beatsPerBar)] = plan;
+        recorder?.bar(plan);
+        updateSessionStatus();
+        if (replay) {
+          // A replay sounds like the jam: lineup and genre changes come from the recording.
+          if (plan.band !== heardBand) synth.setBand((heardBand = plan.band));
+          if (plan.genre !== heardGenre) synth.setMix(getGenre((heardGenre = plan.genre)).mix);
+          const want = replay.bars[plan.bar];
+          if (want && want.hash !== summarizeBar(plan).hash) {
+            mismatches++;
+            overlay.note(`bar ${plan.bar}: plays differently from the recording`);
+          }
+          for (const n of replayNotes) {
+            if (n.start < startBeat || n.start >= startBeat + c.beatsPerBar) continue;
+            // Notes heard from an instrument (audio input) were never sounded by the page; a replay doesn't either.
+            if (replay.input?.kind !== "audio") transport.inject({ start: 0, dur: n.dur, note: n.note, vel: n.vel, part: "player" }, n.start);
+            tracker.noteOn(n.start, n.note, n.vel);
+            tracker.noteOff(n.start + n.dur, n.note);
+          }
+          return;
         }
-        for (const n of replayNotes) {
-          if (n.start < startBeat || n.start >= startBeat + c.beatsPerBar) continue;
-          // Notes heard from an instrument (audio input) were never sounded by the page; a replay doesn't either.
-          if (replay.input?.kind !== "audio") transport.inject({ start: 0, dur: n.dur, note: n.note, vel: n.vel, part: "player" }, n.start);
-          tracker.noteOn(n.start, n.note, n.vel);
-          tracker.noteOff(n.start + n.dur, n.note);
+        if (plan.kind === "count_in") return;
+        const mode = simModeFor(plan.bar);
+        if (!mode) return;
+        for (const n of sim.play(plan, mode, c.beatsPerBar)) {
+          transport.inject({ ...n, part: "player" }, startBeat + n.start);
+          tracker.noteOn(startBeat + n.start, n.note, n.vel);
+          tracker.noteOff(startBeat + n.start + n.dur, n.note);
+          recorder?.note(startBeat + n.start, n.note, n.vel);
+          recorder?.note(startBeat + n.start + n.dur, n.note, 0);
         }
-        return;
-      }
-      if (plan.kind === "count_in") return;
-      const mode = simModeFor(plan.bar);
-      if (!mode) return;
-      for (const n of sim.play(plan, mode, c.beatsPerBar)) {
-        transport.inject({ ...n, part: "player" }, startBeat + n.start);
-        tracker.noteOn(startBeat + n.start, n.note, n.vel);
-        tracker.noteOff(startBeat + n.start + n.dur, n.note);
-        recorder?.note(startBeat + n.start, n.note, n.vel);
-        recorder?.note(startBeat + n.start + n.dur, n.note, 0);
-      }
-    },
-    onBarStart: (plan) => {
-      overlay.bar(plan);
-      if (replay && plan.bar >= replay.bars.length - 1) overlay.note("Last recorded bar.");
-    },
-    onBarEnd: (plan, startBeat) => {
-      conductor.barFinished(plan, tracker.bar(startBeat, c.beatsPerBar));
-      if (plan.kind !== "count_in") overlay.arc(conductor.arcNow(plan));
-      if (replay && plan.bar >= replay.bars.length - 1) {
-        overlay.note(mismatches ? `Replay done: ${mismatches} bars differed.` : "Replay done: every bar matched the recording.");
+      },
+      onBarStart: (plan) => {
+        overlay.bar(plan);
+        if (replay && recap.isOpen) recap.setPlayingBar(plan.bar);
+        if (replay && plan.bar >= replay.bars.length - 1) overlay.note("Last recorded bar.");
+      },
+      onBarEnd: (plan, startBeat) => {
+        conductor.barFinished(plan, tracker.bar(startBeat, c.beatsPerBar));
+        if (plan.kind !== "count_in") overlay.arc(conductor.arcNow(plan));
+        if (replay && plan.bar >= replay.bars.length - 1) {
+          overlay.note(mismatches ? `Replay done: ${mismatches} bars differed.` : "Replay done: every bar matched the recording.");
+          stop();
+        }
+      },
+      onEnd: () => {
+        overlay.note(engine.log.some((m) => m.label === "end_song" && m.status === "applied") ? "The end." : "End of the form.");
         stop();
-      }
+      },
     },
-    onEnd: () => {
-      overlay.note(engine.log.some((m) => m.label === "end_song" && m.status === "applied") ? "The end." : "End of the form.");
-      stop();
-    },
-  });
+    { startBar: seekBar },
+  );
   // The fretboard follows the beat on the scheduler's heartbeat (it keeps going in a background tab; it redraws only on a change).
   const drawFretboard = () => {
     const beat = transport.beatAt(ctx.currentTime);
@@ -1036,21 +1184,49 @@ async function start(replay?: SessionFile): Promise<void> {
     transport.tick();
     drawFretboard();
   });
-  session = { engine, transport, conductor, ticker, tracker, synth, remote, recorder, replay: !!replay };
+  session = { engine, transport, conductor, ticker, tracker, synth, midiSink, hits, rafId: 0, remote, recorder, replay: !!replay };
+  syncMuteSolo();
   overlay.chartBpm = c.bpm;
   overlay.reset(replay ? `Replay: ${replay.title}` : c.title);
-  if (replay) overlay.setForm(c.form);
+  if (replay) overlay.setForm(c.form, sectionBarsOf(c));
   overlay.leaderStatus(replay ? "replay" : leaderLabel(session));
   committedPlans = [];
   fretboard.clear();
   transport.start();
   ticker.start();
   setRunning(true);
+
+  // Smooth 60fps Stage visual loop (playhead sweep, beat dots, next-chord preview, musician hit pulses).
+  const rafFrame = () => {
+    const cur = session;
+    if (!cur) return;
+    const now = ctx.currentTime;
+    const beat = cur.transport.beatAt(now);
+    const k = Math.floor(beat / c.beatsPerBar);
+    const plan = committedPlans[k];
+    const nextPlan = committedPlans[k + 1];
+    const beatInBar = Math.max(0, beat - k * c.beatsPerBar);
+    const { next, anticipate } = upcomingChord(c, plan, beatInBar, nextPlan);
+    const hitLevels: Partial<Record<Part, number>> = {};
+    for (const p of plan?.lineup ?? PARTS) hitLevels[p] = cur.hits.level(p, now);
+    overlay.frame({
+      beatInBar,
+      bpb: c.beatsPerBar,
+      kind: plan?.kind ?? "play",
+      currentChord: plan?.chords[0] ?? null,
+      nextChord: next,
+      anticipate,
+      hits: hitLevels,
+    });
+    cur.rafId = requestAnimationFrame(rafFrame);
+  };
+  session.rafId = requestAnimationFrame(rafFrame);
 }
 
 function stop(): void {
   if (!session) return;
   const wasLive = !session.replay;
+  cancelAnimationFrame(session.rafId);
   if (wasLive && audio) {
     audioIn.setBand(null);
     voice.setBand(null);
@@ -1065,14 +1241,26 @@ function stop(): void {
   session.ticker.stop();
   session.transport.stop();
   fretboard.clear();
+  overlay.resetProgress();
+  recap.setPlayingBar(null);
   for (const release of held.values()) release();
   held.clear();
   session = null;
   setRunning(false);
   updateSessionStatus();
-  overlay.showLineup(bandParts(band).filter((p) => pickedGenre().parts.includes(p)));
-  if (wasLive) void keepJam();
-  if (wasLive && jamKind && lastJam?.recorder) showRatingPanel(true);
+  overlay.showLineup(bandParts(band).filter((p) => pickedGenre().parts.includes(p)), band, mixVolumesOf(pickedGenre().id));
+  if (wasLive) {
+    void keepJam();
+    const f = currentFile();
+    if (f && f.bars.length > 0) {
+      $("recap-banner-text").textContent = `Recorded ${f.bars.length} bars of ${f.title}.`;
+      $("recap-banner").hidden = false;
+    }
+  }
+  if (wasLive && jamKind && lastJam?.recorder) {
+    showRatingPanel(true);
+    drawer.open("sessions");
+  }
 }
 
 $("start").onclick = () => void start();
@@ -1087,6 +1275,44 @@ function leaderName(): string {
   if (!jevReachable()) return "rules";
   return settings.kind;
 }
+
+// ---------- session recap (v0.6) ----------
+
+const recap = new RecapView({
+  onBack: () => {
+    if (session?.replay) stop();
+  },
+  onPlayFrom: (file, startBar) => {
+    void start(file, startBar);
+  },
+  onStopReplay: () => {
+    if (session?.replay) stop();
+  },
+  onExportMidi: (file) => {
+    const bytes = exportSessionMidi(file);
+    save(new Blob([bytes as BlobPart], { type: "audio/midi" }), fileName(file).replace(/\.json$/, ".mid"));
+  },
+  onExportWav: async (file, includeRaw) => {
+    const rawWav = includeRaw ? jamAudio(file) : null;
+    const bytes = await renderSession(file, { rawWav, playerInstrument: playerSound() });
+    save(new Blob([bytes as BlobPart], { type: "audio/wav" }), fileName(file).replace(/\.json$/, ".wav"));
+  },
+  onExportJson: (file) => download(file),
+  canSummarize: () => !!makeBrain(settings)?.summarizeSession,
+  onSummarize: async (r) => {
+    const brain = makeBrain(settings);
+    if (!brain?.summarizeSession) throw new Error("Pick OpenAI-compatible or Claude under Bandleader");
+    return brain.summarizeSession(r, AbortSignal.timeout(30_000));
+  },
+});
+
+$("recap-open-btn").onclick = () => {
+  const f = currentFile();
+  if (!f) return;
+  $("recap-banner").hidden = true;
+  recap.open(f, { hasRawAudio: !!jamAudio(f) });
+};
+$("recap-dismiss-btn").onclick = () => ($("recap-banner").hidden = true);
 
 // ---------- recording and replay ----------
 
@@ -1193,6 +1419,7 @@ function openReplay(raw: unknown, label: string): void {
     res.className = "small errors";
     res.textContent = `Can't replay ${label}: ${(e as Error).message}`;
   }
+  $<HTMLButtonElement>("session-recap").disabled = !replayFile;
   $<HTMLButtonElement>("session-check").disabled = !replayFile;
   $<HTMLButtonElement>("session-export").disabled = !replayFile;
   $<HTMLButtonElement>("session-delete").disabled = !replayFile || !$<HTMLSelectElement>("session-list").value.startsWith("b:");
@@ -1267,6 +1494,15 @@ $("session-export").onclick = () => {
   if (replayFile) download(replayFile);
 };
 
+$("session-recap").onclick = () => {
+  if (!replayFile) return;
+  drawer.close();
+  $("recap-banner").hidden = true;
+  const cur = currentFile();
+  const hasRaw = !!cur && cur.created === replayFile.created && !!jamAudio(replayFile);
+  recap.open(replayFile, { hasRawAudio: hasRaw });
+};
+
 $("session-delete").onclick = async () => {
   const v = $<HTMLSelectElement>("session-list").value;
   if (!v.startsWith("b:") || !platform.sessions.remove) return;
@@ -1297,10 +1533,14 @@ $("session-check").onclick = async () => {
 };
 
 $("session-play").onclick = () => {
-  if (replayFile) void start(replayFile);
+  if (replayFile) {
+    drawer.close();
+    void start(replayFile);
+  }
 };
 
 showBrainSettings();
+updateInputPill();
 getLibrary().onChange = showSampleStatus;
 void loadCharts();
 void checkServer();

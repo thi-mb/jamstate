@@ -22,6 +22,8 @@ bandleader or a language model (Claude with your key, or a local model on
 your own machine). All timing stays in the browser, so a slow or missing
 model never makes the music stutter.
 
+![jamstate Stage view](docs/images/stage.png)
+
 ## Quick start (Docker)
 
 ```bash
@@ -235,6 +237,38 @@ npm run guitar-eval -- voice   # voice cues: Piper phrases over the band and gui
 npm run voice-check            # headless Chrome: a synthesised voice on input 1 says cues during a jam
 npm run eval -- --brains rules --input audio   # the leader eval with the player heard as guitar audio, J1–J3 included
 ```
+
+## Stage & session recap (v0.6)
+
+The page opens straight onto a **Stage view** sized to read from a music stand
+(desktop or tablet): a beat-synced chord display with **next-chord preview**
+and bar playhead sweep, proportional form timeline, live **musician cards**
+(with hit pulses, laying-out and soloing states, and inline **M** mute / **S**
+solo / volume controls), a glanceable bandleader thought bubble, a floating
+toast for voice and keyboard cues, and a full-width fretboard with inline
+tuning and mode controls.
+
+Setup, song/lineup editing, bandleader settings and saved sessions live in a
+collapsible 4-tab **Studio** drawer (**Song & Band**, **Setup**, **Leader**,
+**Sessions**) so they stay out of the way while playing.
+
+After a jam stops, open **View Recap** (or **Recap** on any saved session) for
+an interactive SVG timeline of band intensity vs. your energy with move and
+cue pins — click any bar or move to jump exact replay to that bar, get an
+instant or LLM-written summary, and export the jam as a multi-track **MIDI**
+file (`.mid`), a stereo **WAV** mixdown (`.wav`, optionally mixing in kept
+guitar audio), or session **JSON**.
+
+| Studio drawer | Session recap |
+|---|---|
+| ![Studio drawer](docs/images/studio-drawer.png) | ![Session recap timeline](docs/images/recap.png) |
+
+<details>
+<summary>Tablet / music-stand portrait layout</summary>
+
+![Tablet Stage view](docs/images/stage-tablet.png)
+
+</details>
 
 ## With the jamstate server (optional companion)
 
@@ -452,8 +486,15 @@ v0.5 Guitar (built 2026-11-14, waiting on the hands-on tests in
 audio interface and the band follows, with no MIDI. Notes and strummed
 chords show on the fretboard (left-handed and other tunings), a gate keeps
 the band's own sound out of the mic, and spoken cues work like the keys.
-The
-plan for the releases after this is in [docs/roadmap.md](docs/roadmap.md).
+
+v0.6 Stage (built 2026-11-24, automated checks passing, waiting on hands-on
+play testing): Stage-first performance view (beat-synced chord & next-chord
+display, proportional form timeline, live musician cards with mute/solo/volume
+and hit pulses, cue toast, full-width fretboard), collapsible 4-tab Studio
+drawer, and post-jam Session Recap with seekable SVG timeline, instant/AI
+summary, and MIDI + WAV mixdown export.
+
+The plan for the releases after this is in [docs/roadmap.md](docs/roadmap.md).
 
 Not yet: Ableton Link (needs a local bridge, browsers can't do UDP),
 motif-aware reactions. Later: audio → chart on a local GPU

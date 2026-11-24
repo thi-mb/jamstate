@@ -3,245 +3,402 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>jamstate</title>
+    <title>jamstate — AI backing band</title>
+    <meta name="description" content="An open-source AI backing band in the browser that follows a song's structure and reacts to what you play." />
     <link rel="stylesheet" href="./src/ui/style.css" />
   </head>
   <body>
-    <header>
-      <h1>jamstate <small>v0.4</small></h1>
-      <p class="tag">An AI backing band that follows the song and reacts to how you play.</p>
+    <header id="topbar">
+      <div class="top-brand">
+        <h1>jamstate <small>v0.6</small></h1>
+        <div class="top-pills">
+          <button type="button" id="pill-song" class="pill" data-open-tab="song" title="Open Song & Band settings">Loading…</button>
+          <button type="button" id="pill-leader" class="pill" data-open-tab="leader" title="Open Bandleader settings">rules</button>
+          <button type="button" id="pill-input" class="pill pill-input" data-open-tab="setup" title="Open Input & Audio setup">Keys / MIDI</button>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="transport-group">
+          <button type="button" id="start" class="primary">Start</button>
+          <button type="button" id="end-song" disabled title="The band finishes the phrase and ends the song (key 7)">End song</button>
+          <button type="button" id="stop" disabled>Stop</button>
+        </div>
+        <button type="button" id="trade" class="ghost-btn" aria-pressed="false" title="Key 8: play a phrase, lay out, and a band instrument answers in the next four bars"><kbd>8</kbd> Trade 4s</button>
+        <button type="button" id="studio-toggle" class="studio-btn" aria-expanded="false" aria-controls="studio-drawer">Studio</button>
+      </div>
     </header>
 
-    <main>
-      <section id="stage" aria-live="polite">
-        <div class="now">
-          <div>
-            <div class="label">section</div>
-            <div id="section" class="big">ready</div>
-            <div id="bar" class="dim">press Start, then play</div>
+    <main id="stage" aria-live="polite">
+      <div id="cue-toast" class="cue-toast" role="status" aria-live="assertive" hidden></div>
+
+      <div id="recap-banner" class="recap-banner" hidden>
+        <div class="recap-banner-main">
+          <span class="recap-banner-dot"></span>
+          <span id="recap-banner-text">Session saved.</span>
+        </div>
+        <div class="recap-banner-actions">
+          <button type="button" id="recap-open-btn" class="primary">View Recap</button>
+          <button type="button" id="recap-dismiss-btn" class="ghost-btn">Dismiss</button>
+        </div>
+      </div>
+
+      <section class="stage-hero" aria-label="Current bar and chord">
+        <div class="hero-left">
+          <div class="hero-meta-row">
+            <span class="label">section</span>
+            <div id="beats" class="beats" aria-label="Beat counter"></div>
           </div>
-          <div>
+          <div id="section" class="big">ready</div>
+          <div id="bar" class="hero-sub">press Start, then play</div>
+          <div id="feel" class="hero-feel dim">normal feel</div>
+        </div>
+
+        <div class="hero-chords">
+          <div class="chord-block">
             <div class="label">chord</div>
-            <div id="chord" class="big">–</div>
-            <div id="feel" class="dim">normal feel</div>
+            <div id="chord" class="chord-now">–</div>
+          </div>
+          <div class="chord-next-block">
+            <div class="label">next</div>
+            <div id="next-chord" class="chord-next">–</div>
           </div>
         </div>
-        <ol id="form" class="form"></ol>
+
+        <div class="playhead-track" aria-hidden="true">
+          <div id="playhead" class="playhead-fill"></div>
+        </div>
+      </section>
+
+      <ol id="form" class="form" aria-label="Song form timeline"></ol>
+
+      <section class="stage-band" aria-label="Band on stage">
+        <div id="layers" class="musician-grid"></div>
 
         <div class="meters">
-          <div>
-            <div class="label">band intensity <span id="intensity-num" class="dim"></span></div>
+          <div class="meter-card">
+            <div class="meter-head">
+              <span class="label">band intensity</span>
+              <span id="intensity-num" class="dim tabular"></span>
+            </div>
             <div class="meter"><div id="intensity" class="fill"></div><div id="target" class="target"></div></div>
           </div>
-          <div>
-            <div class="label">your energy <span id="energy-num" class="dim"></span></div>
+          <div class="meter-card">
+            <div class="meter-head">
+              <span class="label">your energy</span>
+              <span id="energy-num" class="dim tabular"></span>
+            </div>
             <div class="meter"><div id="energy" class="fill player"></div></div>
           </div>
         </div>
-        <div id="layers" class="chips"></div>
-        <div id="heard" class="reason dim small"></div>
-        <div id="arc" class="reason dim small" title="The song so far and the bandleader's plan for this section and the next (v0.4)"></div>
-        <div id="fretboard" class="fretboard" aria-label="Chord and scale tones"></div>
+      </section>
 
-        <div class="move">
-          <div class="label">bandleader <span id="leader-status" class="dim"></span></div>
+      <section class="thought-bubble" aria-label="Bandleader thoughts">
+        <div class="thought-head">
+          <span class="label">bandleader <span id="leader-status" class="dim"></span></span>
+        </div>
+        <div class="thought-body">
           <div id="last-move" class="big-move">–</div>
           <div id="last-reason" class="reason"></div>
         </div>
-        <ul id="log" class="log"></ul>
+        <div class="telemetry">
+          <div id="heard" class="telemetry-line dim small"></div>
+          <div id="arc" class="telemetry-line dim small" title="The song so far and the bandleader's plan for this section and the next"></div>
+        </div>
+        <details id="log-drawer" class="log-drawer">
+          <summary>Move log</summary>
+          <ul id="log" class="log"></ul>
+        </details>
       </section>
 
-      <aside id="controls">
-        <div class="row">
-          <button id="start" class="primary">Start</button>
-          <button id="end-song" disabled title="The band finishes the phrase and ends the song">End song</button>
-          <button id="stop" disabled>Stop</button>
-          <label class="inline"><input type="checkbox" id="loop" checked /> loop form</label>
-          <label class="inline" title="Off: the band keeps the chart tempo. On: it follows your beat, within 5% of the chart tempo, changing on bar lines."><input type="checkbox" id="follow-tempo" /> follow my tempo</label>
+      <section class="stage-fretboard" aria-label="Fretboard and scale guide">
+        <div class="fb-toolbar">
+          <span class="label">guide</span>
+          <div class="fb-controls">
+            <select id="fretboard-kind" aria-label="Guide view" title="Guitar neck or two octaves of piano. Your notes: green inside, yellow colour, red outside.">
+              <option value="guitar">guitar</option>
+              <option value="piano">piano</option>
+              <option value="off">off</option>
+            </select>
+            <select id="fretboard-mode" aria-label="Scale or changes mode" title="Scale: one scale for the whole song held still, chord tones on top. Changes: each chord's tones and scale with next chord preview.">
+              <option value="scale">scale</option>
+              <option value="changes">changes</option>
+            </select>
+            <select id="fretboard-tuning" aria-label="Guitar tuning" title="Guitar tuning for the neck and audio input">
+              <option value="standard">standard</option>
+              <option value="half-down">half step down</option>
+              <option value="drop-d">drop D</option>
+              <option value="dadgad">DADGAD</option>
+              <option value="open-g">open G</option>
+              <option value="open-d">open D</option>
+              <option value="bass">bass</option>
+            </select>
+            <label class="inline small" title="Mirror the neck: the nut on the right"><input type="checkbox" id="fretboard-left" /> left-handed</label>
+          </div>
+        </div>
+        <div id="fretboard" class="fretboard" aria-label="Chord and scale tones"></div>
+      </section>
+    </main>
+
+    <section id="recap-view" class="recap-view" aria-label="Session recap" hidden>
+      <div class="recap-top">
+        <div>
+          <button type="button" id="recap-back" class="ghost-btn">← Back to Stage</button>
+          <h2 id="recap-title" class="recap-title">Session Recap</h2>
+          <div id="recap-meta" class="dim small"></div>
+        </div>
+        <div class="recap-exports">
+          <button type="button" id="recap-play" class="primary">Replay</button>
+          <button type="button" id="recap-midi">Export MIDI</button>
+          <button type="button" id="recap-wav">Export WAV</button>
+          <button type="button" id="recap-json">Export JSON</button>
+          <label id="recap-raw-wrap" class="inline small" hidden><input type="checkbox" id="recap-include-raw" checked /> mix guitar audio</label>
+        </div>
+      </div>
+      <div id="recap-export-status" class="dim small"></div>
+
+      <div id="recap-stats" class="recap-stats"></div>
+
+      <div class="recap-card">
+        <div class="recap-card-head">
+          <span class="label">session summary</span>
+          <div class="recap-summary-ctrls">
+            <span id="recap-summary-meta" class="dim small"></span>
+            <button type="button" id="recap-ai-btn" class="ghost-btn small" hidden>Summarize with AI</button>
+          </div>
+        </div>
+        <p id="recap-summary-text" class="recap-summary-text"></p>
+      </div>
+
+      <div class="recap-card">
+        <div class="recap-card-head">
+          <span class="label">energy &amp; intensity timeline</span>
+          <div class="recap-legend small dim">
+            <span class="leg-band">■ band intensity</span>
+            <span class="leg-player">■ your energy</span>
+            <span class="leg-move">● leader move</span>
+            <span class="leg-cue">● cue</span>
+          </div>
+        </div>
+        <div id="recap-timeline" class="recap-timeline"></div>
+        <div id="recap-inspector" class="recap-inspector small">Click any bar on the timeline to replay from there.</div>
+      </div>
+
+      <div class="recap-card">
+        <div class="recap-card-head">
+          <span class="label">moves &amp; cues</span>
+          <span class="dim small">click any row to replay from that bar</span>
+        </div>
+        <ul id="recap-moves" class="recap-moves"></ul>
+      </div>
+    </section>
+
+    <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+
+    <aside id="studio-drawer" class="drawer" aria-label="Studio settings" aria-hidden="true">
+      <div class="drawer-head">
+        <h2>Studio</h2>
+        <button type="button" id="studio-close" class="ghost-btn" aria-label="Close Studio">Done</button>
+      </div>
+
+      <nav class="drawer-tabs" role="tablist" aria-label="Studio sections">
+        <button type="button" role="tab" data-tab="song" aria-selected="true">Song &amp; Band</button>
+        <button type="button" role="tab" data-tab="setup" aria-selected="false">Setup</button>
+        <button type="button" role="tab" data-tab="leader" aria-selected="false">Leader</button>
+        <button type="button" role="tab" data-tab="sessions" aria-selected="false">Sessions</button>
+      </nav>
+
+      <div class="drawer-body" id="controls">
+        <!-- TAB: SONG & BAND -->
+        <div class="tab-panel" role="tabpanel" data-panel="song">
+          <fieldset>
+            <legend>Song</legend>
+            <select id="chart-select" aria-label="Select song"></select>
+            <label>Genre <select id="genre-select"></select></label>
+            <label>Swing
+              <select id="swing-select">
+                <option value="">song's swing</option>
+                <option value="0">0 (straight)</option>
+                <option value="0.33">0.33 (light)</option>
+                <option value="0.5">0.5</option>
+                <option value="0.66">0.66 (triplet)</option>
+              </select>
+            </label>
+            <div class="row wrap">
+              <label class="inline"><input type="checkbox" id="loop" checked /> loop form</label>
+              <label class="inline" title="Off: the band keeps the chart tempo. On: it follows your beat, within 5% of the chart tempo, changing on bar lines."><input type="checkbox" id="follow-tempo" /> follow my tempo</label>
+            </div>
+            <p class="dim small">Genre and swing change from the next bar, also while playing.</p>
+            <div class="row">
+              <label class="file">Load JSON… <input type="file" id="chart-file" accept=".json,application/json" hidden /></label>
+              <button type="button" id="chart-edit-toggle">Edit</button>
+            </div>
+            <div id="chart-editor" hidden>
+              <textarea id="chart-json" spellcheck="false" rows="12"></textarea>
+              <div class="row"><button type="button" id="chart-apply">Use this chart</button></div>
+            </div>
+            <div class="row">
+              <input id="chart-prompt" type="text" placeholder="or describe a song: slow 6-bar blues in E…" />
+              <button type="button" id="chart-ask" title="Ask the bandleader brain to write a chart (needs an LLM brain: OpenAI-compatible or Claude)">Write</button>
+            </div>
+            <div id="chart-errors" class="errors"></div>
+            <div id="chart-info" class="dim small"></div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Band</legend>
+            <label>Lineup <select id="lineup-select"></select></label>
+            <div id="band-parts" class="band-parts"></div>
+            <label>Your sound <select id="player-sound"></select></label>
+            <p class="dim small">Changes land from the next bar, also while playing. A new sound loads first; the old one plays until it's ready.</p>
+            <div id="sample-status" class="dim small"></div>
+          </fieldset>
         </div>
 
-        <fieldset>
-          <legend>Song</legend>
-          <select id="chart-select"></select>
-          <label>Genre <select id="genre-select"></select></label>
-          <label>Swing
-            <select id="swing-select">
-              <option value="">song's swing</option>
-              <option value="0">0 (straight)</option>
-              <option value="0.33">0.33 (light)</option>
-              <option value="0.5">0.5</option>
-              <option value="0.66">0.66 (triplet)</option>
-            </select>
-          </label>
-          <p class="dim small">Genre and swing change from the next bar, also while playing.</p>
-          <div class="row">
-            <label class="file">Load JSON… <input type="file" id="chart-file" accept=".json,application/json" hidden /></label>
-            <button id="chart-edit-toggle">Edit</button>
-          </div>
-          <div id="chart-editor" hidden>
-            <textarea id="chart-json" spellcheck="false" rows="14"></textarea>
-            <div class="row"><button id="chart-apply">Use this chart</button></div>
-          </div>
-          <div class="row">
-            <input id="chart-prompt" type="text" placeholder="or describe a song: slow 6-bar blues in E…" />
-            <button id="chart-ask" title="Ask the bandleader brain to write a chart (needs an LLM brain: OpenAI-compatible or Claude)">Write</button>
-          </div>
-          <div id="chart-errors" class="errors"></div>
-          <div id="chart-info" class="dim"></div>
-        </fieldset>
+        <!-- TAB: SETUP (YOU + OUTPUT) -->
+        <div class="tab-panel" role="tabpanel" data-panel="setup" hidden>
+          <fieldset>
+            <legend>You</legend>
+            <label>MIDI in <select id="midi-in"><option value="all">all inputs</option></select></label>
+            <label title="A guitar, bass, voice or anything else through an audio interface or mic. Wear headphones (or turn on the bleed gate) so it hears you, not the band.">Audio in <select id="audio-in"><option value="">off</option></select></label>
+            <div class="row wrap">
+              <label class="inline" title="Which input of the device: on a Scarlett Solo, 1 is the mic and 2 the instrument">Channel <select id="audio-channel" disabled><option value="1">1</option><option value="2">2</option><option value="mix">both</option></select></label>
+              <label class="inline" title="Play the input through the page (only for interfaces without direct monitoring: it adds the browser's delay)"><input type="checkbox" id="audio-monitor" disabled /> hear input</label>
+              <label class="inline" title="Playing to speakers with a mic? The page takes the band's own sound out of what the input hears, so the band doesn't follow itself. With headphones leave it off."><input type="checkbox" id="audio-gate" disabled /> speakers: gate the band</label>
+              <label class="inline" title="Auto hears single notes, chords and muted strums. Pick single notes for lead lines, chords for comping.">Hears <select id="audio-mode" disabled><option value="auto">auto</option><option value="single">single notes</option><option value="chords">chords</option></select></label>
+              <button type="button" id="calibrate" disabled title="Silence, soft, hard, then a note on each click: sets the noise gate, how hard you play and the input delay">Calibrate</button>
+            </div>
+            <div id="audio-meter" class="meter input-meter" hidden><div id="audio-level" class="fill player"></div><span id="audio-clip" class="clip" hidden>clip</span></div>
+            <div id="calibration-step" class="small"></div>
+            <div id="calibration-info" class="dim small"></div>
+            <div id="audio-status" class="dim small"></div>
 
-        <fieldset>
-          <legend>Band</legend>
-          <label>Lineup <select id="lineup-select"></select></label>
-          <div id="band-parts" class="band-parts"></div>
-          <label>Your sound <select id="player-sound"></select></label>
-          <p class="dim small">Changes land from the next bar, also while playing. A new sound loads first; the old one plays until it's ready.</p>
-          <div id="sample-status" class="dim small"></div>
-        </fieldset>
+            <label title="Say the cues instead of pressing 1–8: &quot;take it down&quot;, &quot;one more chorus&quot;, &quot;trade fours&quot;… Recognised in the page; nothing leaves the machine. Loads a 40 MB speech model the first time.">Voice cues <select id="voice-in"><option value="">off</option></select></label>
+            <div class="row wrap">
+              <label class="inline" title="Which input of the device hears your voice: on a Scarlett Solo, 1 is the mic">Channel <select id="voice-channel" disabled><option value="1">1</option><option value="2">2</option><option value="mix">both</option></select></label>
+              <label class="inline" title="The mic hears speakers? Take the band's own sound out first."><input type="checkbox" id="voice-gate" disabled /> speakers: gate the band</label>
+            </div>
+            <div id="voice-status" class="dim small"></div>
 
-        <fieldset>
-          <legend>Bandleader</legend>
-          <select id="leader-select"></select>
-          <div id="brain-openai" class="brain-cfg" hidden>
-            <label>Endpoint <input id="openai-url" type="text" placeholder="api/relay/llm or http://localhost:11434/v1" /></label>
-            <label>Model <input id="openai-model" type="text" placeholder="leader" /></label>
-            <label>API key (optional) <input id="openai-key" type="password" autocomplete="off" /></label>
-            <p class="dim small"><code>api/relay/llm</code> goes through the jamstate server to its local model. Ollama needs <code>OLLAMA_ORIGINS</code> set to this page's origin.</p>
-          </div>
-          <div id="brain-claude" class="brain-cfg" hidden>
-            <label>Model <input id="claude-model" type="text" /></label>
-            <label>Anthropic API key <input id="claude-key" type="password" autocomplete="off" placeholder="empty: the server's key" /></label>
-          </div>
-          <div id="brain-jev" class="brain-cfg" hidden>
-            <label>Model <input id="jev-model" type="text" placeholder="jev-latest" /></label>
-            <label>TypeSafe API key <input id="jev-key" type="password" autocomplete="off" placeholder="empty: the server's key" /></label>
-            <label class="inline"><input type="checkbox" id="jev-relay" /> through the jamstate server</label>
-            <label>Relay <input id="jev-url" type="text" placeholder="api/relay/jev" /></label>
-            <p class="dim small">TypeSafe doesn't accept calls straight from a web page, so Jev goes through the jamstate server's relay (<code>docker compose up</code>, or <code>python -m jamstate_server</code> on your machine).</p>
-          </div>
-          <div id="brain-blind" class="brain-cfg" hidden>
-            <p class="dim small">Each jam secretly uses one of the brains that work here, the least-tried first. Moves show without names or reasons. When you stop, rate how the band felt; <b>Show results</b> unblinds. Claude joins when the server has a Claude key, or after you pick Claude above and paste one. Laya joins when <code>localbrain/laya_server.py</code> runs on this machine. <b>Test</b> checks which brains answer.</p>
-            <div id="blind-pool" class="small"></div>
-            <div class="row wrap"><button id="blind-results-btn">Show results</button></div>
-            <div id="blind-results" class="small"></div>
-          </div>
-          <div id="brain-laya" class="brain-cfg" hidden>
-            <label>Endpoint <input id="laya-url" type="text" placeholder="http://127.0.0.1:8010/v1/systemone" /></label>
-            <p class="dim small">Laya runs on your machine: <code>python localbrain/laya_server.py</code> (see <code>localbrain/README.md</code>).</p>
-          </div>
-          <p class="dim small" id="brain-keys-note" hidden>Keys are stored in this browser only and sent only to that provider.</p>
-          <div class="row wrap"><button id="brain-test" title="Ask the brain once with a sample phrase">Test</button></div>
-          <div id="brain-result" class="small"></div>
-          <div id="server-status" class="dim small"></div>
-          <label title="How much the bandleader moves, within what suits the genre. Steady: only when you clearly change. Supportive: follows you closely. Adventurous: adds its own colour too.">Personality
-            <select id="personality"></select>
-          </label>
-          <div class="small" title="What the bandleader hears beyond your energy. Every brain gets the same summary; the overlay always shows everything.">
-            <div class="dim">Listening</div>
-            <div id="listening" class="row wrap"></div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>You</legend>
-          <label>MIDI in <select id="midi-in"><option value="all">all inputs</option></select></label>
-          <label title="A guitar, bass, voice or anything else through an audio interface or mic. Wear headphones (or turn on the bleed gate) so it hears you, not the band.">Audio in <select id="audio-in"><option value="">off</option></select></label>
-          <div class="row wrap">
-            <label class="inline" title="Which input of the device: on a Scarlett Solo, 1 is the mic and 2 the instrument">Channel <select id="audio-channel" disabled><option value="1">1</option><option value="2">2</option><option value="mix">both</option></select></label>
-            <label class="inline" title="Play the input through the page (only for interfaces without direct monitoring: it adds the browser's delay)"><input type="checkbox" id="audio-monitor" disabled /> hear input</label>
-            <label class="inline" title="Playing to speakers with a mic? The page takes the band's own sound out of what the input hears, so the band doesn't follow itself. With headphones leave it off."><input type="checkbox" id="audio-gate" disabled /> speakers: gate the band</label>
-            <label class="inline" title="Auto hears single notes, chords and muted strums. Pick single notes for lead lines, chords for comping.">Hears <select id="audio-mode" disabled><option value="auto">auto</option><option value="single">single notes</option><option value="chords">chords</option></select></label>
-            <button id="calibrate" disabled title="Silence, soft, hard, then a note on each click: sets the noise gate, how hard you play and the input delay">Calibrate</button>
-          </div>
-          <div id="audio-meter" class="meter input-meter" hidden><div id="audio-level" class="fill player"></div><span id="audio-clip" class="clip" hidden>clip</span></div>
-          <div id="calibration-step" class="small"></div>
-          <div id="calibration-info" class="dim small"></div>
-          <div id="audio-status" class="dim small"></div>
-          <label title="Say the cues instead of pressing 1–8: &quot;take it down&quot;, &quot;one more chorus&quot;, &quot;trade fours&quot;… Recognised in the page; nothing leaves the machine. Loads a 40 MB speech model the first time.">Voice cues <select id="voice-in"><option value="">off</option></select></label>
-          <div class="row wrap">
-            <label class="inline" title="Which input of the device hears your voice: on a Scarlett Solo, 1 is the mic">Channel <select id="voice-channel" disabled><option value="1">1</option><option value="2">2</option><option value="mix">both</option></select></label>
-            <label class="inline" title="The mic hears speakers? Take the band's own sound out first."><input type="checkbox" id="voice-gate" disabled /> speakers: gate the band</label>
-          </div>
-          <div id="voice-status" class="dim small"></div>
-          <label>Pretend player
-            <select id="sim">
-              <option value="off">off (I'll play)</option>
-              <option value="silent">silent</option>
-              <option value="sparse">sparse</option>
-              <option value="medium">medium</option>
-              <option value="busy">busy</option>
-              <option value="demo">demo script (sparse → busy → silent)</option>
-            </select>
-          </label>
-          <p class="dim small">
-            Computer keys: <kbd>A</kbd>–<kbd>'</kbd> white keys, <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> <kbd>O</kbd> <kbd>P</kbd> black,
-            <kbd>Z</kbd>/<kbd>X</kbd> octave, hold <kbd>Shift</kbd> to play loud.
-          </p>
-          <label title="Guitar neck or two octaves of piano. Your notes: green inside, yellow colour, red outside.">Fretboard
-            <select id="fretboard-kind"><option value="guitar">guitar</option><option value="piano">piano</option><option value="off">off</option></select>
-          </label>
-          <div class="row wrap">
-            <label class="inline" title="The guitar's tuning, for the neck and for what an audio input can hear">Tuning
-              <select id="fretboard-tuning"><option value="standard">standard</option><option value="half-down">half step down</option><option value="drop-d">drop D</option><option value="dadgad">DADGAD</option><option value="open-g">open G</option><option value="open-d">open D</option><option value="bass">bass</option></select>
+            <label>Pretend player
+              <select id="sim">
+                <option value="off">off (I'll play)</option>
+                <option value="silent">silent</option>
+                <option value="sparse">sparse</option>
+                <option value="medium">medium</option>
+                <option value="busy">busy</option>
+                <option value="demo">demo script (sparse → busy → silent)</option>
+              </select>
             </label>
-            <label class="inline" title="Mirror the neck: the nut on the right"><input type="checkbox" id="fretboard-left" /> left-handed</label>
-          </div>
-          <label title="Scale: one scale for the whole song (from its key and genre) held still, the chord tones lit on top; a ring marks a chord tone outside the scale. Changes: each chord's tones and its scale, the next chord fading in on the beat before it changes.">
-            <select id="fretboard-mode"><option value="scale">scale</option><option value="changes">changes</option></select>
-          </label>
-          <div id="midi-status" class="dim small"></div>
-          <div id="audio-latency" class="dim small"></div>
-        </fieldset>
+            <p class="dim small">
+              Computer keys: <kbd>A</kbd>–<kbd>'</kbd> white keys, <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> <kbd>O</kbd> <kbd>P</kbd> black,
+              <kbd>Z</kbd>/<kbd>X</kbd> octave, hold <kbd>Shift</kbd> to play loud.
+            </p>
+            <div id="midi-status" class="dim small"></div>
+            <div id="audio-latency" class="dim small"></div>
+          </fieldset>
 
-        <fieldset>
-          <legend>Output</legend>
-          <label class="inline" title="Off: the page makes no sound, neither the band nor what you play (for playing through Ableton or another synth)"><input type="checkbox" id="builtin" checked /> built-in sound</label>
-          <label>MIDI out <select id="midi-out"><option value="">none</option></select></label>
-        </fieldset>
+          <fieldset>
+            <legend>Output</legend>
+            <label class="inline" title="Off: the page makes no sound, neither the band nor what you play (for playing through Ableton or another synth)"><input type="checkbox" id="builtin" checked /> built-in sound</label>
+            <label>MIDI out <select id="midi-out"><option value="">none</option></select></label>
+          </fieldset>
+        </div>
 
-        <fieldset>
-          <legend>Session</legend>
-          <div id="blind-rate" class="blind-rate" hidden>
-            <p class="small"><b>Blind test:</b> how did that band feel?</p>
-            <div class="row wrap" id="blind-stars"></div>
-            <input id="blind-note" type="text" placeholder="optional: what stood out?" />
-            <div class="row"><button id="blind-save">Save rating</button></div>
-            <div id="blind-rate-result" class="small dim"></div>
-          </div>
-          <div id="session-status" class="dim small">Every jam is recorded and kept in this browser when you stop.</div>
-          <label class="inline" title="With audio input: also keep what the input heard (16 kHz WAV, about 2 MB a minute), downloaded and synced beside the session, so the detector can be re-run over it"><input type="checkbox" id="keep-audio" /> keep the audio</label>
-          <div class="row wrap">
-            <button id="session-download" disabled>Download</button>
-            <button id="session-save" disabled hidden title="Also save on the jamstate server (for the eval set)">Sync to server</button>
-          </div>
-          <label>Replay
-            <select id="session-list"><option value="">no sessions yet</option></select>
-          </label>
-          <div class="row wrap">
-            <label class="file">Import file… <input type="file" id="session-file" accept=".json,application/json" hidden /></label>
-            <button id="session-check" disabled title="Run the session offline and compare every bar">Check</button>
-            <button id="session-play" disabled title="Play it again: the same band, your recorded notes">Play</button>
-            <button id="session-export" disabled title="Download the selected session">Export</button>
-            <button id="session-delete" disabled title="Remove the selected session from this browser">Delete</button>
-          </div>
-          <div id="session-result" class="small"></div>
-        </fieldset>
+        <!-- TAB: LEADER -->
+        <div class="tab-panel" role="tabpanel" data-panel="leader" hidden>
+          <fieldset>
+            <legend>Bandleader</legend>
+            <select id="leader-select" aria-label="Bandleader brain"></select>
+            <div id="brain-openai" class="brain-cfg" hidden>
+              <label>Endpoint <input id="openai-url" type="text" placeholder="api/relay/llm or http://localhost:11434/v1" /></label>
+              <label>Model <input id="openai-model" type="text" placeholder="leader" /></label>
+              <label>API key (optional) <input id="openai-key" type="password" autocomplete="off" /></label>
+              <p class="dim small"><code>api/relay/llm</code> goes through the jamstate server to its local model. Ollama needs <code>OLLAMA_ORIGINS</code> set to this page's origin.</p>
+            </div>
+            <div id="brain-claude" class="brain-cfg" hidden>
+              <label>Model <input id="claude-model" type="text" /></label>
+              <label>Anthropic API key <input id="claude-key" type="password" autocomplete="off" placeholder="empty: the server's key" /></label>
+            </div>
+            <div id="brain-jev" class="brain-cfg" hidden>
+              <label>Model <input id="jev-model" type="text" placeholder="jev-latest" /></label>
+              <label>TypeSafe API key <input id="jev-key" type="password" autocomplete="off" placeholder="empty: the server's key" /></label>
+              <label class="inline"><input type="checkbox" id="jev-relay" /> through the jamstate server</label>
+              <label>Relay <input id="jev-url" type="text" placeholder="api/relay/jev" /></label>
+              <p class="dim small">TypeSafe doesn't accept calls straight from a web page, so Jev goes through the jamstate server's relay (<code>docker compose up</code>, or <code>python -m jamstate_server</code> on your machine).</p>
+            </div>
+            <div id="brain-blind" class="brain-cfg" hidden>
+              <p class="dim small">Each jam secretly uses one of the brains that work here, the least-tried first. Moves show without names or reasons. When you stop, rate how the band felt; <b>Show results</b> unblinds.</p>
+              <div id="blind-pool" class="small"></div>
+              <div class="row wrap"><button type="button" id="blind-results-btn">Show results</button></div>
+              <div id="blind-results" class="small"></div>
+            </div>
+            <div id="brain-laya" class="brain-cfg" hidden>
+              <label>Endpoint <input id="laya-url" type="text" placeholder="http://127.0.0.1:8010/v1/systemone" /></label>
+              <p class="dim small">Laya runs on your machine: <code>python localbrain/laya_server.py</code> (see <code>localbrain/README.md</code>).</p>
+            </div>
+            <p class="dim small" id="brain-keys-note" hidden>Keys are stored in this browser only and sent only to that provider.</p>
+            <div class="row wrap"><button type="button" id="brain-test" title="Ask the brain once with a sample phrase">Test</button></div>
+            <div id="brain-result" class="small"></div>
+            <div id="server-status" class="dim small"></div>
+            <label title="How much the bandleader moves, within what suits the genre. Steady: only when you clearly change. Supportive: follows you closely. Adventurous: adds its own colour too.">Personality
+              <select id="personality"></select>
+            </label>
+            <div class="small" title="What the bandleader hears beyond your energy. Every brain gets the same summary; the overlay always shows everything.">
+              <div class="dim">Listening</div>
+              <div id="listening" class="row wrap"></div>
+            </div>
+          </fieldset>
 
-        <fieldset>
-          <legend>Cues</legend>
-          <p class="dim small">Keys 1–7 while you play. Breaks, build and take it down land on the next bar; the rest on the next phrase. The bandleader can't undo a cue for a phrase.</p>
-          <div class="row wrap" id="cues"></div>
-          <p class="dim small">Key 8 trades fours: play a phrase, lay out, and a band instrument answers in the next four bars; come back in and it hands back.</p>
-          <div class="row wrap"><button id="trade" aria-pressed="false"><kbd>8</kbd>Trade fours</button></div>
-        </fieldset>
+          <fieldset>
+            <legend>Cues</legend>
+            <p class="dim small">Keys 1–7 while you play. Breaks, build and take it down land on the next bar; the rest on the next phrase. The bandleader can't undo a cue for a phrase.</p>
+            <div class="row wrap" id="cues"></div>
+          </fieldset>
 
-        <fieldset>
-          <legend>Manual moves</legend>
-          <p class="dim small">Go through the same governor as the bandleader.</p>
-          <div class="row wrap" id="manual"></div>
-        </fieldset>
-      </aside>
-    </main>
+          <details class="manual-details">
+            <summary>Manual moves (debug)</summary>
+            <fieldset>
+              <p class="dim small">Go through the same governor as the bandleader.</p>
+              <div class="row wrap" id="manual"></div>
+            </fieldset>
+          </details>
+        </div>
+
+        <!-- TAB: SESSIONS -->
+        <div class="tab-panel" role="tabpanel" data-panel="sessions" hidden>
+          <fieldset>
+            <legend>Session</legend>
+            <div id="blind-rate" class="blind-rate" hidden>
+              <p class="small"><b>Blind test:</b> how did that band feel?</p>
+              <div class="row wrap" id="blind-stars"></div>
+              <input id="blind-note" type="text" placeholder="optional: what stood out?" />
+              <div class="row"><button type="button" id="blind-save">Save rating</button></div>
+              <div id="blind-rate-result" class="small dim"></div>
+            </div>
+            <div id="session-status" class="dim small">Every jam is recorded and kept in this browser when you stop.</div>
+            <label class="inline" title="With audio input: also keep what the input heard (16 kHz WAV, about 2 MB a minute), downloaded and synced beside the session, so the detector can be re-run over it"><input type="checkbox" id="keep-audio" /> keep the audio</label>
+            <div class="row wrap">
+              <button type="button" id="session-download" disabled>Download</button>
+              <button type="button" id="session-save" disabled hidden title="Also save on the jamstate server (for the eval set)">Sync to server</button>
+            </div>
+            <label>Replay &amp; Recap
+              <select id="session-list"><option value="">no sessions yet</option></select>
+            </label>
+            <div class="row wrap">
+              <label class="file">Import file… <input type="file" id="session-file" accept=".json,application/json" hidden /></label>
+              <button type="button" id="session-recap" disabled title="Open the interactive recap timeline and exports for this session">Recap</button>
+              <button type="button" id="session-check" disabled title="Run the session offline and compare every bar">Check</button>
+              <button type="button" id="session-play" disabled title="Play it again: the same band, your recorded notes">Play</button>
+              <button type="button" id="session-export" disabled title="Download the selected session">Export</button>
+              <button type="button" id="session-delete" disabled title="Remove the selected session from this browser">Delete</button>
+            </div>
+            <div id="session-result" class="small"></div>
+          </fieldset>
+        </div>
+      </div>
+    </aside>
+
     <script type="module" src="./src/main.ts"></script>
   </body>
 </html>

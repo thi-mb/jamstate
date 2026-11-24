@@ -21,7 +21,7 @@ async function loadPlaywright() {
 const { chromium } = await loadPlaywright();
 const server = await createServer({ server: { port: 5198, strictPort: true }, logLevel: "error" });
 await server.listen();
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
 const page = await browser.newPage();
 await page.route("**/api/**", (route) => route.fulfill({ status: 404, contentType: "application/json", body: "{}" }));
 await page.goto("http://localhost:5198/");
