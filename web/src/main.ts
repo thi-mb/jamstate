@@ -12,13 +12,15 @@ import { DEFAULT_PERSONALITY, PERSONALITIES, PERSONALITY_LABELS, type Personalit
 import { Trader } from "./core/trade";
 import { DEFAULT_LISTENING, LISTENING_LABELS, LISTENING_READY, listeningKey, NO_LISTENING, parseListening, type Listening } from "./core/listening";
 import { CUE_LABELS, CUES, cueForKey, Engine, type BarPlan, type Cue } from "./core/engine";
-import { NoteTracker } from "./core/features";
+import { NoteTracker, type PlayedNote } from "./core/features";
+import { ColdTempo, FollowMeController, freeJamChart, inferBarChord, type FollowStatus } from "./core/follow";
 import { allGenres, getGenre } from "./core/genres";
 import { exportSessionMidi } from "./core/midi-export";
 import type { Move } from "./core/moves";
 import { RuleLeader } from "./core/rules";
 import { checkSession, replaySession, sessionBand, sessionEngine, SessionRecorder, summarizeBar, type SessionFile } from "./core/session";
 import { DEMO_SCRIPT, parseScript, SimPlayer, type SimMode } from "./core/simplayer";
+import { createBlankChart, PlayInCapture, SavedChartStore } from "./core/song-editor";
 import { Transport, type Sink } from "./core/transport";
 import { FEELS, PART_LABELS, PARTS, STINGERS, type Part } from "./core/types";
 import {
@@ -36,6 +38,7 @@ import { AudioInputPanel } from "./ui/audio-input";
 import { VoicePanel } from "./ui/voice-input";
 import { StudioDrawer } from "./ui/drawer";
 import { RecapView } from "./ui/recap";
+import { SongEditorView } from "./ui/song-editor";
 import { SR } from "./core/audio/dsp";
 import { chordView, FRETBOARD_KINDS, FRETBOARD_MODES, TUNING_IDS, type FretboardKind, type FretboardMode, type Place, type TuningId } from "./core/fretboard";
 
@@ -91,7 +94,13 @@ overlay.musicianCb = {
 
 function updateSongPill(): void {
   const el = document.getElementById("pill-song");
-  if (!el || !chart) return;
+  if (!el) return;
+  if (followMeMode && !session?.replay) {
+    const bpm = session?.engine.chart.bpm ?? (FOLLOW_DEFAULT_BPM[pickedGenre().id] ?? 110);
+    el.textContent = `Follow Me · ${pickedGenre().name}${session?.follow ? ` · ${bpm} bpm` : ""}`;
+    return;
+  }
+  if (!chart) return;
   el.textContent = `${chart.title} · ${pickedGenre().name} · ${chart.bpm} bpm`;
 }
 
@@ -155,6 +164,9 @@ const midi = platform.midi;
 /** The companion server, if this page was served by one. */
 let server: { sessions: boolean; relay: { llm: boolean; jev: boolean; anthropic: boolean } } | null = null;
 const serverSessions = new ServerSessionStore();
+const savedCharts = new SavedChartStore(platform.settings);
+let bundledCharts: { file: string; title: string }[] = [];
+let activeSavedId: string | undefined;
 let chart: Chart | null = null;
 let chartRaw: ChartJSON | null = null;
 let chartJson = "";
@@ -170,6 +182,25 @@ let blindTried: Partial<Record<BrainKind, number>> = {};
 /** Brains that answered the blind-test check; null until checked. */
 let blindReady: BrainKind[] | null = null;
 
+// ---------- Follow Me state (v0.7) ----------
+
+const FOLLOW_DEFAULT_BPM: Record<string, number> = { funk: 112, "blues-rock": 96, jazz: 124 };
+let followMeMode = false;
+let activeFollow: FollowMeController | null = null;
+
+interface ColdListen {
+  tempo: ColdTempo;
+  synth: Synth;
+  notes: PlayedNote[];
+  openNotes: Map<number, { startSec: number; vel: number }>;
+  firstNoteAt: number | null;
+  timer: number;
+  genreId: string;
+}
+let coldListen: ColdListen | null = null;
+/** Optional hook while Play-In capture is running inside Song Creator. */
+let playInHook: ((on: boolean, note: number, vel: number, audioTime: number, from: "midi" | "audio") => void) | null = null;
+
 interface Session {
   engine: Engine;
   transport: Transport;
@@ -184,11 +215,13 @@ interface Session {
   recorder: SessionRecorder | null;
   /** Playing back a recorded session: live input and the genre/swing pickers are ignored. */
   replay: boolean;
+  /** Follow Me controller when running in chartless mode. */
+  follow: FollowMeController | null;
 }
 
 // ---------- chart ----------
 
-function useChart(raw: unknown, source: string): boolean {
+function useChart(raw: unknown, source: string, savedId?: string): boolean {
   $("chart-errors").textContent = "";
   try {
     chart = loadChart(raw);
@@ -196,6 +229,8 @@ function useChart(raw: unknown, source: string): boolean {
     $("chart-errors").textContent = e instanceof ChartError ? e.errors.join("\n") : String(e);
     return false;
   }
+  activeSavedId = savedId;
+  $("delete-saved-song").hidden = !savedId;
   chartRaw = raw as ChartJSON;
   chartJson = JSON.stringify(raw, null, 2);
   fillGenres();
@@ -211,14 +246,49 @@ function useChart(raw: unknown, source: string): boolean {
   return true;
 }
 
+function refreshChartSelect(selectValue?: string): void {
+  const select = $<HTMLSelectElement>("chart-select");
+  const keep = selectValue ?? select.value;
+  const nodes: HTMLElement[] = bundledCharts.map((c) => new Option(c.title, c.file));
+  const custom = savedCharts.list();
+  if (custom.length) {
+    const grp = document.createElement("optgroup");
+    grp.label = "Saved songs";
+    grp.append(...custom.map((s) => new Option(s.chart.title, `saved:${s.id}`)));
+    nodes.push(grp);
+  }
+  select.replaceChildren(...nodes);
+  if (keep && [...select.options].some((o) => o.value === keep)) select.value = keep;
+  $("delete-saved-song").hidden = !select.value.startsWith("saved:");
+}
+
+async function loadSelectedChart(): Promise<void> {
+  const select = $<HTMLSelectElement>("chart-select");
+  const v = select.value;
+  if (!v) return;
+  if (v.startsWith("saved:")) {
+    const item = savedCharts.get(v.slice(6));
+    if (item) useChart(item.chart, "saved song", item.id);
+    return;
+  }
+  useChart(await fetch(`charts/${v}`).then((r) => r.json()), select.selectedOptions[0]?.text ?? v);
+}
+
 async function loadCharts(): Promise<void> {
   const select = $<HTMLSelectElement>("chart-select");
-  const list: { file: string; title: string }[] = await fetch("charts/index.json").then((r) => r.json());
-  select.replaceChildren(...list.map((c) => new Option(c.title, c.file)));
-  const load = async () => useChart(await fetch(`charts/${select.value}`).then((r) => r.json()), select.selectedOptions[0].text);
-  select.onchange = load;
-  await load();
+  bundledCharts = await fetch("charts/index.json").then((r) => r.json());
+  refreshChartSelect();
+  select.onchange = () => void loadSelectedChart();
+  await loadSelectedChart();
 }
+
+$("delete-saved-song").onclick = () => {
+  if (!activeSavedId) return;
+  savedCharts.remove(activeSavedId);
+  activeSavedId = undefined;
+  refreshChartSelect(bundledCharts[0]?.file);
+  void loadSelectedChart();
+};
 
 $("chart-file").onchange = async (e) => {
   const file = (e.target as HTMLInputElement).files?.[0];
@@ -289,6 +359,7 @@ $("genre-select").onchange = () => {
   if (session && !session.replay) {
     session.engine.setGenre(pickedGenre());
     session.synth.setMix(pickedGenre().mix);
+    if (session.follow) session.follow.genre = pickedGenre().id;
   }
   updateSongPill();
   // A new genre brings its own band and mix.
@@ -931,6 +1002,14 @@ const held = new Map<number, () => void>();
 
 /** `from` audio: a note the audio input detected; the player hears their own instrument, so the page doesn't sound it. */
 function playerNote(on: boolean, note: number, vel: number, audioTime?: number, from: "midi" | "audio" = "midi", place?: Place): void {
+  if (playInHook) {
+    playInHook(on, note, vel, audioTime ?? (audio ? audio.currentTime : 0), from);
+    return;
+  }
+  if (coldListen) {
+    onColdNote(on, note, vel, audioTime ?? (audio ? audio.currentTime : 0), from);
+    return;
+  }
   if (!audio || !session || session.replay) return;
   const beat = session.transport.beatAt(audioTime ?? audio.currentTime);
   session.recorder?.note(beat, note, on ? vel : 0);
@@ -961,6 +1040,202 @@ function showLatency(): void {
     : "";
 }
 
+// ---------- Follow Me UI & cold latch-in (v0.7) ----------
+
+interface FollowInit {
+  bpm: number;
+  startChord?: string;
+  seedNotes?: PlayedNote[];
+}
+
+function renderFollowStrip(st?: FollowStatus | null, cold?: { bpm: number; onsets: number; confidence: number } | null): void {
+  const strip = $("follow-strip");
+  const phaseEl = $("follow-phase");
+  const statusEl = $("follow-status");
+  const fillEl = $("follow-conf-fill");
+  const loopEl = $("follow-loop");
+  const dropBtn = $<HTMLButtonElement>("follow-dropin-btn");
+  const lockBtn = $<HTMLButtonElement>("follow-lock-btn");
+  const saveBtn = $<HTMLButtonElement>("follow-save-btn");
+
+  const phase = st?.phase ?? "listening";
+  strip.classList.remove("phase-listening", "phase-following", "phase-locked");
+  strip.classList.add(`phase-${phase}`);
+  phaseEl.className = `follow-phase ${phase}`;
+  phaseEl.textContent = phase.toUpperCase();
+
+  if (cold) {
+    statusEl.textContent = cold.onsets < 2
+      ? "Listening… play a riff or strum 4 beats to set tempo and key (or click Drop in now)."
+      : `Latching tempo… ${cold.bpm} bpm (${cold.onsets} beats heard)`;
+    fillEl.style.width = `${Math.round(cold.confidence * 100)}%`;
+  } else if (st) {
+    const bits: string[] = [];
+    if (st.key) bits.push(`Key: ${st.key.name}`);
+    if (st.chord) bits.push(`Now: ${st.chord}`);
+    if (st.nextChord) bits.push(`Next: ${st.nextChord}`);
+    bits.push(st.style === "melody" ? "harmonizing melody" : "following chords");
+    statusEl.textContent = bits.length ? bits.join(" · ") : "Listening for your first bar…";
+    fillEl.style.width = `${Math.round(st.confidence * 100)}%`;
+  } else {
+    statusEl.textContent = "Press Start and play — the band will latch onto your tempo, key and chords.";
+    fillEl.style.width = "0%";
+  }
+
+  if (st?.loop?.length) {
+    loopEl.replaceChildren(
+      ...st.loop.map((sym) =>
+        Object.assign(document.createElement("span"), {
+          className: `follow-loop-chip${sym === st.chord ? " now" : ""}`,
+          textContent: sym,
+        }),
+      ),
+    );
+  } else {
+    loopEl.replaceChildren();
+  }
+
+  dropBtn.hidden = !coldListen;
+  const canLock = !!session?.follow && (st?.barsHeard ?? 0) >= 2;
+  lockBtn.disabled = !canLock;
+  lockBtn.setAttribute("aria-pressed", String(!!st?.locked));
+  lockBtn.textContent = st?.locked ? "Unlock loop" : "Lock loop";
+  saveBtn.disabled = !activeFollow || activeFollow.status.barsHeard < 1;
+}
+
+function setFollowMeMode(on: boolean): void {
+  followMeMode = on;
+  const btn = $<HTMLButtonElement>("follow-me-btn");
+  btn.setAttribute("aria-pressed", String(on));
+  $("follow-strip").hidden = !on;
+  $("form").hidden = on;
+  if (!on && coldListen) cancelColdListen();
+  if (on && !session) renderFollowStrip(null);
+  updateSongPill();
+}
+
+function cancelColdListen(): void {
+  if (!coldListen) return;
+  clearInterval(coldListen.timer);
+  for (const release of held.values()) release();
+  held.clear();
+  coldListen = null;
+  renderFollowStrip(null);
+}
+
+function finishColdListen(manual = false): void {
+  if (!coldListen) return;
+  const cl = coldListen;
+  const est = cl.tempo.estimate();
+  const bpm = est.onsets >= 3 ? est.bpm : (FOLLOW_DEFAULT_BPM[cl.genreId] ?? 110);
+  const beatDur = 60 / bpm;
+  const t0 = cl.firstNoteAt ?? (audio?.currentTime ?? 0);
+  const nowSec = audio?.currentTime ?? t0;
+  // Close any held notes and convert timestamps to beats for chord inference.
+  const seedNotes: PlayedNote[] = [...cl.notes];
+  for (const [note, open] of cl.openNotes) {
+    seedNotes.push({
+      start: Math.max(0, (open.startSec - t0) / beatDur),
+      dur: Math.max(0.25, (nowSec - open.startSec) / beatDur),
+      note,
+      vel: open.vel,
+    });
+  }
+  const guess = seedNotes.length ? inferBarChord(seedNotes, 4, { genre: cl.genreId }) : null;
+  cancelColdListen();
+  if (manual && !seedNotes.length) overlay.note(`Dropping in at ${bpm} bpm…`);
+  else overlay.note(`Latched at ${bpm} bpm${guess ? ` on ${guess.symbol}` : ""}`);
+  void start(undefined, 0, { bpm, startChord: guess?.symbol, seedNotes });
+}
+
+function onColdNote(on: boolean, note: number, vel: number, audioTime: number, from: "midi" | "audio"): void {
+  if (!coldListen) return;
+  const cl = coldListen;
+  if (on) {
+    held.get(note)?.();
+    if ($<HTMLInputElement>("builtin").checked && from === "midi") held.set(note, cl.synth.liveNote(note, vel));
+    if (cl.firstNoteAt === null) cl.firstNoteAt = audioTime;
+    cl.openNotes.set(note, { startSec: audioTime, vel });
+    const est = cl.tempo.onset(audioTime);
+    renderFollowStrip(null, { bpm: est.bpm, onsets: est.onsets, confidence: est.confidence });
+    if (est.ready) finishColdListen(false);
+  } else {
+    held.get(note)?.();
+    held.delete(note);
+    const open = cl.openNotes.get(note);
+    if (open && cl.firstNoteAt !== null) {
+      cl.openNotes.delete(note);
+      const bpm = cl.tempo.estimate().bpm;
+      const beatDur = 60 / bpm;
+      cl.notes.push({
+        start: Math.max(0, (open.startSec - cl.firstNoteAt) / beatDur),
+        dur: Math.max(0.2, (audioTime - open.startSec) / beatDur),
+        note,
+        vel: open.vel,
+      });
+    }
+  }
+}
+
+async function startColdListen(): Promise<void> {
+  stop();
+  recap.close();
+  $("recap-banner").hidden = true;
+  if (drawer.isOpen) drawer.close();
+  audio = getAudio();
+  void audio.resume().then(() => setTimeout(showLatency, 500));
+  const genreId = pickedGenre().id;
+  const defaultBpm = FOLLOW_DEFAULT_BPM[genreId] ?? 110;
+  const synth = new Synth(audio, getLibrary());
+  synth.playerInstrument = playerSound();
+  synth.setMix(pickedGenre().mix);
+  synth.setBand(band);
+  void preload();
+  const tempo = new ColdTempo(defaultBpm);
+  const cl: ColdListen = {
+    tempo,
+    synth,
+    notes: [],
+    openNotes: new Map(),
+    firstNoteAt: null,
+    timer: window.setInterval(() => {
+      if (!coldListen || coldListen.firstNoteAt === null || !audio) return;
+      if (audio.currentTime - coldListen.firstNoteAt >= 3.5 && coldListen.tempo.estimate().onsets >= 2) {
+        finishColdListen(false);
+      }
+    }, 150),
+    genreId,
+  };
+  coldListen = cl;
+  setRunning(true);
+  overlay.reset("Follow Me — listening…");
+  renderFollowStrip(null, { bpm: defaultBpm, onsets: 0, confidence: 0 });
+}
+
+$("follow-me-btn").onclick = () => {
+  if (session && !session.replay) stop();
+  setFollowMeMode(!followMeMode);
+};
+$("follow-dropin-btn").onclick = () => finishColdListen(true);
+$("follow-lock-btn").onclick = () => {
+  if (!session?.follow) return;
+  const st = session.follow.toggleLock();
+  if (st.chord) session.engine.setLiveChord(st.chord, st.nextChord, st.key?.name ?? null);
+  renderFollowStrip(st);
+  overlay.toast(st.locked ? "Loop locked" : "Loop unlocked", st.loop ? st.loop.join(" → ") : undefined, "cue");
+};
+
+function openFollowInEditor(): void {
+  if (!activeFollow) return;
+  const exported = activeFollow.exportChart({ band });
+  if (session) stop();
+  $("recap-banner").hidden = true;
+  setFollowMeMode(false);
+  songEditor.open(exported);
+}
+$("follow-save-btn").onclick = openFollowInEditor;
+$("recap-save-song-btn").onclick = openFollowInEditor;
+
 // ---------- session ----------
 
 function simModeFor(bar: number): SimMode | null {
@@ -987,6 +1262,10 @@ function makeSink(ctx: AudioContext, synth: Synth): { sink: Sink; midiSink: Midi
 /** Next chord preview for Stage: next slot in this bar, else first chord of the next committed bar. */
 function upcomingChord(c: Chart, plan: BarPlan | undefined, beatInBar: number, nextPlan: BarPlan | undefined): { next: string | null; anticipate: boolean } {
   if (!plan) return { next: null, anticipate: false };
+  if (plan.liveHarmony) {
+    const nxt = nextPlan?.chords[0] ?? session?.follow?.status.nextChord ?? plan.chords[0] ?? null;
+    return { next: nxt, anticipate: c.beatsPerBar - beatInBar <= 1 };
+  }
   if (plan.kind === "count_in") {
     const first = nextPlan?.chords[0] ?? c.sections.get(c.form[0])?.barChords(0)[0]?.chord.symbol ?? null;
     return { next: first, anticipate: c.beatsPerBar - beatInBar <= 1 };
@@ -1014,7 +1293,7 @@ function upcomingChord(c: Chart, plan: BarPlan | undefined, beatInBar: number, n
 function setRunning(running: boolean): void {
   $<HTMLButtonElement>("start").disabled = running;
   $<HTMLButtonElement>("stop").disabled = !running;
-  $<HTMLButtonElement>("end-song").disabled = !running || !!session?.replay;
+  $<HTMLButtonElement>("end-song").disabled = !running || !!session?.replay || !!coldListen;
   $<HTMLButtonElement>("session-play").disabled = running || !replayFile;
 }
 
@@ -1030,11 +1309,19 @@ async function soundsReady(ids: string[]): Promise<void> {
 let starting = 0;
 
 /** Start a jam, or play back a recorded session when `replay` is given (optionally seeking to `startBar`). */
-async function start(replay?: SessionFile, startBar = 0): Promise<void> {
-  if (!chart && !replay) return;
+async function start(replay?: SessionFile, startBar = 0, followInit?: FollowInit): Promise<void> {
+  if (!replay && followMeMode && !followInit) {
+    if ($<HTMLSelectElement>("sim").value === "off") {
+      await startColdListen();
+      return;
+    }
+    followInit = { bpm: FOLLOW_DEFAULT_BPM[pickedGenre().id] ?? 110 };
+  }
+  if (!chart && !replay && !followInit) return;
   stop();
   if (!replay) {
     recap.close();
+    if (songEditor.isOpen) songEditor.close();
     $("recap-banner").hidden = true;
     if (drawer.isOpen) drawer.close();
   }
@@ -1044,20 +1331,31 @@ async function start(replay?: SessionFile, startBar = 0): Promise<void> {
   const startBand = replay ? sessionBand(replay) : cloneBand(band);
   if ($<HTMLInputElement>("builtin").checked) await soundsReady([...bandParts(startBand).map((p) => startBand[p]!.instrument), playerSound()]);
   if (myStart !== starting) return; // pressed again while loading
-  const c = replay ? loadChart(replay.chart) : chart!;
+  const genre = pickedGenre();
+  const followChartRaw = followInit ? freeJamChart(genre.id, followInit.bpm, followInit.startChord) : null;
+  const c = replay ? loadChart(replay.chart) : followChartRaw ? loadChart(followChartRaw) : chart!;
   const synth = new Synth(audio, getLibrary());
   synth.playerInstrument = playerSound();
-  synth.setMix(replay ? getGenre(replay.genre).mix : pickedGenre().mix);
+  synth.setMix(replay ? getGenre(replay.genre).mix : genre.mix);
   synth.setBand(startBand);
   const { sink, midiSink, hits } = makeSink(audio, synth);
 
   const seed = (Math.random() * 0x7fffffff) | 0;
-  const config = { loop: $<HTMLInputElement>("loop").checked };
-  const genre = pickedGenre();
+  const config = { loop: followInit ? true : $<HTMLInputElement>("loop").checked };
   const swing = pickedSwing();
   const engine = replay
     ? sessionEngine(replay, replay.controls)
     : new Engine(c, { config, seed, genre, swing, countIn: c.countIn, band: startBand, personality });
+  const followCtrl = followInit ? new FollowMeController(genre.id, followInit.bpm) : null;
+  if (followCtrl) {
+    activeFollow = followCtrl;
+    if (followInit?.seedNotes?.length) {
+      const st = followCtrl.observeBar(followInit.seedNotes, c.beatsPerBar);
+      if (st.chord) engine.setLiveChord(st.chord, st.nextChord, st.key?.name ?? null);
+    } else if (followInit?.startChord) {
+      engine.setLiveChord(followInit.startChord, null, null);
+    }
+  }
   if (!replay && trading) engine.setTrading(true);
   if (!replay) jamKind = null;
   showRatingPanel(false);
@@ -1065,7 +1363,7 @@ async function start(replay?: SessionFile, startBar = 0): Promise<void> {
   const { leader, remote, every } = replay ? { leader: null, remote: null, every: replay.every_bars } : makeLeader(c);
   const recorder = replay
     ? null
-    : new SessionRecorder({ chart: chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every, listening: listeningKey(listening), personality, input: audioIn.sessionInput() ?? undefined });
+    : new SessionRecorder({ chart: followChartRaw ?? chartRaw!, genre: genre.id, swing, band: startBand, seed, countIn: c.countIn, config, leader: leaderName(), everyBars: every, listening: listeningKey(listening), personality, input: audioIn.sessionInput() ?? undefined });
   if (!replay) {
     audioIn.startTape();
     audioIn.setBand(synth.output);
@@ -1088,7 +1386,7 @@ async function start(replay?: SessionFile, startBar = 0): Promise<void> {
       overlay.heard(heard);
     },
   });
-  if (!replay && followBox.checked) conductor.follower = new TempoFollower(c.bpm);
+  if (!replay && (followBox.checked || followCtrl)) conductor.follower = new TempoFollower(c.bpm);
   if (!replay) conductor.trader = new Trader(engine);
   conductor.listening = replay ? (replay.listening?.length ? parseListening(replay.listening[0].groups) : { ...NO_LISTENING }) : { ...listening };
   const ctx = audio;
@@ -1152,7 +1450,14 @@ async function start(replay?: SessionFile, startBar = 0): Promise<void> {
         if (replay && plan.bar >= replay.bars.length - 1) overlay.note("Last recorded bar.");
       },
       onBarEnd: (plan, startBeat) => {
-        conductor.barFinished(plan, tracker.bar(startBeat, c.beatsPerBar));
+        const barNotes = tracker.bar(startBeat, c.beatsPerBar);
+        conductor.barFinished(plan, barNotes);
+        if (followCtrl && plan.kind !== "count_in") {
+          const st = followCtrl.observeBar(barNotes, c.beatsPerBar);
+          if (st.chord) engine.setLiveChord(st.chord, st.nextChord, st.key?.name ?? null);
+          renderFollowStrip(st);
+          if (st.pivoted && st.chord) overlay.toast(`Pivot → ${st.chord}`, st.key ? `key: ${st.key.name}` : undefined, "cue");
+        }
         if (plan.kind !== "count_in") overlay.arc(conductor.arcNow(plan));
         if (replay && plan.bar >= replay.bars.length - 1) {
           overlay.note(mismatches ? `Replay done: ${mismatches} bars differed.` : "Replay done: every bar matched the recording.");
@@ -1173,8 +1478,9 @@ async function start(replay?: SessionFile, startBar = 0): Promise<void> {
     const plan = committedPlans[k];
     fretboard.frame(c, plan, beat - k * c.beatsPerBar, committedPlans[k + 1], getGenre(plan?.genre ?? engine.genre.id).listening);
   };
-  // Chords heard from a guitar lean to the chart's chord at the strum.
+  // Chords heard from a guitar lean to the chart's chord (or Follow Me's live chord prior).
   audioIn.chordPrior = (t) => {
+    if (followCtrl) return followCtrl.chordPrior();
     const beat = transport.beatAt(t);
     const k = Math.floor(beat / c.beatsPerBar);
     const plan = committedPlans[k];
@@ -1184,12 +1490,14 @@ async function start(replay?: SessionFile, startBar = 0): Promise<void> {
     transport.tick();
     drawFretboard();
   });
-  session = { engine, transport, conductor, ticker, tracker, synth, midiSink, hits, rafId: 0, remote, recorder, replay: !!replay };
+  session = { engine, transport, conductor, ticker, tracker, synth, midiSink, hits, rafId: 0, remote, recorder, replay: !!replay, follow: followCtrl };
   syncMuteSolo();
   overlay.chartBpm = c.bpm;
   overlay.reset(replay ? `Replay: ${replay.title}` : c.title);
-  if (replay) overlay.setForm(c.form, sectionBarsOf(c));
+  overlay.setForm(c.form, sectionBarsOf(c));
   overlay.leaderStatus(replay ? "replay" : leaderLabel(session));
+  updateSongPill();
+  if (followCtrl) renderFollowStrip(followCtrl.status);
   committedPlans = [];
   fretboard.clear();
   transport.start();
@@ -1224,8 +1532,15 @@ async function start(replay?: SessionFile, startBar = 0): Promise<void> {
 }
 
 function stop(): void {
+  if (coldListen) {
+    cancelColdListen();
+    setRunning(false);
+    overlay.reset(chart?.title ?? "Follow Me");
+    return;
+  }
   if (!session) return;
   const wasLive = !session.replay;
+  const wasFollow = !!session.follow;
   cancelAnimationFrame(session.rafId);
   if (wasLive && audio) {
     audioIn.setBand(null);
@@ -1248,12 +1563,15 @@ function stop(): void {
   session = null;
   setRunning(false);
   updateSessionStatus();
+  updateSongPill();
+  if (wasFollow && activeFollow) renderFollowStrip(activeFollow.status);
   overlay.showLineup(bandParts(band).filter((p) => pickedGenre().parts.includes(p)), band, mixVolumesOf(pickedGenre().id));
   if (wasLive) {
     void keepJam();
     const f = currentFile();
     if (f && f.bars.length > 0) {
       $("recap-banner-text").textContent = `Recorded ${f.bars.length} bars of ${f.title}.`;
+      $("recap-save-song-btn").hidden = !(wasFollow && activeFollow && activeFollow.status.barsHeard > 0);
       $("recap-banner").hidden = false;
     }
   }
@@ -1275,6 +1593,124 @@ function leaderName(): string {
   if (!jevReachable()) return "rules";
   return settings.kind;
 }
+
+// ---------- Song Creator & Play-In progression (v0.7) ----------
+
+function startPlayInCapture(opts: {
+  bpm: number;
+  bpb: number;
+  bars: number;
+  genre: string;
+  onProgress: (bar: number, total: number, chord: string | null) => void;
+  onDone: (chords: string[], key: string | null) => void;
+}): () => void {
+  audio = getAudio();
+  void audio.resume();
+  const ctx = audio;
+  const synth = new Synth(ctx, getLibrary());
+  synth.playerInstrument = playerSound();
+  const tracker = new NoteTracker();
+  const capture = new PlayInCapture(opts.bars, opts.bpb, opts.genre);
+  const beatDur = 60 / opts.bpm;
+  // 1-bar count-in before bar 0 begins.
+  const startSec = ctx.currentTime + 0.08;
+  const countInBeats = opts.bpb;
+  const totalBeats = countInBeats + opts.bars * opts.bpb;
+  let scheduledBeat = 0;
+  let capturedBars = 0;
+  const playInHeld = new Map<number, () => void>();
+
+  const scheduleClick = (atSec: number, accent: boolean) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.value = accent ? 1100 : 760;
+    gain.gain.setValueAtTime(accent ? 0.16 : 0.09, atSec);
+    gain.gain.exponentialRampToValueAtTime(0.001, atSec + 0.045);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(atSec);
+    osc.stop(atSec + 0.05);
+  };
+
+  playInHook = (on, note, vel, t, from) => {
+    const beat = (t - startSec) / beatDur - countInBeats;
+    if (on) {
+      playInHeld.get(note)?.();
+      if ($<HTMLInputElement>("builtin").checked && from === "midi") playInHeld.set(note, synth.liveNote(note, vel));
+      if (beat >= -0.25) tracker.noteOn(Math.max(0, beat), note, vel);
+    } else {
+      playInHeld.get(note)?.();
+      playInHeld.delete(note);
+      if (beat >= 0) tracker.noteOff(beat, note);
+    }
+  };
+
+  const cleanup = () => {
+    clearInterval(timer);
+    playInHook = null;
+    for (const r of playInHeld.values()) r();
+    playInHeld.clear();
+  };
+
+  const timer = window.setInterval(() => {
+    const now = ctx.currentTime;
+    while (scheduledBeat < totalBeats && startSec + scheduledBeat * beatDur <= now + 0.15) {
+      scheduleClick(startSec + scheduledBeat * beatDur, scheduledBeat % opts.bpb === 0);
+      scheduledBeat++;
+    }
+    const elapsedBeats = (now - startSec) / beatDur - countInBeats;
+    while (capturedBars < opts.bars && elapsedBeats >= (capturedBars + 1) * opts.bpb) {
+      const notes = tracker.bar(capturedBars * opts.bpb, opts.bpb);
+      const res = capture.pushBar(notes);
+      capturedBars++;
+      opts.onProgress(res.bar, opts.bars, res.chord);
+      if (res.done) {
+        cleanup();
+        const done = capture.finish();
+        opts.onDone(done.chords, done.key);
+        return;
+      }
+    }
+  }, 40);
+
+  return cleanup;
+}
+
+const songEditor = new SongEditorView({
+  onClose: () => {
+    if (chart) overlay.setForm(chart.form, sectionBarsOf(chart));
+  },
+  onSave: (c, existingId) => {
+    const entry = savedCharts.save(c, existingId);
+    refreshChartSelect(`saved:${entry.id}`);
+    return entry.id;
+  },
+  onUse: (c, src, savedId) => {
+    if (followMeMode) setFollowMeMode(false);
+    useChart(c, src, savedId);
+    if (savedId) refreshChartSelect(`saved:${savedId}`);
+  },
+  canAskAi: () => !!makeBrain(settings)?.writeChart,
+  onAskAi: async (prompt) => {
+    const brain = makeBrain(settings);
+    if (!brain?.writeChart) throw new Error("Pick OpenAI-compatible or Claude under Studio → Leader");
+    const res = await brain.writeChart(prompt, genreIds(), AbortSignal.timeout(90_000));
+    return { chart: res.chart, label: brain.label, latencyMs: res.latencyMs };
+  },
+  onStartPlayIn: startPlayInCapture,
+});
+
+$("open-song-editor").onclick = () => {
+  if (session) stop();
+  drawer.close();
+  songEditor.open(chartRaw ?? createBlankChart(pickedGenre().id), activeSavedId);
+};
+$("new-song-btn").onclick = () => {
+  if (session) stop();
+  drawer.close();
+  songEditor.open(createBlankChart(pickedGenre().id));
+};
 
 // ---------- session recap (v0.6) ----------
 

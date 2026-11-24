@@ -35,8 +35,8 @@ const FRET_DOTS = new Set([3, 5, 7, 9, 12, 15]);
 export class FretboardView {
   kind: FretboardKind = "guitar";
   mode: FretboardMode = "scale";
-  /** The song scale, worked out once per chart and genre. */
-  private song: { chart: Chart; genre: GenreListening; scale: SongScale | null } | null = null;
+  /** The song scale, worked out once per chart, genre and live key. */
+  private song: { chart: Chart; genre: GenreListening; key: string | undefined; scale: SongScale | null } | null = null;
   private low = 48;
   private key = "";
   private cells = new Map<number, HTMLElement[]>();
@@ -90,7 +90,11 @@ export class FretboardView {
     if (this.kind === "off") return;
     this.view = plan ? chordView(chart, plan, beatInBar, nextPlan) : { chord: null, next: null };
     this.genre = genre;
-    if (this.song?.chart !== chart || this.song.genre !== genre) this.song = { chart, genre, scale: songScale(chart, genre) };
+    const activeKey = plan?.key ?? chart.key;
+    if (this.song?.chart !== chart || this.song.genre !== genre || this.song.key !== activeKey) {
+      const effectiveChart = activeKey !== chart.key ? { ...chart, key: activeKey } : chart;
+      this.song = { chart, genre, key: activeKey, scale: songScale(effectiveChart, genre) };
+    }
     if (this.kind === "piano") this.low = followWindow(this.low, this.recent);
     this.draw();
   }

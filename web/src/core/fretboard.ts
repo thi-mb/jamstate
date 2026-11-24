@@ -12,7 +12,7 @@ import type { BarPlan } from "./engine";
 import type { Chart } from "./chart";
 import type { GenreListening, KeyScale } from "./genre";
 import { noteFit, type NoteFit } from "./listening";
-import { noteName, parseKey, type Chord } from "./theory";
+import { noteName, parseChord, parseKey, type Chord } from "./theory";
 
 export type FretboardKind = "guitar" | "piano" | "off";
 export const FRETBOARD_KINDS: FretboardKind[] = ["guitar", "piano", "off"];
@@ -206,5 +206,9 @@ export function chordView(chart: Chart, plan: BarPlan, beat: number, nextPlan?: 
 
 function slotsOf(chart: Chart, plan: BarPlan) {
   if (plan.kind === "count_in") return [];
+  if (plan.liveHarmony && plan.chords.length) {
+    const dur = chart.beatsPerBar / plan.chords.length;
+    return plan.chords.map((sym, k) => ({ start: k * dur, dur, chord: parseChord(sym) }));
+  }
   return chart.sections.get(plan.section)?.barChords(plan.barInSection) ?? [];
 }
