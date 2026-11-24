@@ -7,9 +7,10 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { LeaderContext } from "../rules";
 import { guardFollow } from "../leading";
 import type { Move } from "../moves";
+import { recapPromptPayload, type RecapData } from "../recap";
 import { extractJson, splitMoves } from "./check";
-import { chartSchema, chartSystem, leaderSystem, movesSchema, strictSchema } from "./prompt";
-import { BrainError, now, type BrainAnswer, type BrainProvider, type ChartAnswer, type Fetch } from "./types";
+import { chartSchema, chartSystem, leaderSystem, movesSchema, recapSystem, strictSchema } from "./prompt";
+import { BrainError, now, type BrainAnswer, type BrainProvider, type ChartAnswer, type Fetch, type RecapSummaryAnswer } from "./types";
 
 export const DEFAULT_CLAUDE_MODEL = "claude-haiku-5-5";
 /** The default before 2026-10-31; settings that still hold it untouched move to the new one. */
@@ -97,5 +98,14 @@ export class ClaudeBrain implements BrainProvider {
     const t0 = now();
     const { data, model } = await this.ask(chartSystem(genres), prompt.slice(0, 2000), chartSchema(genres), 8000, signal);
     return { chart: data, model, latencyMs: Math.round(now() - t0) };
+  }
+
+  async summarizeSession(recap: RecapData, signal?: AbortSignal): Promise<RecapSummaryAnswer> {
+    const t0 = now();
+    const schema = { type: "object", properties: { summary: { type: "string" } }, required: ["summary"], additionalProperties: false };
+    const { data, model } = await this.ask(recapSystem(), JSON.stringify(recapPromptPayload(recap)), schema, 400, signal);
+    const summary = typeof (data as { summary?: unknown })?.summary === "string" ? (data as { summary: string }).summary.trim() : "";
+    if (!summary) throw new BrainError("Claude returned an empty summary");
+    return { summary, model, latencyMs: Math.round(now() - t0) };
   }
 }

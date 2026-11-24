@@ -46,6 +46,7 @@ const check = (ok, msg) => {
 };
 
 const browser = await chromium.launch({
+  ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}),
   args: ["--autoplay-policy=no-user-gesture-required", "--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", `--use-file-for-fake-audio-capture=${wav}`],
 });
 const context = await browser.newContext({ acceptDownloads: true });
@@ -77,25 +78,39 @@ const jam = async (seconds) => {
   return { energy, lit };
 };
 
+const openTab = async (tab) => {
+  if ((await page.getAttribute("#studio-toggle", "aria-expanded")) !== "true") await page.click("#studio-toggle");
+  await page.click(`#studio-drawer [data-tab="${tab}"]`);
+};
+const closeDrawer = async () => {
+  if ((await page.getAttribute("#studio-toggle", "aria-expanded")) === "true") await page.click("#studio-close");
+};
+
 try {
   await page.goto(`http://127.0.0.1:${PORT}/`);
   await page.waitForFunction(() => /Sounds ready/.test(document.querySelector("#sample-status")?.textContent ?? ""), null, { timeout: 20000 });
+  await openTab("setup");
   await page.selectOption("#sim", "off");
+  await openTab("leader");
   await page.selectOption("#leader-select", "rules");
 
+  await openTab("setup");
   const devices = await page.$$eval("#audio-in option", (o) => o.map((x) => x.value).filter(Boolean));
   check(devices.length > 0, `audio inputs offered: ${devices.length}`);
   await page.selectOption("#audio-in", devices[0]);
   await page.waitForFunction(() => /channel/.test(document.querySelector("#audio-status")?.textContent ?? ""), null, { timeout: 10000 });
   check(true, `input open: ${await page.textContent("#audio-status")}`);
   await page.selectOption("#audio-channel", "2");
-  await page.check("#keep-audio");
   check(!(await page.isHidden("#audio-meter")), "the level meter shows");
+  await openTab("sessions");
+  await page.check("#keep-audio");
+  await closeDrawer();
 
   const { energy, lit } = await jam(24);
   check(energy > 0.2, `the band heard the guitar: peak energy ${energy}`);
   check(lit.samples > 10 && lit.most <= 2, `the neck lights one place per note: lit in ${lit.samples} samples, at most ${lit.most} at once, ${lit.places.size} places in all`);
 
+  await openTab("sessions");
   const downloads = [];
   page.on("download", (d) => downloads.push(d));
   await page.click("#session-download");
@@ -125,7 +140,8 @@ try {
   const synced = await page.textContent("#session-result");
   check(/with its audio/.test(synced ?? ""), `sync: ${synced}`);
 
-  // Tunings and a left-handed neck redraw it.
+  // Tunings and a left-handed neck redraw it (directly on Stage fretboard toolbar).
+  await closeDrawer();
   await page.selectOption("#fretboard-tuning", "drop-d");
   await page.check("#fretboard-left");
   const neck = await page.$eval("#fretboard .fb-guitar", (g) => ({ tuning: g.dataset.tuning, left: g.classList.contains("fb-left"), cells: g.querySelectorAll(".fb-fret").length }));
@@ -136,26 +152,35 @@ try {
   await page.uncheck("#fretboard-left");
 
   // Chords mode: the same playing heard as chords lights shapes, one place per string.
+  await openTab("setup");
   await page.selectOption("#audio-channel", "2");
   await page.selectOption("#audio-mode", "chords");
+  await closeDrawer();
   const chords = await jam(10);
   check(chords.lit.samples > 5 && chords.lit.most >= 3 && chords.lit.most <= 6 && chords.lit.stacked === 0, `chords light shapes: lit in ${chords.lit.samples} samples, up to ${chords.lit.most} at once, never two on a string`);
+  await openTab("setup");
   await page.selectOption("#audio-mode", "auto");
 
   // The bleed gate on (speakers): the band's mix goes in as the reference; the guitar is still heard.
   await page.check("#audio-gate");
+  await closeDrawer();
   await jam(16);
+  await openTab("sessions");
   await page.click("#session-download");
   await page.waitForTimeout(1000);
   const gated = JSON.parse(readFileSync(await downloads.filter((d) => d.suggestedFilename().endsWith(".json")).at(-1).path(), "utf8"));
   const gatedOns = gated.player.filter((e) => e[2] > 0).length;
   check(gated.input?.gate === true && gatedOns > 10, `bleed gate on: recorded as gated, ${gatedOns} notes heard`);
+  await openTab("setup");
   await page.uncheck("#audio-gate");
 
   // Input 1 is silent: no notes.
   await page.selectOption("#audio-channel", "1");
+  await openTab("sessions");
   await page.uncheck("#keep-audio");
+  await closeDrawer();
   await jam(5);
+  await openTab("sessions");
   await page.click("#session-download");
   await page.waitForTimeout(1000);
   const quiet = JSON.parse(readFileSync(await downloads.filter((d) => d.suggestedFilename().endsWith(".json")).at(-1).path(), "utf8"));

@@ -66,7 +66,7 @@ const JOBS = [
 
 const server = await createServer({ server: { port: 5199, strictPort: true }, logLevel: "error" });
 await server.listen();
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
 const page = await browser.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e)));

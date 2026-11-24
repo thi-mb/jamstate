@@ -6,6 +6,7 @@
 // the bake-off) and later in a desktop shell.
 
 import type { Move } from "../moves";
+import type { RecapData } from "../recap";
 import type { LeaderContext } from "../rules";
 
 export type BrainKind = "rules" | "openai" | "claude" | "jev" | "laya";
@@ -33,6 +34,12 @@ export interface ChartAnswer {
   latencyMs: number;
 }
 
+export interface RecapSummaryAnswer {
+  summary: string;
+  model?: string;
+  latencyMs: number;
+}
+
 export interface BrainProvider {
   readonly kind: BrainKind;
   /** Short label for the overlay, e.g. "Jev" or "Rules (in the page)". */
@@ -40,6 +47,8 @@ export interface BrainProvider {
   decide(ctx: LeaderContext, signal?: AbortSignal): Promise<BrainAnswer>;
   /** Text to chart. Only text-writing brains (LLMs) have it. */
   writeChart?(prompt: string, genres: string[], signal?: AbortSignal): Promise<ChartAnswer>;
+  /** Short natural-language session recap (v0.6). Only text-writing brains have it. */
+  summarizeSession?(recap: RecapData, signal?: AbortSignal): Promise<RecapSummaryAnswer>;
 }
 
 export class BrainError extends Error {

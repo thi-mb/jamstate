@@ -4,10 +4,11 @@
 
 import { guardFollow } from "../leading";
 import type { Move } from "../moves";
+import { recapPromptPayload, type RecapData } from "../recap";
 import type { LeaderContext } from "../rules";
 import { extractJson, splitMoves } from "./check";
-import { chartSchema, chartSystem, leaderSystem, movesSchema } from "./prompt";
-import { BrainError, now, type BrainAnswer, type BrainProvider, type ChartAnswer, type Fetch } from "./types";
+import { chartSchema, chartSystem, leaderSystem, movesSchema, recapSystem } from "./prompt";
+import { BrainError, now, type BrainAnswer, type BrainProvider, type ChartAnswer, type Fetch, type RecapSummaryAnswer } from "./types";
 
 export interface OpenAIConfig {
   /** Base URL that ends before /chat/completions, e.g. http://127.0.0.1:8080/v1 or api/relay/llm. */
@@ -97,5 +98,11 @@ export class OpenAIBrain implements BrainProvider {
     const t0 = now();
     const res = await this.chat(chartSystem(genres), prompt.slice(0, 2000), chartSchema(genres), "chart", signal);
     return { chart: extractJson(res.text), model: res.model, latencyMs: Math.round(now() - t0) };
+  }
+
+  async summarizeSession(recap: RecapData, signal?: AbortSignal): Promise<RecapSummaryAnswer> {
+    const t0 = now();
+    const res = await this.chat(recapSystem(), JSON.stringify(recapPromptPayload(recap)), null, "recap", signal);
+    return { summary: res.text.trim(), model: res.model, latencyMs: Math.round(now() - t0) };
   }
 }
