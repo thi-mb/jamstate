@@ -148,6 +148,10 @@ export interface BarPlan {
   trading?: boolean;
   /** A band turn while trading: who solos, and which bar of the turn this is. */
   solo?: { part: Part; bar: number; of: number } | null;
+  /** Live inferred key in Follow Me mode (v0.7). */
+  key?: string;
+  /** True when bar chords came from live Follow Me harmony instead of the static chart. */
+  liveHarmony?: boolean;
 }
 
 /**
@@ -164,7 +168,8 @@ export type Control =
   | { at: number; kind: "band"; band: Band }
   | { at: number; kind: "personality"; personality: Personality }
   | { at: number; kind: "trade"; on: boolean }
-  | { at: number; kind: "solo"; solo: Solo | null };
+  | { at: number; kind: "solo"; solo: Solo | null }
+  | { at: number; kind: "chord"; chord: string; next?: string | null; key?: string | null };
 
 /**
  * The player's cues (v0.3), on keys 1–7. Breaks, build and take it down land
@@ -276,6 +281,10 @@ export class Engine {
   /** The band's turn while trading, from its first bar to its last. */
   private solo: Solo | null = null;
   private soloist: Soloist;
+  /** Follow Me mode (v0.7): live chord override for upcoming bars, plus predicted next chord and key. */
+  private liveChord: string | null = null;
+  private liveNextChord: string | null = null;
+  private liveKey: string | null = null;
   readonly log: MoveRecord[] = [];
   /** Every outside change, for session recording. */
   readonly controls: Control[] = [];
@@ -333,6 +342,23 @@ export class Engine {
     if (solo && !this.trading) return;
     if (!solo && this.solo && this.solo.from <= this.bar + 1) this.solo = { ...this.solo, bars: Math.max(0, this.bar + 1 - this.solo.from) };
     else this.solo = solo;
+  }
+
+  /**
+   * Set the live chord (and optional predicted next chord / key) from the next
+   * bar on (Follow Me mode, v0.7). Recorded as a control so replays match.
+   */
+  setLiveChord(chord: string, next?: string | null, key?: string | null): void {
+    this.controls.push({
+      at: this.bar,
+      kind: "chord",
+      chord,
+      ...(next !== undefined ? { next } : {}),
+      ...(key !== undefined ? { key } : {}),
+    });
+    this.liveChord = chord;
+    if (next !== undefined) this.liveNextChord = next;
+    if (key !== undefined) this.liveKey = key;
   }
 
   /** The band turn covering a bar, if any. */
@@ -418,14 +444,25 @@ export class Engine {
 
   /** The song's tonic chord in the genre's ending colour: from the key, else from the first chord. */
   tonic(): Chord {
-    const key = parseKey(this.chart.key);
-    const first = this.sectionAt(0).barChords(0)[0].chord;
+    const key = parseKey(this.liveKey ?? this.chart.key);
+    const first = this.liveChord ? this.parseLiveSlots(this.liveChord)[0].chord : this.sectionAt(0).barChords(0)[0].chord;
     const tonic = key ?? { tonic: first.root, minor: first.intervals.includes(3) && !first.intervals.includes(4) };
     const q = tonic.minor ? this.genre.ending.chordMinor : this.genre.ending.chordMajor;
     try {
       return parseChord(noteName(tonic.tonic) + q);
     } catch {
       return parseChord(noteName(tonic.tonic) + (tonic.minor ? "m" : ""));
+    }
+  }
+
+  private parseLiveSlots(entry: string): ChordSlot[] {
+    const syms = entry.trim().split(/\s+/).filter(Boolean);
+    if (!syms.length) return this.sectionAt(this.formPos).barChords(this.barInSection);
+    const dur = this.chart.beatsPerBar / syms.length;
+    try {
+      return syms.map((sym, k) => ({ start: k * dur, dur, chord: parseChord(sym) }));
+    } catch {
+      return this.sectionAt(this.formPos).barChords(this.barInSection);
     }
   }
 
@@ -654,6 +691,7 @@ export class Engine {
       else if (c.kind === "personality") this.setPersonality(c.personality);
       else if (c.kind === "trade") this.setTrading(c.on);
       else if (c.kind === "solo") this.setSolo(c.solo);
+      else if (c.kind === "chord") this.setLiveChord(c.chord, c.next, c.key);
       else this.setSwing(c.swing);
     }
   }
@@ -803,7 +841,14 @@ export class Engine {
       this.lastStingerPhrase = phraseId;
       this.cueStinger = null;
     }
-    const next = ending ? tonic : this.peekNextChord();
+    const slots = this.liveChord ? this.parseLiveSlots(this.liveChord) : section.barChords(this.barInSection);
+    const next = ending
+      ? tonic
+      : this.liveNextChord
+        ? this.parseLiveSlots(this.liveNextChord)[0].chord
+        : this.liveChord
+          ? slots[0].chord
+          : this.peekNextChord();
     if (cfg.autoFills && this.layers.has("drums") && level >= 1) {
       if (lastBarOfSection && next && !stingers.includes("fill")) stingers.push("fill");
       if (newSection && this.bar > this.countInTotal && !stingers.includes("crash")) stingers.push("crash");
@@ -836,7 +881,7 @@ export class Engine {
     }
     const ctx = this.context({
       bar: this.bar, kind: ending ? "ending" : "play", section: name, barInSection: this.barInSection, sectionBars: this.sectionLength(),
-      barInPhrase, lastBarOfSection, level, feel: this.feel, parts, slots: section.barChords(this.barInSection), next, stingers,
+      barInPhrase, lastBarOfSection, level, feel: this.feel, parts, slots, next, stingers,
       cymbal: section.cymbal ?? this.genre.drums.cymbalSections[name] ?? this.genre.drums.cymbal,
       ending: tonic ? { tonic, ringBeats: this.genre.ending.ringBeats } : null,
     });
@@ -871,7 +916,7 @@ export class Engine {
       formPos: this.formPos,
       barInSection: this.barInSection,
       sectionBars: this.sectionLength(),
-      chords: section.barChords(this.barInSection).map((s) => s.chord.symbol),
+      chords: slots.map((s) => s.chord.symbol),
       intensity: this.intensity,
       target: goal,
       level,
@@ -887,6 +932,8 @@ export class Engine {
       repeated,
       trading: this.trading,
       solo: soloing ? { part: soloing.part, bar: this.bar - soloing.from, of: soloing.bars } : null,
+      ...(this.liveKey ? { key: this.liveKey } : {}),
+      ...(this.liveChord ? { liveHarmony: true } : {}),
     };
   }
 }

@@ -12,6 +12,7 @@ import type { Trader } from "./trade";
 import { DEFAULT_LISTENING, dynamicsOf, harmonyOf, phrasingOf, rhythmOf, songPosition, type Heard, type HeardBar, type Listening } from "./listening";
 import { PLAYER_ONLY_MOVES, type Move } from "./moves";
 import type { LeaderContext } from "./rules";
+import { parseChord } from "./theory";
 
 export interface LeaderReply {
   moves: Move[] | unknown[];
@@ -82,8 +83,18 @@ export class Conductor {
     return f;
   }
 
-  /** The chord the chart has at a beat of a played bar. */
+  /** The chord sounding at a beat of a played bar (live Follow Me chord or chart chord). */
   private chordAt = (plan: BarPlan, beat: number) => {
+    if (plan.liveHarmony && plan.chords.length) {
+      const bpb = this.engine.chart.beatsPerBar;
+      const dur = bpb / plan.chords.length;
+      const idx = Math.max(0, Math.min(plan.chords.length - 1, Math.floor(beat / dur)));
+      try {
+        return parseChord(plan.chords[idx]);
+      } catch {
+        return null;
+      }
+    }
     const slots = this.engine.chart.sections.get(plan.section)?.barChords(plan.barInSection) ?? [];
     return (slots.find((s) => beat >= s.start && beat < s.start + s.dur) ?? slots[0])?.chord ?? null;
   };

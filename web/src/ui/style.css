@@ -118,7 +118,7 @@ h1 small { color: var(--dim); font-weight: 500; font-size: 12px; margin-left: 3p
 
 /* ---------- Buttons & Inputs ---------- */
 
-select, textarea, button, .file, input[type=text], input[type=password] {
+select, textarea, button, .file, input[type=text], input[type=password], input[type=number] {
   font: inherit;
   color: var(--text);
   background: var(--surface-sunk);
@@ -162,9 +162,15 @@ button[aria-pressed="true"] {
   font-weight: 600;
 }
 
+#follow-me-btn[aria-pressed="true"] {
+  border-color: var(--player);
+  color: var(--player);
+  background: var(--player-soft);
+}
+
 /* ---------- Stage Main Container ---------- */
 
-#stage, .recap-view {
+#stage, .recap-view, .editor-view {
   max-width: 1180px;
   margin: 0 auto;
   padding: 18px 24px 36px;
@@ -910,15 +916,313 @@ input[type=text] { flex: 1; min-width: 0; }
 .rm-src { color: var(--player); font-size: 12px; }
 .rm-reason { color: var(--accent); }
 
+/* ---------- Follow Me Strip (v0.7) ---------- */
+
+.follow-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, rgba(92, 200, 255, 0.09), var(--surface) 58%);
+  border: 1px solid rgba(92, 200, 255, 0.35);
+}
+.follow-strip.phase-locked {
+  background: linear-gradient(90deg, rgba(103, 211, 145, 0.1), var(--surface) 58%);
+  border-color: rgba(103, 211, 145, 0.45);
+}
+.follow-strip.phase-following {
+  background: linear-gradient(90deg, rgba(242, 165, 65, 0.09), var(--surface) 58%);
+  border-color: rgba(242, 165, 65, 0.4);
+}
+.follow-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+  flex: 1 1 280px;
+}
+.follow-phase {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--player-soft);
+  color: var(--player);
+  border: 1px solid rgba(92, 200, 255, 0.4);
+  white-space: nowrap;
+}
+.follow-phase.following {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: rgba(242, 165, 65, 0.45);
+}
+.follow-phase.locked {
+  background: var(--ok-soft);
+  color: var(--ok);
+  border-color: rgba(103, 211, 145, 0.45);
+}
+.follow-status {
+  font-size: 13.5px;
+  color: var(--text);
+}
+.follow-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.follow-conf {
+  width: 64px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.follow-conf-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--player);
+  transition: width 0.2s ease;
+}
+.follow-strip.phase-following .follow-conf-fill { background: var(--accent); }
+.follow-strip.phase-locked .follow-conf-fill { background: var(--ok); }
+.follow-loop {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.follow-loop-chip {
+  font: 600 12px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+.follow-loop-chip.now {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.follow-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Song Creator View (v0.7) ---------- */
+
+.ed-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+}
+.ed-top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.ed-validation {
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 500;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.ed-validation.ok {
+  border-color: rgba(103, 211, 145, 0.45);
+  background: rgba(103, 211, 145, 0.08);
+  color: var(--ok);
+}
+.ed-validation.bad {
+  border-color: rgba(255, 122, 122, 0.5);
+  background: rgba(255, 122, 122, 0.09);
+  color: var(--bad);
+}
+
+.ed-card {
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.ed-meta-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 2fr) repeat(6, minmax(110px, 1fr));
+  gap: 10px 12px;
+}
+.ed-meta-grid label {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--dim);
+}
+.ed-meta-grid input, .ed-meta-grid select {
+  width: 100%;
+  color: var(--text);
+}
+
+.ed-form-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.ed-form-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 600;
+}
+.ed-mini {
+  padding: 1px 5px;
+  font-size: 11px;
+  line-height: 1.2;
+  border-radius: 4px;
+  background: transparent;
+  border-color: transparent;
+  color: var(--dim);
+}
+.ed-mini:hover:not(:disabled) { color: var(--text); border-color: var(--line); }
+.ed-mini.ed-del:hover:not(:disabled) { color: var(--bad); border-color: var(--bad); }
+.ed-form-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ed-playin-status {
+  min-height: 0;
+  color: var(--player);
+  margin-bottom: 8px;
+}
+.ed-playin-status:empty { display: none; }
+
+.ed-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ed-section {
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ed-sec-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+input.ed-sec-name {
+  width: 140px;
+  flex: 0 0 140px;
+  font-weight: 600;
+}
+.ed-num {
+  width: 64px;
+  padding: 4px 8px;
+}
+.ed-int {
+  width: 78px;
+  accent-color: var(--accent);
+}
+.ed-cym {
+  width: auto;
+  padding: 4px 8px;
+  font-size: 12.5px;
+}
+.active-rec {
+  border-color: var(--bad) !important;
+  color: var(--bad) !important;
+  background: rgba(255, 122, 122, 0.14) !important;
+  animation: rec-pulse 1.2s ease-in-out infinite;
+}
+@keyframes rec-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.65; }
+}
+
+.ed-chord-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.ed-chord-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+}
+.ed-bar-num {
+  font-size: 11px;
+  color: var(--dim);
+  min-width: 16px;
+}
+.ed-chord-in {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 4px 2px;
+  font: 600 14px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.ed-chord-in:focus { outline: none; }
+.ed-chord-cell:focus-within { border-color: var(--accent); }
+.ed-chord-in.bad { color: var(--bad); }
+.ed-chord-cell:has(.ed-chord-in.bad) { border-color: var(--bad); }
+
+.ed-grid-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ed-raw-details summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--dim);
+  padding: 4px 2px 8px;
+}
+
 /* ---------- Responsive: Tablet Music Stand & Mobile ---------- */
 
 @media (max-width: 960px) {
   #topbar { padding: 10px 16px; }
-  #stage, .recap-view { padding: 14px 16px 28px; }
+  #stage, .recap-view, .editor-view { padding: 14px 16px 28px; }
   .stage-hero { grid-template-columns: 1fr; padding: 18px 20px 22px; gap: 14px; }
   .hero-chords { border-left: 0; border-top: 1px solid var(--line-soft); padding-left: 0; padding-top: 14px; }
   .mc-btn { width: 34px; height: 32px; }
   button.primary, .studio-btn, .ghost-btn { min-height: 38px; }
+  .ed-meta-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .ed-chord-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 640px) {

@@ -188,6 +188,39 @@ try {
   await page.keyboard.press("8");
   await openTab("leader");
   await page.selectOption("#personality", "supportive");
+
+  // v0.7: Song Creator (create custom song, edit chord, save & load on Stage, delete).
+  await openTab("song");
+  await page.click("#new-song-btn");
+  await page.waitForFunction(() => !document.querySelector("#editor-view")?.hidden, null, { timeout: 5000 });
+  await page.fill("#ed-title", "Custom Jam v0.7");
+  await page.locator("#ed-sections .ed-chord-in").first().fill("Dm7");
+  check((await page.locator("#ed-validation.ok").count()) === 1, `Song Creator live validation ok: ${await page.textContent("#ed-validation")}`);
+  await page.click("#ed-use");
+  await page.waitForFunction(() => document.querySelector("#editor-view")?.hidden && !document.querySelector("#stage")?.hidden, null, { timeout: 5000 });
+  check(/Custom Jam v0\.7/.test((await page.textContent("#pill-song")) ?? ""), `custom song loaded on Stage: ${await page.textContent("#pill-song")}`);
+  await openTab("song");
+  const savedVal = await page.inputValue("#chart-select");
+  check(savedVal.startsWith("saved:"), `custom song saved in #chart-select (${savedVal})`);
+  await page.click("#delete-saved-song");
+  await closeDrawer();
+
+  // v0.7: Follow Me mode (start with pretend player, detect chord/key, lock loop, save as song).
+  await openTab("setup");
+  await page.selectOption("#sim", "medium");
+  await closeDrawer();
+  await page.click("#follow-me-btn");
+  check((await page.getAttribute("#follow-me-btn", "aria-pressed")) === "true" && !(await page.isHidden("#follow-strip")), "Follow Me toggle reveals live strip");
+  await page.click("#start");
+  await page.waitForFunction(() => document.querySelector("#follow-phase")?.textContent === "FOLLOWING", null, { timeout: 15000 });
+  check(true, `Follow Me latched & following: ${await page.textContent("#follow-status")}`);
+  await page.waitForFunction(() => !(document.querySelector("#follow-lock-btn")?.disabled ?? true), null, { timeout: 15000 });
+  await page.click("#follow-lock-btn");
+  check((await page.textContent("#follow-phase")) === "LOCKED", "Follow Me Lock loop locks the progression");
+  await page.click("#follow-save-btn");
+  await page.waitForFunction(() => !document.querySelector("#editor-view")?.hidden, null, { timeout: 5000 });
+  check((await page.locator("#ed-validation.ok").count()) === 1, `Follow Me Save as song opened valid chart: ${await page.inputValue("#ed-title")}`);
+  await page.click("#ed-back");
 } catch (e) {
   check(false, `page run: ${e.message}`);
 }

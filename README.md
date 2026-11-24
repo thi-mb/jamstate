@@ -270,6 +270,30 @@ guitar audio), or session **JSON**.
 
 </details>
 
+## Follow Me & Song Creator (v0.7)
+
+Toggle **Follow Me** on the top bar to jam without a chart. Start playing a
+riff, melody or chord progression (MIDI, computer keys, or guitar audio): the
+band latches onto your tempo from cold onsets, infers key and per-bar chords
+(supporting both polyphonic comping and single-note melody harmonization),
+predicts upcoming chords with a genre-aware harmonic transition model, and
+automatically detects repeating 2/4/8-bar loops. Press **Lock loop** to hold a
+detected progression while you solo freely over it, break out onto a new chord
+to pivot, or click **Save as song** to turn the jam into an editable chart.
+Every live chord change is stamped into `Engine.controls`, so Follow Me jams
+replay deterministically and export cleanly to MIDI and WAV.
+
+Open **Song Creator** (from **Studio → Song & Band**) to build or edit songs
+visually with live schema validation: title/tempo/key/genre metadata, an
+interactive form builder, 4-column bar chord grids, **Play in chords** over a
+click track to capture a progression straight from your instrument, optional
+text-to-song drafting, and browser-saved custom songs alongside the bundled
+charts.
+
+| Follow Me live strip | Song Creator |
+|---|---|
+| ![Follow Me on Stage](docs/images/follow-me.png) | ![Song Creator view](docs/images/song-creator.png) |
+
 ## With the jamstate server (optional companion)
 
 ```bash

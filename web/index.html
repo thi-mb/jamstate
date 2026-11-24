@@ -10,7 +10,7 @@
   <body>
     <header id="topbar">
       <div class="top-brand">
-        <h1>jamstate <small>v0.6</small></h1>
+        <h1>jamstate <small>v0.7</small></h1>
         <div class="top-pills">
           <button type="button" id="pill-song" class="pill" data-open-tab="song" title="Open Song & Band settings">Loading…</button>
           <button type="button" id="pill-leader" class="pill" data-open-tab="leader" title="Open Bandleader settings">rules</button>
@@ -24,6 +24,7 @@
           <button type="button" id="end-song" disabled title="The band finishes the phrase and ends the song (key 7)">End song</button>
           <button type="button" id="stop" disabled>Stop</button>
         </div>
+        <button type="button" id="follow-me-btn" class="ghost-btn" aria-pressed="false" title="Chartless mode: just start playing and the band latches onto your tempo, key and chords">Follow Me</button>
         <button type="button" id="trade" class="ghost-btn" aria-pressed="false" title="Key 8: play a phrase, lay out, and a band instrument answers in the next four bars"><kbd>8</kbd> Trade 4s</button>
         <button type="button" id="studio-toggle" class="studio-btn" aria-expanded="false" aria-controls="studio-drawer">Studio</button>
       </div>
@@ -38,6 +39,7 @@
           <span id="recap-banner-text">Session saved.</span>
         </div>
         <div class="recap-banner-actions">
+          <button type="button" id="recap-save-song-btn" class="ghost-btn" hidden>Save as song</button>
           <button type="button" id="recap-open-btn" class="primary">View Recap</button>
           <button type="button" id="recap-dismiss-btn" class="ghost-btn">Dismiss</button>
         </div>
@@ -67,6 +69,22 @@
 
         <div class="playhead-track" aria-hidden="true">
           <div id="playhead" class="playhead-fill"></div>
+        </div>
+      </section>
+
+      <section id="follow-strip" class="follow-strip" aria-label="Follow Me live detection" hidden>
+        <div class="follow-main">
+          <span id="follow-phase" class="follow-phase listening">LISTENING</span>
+          <span id="follow-status" class="follow-status">Press Start and play — the band will latch onto your tempo, key and chords.</span>
+        </div>
+        <div class="follow-meta">
+          <div id="follow-conf-bar" class="follow-conf" title="Detection confidence"><div id="follow-conf-fill" class="follow-conf-fill"></div></div>
+          <div id="follow-loop" class="follow-loop" aria-label="Detected chord loop"></div>
+        </div>
+        <div class="follow-actions">
+          <button type="button" id="follow-dropin-btn" class="primary small" hidden>Drop in now</button>
+          <button type="button" id="follow-lock-btn" class="ghost-btn small" aria-pressed="false" disabled title="Hold the detected chord loop so you can solo freely over it">Lock loop</button>
+          <button type="button" id="follow-save-btn" class="ghost-btn small" disabled title="Open this jam in the Song Creator to save as a chart">Save as song</button>
         </div>
       </section>
 
@@ -193,6 +211,95 @@
       </div>
     </section>
 
+    <section id="editor-view" class="editor-view" aria-label="Song creator" hidden>
+      <div class="ed-top">
+        <div>
+          <button type="button" id="ed-back" class="ghost-btn">← Back to Stage</button>
+          <h2 class="recap-title">Song Creator</h2>
+        </div>
+        <div class="ed-top-actions">
+          <button type="button" id="ed-new" class="ghost-btn">New song</button>
+          <button type="button" id="ed-save">Save in browser</button>
+          <button type="button" id="ed-use" class="primary">Use on Stage</button>
+        </div>
+      </div>
+
+      <div id="ed-validation" class="ed-validation ok">Valid chart</div>
+
+      <div class="ed-card">
+        <div class="recap-card-head">
+          <span class="label">describe a song (optional)</span>
+          <span id="ed-ai-hint" class="dim small"></span>
+        </div>
+        <div class="row">
+          <input id="ed-ai-prompt" type="text" placeholder="e.g. slow 12-bar minor blues in D at 82 bpm with a turnaround…" />
+          <button type="button" id="ed-ai-go">Generate draft</button>
+        </div>
+      </div>
+
+      <div class="ed-card">
+        <div class="recap-card-head"><span class="label">song details</span></div>
+        <div class="ed-meta-grid">
+          <label>Title <input id="ed-title" type="text" placeholder="Song title" /></label>
+          <label>Tempo (BPM) <input id="ed-bpm" type="number" min="40" max="240" value="110" /></label>
+          <label>Time sig
+            <select id="ed-timesig">
+              <option value="4/4">4/4</option>
+              <option value="3/4">3/4</option>
+              <option value="2/4">2/4</option>
+              <option value="5/4">5/4</option>
+              <option value="6/4">6/4</option>
+              <option value="7/4">7/4</option>
+            </select>
+          </label>
+          <label>Key <input id="ed-key" type="text" placeholder="e.g. A minor, Bb major" /></label>
+          <label>Genre <select id="ed-genre"></select></label>
+          <label>Swing
+            <select id="ed-swing">
+              <option value="">genre default</option>
+              <option value="0">0 (straight)</option>
+              <option value="0.33">0.33 (light)</option>
+              <option value="0.5">0.5</option>
+              <option value="0.66">0.66 (triplet)</option>
+            </select>
+          </label>
+          <label>Count-in
+            <select id="ed-countin">
+              <option value="0">0 bars</option>
+              <option value="1">1 bar</option>
+              <option value="2">2 bars</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="ed-card">
+        <div class="recap-card-head">
+          <span class="label">song form</span>
+          <span class="dim small">order sections play in</span>
+        </div>
+        <div id="ed-form-list" class="ed-form-list"></div>
+        <div id="ed-form-add" class="ed-form-add"></div>
+      </div>
+
+      <div class="ed-card">
+        <div class="recap-card-head">
+          <span class="label">sections &amp; chord grids</span>
+          <button type="button" id="ed-add-section" class="ghost-btn small">+ Add section</button>
+        </div>
+        <div id="ed-playin-status" class="ed-playin-status small"></div>
+        <div id="ed-sections" class="ed-sections"></div>
+      </div>
+
+      <details class="ed-raw-details">
+        <summary>Advanced: raw chart JSON</summary>
+        <div class="ed-card">
+          <textarea id="ed-raw-json" spellcheck="false" rows="14"></textarea>
+          <div class="row"><button type="button" id="ed-raw-apply">Apply JSON</button></div>
+        </div>
+      </details>
+    </section>
+
     <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
 
     <aside id="studio-drawer" class="drawer" aria-label="Studio settings" aria-hidden="true">
@@ -214,6 +321,11 @@
           <fieldset>
             <legend>Song</legend>
             <select id="chart-select" aria-label="Select song"></select>
+            <div class="row wrap">
+              <button type="button" id="open-song-editor" class="primary">Song Creator</button>
+              <button type="button" id="new-song-btn">New song</button>
+              <button type="button" id="delete-saved-song" hidden>Delete saved</button>
+            </div>
             <label>Genre <select id="genre-select"></select></label>
             <label>Swing
               <select id="swing-select">
@@ -231,7 +343,7 @@
             <p class="dim small">Genre and swing change from the next bar, also while playing.</p>
             <div class="row">
               <label class="file">Load JSON… <input type="file" id="chart-file" accept=".json,application/json" hidden /></label>
-              <button type="button" id="chart-edit-toggle">Edit</button>
+              <button type="button" id="chart-edit-toggle">Edit JSON</button>
             </div>
             <div id="chart-editor" hidden>
               <textarea id="chart-json" spellcheck="false" rows="12"></textarea>
